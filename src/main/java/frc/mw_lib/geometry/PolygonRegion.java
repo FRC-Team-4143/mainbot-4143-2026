@@ -2,6 +2,7 @@ package frc.mw_lib.geometry;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructArrayPublisher;
 import java.awt.geom.*;
@@ -10,7 +11,7 @@ import java.awt.geom.*;
  * This class models a region of the field. It is defined by its vertices Credit to frc-3061 for
  * base code
  */
-public class PolygonRegion implements Region {
+public class PolygonRegion extends Region {
   private Path2D shape_;
   private String name_;
   private Translation2d[] points_;
@@ -70,4 +71,6 @@ public class PolygonRegion implements Region {
     Translation2d[] saftey = points_;
     return saftey;
   }
+
+
 }
