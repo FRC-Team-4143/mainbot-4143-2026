@@ -8,8 +8,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.subsystems.elevator.ElevatorSubsystem;
-import frc.robot.subsystems.swerve.Swerve;
+import frc.robot.subsystems.swerve.SwerveSubsystem;
 import java.util.Optional;
 
 public abstract class OI {
@@ -20,11 +19,10 @@ public abstract class OI {
   public static void configureBindings() {
     DriverStation.silenceJoystickConnectionWarning(true);
 
-    driver_controller_.rightStick().onTrue(Swerve.getInstance().toggleFieldCentric());
+    driver_controller_.rightStick().onTrue(SwerveSubsystem.getInstance().toggleFieldCentric());
     // driver_controller_.a().whileTrue(Commands.startEnd(() -> Superstructure.getInstance().requestMove(Targets.L3), () -> Superstructure.getInstance().requestMove(Targets.CORAL_INTAKE)));
   
-    driver_controller_.a().onTrue(Commands.run(() -> ElevatorSubsystem.getInstance().requestMove(0.0)));
-    driver_controller_.b().onTrue(Commands.run(() -> ElevatorSubsystem.getInstance().requestMove(1.0)));
+
   }
 
   /**

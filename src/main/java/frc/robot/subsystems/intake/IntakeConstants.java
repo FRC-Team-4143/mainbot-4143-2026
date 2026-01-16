@@ -1,43 +1,49 @@
 package frc.robot.subsystems.intake;
 
-import com.ctre.phoenix6.configs.Slot0Configs;
-import edu.wpi.first.math.geometry.Rotation2d;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
+
 import frc.mw_lib.subsystem.MwConstants;
+import frc.mw_lib.util.FxMotorConfig;
+import frc.mw_lib.util.FxMotorConfig.FxMotorType;
 
-public class IntakeConstants extends MwConstants {
+public class IntakeConstants extends MwConstants  {
+    
+    public enum IntakeStates {
+        IDLE,
+        DEPLOY,
+        PICKUP,
+        RETRACT;
+    }
+    //Intake Constants
+    public final int INTAKE_ID = 1; //ID here;
+    public final boolean INTAKE_INVERTED = false; //true or false;
+    public final double INTAKE_GEAR_RATIO = 1; //gear ratio here ex 1.0;
+    public final double INTAKE_WHEEL_RADIUS_METERS = 1; // must be in meters ex:Units.inchesToMeters(3);
+    public final double INTAKE_WHEEL_MASS_KG = 1; // kg, approximate;
+    public final double INTAKE_WHEEL_INERTIA = 0.5 * INTAKE_WHEEL_MASS_KG * Math.pow(INTAKE_WHEEL_RADIUS_METERS, 2.0); // kg m^2, approximate
+    public final FxMotorConfig INTAKE_MOTOR_CONFIG = new FxMotorConfig();
+    
+    //Arm Constants
+    public final int ARMID = 1; //ID here;
+    public final double ARM_LENGTH = 1; // in meters
+    public final double ARM_MASS = 1; // in kg
+    public final double ARM_MIN_ANGLE = 0; //in radians
+    public final double ARM_MAX_ANGLE = 0; // in radians
+    public final boolean ARM_INVERTED = false; //true or false;
+    public final double ARM_GEAR_RATIO = 1; //gear ratio here ex 1.0;
 
-  public enum IntakeStates {
-    DEPLOY,
-    PURGE,
-    CLIMB_STAGE,
-    PICK_UP,
-    IDLE
-  }
 
-  public IntakeConstants() {
-  }
 
-  // General Intake Constants
-  public final double INTAKE_OFF_SET_Y = getDoubleConstant("offset_y");
-  public final double STATOR_CURRENT_LIMIT = getDoubleConstant("stator_current_limit");
+    // Control Setpoints
+    public final double INTAKE_DUTY_CYCLE = 1; //power here; // 50% power for shooting
+    public final double ARM_DUTY_CYCLE = 1;//power here;
 
-  // TOF Constants
-  public final int TIME_OF_FLIGHT_ID = getIntConstant("tof", "id");
-  public final double TOF_CORAL_DISTANCE = getDoubleConstant("tof", "coral_distance");
 
-  // Intake Motor Constants
-  public final int INTAKE_ID = getIntConstant("intake", "id");
-  public final double INTAKE_IN_SPEED = getDoubleConstant("intake", "in_speed");
-  public final double INTAKE_OUT_SPEED = getDoubleConstant("intake", "out_speed");
-
-  // Pivot Motor Constants
-  public final int PIVOT_ID = getIntConstant("pivot", "id");
-  public final double PIVOT_MECH_RATIO = getDoubleConstant("pivot", "mech_ratio");
-  public final Slot0Configs PIVOT_GAINS = new Slot0Configs().withKP(getDoubleConstant("pivot", "kp"));
-
-  public final Rotation2d PIVOT_OFFSET = Rotation2d.fromDegrees(35);
-  public final Rotation2d PIVOT_DEPLOYED_ANGLE = Rotation2d.fromDegrees(-35);
-  public final Rotation2d PIVOT_STATION_ANGLE = Rotation2d.fromDegrees(59);
-  public final Rotation2d PIVOT_CLIMB_ANGLE = Rotation2d.fromDegrees(0);
-
+    public IntakeConstants() {
+        INTAKE_MOTOR_CONFIG.can_id= INTAKE_ID;
+        INTAKE_MOTOR_CONFIG.motor_type = FxMotorType.X60;
+        INTAKE_MOTOR_CONFIG.canbus_name = "rio";
+        INTAKE_MOTOR_CONFIG.config = new TalonFXConfiguration();
+    }
 }
+

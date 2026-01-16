@@ -10,11 +10,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.mw_lib.proxy_server.ProxyServer;
-import frc.robot.subsystems.elevator.ElevatorSubsystem;
-import frc.robot.subsystems.elevator.ElevatorConstants.ElevatorStates;
-import frc.robot.subsystems.superstructure.Superstructure;
-import frc.robot.subsystems.superstructure.SuperstructureConstants.SuperstructureStates;
-import frc.robot.subsystems.swerve.Swerve;
+import frc.robot.subsystems.swerve.SwerveSubsystem;
 import frc.robot.subsystems.swerve.SwerveConstants;
 import java.util.Optional;
 import org.ironmaple.simulation.SimulatedArena;
@@ -60,7 +56,7 @@ public class Robot extends TimedRobot {
 
       if (alliance.get() != alliance_) {
         alliance_ = alliance.get();
-        Swerve.getInstance()
+        SwerveSubsystem.getInstance()
             .setOperatorForwardDirection(
                 alliance_ == Alliance.Blue
                     ? SwerveConstants.OperatorPerspective.BLUE_ALLIANCE
@@ -94,7 +90,7 @@ public class Robot extends TimedRobot {
   @Override
   public void testInit() {
     CommandScheduler.getInstance().cancelAll();
-    ElevatorSubsystem.getInstance().setWantedState(ElevatorStates.TUNING);
+  
   }
 
   @Override
@@ -103,7 +99,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void testExit() {
-    ElevatorSubsystem.getInstance().setWantedState(ElevatorStates.IDLE);
+
   }
 
   @Override

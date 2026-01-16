@@ -5,8 +5,6 @@ import static edu.wpi.first.units.Units.Celsius;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
-import java.util.List;
-
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.Slot1Configs;
@@ -14,17 +12,19 @@ import com.ctre.phoenix6.configs.SlotConfigs;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
-
 import dev.doglog.DogLog;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
-import frc.mw_lib.mechanisms.FxMotorConfig.FxMotorType;
+import frc.mw_lib.util.FxMotorConfig;
+import frc.mw_lib.util.FxMotorConfig.FxMotorType;
+import frc.mw_lib.util.TunablePid;
+import java.util.List;
 
 public class FlywheelMech extends MechBase {
 
-    // control modes for the flywheel mechanism
+    /** Control modes for the flywheel mechanism */
     protected enum ControlMode {
         VELOCITY,
         DUTY_CYCLE
@@ -45,6 +45,7 @@ public class FlywheelMech extends MechBase {
     protected final double gear_ratio_;
     protected final double wheel_inertia_;
     protected final double wheel_radius_;
+    private final DCMotor motor_type_;
 
     // Current state info
     protected double position_ = 0; // only used in sim
@@ -56,9 +57,22 @@ public class FlywheelMech extends MechBase {
     protected double[] motor_temp_c_;
     protected double[] bus_voltage_;
 
-    public FlywheelMech(List<FxMotorConfig> motor_configs, double gear_ratio, double wheel_inertia,
+    /**
+     * Constructs a new FlywheelMech
+     *
+     * @param logging_prefix String prefix for logging
+     * @param motor_configs List of motor configurations
+     * @param gear_ratio Gear ratio from motor TO wheel
+     * @param wheel_inertia Inertia of the flywheel in kg*m^2 (Simulation only)
+     * @param wheel_radius Radius of the flywheel in meters (Simulation only)
+     */
+    public FlywheelMech(
+            String logging_prefix,
+            List<FxMotorConfig> motor_configs,
+            double gear_ratio,
+            double wheel_inertia,
             double wheel_radius) {
-        super();
+        super(logging_prefix);
 
         // Create control requests
         this.velocity_request_ = new VelocityVoltage(0).withSlot(0);
@@ -75,7 +89,6 @@ public class FlywheelMech extends MechBase {
 
         // default the inputs
         velocity_ = 0;
-        
         applied_voltage_ = new double[motors_.length];
         current_draw_ = new double[motors_.length];
         motor_temp_c_ = new double[motors_.length];
@@ -84,15 +97,25 @@ public class FlywheelMech extends MechBase {
         ////////////////////////
         /// SIMULATION SETUP ///
         ////////////////////////
-        DCMotor motor_type;
         if (motor_configs.get(0).motor_type == FxMotorType.X60) {
-            motor_type = DCMotor.getKrakenX60(motor_configs.size());
+            motor_type_ = DCMotor.getKrakenX60(motor_configs.size());
         } else {
             throw new IllegalArgumentException("Unsupported motor type for FlywheelMech");
         }
 
-        flywheel_sim_ = new FlywheelSim(
-                LinearSystemId.createFlywheelSystem(motor_type, wheel_inertia_, gear_ratio_), motor_type);
+        flywheel_sim_ =
+                new FlywheelSim(
+                        LinearSystemId.createFlywheelSystem(
+                                motor_type_, wheel_inertia_, gear_ratio_),
+                        motor_type_);
+
+        // Setup tunable PIDs
+        TunablePid.create(
+                getLoggingKey() + "VelocityGains",
+                this::configVelocitySlot,
+                SlotConfigs.from(motor_configs.get(0).config.Slot1));
+        DogLog.tunable(
+                getLoggingKey() + "VelocityGains/Setpoint", 0.0, (val) -> setTargetVelocity(val));
     }
 
     @Override
@@ -123,10 +146,11 @@ public class FlywheelMech extends MechBase {
             flywheel_sim_.update(0.020);
 
             // Convert meters to motor rotations
-            double motorVelocity = RadiansPerSecond.of(flywheel_sim_.getAngularVelocityRadPerSec() * gear_ratio_)
-                    .in(RotationsPerSecond);
+            double motorVelocity =
+                    RadiansPerSecond.of(flywheel_sim_.getAngularVelocityRadPerSec() * gear_ratio_)
+                            .in(RotationsPerSecond);
             position_ += motorVelocity * 0.020;
-            
+
             motors_[0].getSimState().setRawRotorPosition(position_);
             motors_[0].getSimState().setRotorVelocity(motorVelocity);
         }
@@ -146,40 +170,6 @@ public class FlywheelMech extends MechBase {
         }
     }
 
-    protected void configSlot(int slot, SlotConfigs config) {
-        if (slot == 0) {
-            motors_[0].getConfigurator().apply(Slot0Configs.from(config));
-        } else if (slot == 1) {
-            motors_[0].getConfigurator().apply(Slot1Configs.from(config));
-        } else {
-            throw new IllegalArgumentException("Slot must be 0, 1, or 2");
-        }
-    }
-
-    public void setVelocitySlot(SlotConfigs config) {
-        configSlot(0, config);
-    }
-
-    public double getCurrentVelocity() {
-        return velocity_;
-    }
-
-    public double getLeaderCurrent() {
-        return current_draw_[0];
-    }
-
-    public void setTargetVelocity(double velocity_rad_per_sec) {
-        control_mode_ = ControlMode.VELOCITY;
-        velocity_target_ = velocity_rad_per_sec;
-        velocity_request_.Velocity = Units.radiansToRotations(velocity_rad_per_sec);
-    }
-
-    public void setTargetDutyCycle(double duty_cycle) {
-        control_mode_ = ControlMode.DUTY_CYCLE;
-        duty_cycle_target_ = duty_cycle;
-        duty_cycle_request_.Output = duty_cycle;
-    }
-
     @Override
     public void logData() {
         // commands
@@ -197,4 +187,76 @@ public class FlywheelMech extends MechBase {
         }
     }
 
+    /**
+     * Configures the velocity slot with the given config
+     *
+     * @param config the slot config to apply
+     */
+    private void configVelocitySlot(SlotConfigs config) {
+        configSlot(1, config);
+    }
+
+    /**
+     * Configures the given slot with the given config
+     *
+     * @param slot the slot index to configure
+     * @param config the slot config to apply
+     */
+    private void configSlot(int slot, SlotConfigs config) {
+        if (slot == 0) {
+            motors_[0].getConfigurator().apply(Slot0Configs.from(config));
+        } else if (slot == 1) {
+            motors_[0].getConfigurator().apply(Slot1Configs.from(config));
+        } else {
+            throw new IllegalArgumentException("Slot must be 0, 1, or 2");
+        }
+    }
+
+    /**
+     * @return The current velocity of the flywheel in radians per second
+     */
+    public double getCurrentVelocity() {
+        return velocity_;
+    }
+
+    /**
+     * Sets the target velocity of the flywheel in radians per second
+     *
+     * @param velocity_rad_per_sec the target velocity in radians per second
+     */
+    public void setTargetVelocity(double velocity_rad_per_sec) {
+        control_mode_ = ControlMode.VELOCITY;
+        velocity_target_ = velocity_rad_per_sec;
+        velocity_request_.Velocity = Units.radiansToRotations(velocity_rad_per_sec);
+    }
+
+    /**
+     * Sets the target duty cycle of the flywheel
+     *
+     * @param duty_cycle the target duty cycle (-1.0 to 1.0)
+     */
+    public void setTargetDutyCycle(double duty_cycle) {
+        control_mode_ = ControlMode.DUTY_CYCLE;
+        duty_cycle_target_ = duty_cycle;
+        duty_cycle_request_.Output = duty_cycle;
+    }
+
+    /**
+     * Applies a load torque to the flywheel mechanism for simulation purposes.
+     *
+     * @param torque_nm The load torque in Newton-meters (Nm). Positive values oppose motion.
+     */
+    public void applyLoadTorque(double torque_nm) {
+        double current_torque = motor_type_.KtNMPerAmp * current_draw_[0];
+        current_torque -= torque_nm;
+
+        // Calculate the new angular velocity based on the net torque
+        double angular_acceleration = current_torque / wheel_inertia_;
+        double new_velocity = velocity_ + angular_acceleration * 0.020; // assuming 20ms timestep
+
+        // Apply the calculated velocity to simulation
+        if (IS_SIM) {
+            flywheel_sim_.setAngularVelocity(new_velocity);
+        }
+    }
 }

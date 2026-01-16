@@ -7,9 +7,6 @@ import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.Slot1Configs;
@@ -18,18 +15,20 @@ import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
-import com.ctre.phoenix6.controls.StrictFollower;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.GravityTypeValue;
-
 import dev.doglog.DogLog;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
-import frc.mw_lib.mechanisms.FxMotorConfig.FxMotorType;
+import frc.mw_lib.util.FxMotorConfig;
+import frc.mw_lib.util.FxMotorConfig.FxMotorType;
+import frc.mw_lib.util.TunablePid;
+import java.util.List;
 
 public class ArmMech extends MechBase {
 
+    /** Control modes for the arm mechanism */
     protected enum ControlMode {
         MOTION_MAGIC_POSITION,
         POSITION,
@@ -62,27 +61,58 @@ public class ArmMech extends MechBase {
     protected double[] current_draw_;
     protected double[] motor_temp_c_;
     protected double[] bus_voltage_;
-    public ArmMech(List<FxMotorConfig> motor_configs, double gear_ratio, double length, double mass_kg,
-            double min_angle, double max_angle){
-                this(motor_configs, gear_ratio, length, mass_kg, min_angle, max_angle, true);
+
+    /**
+     * Constructs a new ArmMech
+     *
+     * @param logging_prefix String prefix for logging
+     * @param motor_configs List of motor configurations
+     * @param gear_ratio Gear ratio from motor TO arm
+     * @param length Length of the arm in meters (Simulation only)
+     * @param mass_kg Mass of the arm in kg (Simulation only)
+     * @param min_angle Minimum angle of the arm in radians (Simulation only)
+     * @param max_angle Maximum angle of the arm in radians (Simulation only)
+     */
+    public ArmMech(
+            String logging_prefix,
+            List<FxMotorConfig> motor_configs,
+            double gear_ratio,
+            double length,
+            double mass_kg,
+            double min_angle,
+            double max_angle) {
+                this(logging_prefix, motor_configs, gear_ratio, length, mass_kg, min_angle, max_angle, true);
             }
-    public ArmMech(List<FxMotorConfig> motor_configs, double gear_ratio, double length, double mass_kg,
-            double min_angle, double max_angle, boolean gravity) {
-        super();
+    public ArmMech(
+            String logging_prefix,
+            List<FxMotorConfig> motor_configs,
+            double gear_ratio,
+            double length,
+            double mass_kg,
+            double min_angle,
+            double max_angle,
+            boolean gravity) {
+
+        super(logging_prefix);
 
         position_request_ = new PositionVoltage(0).withSlot(0);
         motion_magic_position_request_ = new MotionMagicVoltage(0).withSlot(0);
         velocity_request_ = new VelocityVoltage(0).withSlot(1);
         duty_cycle_request_ = new DutyCycleOut(0);
 
-        ConstructedMotors configured_motors = configMotors(motor_configs, gear_ratio, (cfg) -> {
-            // Configure the motor for position & velocity control with gravity compensation
-            cfg.config.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
-            cfg.config.Slot1.GravityType = GravityTypeValue.Arm_Cosine;
-            cfg.config.Slot2.GravityType = GravityTypeValue.Arm_Cosine;
+        ConstructedMotors configured_motors =
+                configMotors(
+                        motor_configs,
+                        gear_ratio,
+                        (cfg) -> {
+                            // Configure the motor for position & velocity control with gravity
+                            // compensation
+                            cfg.config.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
+                            cfg.config.Slot1.GravityType = GravityTypeValue.Arm_Cosine;
+                            cfg.config.Slot2.GravityType = GravityTypeValue.Arm_Cosine;
 
-            return cfg;
-        });
+                            return cfg;
+                        });
         motors_ = configured_motors.motors;
         signals_ = configured_motors.signals;
 
@@ -108,34 +138,31 @@ public class ArmMech extends MechBase {
             throw new IllegalArgumentException("Unsupported motor type for ArmMech");
         }
 
-        arm_sim_ = new SingleJointedArmSim(
-                motor_type, // Motor type
-                gear_ratio,
-                SingleJointedArmSim.estimateMOI(length, mass_kg),
-                length, // Length of the arm (meters)
-                min_angle, // Minimum angle (radians)
-                max_angle, // Maximum angle (radians)
-                gravity, // Simulate gravity
-                0 // Starting angle (radians)
-        );
-    }
+        arm_sim_ =
+                new SingleJointedArmSim(
+                        motor_type, // Motor type
+                        gear_ratio,
+                        SingleJointedArmSim.estimateMOI(length, mass_kg),
+                        length, // Length of the arm (meters)
+                        min_angle, // Minimum angle (radians)
+                        max_angle, // Maximum angle (radians)
+                        true, // Simulate gravity
+                        0 // Starting angle (radians)
+                        );
 
-    protected void configSlot(int slot, SlotConfigs config) {
-        if (slot == 0) {
-            motors_[0].getConfigurator().apply(Slot0Configs.from(config));
-        } else if (slot == 1) {
-            motors_[0].getConfigurator().apply(Slot1Configs.from(config));
-        } else {
-            throw new IllegalArgumentException("Slot must be 0, 1, or 2");
-        }
-    }
-
-    public void setPositionSlot(SlotConfigs config) {
-        configSlot(0, config);
-    }
-
-    public void setVelocitySlot(SlotConfigs config) {
-        configSlot(1, config);
+        // Setup tunable PIDs
+        TunablePid.create(
+                getLoggingKey() + "PositionGains",
+                this::configPositionSlot,
+                SlotConfigs.from(motor_configs.get(0).config.Slot0));
+        DogLog.tunable(
+                getLoggingKey() + "PositionGains/Setpoint", 0.0, (val) -> setTargetPosition(val));
+        TunablePid.create(
+                getLoggingKey() + "VelocityGains",
+                this::configVelocitySlot,
+                SlotConfigs.from(motor_configs.get(0).config.Slot1));
+        DogLog.tunable(
+                getLoggingKey() + "VelocityGains/Setpoint", 0.0, (val) -> setTargetVelocity(val));
     }
 
     @Override
@@ -168,8 +195,9 @@ public class ArmMech extends MechBase {
 
             // Convert meters to motor rotations
             double motorPosition = Radians.of(arm_sim_.getAngleRads() * gear_ratio_).in(Rotations);
-            double motorVelocity = RadiansPerSecond.of(arm_sim_.getVelocityRadPerSec() * gear_ratio_)
-                    .in(RotationsPerSecond);
+            double motorVelocity =
+                    RadiansPerSecond.of(arm_sim_.getVelocityRadPerSec() * gear_ratio_)
+                            .in(RotationsPerSecond);
 
             motors_[0].getSimState().setRawRotorPosition(motorPosition);
             motors_[0].getSimState().setRotorVelocity(motorVelocity);
@@ -196,45 +224,6 @@ public class ArmMech extends MechBase {
         }
     }
 
-    public void setCurrentPosition(double position_rad) {
-        motors_[0].setPosition(Units.radiansToRotations(position_rad));
-    }
-
-    public double getCurrentPosition() {
-        return position_;
-    }
-
-    public double getCurrentVelocity() {
-        return velocity_;
-    }
-
-    public double getLeaderCurrent() {
-        return current_draw_[0];
-    }
-
-    public void setTargetPosition(double position_rad) {
-        position_target_ = position_rad;
-        if (use_motion_magic_) {
-            control_mode_ = ControlMode.MOTION_MAGIC_POSITION;
-            motion_magic_position_request_.Position = Units.radiansToRotations(position_rad);
-        } else {
-            control_mode_ = ControlMode.POSITION;
-            position_request_.Position = Units.radiansToRotations(position_rad);
-        }
-    }
-
-    public void setTargetVelocity(double velocity_rad_per_sec) {
-        control_mode_ = ControlMode.VELOCITY;
-        velocity_target_ = velocity_rad_per_sec;
-        velocity_request_.Velocity = Units.radiansToRotations(velocity_rad_per_sec);
-    }
-
-    public void setTargetDutyCycle(double duty_cycle) {
-        control_mode_ = ControlMode.DUTY_CYCLE;
-        duty_cycle_target_ = duty_cycle;
-        duty_cycle_request_.Output = duty_cycle;
-    }
-
     @Override
     public void logData() {
         // commands
@@ -254,4 +243,111 @@ public class ArmMech extends MechBase {
         }
     }
 
+    /**
+     * Configures the position slot with the given config
+     *
+     * @param config the slot config to apply
+     */
+    private void configPositionSlot(SlotConfigs config) {
+        configSlot(0, config);
+    }
+
+    /**
+     * Configures the velocity slot with the given config
+     *
+     * @param config the slot config to apply
+     */
+    private void configVelocitySlot(SlotConfigs config) {
+        configSlot(1, config);
+    }
+
+    /**
+     * Configures the given slot with the given config
+     *
+     * @param slot the slot to configure
+     * @param config the config to apply
+     */
+    private void configSlot(int slot, SlotConfigs config) {
+        if (slot == 0) {
+            motors_[0].getConfigurator().apply(Slot0Configs.from(config));
+        } else if (slot == 1) {
+            motors_[0].getConfigurator().apply(Slot1Configs.from(config));
+        } else {
+            throw new IllegalArgumentException("Slot must be 0, 1, or 2");
+        }
+    }
+
+    /**
+     * Set the current position of the arm (for zeroing)
+     *
+     * @param position_rad the current position in radians
+     */
+    public void setCurrentPosition(double position_rad) {
+        motors_[0].setPosition(Units.radiansToRotations(position_rad));
+    }
+
+    /**
+     * Get the current position of the arm
+     *
+     * @return the current position in radians
+     */
+    public double getCurrentPosition() {
+        return position_;
+    }
+
+    /**
+     * Get the current velocity of the arm
+     *
+     * @return the current velocity in radians per second
+     */
+    public double getCurrentVelocity() {
+        return velocity_;
+    }
+
+    /**
+     * Get the current draw of the leader motor
+     *
+     * @return the current draw in amps
+     */
+    public double getLeaderCurrent() {
+        return current_draw_[0];
+    }
+
+    /**
+     * Set the target position of the arm
+     *
+     * @param position_rad the target position in radians
+     */
+    public void setTargetPosition(double position_rad) {
+        position_target_ = position_rad;
+        if (use_motion_magic_) {
+            control_mode_ = ControlMode.MOTION_MAGIC_POSITION;
+            motion_magic_position_request_.Position = Units.radiansToRotations(position_rad);
+        } else {
+            control_mode_ = ControlMode.POSITION;
+            position_request_.Position = Units.radiansToRotations(position_rad);
+        }
+    }
+
+    /**
+     * Set the target velocity of the arm
+     *
+     * @param velocity_rad_per_sec the target velocity in radians per second
+     */
+    public void setTargetVelocity(double velocity_rad_per_sec) {
+        control_mode_ = ControlMode.VELOCITY;
+        velocity_target_ = velocity_rad_per_sec;
+        velocity_request_.Velocity = Units.radiansToRotations(velocity_rad_per_sec);
+    }
+
+    /**
+     * Set the target duty cycle of the arm
+     *
+     * @param duty_cycle the target duty cycle (-1.0 to 1.0)
+     */
+    public void setTargetDutyCycle(double duty_cycle) {
+        control_mode_ = ControlMode.DUTY_CYCLE;
+        duty_cycle_target_ = duty_cycle;
+        duty_cycle_request_.Output = duty_cycle;
+    }
 }
