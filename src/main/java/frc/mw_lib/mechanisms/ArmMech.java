@@ -62,9 +62,12 @@ public class ArmMech extends MechBase {
     protected double[] current_draw_;
     protected double[] motor_temp_c_;
     protected double[] bus_voltage_;
-
     public ArmMech(List<FxMotorConfig> motor_configs, double gear_ratio, double length, double mass_kg,
-            double min_angle, double max_angle) {
+            double min_angle, double max_angle){
+                this(motor_configs, gear_ratio, length, mass_kg, min_angle, max_angle, true);
+            }
+    public ArmMech(List<FxMotorConfig> motor_configs, double gear_ratio, double length, double mass_kg,
+            double min_angle, double max_angle, boolean gravity) {
         super();
 
         position_request_ = new PositionVoltage(0).withSlot(0);
@@ -112,7 +115,7 @@ public class ArmMech extends MechBase {
                 length, // Length of the arm (meters)
                 min_angle, // Minimum angle (radians)
                 max_angle, // Maximum angle (radians)
-                true, // Simulate gravity
+                gravity, // Simulate gravity
                 0 // Starting angle (radians)
         );
     }
