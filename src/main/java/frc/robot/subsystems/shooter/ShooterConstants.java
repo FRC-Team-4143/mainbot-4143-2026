@@ -10,9 +10,12 @@ import frc.mw_lib.util.FxMotorConfig.FxMotorType;
 public class ShooterConstants extends MwConstants {
 
     public enum ShooterStates {
+        UNWIND,
+        AIMING,
+        DUMP,
+        SHOOT,
         IDLE,
-        SPIN_UP,
-        SHOOTING
+        PROFILE
     }
 
     // Shooter Mech Configs
@@ -29,6 +32,15 @@ public class ShooterConstants extends MwConstants {
     public final boolean INDEXER_INVERTED = false;
     public final double INDEXER_GEAR_RATIO = 1.0;
     public final FxMotorConfig INDEX_MOTOR_CONFIG = new FxMotorConfig();
+
+    //Hood Mech Config
+    public final int HOOD_ID;
+    public final boolean HOOD_INVERTED = false;
+    public final double HOOD_GEAR_RATIO;
+    public final double HOOD_LENGTH;
+    public final double HOOD_MASS_KG;
+    public final double HOOD_MIN_ANGLE;
+    public final double HOOD_MAX_ANGLE;
 
     // Control Setpoints
     public final double SHOOT_DUTY_CYCLE = 0.5; // 50% power for shooting

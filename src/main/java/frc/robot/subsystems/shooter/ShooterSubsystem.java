@@ -3,6 +3,7 @@ package frc.robot.subsystems.shooter;
 import java.util.List;
 import java.util.Arrays;
 import dev.doglog.DogLog;
+import frc.mw_lib.mechanisms.ArmMech;
 import frc.mw_lib.mechanisms.FlywheelMech;
 import frc.mw_lib.mechanisms.RollerMech;
 import frc.mw_lib.subsystem.MwSubsystem;
@@ -25,7 +26,7 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
         super(ShooterStates.IDLE, new ShooterConstants());
         indexer_ = new RollerMech(getSubsystemKey(), CONSTANTS.INDEX_MOTOR_CONFIG);
         flywheel_ = new FlywheelMech(getSubsystemKey(), List.of(CONSTANTS.SHOOTER_MOTOR_CONFIGS), CONSTANTS.SHOOTER_GEAR_RATIO, CONSTANTS.SHOOTER_WHEEL_INERTIA, CONSTANTS.SHOOTER_WHEEL_RADIUS_METERS);
-
+        hood_ = new ArmMech(getSubsystemKey(), 0, 0, 0, 0, 0, 0)
         indexer_.setLoggingPrefix(getSubsystemKey());
         flywheel_.setLoggingPrefix(getSubsystemKey());
 
@@ -38,6 +39,17 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
     @Override
     public void updateLogic(double timestamp) {
         switch (system_state_) {
+            case UNWIND:
+
+            case AIMING:
+
+            case DUMP:
+
+            case SHOOT:
+
+            case IDLE:
+
+            case PROFILE:
 
         }
         // Log Data
