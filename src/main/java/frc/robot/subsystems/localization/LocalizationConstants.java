@@ -1,8 +1,8 @@
 package frc.robot.subsystems.localization;
 
+import com.marswars.subsystem.MwConstants;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import frc.mw_lib.subsystem.MwConstants;
 
 public class LocalizationConstants extends MwConstants {
 

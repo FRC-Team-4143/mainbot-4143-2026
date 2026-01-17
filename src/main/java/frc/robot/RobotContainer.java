@@ -4,29 +4,25 @@
 
 package frc.robot;
 
-import frc.mw_lib.subsystem.SubsystemManager;
-import frc.robot.subsystems.intake.IntakeSubsystem;
-import frc.robot.subsystems.shooter.ShooterSubsystem;
+import com.marswars.subsystem.SubsystemManager;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 
 public class RobotContainer extends SubsystemManager {
-  private static RobotContainer instance;
+    private static RobotContainer instance;
 
-  public static synchronized RobotContainer getInstance() {
-    if (instance == null) {
-      instance = new RobotContainer();
+    public static synchronized RobotContainer getInstance() {
+        if (instance == null) {
+            instance = new RobotContainer();
+        }
+        return instance;
     }
-    return instance;
-  }
 
-  public RobotContainer() {
-    // !!!!!! ALL SUBSYSTEMS MUST BE REGISTERED HERE TO RUN !!!!!!!
-    // registerSubsystem(Superstructure.getInstance());
-    registerSubsystem(SwerveSubsystem.getInstance());
-    // registerSubsystem(IntakeSubsystem.getInstance());
-    //registerSubsystem(ShooterSubsystem.getInstance());
+    public RobotContainer() {
+        super(BuildConstants.class);
+        // !!!!!! ALL SUBSYSTEMS MUST BE REGISTERED HERE TO RUN !!!!!!!
+        registerSubsystem(SwerveSubsystem.getInstance());
 
-    // !!!!! LEAVE THESE LINES AS THE LAST LINE IN THE CONSTRUCTOR !!!!!!
-    reset();
-  }
+        // !!!!! LEAVE THESE LINES AS THE LAST LINE IN THE CONSTRUCTOR !!!!!!
+        reset();
+    }
 }
