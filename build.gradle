@@ -2,6 +2,7 @@ plugins {
     id "java"
     id "edu.wpi.first.GradleRIO" version "2026.1.1"
     id "com.peterabeles.gversion" version "1.10"
+    id "com.diffplug.spotless" version "6.25.0"
 }
 
 java {
@@ -10,6 +11,38 @@ java {
 }
 
 def ROBOT_MAIN_CLASS = "frc.robot.Main"
+
+// Configure Spotless for code formatting
+spotless {
+    java {
+        target 'src/**/*.java'
+        googleJavaFormat('1.23.0').aosp().reflowLongStrings()
+        removeUnusedImports()
+        trimTrailingWhitespace()
+        endWithNewline()
+    }
+    groovyGradle {
+        target '*.gradle'
+        greclipse()
+        indentWithSpaces(4)
+        trimTrailingWhitespace()
+        endWithNewline()
+    }
+    json {
+        target 'src/**/*.json', 'vendordeps/*.json'
+        jackson()
+    }
+    format 'misc', {
+        target '**/*.md', '**/*.xml'
+        trimTrailingWhitespace()
+        endWithNewline()
+    }
+}
+
+// Suppress Spotless verbose output during builds
+tasks.withType(com.diffplug.gradle.spotless.SpotlessTask) {
+    logging.captureStandardOutput LogLevel.INFO
+}
 
 // Define my targets (RoboRIO) and artifacts (deployable files)
 // This is added by GradleRIO's backing project DeployUtils.
@@ -35,7 +68,7 @@ deploy {
                     files = project.fileTree('src/main/deploy')
                     directory = '/home/lvuser/deploy'
                     deleteOldFiles = false // Change to true to delete files on roboRIO that no
-                                           // longer exist in deploy directory of this project
+                    // longer exist in deploy directory of this project
                 }
             }
         }
@@ -100,7 +133,11 @@ wpi.sim.addDriverstation()
 // in order to make them all available at runtime. Also adding the manifest so WPILib
 // knows where to look for our Robot Class.
 jar {
-    from { configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) } }
+    from {
+        configurations.runtimeClasspath.collect {
+            it.isDirectory() ? it : zipTree(it)
+        }
+    }
     from('src') { into 'backup/src' }
     from('vendordeps') { into 'backup/vendordeps' }
     from('build.gradle') { into 'backup' }
@@ -112,6 +149,11 @@ jar {
 deployArtifact.jarTask = jar
 wpi.java.configureExecutableTasks(jar)
 wpi.java.configureTestTasks(test)
+
+// Auto-format code after successful build
+build.finalizedBy spotlessApply
+// Only check formatting on explicit check task
+check.dependsOn spotlessCheck
 
 // Configure string concat to always inline compile
 tasks.withType(JavaCompile) {

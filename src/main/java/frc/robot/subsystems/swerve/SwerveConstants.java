@@ -3,19 +3,18 @@ package frc.robot.subsystems.swerve;
 import static edu.wpi.first.units.Units.Kilograms;
 import static edu.wpi.first.units.Units.Meters;
 
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.math.util.Units;
 import com.marswars.subsystem.MwConstants;
 import com.marswars.swerve_lib.SwerveDriveConfig;
 import com.marswars.swerve_lib.module.ModuleType;
 import com.marswars.swerve_lib.module.SwerveModuleConfig;
 import com.marswars.util.FxMotorConfig;
 import com.marswars.util.PhoenixUtil;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.math.util.Units;
 import org.ironmaple.simulation.drivesims.COTS;
 import org.ironmaple.simulation.drivesims.configs.DriveTrainSimulationConfig;
-import org.ironmaple.simulation.drivesims.configs.SwerveModuleSimulationConfig;
 
 public class SwerveConstants extends MwConstants {
     // Current system states for the swerve drive
@@ -223,11 +222,13 @@ public class SwerveConstants extends MwConstants {
                         .withBumperSize(
                                 Meters.of(BUMPER_LENGTH_METERS), Meters.of(BUMPER_WIDTH_METERS))
                         .withRobotMass(Kilograms.of(ROBOT_MASS_KG))
-                        .withCustomModuleTranslations(new Translation2d[]{
-                            FL_MODULE_TRANSLATION,
-                            FR_MODULE_TRANSLATION,
-                            BL_MODULE_TRANSLATION,
-                            BR_MODULE_TRANSLATION})
+                        .withCustomModuleTranslations(
+                                new Translation2d[] {
+                                    FL_MODULE_TRANSLATION,
+                                    FR_MODULE_TRANSLATION,
+                                    BL_MODULE_TRANSLATION,
+                                    BR_MODULE_TRANSLATION
+                                })
                         .withGyro(COTS.ofPigeon2())
                         .withSwerveModules(
                                 COTS.ofMark4i(

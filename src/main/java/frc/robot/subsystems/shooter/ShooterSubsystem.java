@@ -1,14 +1,12 @@
 package frc.robot.subsystems.shooter;
 
-import java.util.List;
-import java.util.Arrays;
-import dev.doglog.DogLog;
-import com.marswars.mechanisms.ArmMech;
 import com.marswars.mechanisms.FlywheelMech;
 import com.marswars.mechanisms.RollerMech;
 import com.marswars.subsystem.MwSubsystem;
 import com.marswars.subsystem.SubsystemIoBase;
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterStates;
+import java.util.Arrays;
+import java.util.List;
 
 public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstants> {
     private static ShooterSubsystem instance_ = null;
@@ -19,17 +17,27 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
         }
         return instance_;
     }
+
     private RollerMech indexer_;
     private FlywheelMech flywheel_;
 
     public ShooterSubsystem() {
         super(ShooterStates.IDLE, new ShooterConstants());
-        indexer_ = new RollerMech(getSubsystemKey(), List.of(CONSTANTS.INDEX_MOTOR_CONFIG), CONSTANTS.INDEXER_GEAR_RATIO);
-        flywheel_ = new FlywheelMech(getSubsystemKey(), List.of(CONSTANTS.SHOOTER_MOTOR_CONFIGS), CONSTANTS.SHOOTER_GEAR_RATIO, CONSTANTS.SHOOTER_WHEEL_INERTIA, CONSTANTS.SHOOTER_WHEEL_RADIUS_METERS);
+        indexer_ =
+                new RollerMech(
+                        getSubsystemKey(),
+                        List.of(CONSTANTS.INDEX_MOTOR_CONFIG),
+                        CONSTANTS.INDEXER_GEAR_RATIO);
+        flywheel_ =
+                new FlywheelMech(
+                        getSubsystemKey(),
+                        List.of(CONSTANTS.SHOOTER_MOTOR_CONFIGS),
+                        CONSTANTS.SHOOTER_GEAR_RATIO,
+                        CONSTANTS.SHOOTER_WHEEL_INERTIA,
+                        CONSTANTS.SHOOTER_WHEEL_RADIUS_METERS);
         // hood_ = new ArmMech(getSubsystemKey(), 0, 0, 0, 0, 0, 0);
         indexer_.setLoggingPrefix(getSubsystemKey());
         flywheel_.setLoggingPrefix(getSubsystemKey());
-
     }
 
     // @Override
@@ -50,7 +58,6 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
             case IDLE:
 
             case PROFILE:
-
         }
         // Log Data
     }

@@ -8,21 +8,21 @@ import com.marswars.subsystem.SubsystemManager;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 
 public class RobotContainer extends SubsystemManager {
-  private static RobotContainer instance;
+    private static RobotContainer instance;
 
-  public static synchronized RobotContainer getInstance() {
-    if (instance == null) {
-      instance = new RobotContainer();
+    public static synchronized RobotContainer getInstance() {
+        if (instance == null) {
+            instance = new RobotContainer();
+        }
+        return instance;
     }
-    return instance;
-  }
 
-  public RobotContainer() {
-    super(BuildConstants.class);
-    // !!!!!! ALL SUBSYSTEMS MUST BE REGISTERED HERE TO RUN !!!!!!!
-    registerSubsystem(SwerveSubsystem.getInstance());
+    public RobotContainer() {
+        super(BuildConstants.class);
+        // !!!!!! ALL SUBSYSTEMS MUST BE REGISTERED HERE TO RUN !!!!!!!
+        registerSubsystem(SwerveSubsystem.getInstance());
 
-    // !!!!! LEAVE THESE LINES AS THE LAST LINE IN THE CONSTRUCTOR !!!!!!
-    reset();
-  }
+        // !!!!! LEAVE THESE LINES AS THE LAST LINE IN THE CONSTRUCTOR !!!!!!
+        reset();
+    }
 }
