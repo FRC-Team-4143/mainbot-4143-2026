@@ -36,8 +36,6 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
                         CONSTANTS.SHOOTER_WHEEL_INERTIA,
                         CONSTANTS.SHOOTER_WHEEL_RADIUS_METERS);
         // hood_ = new ArmMech(getSubsystemKey(), 0, 0, 0, 0, 0, 0);
-        indexer_.setLoggingPrefix(getSubsystemKey());
-        flywheel_.setLoggingPrefix(getSubsystemKey());
     }
 
     // @Override
