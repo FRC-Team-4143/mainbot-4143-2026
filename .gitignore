@@ -187,4 +187,4 @@ compile_commands.json
 .factorypath
 
 # Build related files
-*/BuildConstants.java
+BuildConstants.java
