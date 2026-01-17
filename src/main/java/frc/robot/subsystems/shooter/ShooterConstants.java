@@ -3,9 +3,9 @@ package frc.robot.subsystems.shooter;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 
 import edu.wpi.first.math.util.Units;
-import frc.mw_lib.subsystem.MwConstants;
-import frc.mw_lib.util.FxMotorConfig;
-import frc.mw_lib.util.FxMotorConfig.FxMotorType;
+import com.marswars.subsystem.MwConstants;
+import com.marswars.util.FxMotorConfig;
+import com.marswars.util.FxMotorConfig.FxMotorType;
 
 public class ShooterConstants extends MwConstants {
 
@@ -34,13 +34,13 @@ public class ShooterConstants extends MwConstants {
     public final FxMotorConfig INDEX_MOTOR_CONFIG = new FxMotorConfig();
 
     //Hood Mech Config
-    public final int HOOD_ID;
-    public final boolean HOOD_INVERTED = false;
-    public final double HOOD_GEAR_RATIO;
-    public final double HOOD_LENGTH;
-    public final double HOOD_MASS_KG;
-    public final double HOOD_MIN_ANGLE;
-    public final double HOOD_MAX_ANGLE;
+    // public final int HOOD_ID;
+    // public final boolean HOOD_INVERTED = false;
+    // public final double HOOD_GEAR_RATIO;
+    // public final double HOOD_LENGTH;
+    // public final double HOOD_MASS_KG;
+    // public final double HOOD_MIN_ANGLE;
+    // public final double HOOD_MAX_ANGLE;
 
     // Control Setpoints
     public final double SHOOT_DUTY_CYCLE = 0.5; // 50% power for shooting

@@ -4,9 +4,7 @@
 
 package frc.robot;
 
-import frc.mw_lib.subsystem.SubsystemManager;
-import frc.robot.subsystems.intake.IntakeSubsystem;
-import frc.robot.subsystems.shooter.ShooterSubsystem;
+import com.marswars.subsystem.SubsystemManager;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 
 public class RobotContainer extends SubsystemManager {
@@ -20,11 +18,9 @@ public class RobotContainer extends SubsystemManager {
   }
 
   public RobotContainer() {
+    super(BuildConstants.class);
     // !!!!!! ALL SUBSYSTEMS MUST BE REGISTERED HERE TO RUN !!!!!!!
-    // registerSubsystem(Superstructure.getInstance());
     registerSubsystem(SwerveSubsystem.getInstance());
-    // registerSubsystem(IntakeSubsystem.getInstance());
-    //registerSubsystem(ShooterSubsystem.getInstance());
 
     // !!!!! LEAVE THESE LINES AS THE LAST LINE IN THE CONSTRUCTOR !!!!!!
     reset();
