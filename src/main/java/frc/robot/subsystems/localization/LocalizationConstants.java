@@ -8,7 +8,8 @@ public class LocalizationConstants extends MwConstants {
 
     // Subsystem States
     public enum LocalizationStates {
-        ACTIVE
+        ACTIVE,
+        SIMPLE_SIM_CONTROL // Directly use simulation pose instead of odometry
     }
 
     public final Pose2d START_POSE = new Pose2d(3.0, 3.0, Rotation2d.kZero);

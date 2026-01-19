@@ -5,12 +5,13 @@
 package frc.robot;
 
 import com.marswars.proxy_server.ProxyServer;
-import dev.doglog.DogLog;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.subsystems.swerve.SwerveConstants;
+import frc.robot.subsystems.swerve.SwerveConstants.SwerveStates;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 import java.util.Optional;
 import org.ironmaple.simulation.SimulatedArena;
@@ -76,6 +77,13 @@ public class Robot extends TimedRobot {
     public void teleopInit() {
         ProxyServer.syncMatchData();
         CommandScheduler.getInstance().cancelAll();
+
+        // In simulation, keep simple sim control. Otherwise use robot centric.
+        if (RobotBase.isSimulation()) {
+            SwerveSubsystem.getInstance().setWantedState(SwerveStates.SIMPLE_SIM_CONTROL);
+        } else {
+            SwerveSubsystem.getInstance().setWantedState(SwerveStates.FIELD_CENTRIC);
+        }
     }
 
     @Override
@@ -94,17 +102,13 @@ public class Robot extends TimedRobot {
 
     @Override
     public void simulationInit() {
-        SimulatedArena.getInstance().resetFieldForAuto();
+        // Configure the simulated robot state
+        SimulatedRobotState.configure();
     }
 
     @Override
     public void simulationPeriodic() {
+        // Update the physics simulation - this is CRITICAL for proper simulation data
         SimulatedArena.getInstance().simulationPeriodic();
-        DogLog.log(
-                "FieldSimulation/Coral",
-                SimulatedArena.getInstance().getGamePiecesArrayByType("Coral"));
-        DogLog.log(
-                "FieldSimulation/Algae",
-                SimulatedArena.getInstance().getGamePiecesArrayByType("Algae"));
     }
 }
