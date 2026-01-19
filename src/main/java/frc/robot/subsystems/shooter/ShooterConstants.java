@@ -36,13 +36,14 @@ public class ShooterConstants extends MwConstants {
     public final FxMotorConfig INDEX_MOTOR_CONFIG = new FxMotorConfig();
 
     // Hood Mech Config
-    // public final int HOOD_ID;
-    // public final boolean HOOD_INVERTED = false;
-    // public final double HOOD_GEAR_RATIO;
-    // public final double HOOD_LENGTH;
-    // public final double HOOD_MASS_KG;
-    // public final double HOOD_MIN_ANGLE;
-    // public final double HOOD_MAX_ANGLE;
+    public final int HOOD_ID = 0; // Place Holder
+    public final boolean HOOD_INVERTED = false;
+    public final double HOOD_GEAR_RATIO = 1.0; // Place Holder
+    public final double HOOD_LENGTH = 2; // Place Holder
+    public final double HOOD_MASS_KG = 2; // Place Holder
+    public final double HOOD_MIN_ANGLE = 0; // Place Holder
+    public final double HOOD_MAX_ANGLE = 3; // Place Holder
+    public final FxMotorConfig HOOD_MOTOR_CONFIG = new FxMotorConfig();
 
     // Control Setpoints
     public final double SHOOT_DUTY_CYCLE = 0.5; // 50% power for shooting

@@ -1,5 +1,6 @@
 package frc.robot.subsystems.shooter;
 
+import com.marswars.mechanisms.ArmMech;
 import com.marswars.mechanisms.FlywheelMech;
 import com.marswars.mechanisms.RollerMech;
 import com.marswars.subsystem.MwSubsystem;
@@ -20,6 +21,7 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
 
     private RollerMech indexer_;
     private FlywheelMech flywheel_;
+    private ArmMech hood_;
 
     public ShooterSubsystem() {
         super(ShooterStates.IDLE, new ShooterConstants());
@@ -35,34 +37,50 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
                         CONSTANTS.SHOOTER_GEAR_RATIO,
                         CONSTANTS.SHOOTER_WHEEL_INERTIA,
                         CONSTANTS.SHOOTER_WHEEL_RADIUS_METERS);
-        // hood_ = new ArmMech(getSubsystemKey(), 0, 0, 0, 0, 0, 0);
+        hood_ =
+                new ArmMech(
+                        getSubsystemKey(),
+                        List.of(CONSTANTS.HOOD_MOTOR_CONFIG),
+                        CONSTANTS.HOOD_GEAR_RATIO,
+                        CONSTANTS.HOOD_LENGTH,
+                        CONSTANTS.HOOD_MASS_KG,
+                        CONSTANTS.HOOD_MIN_ANGLE,
+                        CONSTANTS.HOOD_MAX_ANGLE);
     }
 
-    // @Override
-    // public void handleStateTransition(ShooterStates wanted) {
-    // }
+    @Override
+    public void handleStateTransition(ShooterStates wanted) {
+        
+    }
 
     @Override
     public void updateLogic(double timestamp) {
         switch (system_state_) {
             case UNWIND:
 
+                break;
             case AIMING:
 
+                break;
             case DUMP:
 
+                break;
             case SHOOT:
 
+                break;
             case IDLE:
 
+                break;
             case PROFILE:
+
+                break;
         }
         // Log Data
     }
 
     @Override
     public List<SubsystemIoBase> getIos() {
-        return Arrays.asList(indexer_, flywheel_);
+        return Arrays.asList(indexer_, flywheel_, hood_);
     }
 
     @Override
