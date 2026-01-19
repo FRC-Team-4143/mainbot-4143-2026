@@ -27,8 +27,8 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.OI;
-import frc.robot.subsystems.localization.LocalizationSubsystem;
 import frc.robot.subsystems.localization.LocalizationConstants.LocalizationStates;
+import frc.robot.subsystems.localization.LocalizationSubsystem;
 import frc.robot.subsystems.swerve.SwerveConstants.OperatorPerspective;
 import frc.robot.subsystems.swerve.SwerveConstants.SwerveStates;
 import java.util.Arrays;
@@ -205,7 +205,8 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
                     case ROTATION_LOCK -> SwerveStates.ROTATION_LOCK;
                     case TRACTOR_BEAM -> SwerveStates.TRACTOR_BEAM;
                     case SIMPLE_SIM_CONTROL -> {
-                        LocalizationSubsystem.getInstance().setWantedState(LocalizationStates.SIMPLE_SIM_CONTROL);
+                        LocalizationSubsystem.getInstance()
+                                .setWantedState(LocalizationStates.SIMPLE_SIM_CONTROL);
                         yield SwerveStates.SIMPLE_SIM_CONTROL;
                     }
                     default -> SwerveStates.IDLE;
