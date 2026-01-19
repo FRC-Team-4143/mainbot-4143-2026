@@ -22,11 +22,13 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.OI;
 import frc.robot.subsystems.localization.LocalizationSubsystem;
+import frc.robot.subsystems.localization.LocalizationConstants.LocalizationStates;
 import frc.robot.subsystems.swerve.SwerveConstants.OperatorPerspective;
 import frc.robot.subsystems.swerve.SwerveConstants.SwerveStates;
 import java.util.Arrays;
@@ -157,6 +159,9 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
             case CHOREO_PATH:
                 choreoPathState();
                 break;
+            case SIMPLE_SIM_CONTROL:
+                simpleSimulationControlState();
+                break;
             case IDLE:
             default:
                 swerve_mech_.setChassisRequest(new ChassisRequest.Idle());
@@ -199,6 +204,10 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
                     }
                     case ROTATION_LOCK -> SwerveStates.ROTATION_LOCK;
                     case TRACTOR_BEAM -> SwerveStates.TRACTOR_BEAM;
+                    case SIMPLE_SIM_CONTROL -> {
+                        LocalizationSubsystem.getInstance().setWantedState(LocalizationStates.SIMPLE_SIM_CONTROL);
+                        yield SwerveStates.SIMPLE_SIM_CONTROL;
+                    }
                     default -> SwerveStates.IDLE;
                 };
     }
@@ -282,6 +291,31 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
         }
     }
 
+    /**
+     * Handles the SIMPLE_SIM_CONTROL state by directly updating the robot's pose in simulation
+     * based on joystick inputs. This bypasses all swerve drive mathematics and provides a simple
+     * way to control the robot in simulation for testing purposes. This method only works in
+     * simulation mode.
+     */
+    private void simpleSimulationControlState() {
+        // Get joystick inputs (already scaled by MAX_TRANSLATION_RATE and MAX_ANGULAR_RATE)
+        Twist2d joystick_inputs = calculateSpeedsBasedOnJoystickInputs();
+
+        // Convert velocities (m/s, rad/s) to movement per cycle (m/cycle, rad/cycle)
+        // Assuming 20ms loop time (50 Hz)
+        double loop_time = 0.02; // seconds
+        double translation_scale = loop_time; // Convert m/s to m/cycle
+        double rotation_scale = loop_time; // Convert rad/s to rad/cycle
+
+        // Use the MW-Lib method to apply simple simulation control
+        // This automatically fakes chassis speeds for realistic feedback
+        swerve_mech_.applySimpleSimulationControl(
+                joystick_inputs, translation_scale, rotation_scale);
+
+        // Still need to set some chassis request to keep the swerve system happy
+        swerve_mech_.setChassisRequest(new ChassisRequest.Idle());
+    }
+
     // ------------------------------------------------
     // Chassis Control Methods
     // ------------------------------------------------
@@ -360,6 +394,26 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
                         setWantedState(SwerveStates.ROBOT_CENTRIC);
                     } else {
                         setWantedState(SwerveStates.FIELD_CENTRIC);
+                    }
+                });
+    }
+
+    /**
+     * Toggles simple simulation control mode. In this mode, joystick inputs directly control the
+     * robot's pose in simulation, bypassing all swerve drive mathematics. This only works in
+     * simulation mode.
+     *
+     * @return Command to toggle simple simulation control
+     */
+    public Command toggleSimpleSimulationControl() {
+        return Commands.runOnce(
+                () -> {
+                    if (RobotBase.isSimulation()) {
+                        if (system_state_ == SwerveStates.SIMPLE_SIM_CONTROL) {
+                            setWantedState(SwerveStates.FIELD_CENTRIC);
+                        } else {
+                            setWantedState(SwerveStates.SIMPLE_SIM_CONTROL);
+                        }
                     }
                 });
     }

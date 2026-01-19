@@ -89,11 +89,25 @@ public class LocalizationSubsystem extends MwSubsystem<LocalizationStates, Local
                     // This pose estimator will later have vision measurements added to it
                 }
                 break;
+            case SIMPLE_SIM_CONTROL:
+                // Directly override pose estimators with simulation pose
+                if (IS_SIM && swerve_sim_ != null) {
+                    Pose2d simPose = swerve_sim_.getSimulatedDriveTrainPose();
+                    Rotation2d gyroRotation = SwerveSubsystem.getInstance().getGyroRotation();
+                    SwerveModulePosition[] modulePositions =
+                            SwerveSubsystem.getInstance().getModulePositions();
+
+                    // Reset both pose estimators to the simulation pose
+                    smooth_pose_estimator_.resetPosition(gyroRotation, modulePositions, simPose);
+                    field_pose_estimator_.resetPosition(gyroRotation, modulePositions, simPose);
+                }
+                break;
         }
 
         if (IS_SIM) {
             simulateArena();
         }
+        DogLog.log(getSubsystemKey() + "CurrentState", system_state_.toString());
         DogLog.log(getSubsystemKey() + "SmoothPose", getSmoothPose());
         DogLog.log(getSubsystemKey() + "FieldPose", getFieldPose());
     }
@@ -122,11 +136,8 @@ public class LocalizationSubsystem extends MwSubsystem<LocalizationStates, Local
     /** Simulate the Arena and log game pieces */
     private void simulateArena() {
         DogLog.log(
-                getSubsystemKey() + "FieldSimulation/Coral",
-                SimulatedArena.getInstance().getGamePiecesArrayByType("Coral"));
-        DogLog.log(
-                getSubsystemKey() + "FieldSimulation/Algae",
-                SimulatedArena.getInstance().getGamePiecesArrayByType("Algae"));
+                getSubsystemKey() + "FieldSimulation/Fuel",
+                SimulatedArena.getInstance().getGamePiecesArrayByType("Fuel"));
         DogLog.log(
                 getSubsystemKey() + "FieldSimulation/RobotPose",
                 swerve_sim_.getSimulatedDriveTrainPose());
