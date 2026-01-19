@@ -107,7 +107,6 @@ public class LocalizationSubsystem extends MwSubsystem<LocalizationStates, Local
         if (IS_SIM) {
             simulateArena();
         }
-        DogLog.log(getSubsystemKey() + "CurrentState", system_state_.toString());
         DogLog.log(getSubsystemKey() + "SmoothPose", getSmoothPose());
         DogLog.log(getSubsystemKey() + "FieldPose", getFieldPose());
     }
