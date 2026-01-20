@@ -10,8 +10,8 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterStates;
+import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.swerve.SwerveConstants;
 import frc.robot.subsystems.swerve.SwerveConstants.SwerveStates;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
@@ -33,8 +33,7 @@ public class Robot extends TimedRobot {
     }
 
     @Override
-    public void robotInit() {
-    }
+    public void robotInit() {}
 
     @Override
     public void robotPeriodic() {
@@ -49,8 +48,7 @@ public class Robot extends TimedRobot {
     }
 
     @Override
-    public void disabledInit() {
-    }
+    public void disabledInit() {}
 
     @Override
     public void disabledPeriodic() {
@@ -69,16 +67,13 @@ public class Robot extends TimedRobot {
     }
 
     @Override
-    public void autonomousInit() {
-    }
+    public void autonomousInit() {}
 
     @Override
-    public void autonomousPeriodic() {
-    }
+    public void autonomousPeriodic() {}
 
     @Override
-    public void autonomousExit() {
-    }
+    public void autonomousExit() {}
 
     @Override
     public void teleopInit() {
@@ -94,8 +89,7 @@ public class Robot extends TimedRobot {
     }
 
     @Override
-    public void teleopPeriodic() {
-    }
+    public void teleopPeriodic() {}
 
     @Override
     public void testInit() {
@@ -104,12 +98,10 @@ public class Robot extends TimedRobot {
     }
 
     @Override
-    public void testPeriodic() {
-    }
+    public void testPeriodic() {}
 
     @Override
-    public void testExit() {
-    }
+    public void testExit() {}
 
     @Override
     public void simulationInit() {
@@ -120,6 +112,6 @@ public class Robot extends TimedRobot {
     @Override
     public void simulationPeriodic() {
         // Update the physics simulation - this is CRITICAL for proper simulation data
-        SimulatedArena.getInstance().simulationPeriodic();
+        SimulatedRobotState.update();
     }
 }

@@ -8,8 +8,8 @@ import com.marswars.mechanisms.RollerMech;
 import com.marswars.mechanisms.TurretMech;
 import com.marswars.subsystem.MwSubsystem;
 import com.marswars.subsystem.SubsystemIoBase;
+
 import dev.doglog.DogLog;
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.util.Units;
 import frc.robot.subsystems.localization.LocalizationSubsystem;
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterStates;
@@ -39,11 +39,13 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
         indexer_ =
                 new RollerMech(
                         getSubsystemKey(),
+                        "Indexer",
                         List.of(CONSTANTS.INDEX_MOTOR_CONFIG),
                         CONSTANTS.INDEXER_GEAR_RATIO);
         flywheel_ =
                 new FlywheelMech(
                         getSubsystemKey(),
+                        "Flywheel",
                         List.of(
                                 CONSTANTS.SHOOTER_LEADER_MOTOR_CONFIG,
                                 CONSTANTS.SHOOTER_FOLLOWER_MOTOR_CONFIG),
@@ -53,6 +55,7 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
         hood_ =
                 new ArmMech(
                         getSubsystemKey(),
+                        "Hood",
                         List.of(CONSTANTS.HOOD_MOTOR_CONFIGS),
                         CONSTANTS.HOOD_GEAR_RATIO,
                         CONSTANTS.HOOD_LENGTH,
@@ -62,6 +65,7 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
         top_spin_ =
                 new RollerMech(
                         getSubsystemKey(),
+                        "TopSpin",
                         List.of(CONSTANTS.TOP_SPIN_CONFIG),
                         CONSTANTS.TOP_SPIN_GEAR_RATIO);
         turret_ =
@@ -119,6 +123,9 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
         }
         // Log Data
         DogLog.log(
+                getSubsystemKey() + "TrajectorySolver/Valid",
+                solution.valid);
+        DogLog.log(
                 getSubsystemKey() + "TrajectorySolver/LaunchAngle",
                 Units.radiansToDegrees(solution.exit_angle));
         DogLog.log(
@@ -131,7 +138,7 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
 
     @Override
     public List<SubsystemIoBase> getIos() {
-        return Arrays.asList(indexer_, flywheel_, hood_, top_spin_, turret_);
+        return Arrays.asList(indexer_, flywheel_, hood_, top_spin_);
     }
 
     @Override
