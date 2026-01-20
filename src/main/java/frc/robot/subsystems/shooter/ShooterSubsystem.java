@@ -138,7 +138,7 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
 
     @Override
     public List<SubsystemIoBase> getIos() {
-        return Arrays.asList(indexer_, flywheel_, hood_, top_spin_);
+        return Arrays.asList(indexer_, flywheel_, hood_, top_spin_, turret_);
     }
 
     @Override
