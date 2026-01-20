@@ -8,7 +8,6 @@ import com.marswars.mechanisms.RollerMech;
 import com.marswars.mechanisms.TurretMech;
 import com.marswars.subsystem.MwSubsystem;
 import com.marswars.subsystem.SubsystemIoBase;
-
 import dev.doglog.DogLog;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.util.Units;
@@ -37,56 +36,42 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
 
     public ShooterSubsystem() {
         super(ShooterStates.IDLE, new ShooterConstants());
-        indexer_ = new RollerMech(
-                getSubsystemKey() + "Indexer/",
-                List.of(CONSTANTS.INDEX_MOTOR_CONFIG),
-                CONSTANTS.INDEXER_GEAR_RATIO);
-        flywheel_ = new FlywheelMech(
-                getSubsystemKey() + "Flywheel/",
-                List.of(CONSTANTS.SHOOTER_LEADER_MOTOR_CONFIG, CONSTANTS.SHOOTER_FOLLOWER_MOTOR_CONFIG),
-                CONSTANTS.SHOOTER_GEAR_RATIO,
-                CONSTANTS.SHOOTER_WHEEL_INERTIA,
-                CONSTANTS.SHOOTER_WHEEL_RADIUS_METERS);
-        hood_ = new ArmMech(
-                getSubsystemKey()+"Hood/",
-                List.of(CONSTANTS.HOOD_MOTOR_CONFIGS),
-                CONSTANTS.HOOD_GEAR_RATIO,
-                CONSTANTS.HOOD_LENGTH,
-                CONSTANTS.HOOD_MASS_KG,
-                CONSTANTS.HOOD_MIN_ANGLE,
-                CONSTANTS.HOOD_MAX_ANGLE);
-        top_spin_ = new RollerMech(
-                getSubsystemKey()+"Top Spin/",
-                List.of(CONSTANTS.TOP_SPIN_CONFIG),
-                CONSTANTS.TOP_SPIN_GEAR_RATIO);
-        turret_ = new TurretMech(
-                getSubsystemKey()+"Turret/",
-                List.of(CONSTANTS.TURRET_MOTOR_CONFIGS),
-                CONSTANTS.TURRET_GEAR_RATIO,
-                CONSTANTS.TURRET_MOI);
+        indexer_ =
+                new RollerMech(
+                        getSubsystemKey(),
+                        List.of(CONSTANTS.INDEX_MOTOR_CONFIG),
+                        CONSTANTS.INDEXER_GEAR_RATIO);
+        flywheel_ =
+                new FlywheelMech(
+                        getSubsystemKey(),
+                        List.of(
+                                CONSTANTS.SHOOTER_LEADER_MOTOR_CONFIG,
+                                CONSTANTS.SHOOTER_FOLLOWER_MOTOR_CONFIG),
+                        CONSTANTS.SHOOTER_GEAR_RATIO,
+                        CONSTANTS.SHOOTER_WHEEL_INERTIA,
+                        CONSTANTS.SHOOTER_WHEEL_RADIUS_METERS);
+        hood_ =
+                new ArmMech(
+                        getSubsystemKey(),
+                        List.of(CONSTANTS.HOOD_MOTOR_CONFIGS),
+                        CONSTANTS.HOOD_GEAR_RATIO,
+                        CONSTANTS.HOOD_LENGTH,
+                        CONSTANTS.HOOD_MASS_KG,
+                        CONSTANTS.HOOD_MIN_ANGLE,
+                        CONSTANTS.HOOD_MAX_ANGLE);
+        top_spin_ =
+                new RollerMech(
+                        getSubsystemKey(),
+                        List.of(CONSTANTS.TOP_SPIN_CONFIG),
+                        CONSTANTS.TOP_SPIN_GEAR_RATIO);
+        turret_ =
+                new TurretMech(
+                        getSubsystemKey(),
+                        List.of(CONSTANTS.TURRET_MOTOR_CONFIGS),
+                        CONSTANTS.TURRET_GEAR_RATIO,
+                        CONSTANTS.TURRET_MOI);
 
         solver = new LaunchTrajectory(CONSTANTS.HUB_TRANSLATION, CONSTANTS.LAUNCH_HIGHT, true);
-        DogLog.tunable(getSubsystemKey() + "Flywheel Percent Output", 0.0, (val) -> {
-            if (system_state_ == ShooterStates.PROFILE) {
-                flywheel_.setTargetDutyCycle(val);
-            }
-        });
-        DogLog.tunable(getSubsystemKey() + "Indexer Percent Output", 0.0, (val) -> {
-            if (system_state_ == ShooterStates.PROFILE) {
-                indexer_.setTargetDutyCycle(val);
-            }
-        });
-        DogLog.tunable(getSubsystemKey() + "Top Spin Percent Output", 0.0, (val) -> {
-            if (system_state_ == ShooterStates.PROFILE) {
-                top_spin_.setTargetDutyCycle(val);
-            }
-        });
-        DogLog.tunable(getSubsystemKey() + "Turret Percent Output", 0.0, (val) -> {
-            if (system_state_ == ShooterStates.PROFILE) {
-                turret_.setTargetDutyCycle(MathUtil.clamp(val, -0.05, 0.05));
-            }
-        });
-
     }
 
     // @Override
@@ -95,7 +80,8 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
 
     @Override
     public void updateLogic(double timestamp) {
-        TrajectorySol solution = solver.getSolution(LocalizationSubsystem.getInstance().getFieldPose());
+        TrajectorySol solution =
+                solver.getSolution(LocalizationSubsystem.getInstance().getFieldPose());
         switch (system_state_) {
             case UNWIND:
                 break;
@@ -104,37 +90,43 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
                 indexer_.setTargetDutyCycle(0);
                 turret_.setTargetPosition(solution.heading_angle);
                 hood_.setTargetPosition(solution.exit_angle);
-                top_spin_.setTargetVelocity(0);// calculate speed from exit speed
+                top_spin_.setTargetVelocity(0); // calculate speed from exit speed
                 break;
             case DUMP:
                 flywheel_.setTargetVelocity(0); // calculate flywheel speed from exit speed
                 indexer_.setTargetDutyCycle(-CONSTANTS.INDEXER_DUTY_CYCLE);
                 turret_.setTargetDutyCycle(0);
                 hood_.setTargetPosition(0);
-                top_spin_.setTargetVelocity(0);// calculate speed from exit speed
+                top_spin_.setTargetVelocity(0); // calculate speed from exit speed
                 break;
             case SHOOT:
                 flywheel_.setTargetVelocity(0); // calculate flywheel speed from exit speed
                 indexer_.setTargetDutyCycle(CONSTANTS.INDEXER_DUTY_CYCLE);
                 turret_.setTargetPosition(solution.heading_angle);
                 hood_.setTargetPosition(solution.exit_angle);
-                top_spin_.setTargetVelocity(0);// calculate speed from exit speed
+                top_spin_.setTargetVelocity(0); // calculate speed from exit speed
                 break;
             case IDLE:
                 flywheel_.setTargetVelocity(0); // calculate flywheel speed from exit speed
                 indexer_.setTargetDutyCycle(0);
                 turret_.setTargetPosition(0);
                 hood_.setTargetPosition(0);
-                top_spin_.setTargetVelocity(0);// calculate speed from exit speed
+                top_spin_.setTargetVelocity(0); // calculate speed from exit speed
                 break;
             case PROFILE:
                 // code does NOTHING to allow for testing
                 break;
         }
         // Log Data
-        DogLog.log(getSubsystemKey() + "TrajectorySolver/LaunchAngle", Units.radiansToDegrees(solution.exit_angle));
-        DogLog.log(getSubsystemKey() + "TrajectorySolver/LaunchHeading", Units.radiansToDegrees(solution.heading_angle));
-        DogLog.log(getSubsystemKey() + "TrajectorySolver/LaunchVelocity", Units.radiansToDegrees(solution.velocity));
+        DogLog.log(
+                getSubsystemKey() + "TrajectorySolver/LaunchAngle",
+                Units.radiansToDegrees(solution.exit_angle));
+        DogLog.log(
+                getSubsystemKey() + "TrajectorySolver/LaunchHeading",
+                Units.radiansToDegrees(solution.heading_angle));
+        DogLog.log(
+                getSubsystemKey() + "TrajectorySolver/LaunchVelocity",
+                Units.radiansToDegrees(solution.velocity));
     }
 
     @Override
