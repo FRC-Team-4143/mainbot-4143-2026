@@ -17,22 +17,22 @@ public class HopperSubsytem extends MwSubsystem<HopperStates, HopperContstants> 
         return instance_;
     }
 
-    private RollerMech feed_motor;
-    private RollerMech hopper_motor;
+    private RollerMech Feeder;
+    private RollerMech Hopper;
 
     public HopperSubsytem() {
         super(HopperStates.IDLE, new HopperContstants());
-        feed_motor =
-                new RollerMech(
-                        getSubsystemKey(),
-                        List.of(CONSTANTS.FEED_MOTOR_CONFIG),
-                        CONSTANTS.FEED_GEAR_RATIO);
+        Feeder = new RollerMech(
+                getSubsystemKey(),
+                "Feeder",
+                List.of(CONSTANTS.FEED_MOTOR_CONFIG),
+                CONSTANTS.FEED_GEAR_RATIO);
 
-        hopper_motor =
-                new RollerMech(
-                        getSubsystemKey(),
-                        List.of(CONSTANTS.HOPPER_MOTOR_CONFIG),
-                        CONSTANTS.HOPPER_GEAR_RATIO);
+        Hopper = new RollerMech(
+                getSubsystemKey(),
+                "Hopper",
+                List.of(CONSTANTS.HOPPER_MOTOR_CONFIG),
+                CONSTANTS.HOPPER_GEAR_RATIO);
     }
 
     /*
@@ -44,10 +44,16 @@ public class HopperSubsytem extends MwSubsystem<HopperStates, HopperContstants> 
     public void updateLogic(double timestamp) {
         switch (system_state_) {
             case IDLE:
+                Feeder.setTargetDutyCycle(0.0);
+                Hopper.setTargetDutyCycle(0.0);
                 break;
             case STIRRING:
                 break;
             case SHOOTING:
+                Feeder.setTargetDutyCycle(.5);
+                Hopper.setTargetDutyCycle(.5);
+                break;
+            case PROFILE:
                 break;
         }
         // Log Data
@@ -55,7 +61,7 @@ public class HopperSubsytem extends MwSubsystem<HopperStates, HopperContstants> 
 
     @Override
     public List<SubsystemIoBase> getIos() {
-        return Arrays.asList(feed_motor, hopper_motor);
+        return Arrays.asList(Feeder, Hopper);
     }
 
     @Override
