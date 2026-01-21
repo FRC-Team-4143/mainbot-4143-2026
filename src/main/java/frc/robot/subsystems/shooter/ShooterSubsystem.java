@@ -33,6 +33,10 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
     private TurretMech turret_;
 
     private LaunchTrajectory solver;
+    private double flywheelEffFactor = 1;
+    private double topSpinEffFactor = 1;
+    private double shooterRotationalVelocity;
+    private double topSpinRotationalVelocity;
 
     public ShooterSubsystem() {
         super(ShooterStates.IDLE, new ShooterConstants());
@@ -76,6 +80,10 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
                         CONSTANTS.TURRET_MOI);
 
         solver = new LaunchTrajectory(CONSTANTS.HUB_TRANSLATION, CONSTANTS.LAUNCH_HIGHT, true);
+        
+
+        DogLog.tunable(getSubsystemKey()+" flywheel eff factor", 1.0, (val) -> flywheelEffFactor = val);
+        DogLog.tunable(getSubsystemKey()+" topspin eff factor", 1.0, (val) -> topSpinEffFactor = val);
     }
 
     // @Override
@@ -86,36 +94,41 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
     public void updateLogic(double timestamp) {
         TrajectorySol solution =
                 solver.getSolution(LocalizationSubsystem.getInstance().getFieldPose());
+        if(solution.valid){
+            shooterRotationalVelocity = solution.velocity / CONSTANTS.SHOOTER_WHEEL_RADIUS_METERS * flywheelEffFactor; //Tune the multiplication later
+            topSpinRotationalVelocity = solution.velocity / CONSTANTS.TOP_SPIN_RADIUS_METERS * topSpinEffFactor; //Tune the multiplication later
+        }
+        
         switch (system_state_) {
             case UNWIND:
                 break;
             case AIMING:
-                flywheel_.setTargetVelocity(0); // calculate flywheel speed from exit speed
+                flywheel_.setTargetVelocity(shooterRotationalVelocity); // calculate flywheel speed from exit speed
                 indexer_.setTargetDutyCycle(0);
                 turret_.setTargetPosition(solution.heading_angle);
                 hood_.setTargetPosition(solution.exit_angle);
-                top_spin_.setTargetVelocity(0); // calculate speed from exit speed
+                top_spin_.setTargetVelocity(topSpinRotationalVelocity); // calculate speed from exit speed
                 break;
             case DUMP:
-                flywheel_.setTargetVelocity(0); // calculate flywheel speed from exit speed
+                flywheel_.setTargetVelocity(shooterRotationalVelocity); // calculate flywheel speed from exit speed
                 indexer_.setTargetDutyCycle(-CONSTANTS.INDEXER_DUTY_CYCLE);
                 turret_.setTargetDutyCycle(0);
                 hood_.setTargetPosition(0);
-                top_spin_.setTargetVelocity(0); // calculate speed from exit speed
+                top_spin_.setTargetVelocity(topSpinRotationalVelocity); // calculate speed from exit speed
                 break;
             case SHOOT:
-                flywheel_.setTargetVelocity(0); // calculate flywheel speed from exit speed
+                flywheel_.setTargetVelocity(shooterRotationalVelocity); // calculate flywheel speed from exit speed
                 indexer_.setTargetDutyCycle(CONSTANTS.INDEXER_DUTY_CYCLE);
                 turret_.setTargetPosition(solution.heading_angle);
                 hood_.setTargetPosition(solution.exit_angle);
-                top_spin_.setTargetVelocity(0); // calculate speed from exit speed
+                top_spin_.setTargetVelocity(topSpinRotationalVelocity); // calculate speed from exit speed
                 break;
             case IDLE:
-                flywheel_.setTargetVelocity(0); // calculate flywheel speed from exit speed
+                flywheel_.setTargetVelocity(shooterRotationalVelocity); // calculate flywheel speed from exit speed
                 indexer_.setTargetDutyCycle(0);
                 turret_.setTargetPosition(0);
                 hood_.setTargetPosition(0);
-                top_spin_.setTargetVelocity(0); // calculate speed from exit speed
+                top_spin_.setTargetVelocity(topSpinRotationalVelocity); // calculate speed from exit speed
                 break;
             case PROFILE:
                 // code does NOTHING to allow for testing

@@ -73,6 +73,7 @@ public class ShooterConstants extends MwConstants {
     
     public final boolean TOP_SPIN_INVERTED = false;
     public final double TOP_SPIN_GEAR_RATIO = 1.0;
+    public final double TOP_SPIN_RADIUS_METERS = Units.inchesToMeters(1);
 
     // =============================================================================
     // MECHANICAL CONSTANTS - TURRET (needs actual values)
