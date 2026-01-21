@@ -80,7 +80,28 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
                         CONSTANTS.TURRET_MOI);
 
         solver = new LaunchTrajectory(CONSTANTS.HUB_TRANSLATION, CONSTANTS.LAUNCH_HIGHT, true);
-        
+        solver.addVelocityPoint(0.0, 6.283);
+        solver.addVelocityPoint(0.5, 6.382);
+        solver.addVelocityPoint(1.0, 6.635);
+        solver.addVelocityPoint(1.5, 6.977);
+        solver.addVelocityPoint(2.0, 7.367);
+        solver.addVelocityPoint(2.5, 7.764);
+        solver.addVelocityPoint(3.0, 8.160);
+        solver.addVelocityPoint(3.5, 8.544);
+        solver.addVelocityPoint(4.0, 8.928);
+        solver.addVelocityPoint(4.5, 9.288);
+        solver.addVelocityPoint(5.0, 9.648);
+        solver.addVelocityPoint(5.5, 9.996);
+        solver.addVelocityPoint(6.0, 10.332);
+        solver.addVelocityPoint(6.5, 10.656);
+        solver.addVelocityPoint(7.0, 10.980);
+        solver.addVelocityPoint(7.5, 11.292);
+        solver.addVelocityPoint(8.0, 11.592);
+        solver.addVelocityPoint(8.5, 11.892);
+        solver.addVelocityPoint(9.0, 12.180);
+        solver.addVelocityPoint(9.5, 12.456);
+        solver.addVelocityPoint(10.0, 12.744);
+
 
         DogLog.tunable(getSubsystemKey()+" flywheel eff factor", 1.0, (val) -> flywheelEffFactor = val);
         DogLog.tunable(getSubsystemKey()+" topspin eff factor", 1.0, (val) -> topSpinEffFactor = val);
