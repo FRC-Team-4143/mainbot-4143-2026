@@ -24,6 +24,7 @@ public class SwerveConstants extends MwConstants {
         CHOREO_PATH,
         ROTATION_LOCK,
         TRACTOR_BEAM,
+        SIMPLE_SIM_CONTROL, // Temporary simple simulation control bypassing swerve math
         IDLE
     }
 
