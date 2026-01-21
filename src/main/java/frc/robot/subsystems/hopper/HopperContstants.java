@@ -17,12 +17,12 @@ public class HopperContstants extends MwConstants {
     }
 
     // Hopper Configs
-    public final int HOPPERMOTOR_ID = 0; // Place holder
+    public final int HOPPERMOTOR_ID = 20; // Place holder
     public final boolean HOPPERMOTOR_INVERTED = false; // Place Holder
     public final double HOPPER_GEAR_RATIO = 1.0; // Place Holder
     public final FxMotorConfig HOPPER_MOTOR_CONFIG = new FxMotorConfig();
     // Feed Configs
-    public final int FEED_ID = 0; // Place holder
+    public final int FEED_ID = 21; // Place holder
     public final boolean FEED_INVERTED = false; // Place Holder
     public final double FEED_GEAR_RATIO = 1.0; // Place Holder
     public final FxMotorConfig FEED_MOTOR_CONFIG = new FxMotorConfig();
