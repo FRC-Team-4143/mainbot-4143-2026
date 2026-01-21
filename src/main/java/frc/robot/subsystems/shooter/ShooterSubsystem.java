@@ -32,11 +32,10 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
     private ArmMech hood_;
     private TurretMech turret_;
 
-    private LaunchTrajectory solver;
-    private double flywheelEffFactor = 1;
-    private double topSpinEffFactor = 1;
-    private double shooterRotationalVelocity;
-    private double topSpinRotationalVelocity;
+    private double flywheel_eff_factor_ = CONSTANTS.FLYWHEEL_EFF_FACTOR;
+    private double top_spin_eff_factor_ = CONSTANTS.TOP_SPIN_EFF_FACTOR;
+    private double flywheel_omega_ = 0;
+    private double top_spin_omega_ = 0;
 
     public ShooterSubsystem() {
         super(ShooterStates.IDLE, new ShooterConstants());
@@ -49,13 +48,12 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
         flywheel_ =
                 new FlywheelMech(
                         getSubsystemKey(),
-                        "Flywheel",
                         List.of(
                                 CONSTANTS.SHOOTER_LEADER_MOTOR_CONFIG,
                                 CONSTANTS.SHOOTER_FOLLOWER_MOTOR_CONFIG),
-                        CONSTANTS.SHOOTER_GEAR_RATIO,
-                        CONSTANTS.SHOOTER_WHEEL_INERTIA,
-                        CONSTANTS.SHOOTER_WHEEL_RADIUS_METERS);
+                        CONSTANTS.FLYWHEEL_GEAR_RATIO,
+                        CONSTANTS.FLYWHEEL_INERTIA,
+                        CONSTANTS.FLYWHEEL_WHEEL_RADIUS_METERS);
         hood_ =
                 new ArmMech(
                         getSubsystemKey(),
@@ -79,32 +77,8 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
                         CONSTANTS.TURRET_GEAR_RATIO,
                         CONSTANTS.TURRET_MOI);
 
-        solver = new LaunchTrajectory(CONSTANTS.HUB_TRANSLATION, CONSTANTS.LAUNCH_HIGHT, true);
-        solver.addVelocityPoint(0.0, 6.283);
-        solver.addVelocityPoint(0.5, 6.382);
-        solver.addVelocityPoint(1.0, 6.635);
-        solver.addVelocityPoint(1.5, 6.977);
-        solver.addVelocityPoint(2.0, 7.367);
-        solver.addVelocityPoint(2.5, 7.764);
-        solver.addVelocityPoint(3.0, 8.160);
-        solver.addVelocityPoint(3.5, 8.544);
-        solver.addVelocityPoint(4.0, 8.928);
-        solver.addVelocityPoint(4.5, 9.288);
-        solver.addVelocityPoint(5.0, 9.648);
-        solver.addVelocityPoint(5.5, 9.996);
-        solver.addVelocityPoint(6.0, 10.332);
-        solver.addVelocityPoint(6.5, 10.656);
-        solver.addVelocityPoint(7.0, 10.980);
-        solver.addVelocityPoint(7.5, 11.292);
-        solver.addVelocityPoint(8.0, 11.592);
-        solver.addVelocityPoint(8.5, 11.892);
-        solver.addVelocityPoint(9.0, 12.180);
-        solver.addVelocityPoint(9.5, 12.456);
-        solver.addVelocityPoint(10.0, 12.744);
-
-
-        DogLog.tunable(getSubsystemKey()+" flywheel eff factor", 1.0, (val) -> flywheelEffFactor = val);
-        DogLog.tunable(getSubsystemKey()+" topspin eff factor", 1.0, (val) -> topSpinEffFactor = val);
+        DogLog.tunable(getSubsystemKey()+"Flywheel/EffFactor", CONSTANTS.FLYWHEEL_EFF_FACTOR, (val) -> flywheel_eff_factor_ = val);
+        DogLog.tunable(getSubsystemKey()+"TopSpin/EffFactor", CONSTANTS.TOP_SPIN_EFF_FACTOR, (val) -> top_spin_eff_factor_ = val);
     }
 
     // @Override
@@ -113,43 +87,43 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
 
     @Override
     public void updateLogic(double timestamp) {
-        TrajectorySol solution =
-                solver.getSolution(LocalizationSubsystem.getInstance().getFieldPose());
+        TrajectorySol solution = CONSTANTS.SOLVER.getSolution(LocalizationSubsystem.getInstance().getFieldPose());
         if(solution.valid){
-            shooterRotationalVelocity = solution.velocity / CONSTANTS.SHOOTER_WHEEL_RADIUS_METERS * flywheelEffFactor; //Tune the multiplication later
-            topSpinRotationalVelocity = solution.velocity / CONSTANTS.TOP_SPIN_RADIUS_METERS * topSpinEffFactor; //Tune the multiplication later
+            flywheel_omega_ = solution.velocity / CONSTANTS.FLYWHEEL_WHEEL_RADIUS_METERS * flywheel_eff_factor_;
+            top_spin_omega_ = solution.velocity / CONSTANTS.TOP_SPIN_RADIUS_METERS * top_spin_eff_factor_;
         }
         
         switch (system_state_) {
             case UNWIND:
                 break;
             case AIMING:
-                flywheel_.setTargetVelocity(shooterRotationalVelocity); // calculate flywheel speed from exit speed
+                flywheel_.setTargetVelocity(flywheel_omega_); // calculate flywheel speed from exit speed
                 indexer_.setTargetDutyCycle(0);
                 turret_.setTargetPosition(solution.heading_angle);
                 hood_.setTargetPosition(solution.exit_angle);
-                top_spin_.setTargetVelocity(topSpinRotationalVelocity); // calculate speed from exit speed
+                top_spin_.setTargetVelocity(top_spin_omega_); // calculate speed from exit speed
                 break;
             case DUMP:
-                flywheel_.setTargetVelocity(shooterRotationalVelocity); // calculate flywheel speed from exit speed
+                flywheel_.setTargetVelocity(flywheel_omega_); // calculate flywheel speed from exit speed
                 indexer_.setTargetDutyCycle(-CONSTANTS.INDEXER_DUTY_CYCLE);
                 turret_.setTargetDutyCycle(0);
                 hood_.setTargetPosition(0);
-                top_spin_.setTargetVelocity(topSpinRotationalVelocity); // calculate speed from exit speed
+                top_spin_.setTargetVelocity(top_spin_omega_); // calculate speed from exit speed
                 break;
             case SHOOT:
-                flywheel_.setTargetVelocity(shooterRotationalVelocity); // calculate flywheel speed from exit speed
+                flywheel_.setTargetVelocity(flywheel_omega_); // calculate flywheel speed from exit speed
                 indexer_.setTargetDutyCycle(CONSTANTS.INDEXER_DUTY_CYCLE);
                 turret_.setTargetPosition(solution.heading_angle);
                 hood_.setTargetPosition(solution.exit_angle);
-                top_spin_.setTargetVelocity(topSpinRotationalVelocity); // calculate speed from exit speed
+                top_spin_.setTargetVelocity(top_spin_omega_); // calculate speed from exit speed
                 break;
+            default:
             case IDLE:
-                flywheel_.setTargetVelocity(shooterRotationalVelocity); // calculate flywheel speed from exit speed
+                flywheel_.setTargetVelocity(flywheel_omega_); // calculate flywheel speed from exit speed
                 indexer_.setTargetDutyCycle(0);
                 turret_.setTargetPosition(0);
                 hood_.setTargetPosition(0);
-                top_spin_.setTargetVelocity(topSpinRotationalVelocity); // calculate speed from exit speed
+                top_spin_.setTargetVelocity(top_spin_omega_); // calculate speed from exit speed
                 break;
             case PROFILE:
                 // code does NOTHING to allow for testing
@@ -167,7 +141,7 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
                 Units.radiansToDegrees(solution.heading_angle));
         DogLog.log(
                 getSubsystemKey() + "TrajectorySolver/LaunchVelocity",
-                Units.radiansToDegrees(solution.velocity));
+                solution.velocity);
     }
 
     @Override

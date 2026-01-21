@@ -1,6 +1,7 @@
 package frc.robot.subsystems.shooter;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.marswars.geometry.LaunchTrajectory;
 import com.marswars.subsystem.MwConstants;
 import com.marswars.util.FxMotorConfig;
 import com.marswars.util.FxMotorConfig.FxMotorType;
@@ -36,18 +37,19 @@ public class ShooterConstants extends MwConstants {
     public final int TURRET_ID = 15;
 
     // =============================================================================
-    // MECHANICAL CONSTANTS - SHOOTER
+    // MECHANICAL CONSTANTS - FLYWHEEL
     // =============================================================================
     
-    public final boolean SHOOTER_LEADER_INVERTED = false;
-    public final boolean SHOOTER_FOLLOWER_INVERTED = true;
-    public final double SHOOTER_GEAR_RATIO = 1.0;
-    public final double SHOOTER_WHEEL_RADIUS_METERS = Units.inchesToMeters(3);
-    public final double SHOOTER_WHEEL_MASS_KG = 2.3; // kg, approximate
-    public final double SHOOTER_WHEEL_INERTIA =
+    public final boolean FLYWHEEL_LEADER_INVERTED = true;
+    public final boolean FLYWHEEL_FOLLOWER_INVERTED = false;
+    public final double FLYWHEEL_GEAR_RATIO = 1.0;
+    public final double FLYWHEEL_WHEEL_RADIUS_METERS = Units.inchesToMeters(3);
+    public final double FLYWHEEL_MASS_KG = 2.3; // kg, approximate
+    public final double FLYWHEEL_INERTIA =
             0.5
-                    * SHOOTER_WHEEL_MASS_KG
-                    * Math.pow(SHOOTER_WHEEL_RADIUS_METERS, 2.0); // kg m^2, approximate
+                    * FLYWHEEL_MASS_KG
+                    * Math.pow(FLYWHEEL_WHEEL_RADIUS_METERS, 2.0); // kg m^2, approximate
+    public final double FLYWHEEL_EFF_FACTOR = 1.0;
 
     // =============================================================================
     // MECHANICAL CONSTANTS - INDEXER
@@ -74,6 +76,7 @@ public class ShooterConstants extends MwConstants {
     public final boolean TOP_SPIN_INVERTED = false;
     public final double TOP_SPIN_GEAR_RATIO = 1.0;
     public final double TOP_SPIN_RADIUS_METERS = Units.inchesToMeters(1);
+    public final double TOP_SPIN_EFF_FACTOR = 1.0;
 
     // =============================================================================
     // MECHANICAL CONSTANTS - TURRET (needs actual values)
@@ -89,7 +92,9 @@ public class ShooterConstants extends MwConstants {
     public final double INDEXER_DUTY_CYCLE = 0.3; // 30% power for indexing
     public final Translation3d HUB_TRANSLATION =
             new Translation3d(4.611624, 4.021328, 1.397); // where the hub is
-    public final double LAUNCH_HIGHT = 0.613;
+    public final double LAUNCH_HEIGHT = 0.613;
+    public final LaunchTrajectory SOLVER = new LaunchTrajectory(HUB_TRANSLATION, LAUNCH_HEIGHT, true);
+
 
     // =============================================================================
     // MOTOR CONFIGURATION OBJECTS
@@ -120,7 +125,7 @@ public class ShooterConstants extends MwConstants {
         SHOOTER_LEADER_MOTOR_CONFIG.canbus_name = "CANivore";
         SHOOTER_LEADER_MOTOR_CONFIG.config = new TalonFXConfiguration();
         SHOOTER_LEADER_MOTOR_CONFIG.config.MotorOutput.Inverted =
-                PhoenixUtil.toInvertedValue(SHOOTER_LEADER_INVERTED);
+                PhoenixUtil.toInvertedValue(FLYWHEEL_LEADER_INVERTED);
 
         // Configure Shooter Follower Motor
         SHOOTER_FOLLOWER_MOTOR_CONFIG.can_id = SHOOTER_FOLLOWER_ID;
@@ -128,7 +133,7 @@ public class ShooterConstants extends MwConstants {
         SHOOTER_FOLLOWER_MOTOR_CONFIG.canbus_name = "CANivore";
         SHOOTER_FOLLOWER_MOTOR_CONFIG.config = new TalonFXConfiguration();
         SHOOTER_FOLLOWER_MOTOR_CONFIG.config.MotorOutput.Inverted =
-                PhoenixUtil.toInvertedValue(SHOOTER_FOLLOWER_INVERTED);
+                PhoenixUtil.toInvertedValue(FLYWHEEL_FOLLOWER_INVERTED);
 
         // Configure Hood Motor
         HOOD_MOTOR_CONFIGS.can_id = HOOD_ID;
@@ -149,5 +154,28 @@ public class ShooterConstants extends MwConstants {
         TURRET_MOTOR_CONFIGS.motor_type = FxMotorType.X44;
         TURRET_MOTOR_CONFIGS.canbus_name = "CANivore";
         TURRET_MOTOR_CONFIGS.config = new TalonFXConfiguration();
+
+        // Solver Map Population
+        SOLVER.addVelocityPoint(0.0, 6.283);
+        SOLVER.addVelocityPoint(0.5, 6.382);
+        SOLVER.addVelocityPoint(1.0, 6.635);
+        SOLVER.addVelocityPoint(1.5, 6.977);
+        SOLVER.addVelocityPoint(2.0, 7.367);
+        SOLVER.addVelocityPoint(2.5, 7.764);
+        SOLVER.addVelocityPoint(3.0, 8.160);
+        SOLVER.addVelocityPoint(3.5, 8.544);
+        SOLVER.addVelocityPoint(4.0, 8.928);
+        SOLVER.addVelocityPoint(4.5, 9.288);
+        SOLVER.addVelocityPoint(5.0, 9.648);
+        SOLVER.addVelocityPoint(5.5, 9.996);
+        SOLVER.addVelocityPoint(6.0, 10.332);
+        SOLVER.addVelocityPoint(6.5, 10.656);
+        SOLVER.addVelocityPoint(7.0, 10.980);
+        SOLVER.addVelocityPoint(7.5, 11.292);
+        SOLVER.addVelocityPoint(8.0, 11.592);
+        SOLVER.addVelocityPoint(8.5, 11.892);
+        SOLVER.addVelocityPoint(9.0, 12.180);
+        SOLVER.addVelocityPoint(9.5, 12.456);
+        SOLVER.addVelocityPoint(10.0, 12.744);
     }
 }
