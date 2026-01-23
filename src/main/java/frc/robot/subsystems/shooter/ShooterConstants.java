@@ -14,20 +14,20 @@ public class ShooterConstants extends MwConstants {
     // =============================================================================
     // ENUMS AND STATE DEFINITIONS
     // =============================================================================
-    
+
     public enum ShooterStates {
-        UNWIND,
         AIMING,
         DUMP,
         SHOOT,
         IDLE,
+        TRACKING,
         PROFILE
     }
 
     // =============================================================================
     // CAN IDS AND HARDWARE CONFIGURATION
     // =============================================================================
-    
+
     // Motor CAN IDs
     public final int SHOOTER_LEADER_ID = 10;
     public final int SHOOTER_FOLLOWER_ID = 11;
@@ -39,7 +39,7 @@ public class ShooterConstants extends MwConstants {
     // =============================================================================
     // MECHANICAL CONSTANTS - FLYWHEEL
     // =============================================================================
-    
+
     public final boolean FLYWHEEL_LEADER_INVERTED = true;
     public final boolean FLYWHEEL_FOLLOWER_INVERTED = false;
     public final double FLYWHEEL_GEAR_RATIO = 1.0;
@@ -50,56 +50,61 @@ public class ShooterConstants extends MwConstants {
                     * FLYWHEEL_MASS_KG
                     * Math.pow(FLYWHEEL_WHEEL_RADIUS_METERS, 2.0); // kg m^2, approximate
     public final double FLYWHEEL_EFF_FACTOR = 1.0;
+    public final double FLYWHEEL_SPEED_TOLERANCE = 1.0;
 
     // =============================================================================
     // MECHANICAL CONSTANTS - INDEXER
     // =============================================================================
-    
+
     public final boolean INDEXER_INVERTED = false;
     public final double INDEXER_GEAR_RATIO = 1.0;
 
     // =============================================================================
     // MECHANICAL CONSTANTS - HOOD (needs actual values)
     // =============================================================================
-    
+
     public final boolean HOOD_INVERTED = false;
     public final double HOOD_GEAR_RATIO = 1.0;
     public final double HOOD_LENGTH = Units.inchesToMeters(8.25);
     public final double HOOD_MASS_KG = Units.lbsToKilograms(1);
     public final double HOOD_MIN_ANGLE = 0;
     public final double HOOD_MAX_ANGLE = 0;
+    public final double HOOD_ANGLE_TOLERANCE = 1.0;
 
     // =============================================================================
     // MECHANICAL CONSTANTS - TOP SPIN (needs actual values)
     // =============================================================================
-    
+
     public final boolean TOP_SPIN_INVERTED = false;
     public final double TOP_SPIN_GEAR_RATIO = 1.0;
     public final double TOP_SPIN_RADIUS_METERS = Units.inchesToMeters(1);
     public final double TOP_SPIN_EFF_FACTOR = 1.0;
+    public final double TOP_SPIN_ANGLE_TOLERANCE = 1.0;
 
     // =============================================================================
     // MECHANICAL CONSTANTS - TURRET (needs actual values)
     // =============================================================================
-    
+
     public final double TURRET_GEAR_RATIO = 1.0;
     public final double TURRET_MOI = 0.001;
+    public final double TURRET_ANGLE_TOLERANCE = 1.0;
 
     // =============================================================================
     // CONTROL AND OPERATIONAL CONSTANTS
     // =============================================================================
-    
+
     public final double INDEXER_DUTY_CYCLE = 0.3; // 30% power for indexing
     public final Translation3d HUB_TRANSLATION =
             new Translation3d(4.611624, 4.021328, 1.397); // where the hub is
     public final double LAUNCH_HEIGHT = 0.613;
-    public final LaunchTrajectory SOLVER = new LaunchTrajectory(HUB_TRANSLATION, LAUNCH_HEIGHT, true);
-
+    public final LaunchTrajectory SOLVER =
+            new LaunchTrajectory(HUB_TRANSLATION, LAUNCH_HEIGHT, true);
+    public final double MAX_TURRET_WRAP = Units.degreesToRadians(190);
 
     // =============================================================================
     // MOTOR CONFIGURATION OBJECTS
     // =============================================================================
-    
+
     public final FxMotorConfig SHOOTER_LEADER_MOTOR_CONFIG = new FxMotorConfig();
     public final FxMotorConfig SHOOTER_FOLLOWER_MOTOR_CONFIG = new FxMotorConfig();
     public final FxMotorConfig INDEX_MOTOR_CONFIG = new FxMotorConfig();
@@ -107,7 +112,6 @@ public class ShooterConstants extends MwConstants {
     public final FxMotorConfig TOP_SPIN_CONFIG = new FxMotorConfig();
     public final FxMotorConfig TURRET_MOTOR_CONFIGS = new FxMotorConfig();
 
-    
     // =============================================================================
     // CONSTRUCTOR - MOTOR CONFIGURATION INITIALIZATION
     // =============================================================================

@@ -1,6 +1,5 @@
 package frc.robot.subsystems.shooter;
 
-import com.marswars.geometry.LaunchTrajectory;
 import com.marswars.geometry.LaunchTrajectory.TrajectorySol;
 import com.marswars.mechanisms.ArmMech;
 import com.marswars.mechanisms.FlywheelMech;
@@ -8,8 +7,9 @@ import com.marswars.mechanisms.RollerMech;
 import com.marswars.mechanisms.TurretMech;
 import com.marswars.subsystem.MwSubsystem;
 import com.marswars.subsystem.SubsystemIoBase;
-
 import dev.doglog.DogLog;
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.util.Units;
 import frc.robot.subsystems.localization.LocalizationSubsystem;
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterStates;
@@ -36,6 +36,8 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
     private double top_spin_eff_factor_ = CONSTANTS.TOP_SPIN_EFF_FACTOR;
     private double flywheel_omega_ = 0;
     private double top_spin_omega_ = 0;
+    TrajectorySol solution;
+    double newHeadingAngle;
 
     public ShooterSubsystem() {
         super(ShooterStates.IDLE, new ShooterConstants());
@@ -77,41 +79,73 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
                         CONSTANTS.TURRET_GEAR_RATIO,
                         CONSTANTS.TURRET_MOI);
 
-        DogLog.tunable(getSubsystemKey()+"Flywheel/EffFactor", CONSTANTS.FLYWHEEL_EFF_FACTOR, (val) -> flywheel_eff_factor_ = val);
-        DogLog.tunable(getSubsystemKey()+"TopSpin/EffFactor", CONSTANTS.TOP_SPIN_EFF_FACTOR, (val) -> top_spin_eff_factor_ = val);
+        DogLog.tunable(
+                getSubsystemKey() + "Flywheel/EffFactor",
+                CONSTANTS.FLYWHEEL_EFF_FACTOR,
+                (val) -> flywheel_eff_factor_ = val);
+        DogLog.tunable(
+                getSubsystemKey() + "TopSpin/EffFactor",
+                CONSTANTS.TOP_SPIN_EFF_FACTOR,
+                (val) -> top_spin_eff_factor_ = val);
     }
 
-    // @Override
-    // public void handleStateTransition(ShooterStates wanted) {
-    // }
+    @Override
+    public void handleStateTransition(ShooterStates wanted) {
+        if (wanted == ShooterStates.SHOOT && !(system_state_ == ShooterStates.AIMING)) {
+            setWantedState(ShooterStates.AIMING);
+        }
+        if (system_state_ == ShooterStates.AIMING && shooterIsReady()) {
+            setWantedState(ShooterStates.SHOOT);
+        } else {
+            system_state_ = wanted;
+        }
+    }
 
     @Override
     public void updateLogic(double timestamp) {
-        TrajectorySol solution = CONSTANTS.SOLVER.getSolution(LocalizationSubsystem.getInstance().getFieldPose());
-        if(solution.valid){
-            flywheel_omega_ = solution.velocity / CONSTANTS.FLYWHEEL_WHEEL_RADIUS_METERS * flywheel_eff_factor_;
-            top_spin_omega_ = solution.velocity / CONSTANTS.TOP_SPIN_RADIUS_METERS * top_spin_eff_factor_;
+        Pose2d robotPose = LocalizationSubsystem.getInstance().getFieldPose();
+        solution = CONSTANTS.SOLVER.getSolution(robotPose);
+        if (solution.valid) {
+            flywheel_omega_ =
+                    solution.velocity
+                            / CONSTANTS.FLYWHEEL_WHEEL_RADIUS_METERS
+                            * flywheel_eff_factor_;
+            top_spin_omega_ =
+                    solution.velocity / CONSTANTS.TOP_SPIN_RADIUS_METERS * top_spin_eff_factor_;
         }
-        
+        newHeadingAngle = solution.heading_angle - robotPose.getRotation().getRadians();
+        if (newHeadingAngle > CONSTANTS.MAX_TURRET_WRAP) {
+            newHeadingAngle -= 2 * Math.PI;
+            if (system_state_ == ShooterStates.SHOOT) {
+                setWantedState(ShooterStates.AIMING);
+            }
+        } else if (newHeadingAngle < -CONSTANTS.MAX_TURRET_WRAP) {
+            newHeadingAngle += 2 * Math.PI;
+            if (system_state_ == ShooterStates.SHOOT) {
+                setWantedState(ShooterStates.AIMING);
+            }
+        }
         switch (system_state_) {
-            case UNWIND:
-                break;
+            case TRACKING:
             case AIMING:
-                flywheel_.setTargetVelocity(flywheel_omega_); // calculate flywheel speed from exit speed
+                flywheel_.setTargetVelocity(
+                        flywheel_omega_); // calculate flywheel speed from exit speed
                 indexer_.setTargetDutyCycle(0);
                 turret_.setTargetPosition(solution.heading_angle);
                 hood_.setTargetPosition(solution.exit_angle);
                 top_spin_.setTargetVelocity(top_spin_omega_); // calculate speed from exit speed
                 break;
             case DUMP:
-                flywheel_.setTargetVelocity(flywheel_omega_); // calculate flywheel speed from exit speed
+                flywheel_.setTargetVelocity(
+                        flywheel_omega_); // calculate flywheel speed from exit speed
                 indexer_.setTargetDutyCycle(-CONSTANTS.INDEXER_DUTY_CYCLE);
                 turret_.setTargetDutyCycle(0);
                 hood_.setTargetPosition(0);
                 top_spin_.setTargetVelocity(top_spin_omega_); // calculate speed from exit speed
                 break;
             case SHOOT:
-                flywheel_.setTargetVelocity(flywheel_omega_); // calculate flywheel speed from exit speed
+                flywheel_.setTargetVelocity(
+                        flywheel_omega_); // calculate flywheel speed from exit speed
                 indexer_.setTargetDutyCycle(CONSTANTS.INDEXER_DUTY_CYCLE);
                 turret_.setTargetPosition(solution.heading_angle);
                 hood_.setTargetPosition(solution.exit_angle);
@@ -119,7 +153,8 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
                 break;
             default:
             case IDLE:
-                flywheel_.setTargetVelocity(flywheel_omega_); // calculate flywheel speed from exit speed
+                flywheel_.setTargetVelocity(
+                        flywheel_omega_); // calculate flywheel speed from exit speed
                 indexer_.setTargetDutyCycle(0);
                 turret_.setTargetPosition(0);
                 hood_.setTargetPosition(0);
@@ -130,18 +165,14 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
                 break;
         }
         // Log Data
-        DogLog.log(
-                getSubsystemKey() + "TrajectorySolver/Valid",
-                solution.valid);
+        DogLog.log(getSubsystemKey() + "TrajectorySolver/Valid", solution.valid);
         DogLog.log(
                 getSubsystemKey() + "TrajectorySolver/LaunchAngle",
                 Units.radiansToDegrees(solution.exit_angle));
         DogLog.log(
                 getSubsystemKey() + "TrajectorySolver/LaunchHeading",
                 Units.radiansToDegrees(solution.heading_angle));
-        DogLog.log(
-                getSubsystemKey() + "TrajectorySolver/LaunchVelocity",
-                solution.velocity);
+        DogLog.log(getSubsystemKey() + "TrajectorySolver/LaunchVelocity", solution.velocity);
     }
 
     @Override
@@ -152,5 +183,24 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
     @Override
     public void reset() {
         system_state_ = ShooterStates.IDLE;
+    }
+
+    public boolean shooterIsReady() {
+        return MathUtil.isNear(
+                        flywheel_omega_,
+                        flywheel_.getCurrentVelocity(),
+                        CONSTANTS.FLYWHEEL_SPEED_TOLERANCE)
+                && MathUtil.isNear(
+                        newHeadingAngle,
+                        turret_.getCurrentPosition(),
+                        CONSTANTS.TURRET_ANGLE_TOLERANCE)
+                && MathUtil.isNear(
+                        solution.exit_angle,
+                        hood_.getCurrentPosition(),
+                        CONSTANTS.HOOD_ANGLE_TOLERANCE)
+                && MathUtil.isNear(
+                        top_spin_omega_,
+                        top_spin_.getCurrentPosition(),
+                        CONSTANTS.TOP_SPIN_ANGLE_TOLERANCE);
     }
 }

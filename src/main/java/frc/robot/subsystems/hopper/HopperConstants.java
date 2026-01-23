@@ -42,5 +42,4 @@ public class HopperConstants extends MwConstants {
         FEEDER_MOTOR_CONFIG.canbus_name = "rio";
         FEEDER_MOTOR_CONFIG.config = new TalonFXConfiguration();
     }
-
 }

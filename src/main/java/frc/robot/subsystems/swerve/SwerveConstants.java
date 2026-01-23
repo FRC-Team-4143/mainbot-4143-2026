@@ -21,7 +21,7 @@ public class SwerveConstants extends MwConstants {
     // =============================================================================
     // ENUMS AND STATE DEFINITIONS
     // =============================================================================
-    
+
     public enum SwerveStates {
         FIELD_CENTRIC,
         ROBOT_CENTRIC,
@@ -46,7 +46,7 @@ public class SwerveConstants extends MwConstants {
     // =============================================================================
     // CAN IDS AND HARDWARE CONFIGURATION
     // =============================================================================
-    
+
     public final int PIGEON2_ID = 0;
     public final String PIGEON2_CANBUS_NAME = "rio";
     public final String MODULE_CANBUS_NAME = "rio";
@@ -54,7 +54,7 @@ public class SwerveConstants extends MwConstants {
     // =============================================================================
     // PHYSICAL ROBOT CONSTANTS
     // =============================================================================
-    
+
     public final double ROBOT_MASS_KG = Units.lbsToKilograms(140.0); // Mass of the robot in pounds
     public final double BUMPER_WIDTH_METERS =
             Units.inchesToMeters(34.75); // Width of the bumpers in meters (y axis : left -> right)
@@ -66,12 +66,12 @@ public class SwerveConstants extends MwConstants {
     // =============================================================================
     // MOTOR AND MECHANICAL CONSTANTS
     // =============================================================================
-    
+
     public final double DRIVE_INERTIA = 0.025; // kg*m^2, inertia of the drive motor
     public final double STEER_INERTIA = 0.004; // kg*m^2, inertia of the steer motor
     public final double DRIVE_FRICTION_VOLTAGE = 0.2;
     public final double STEER_FRICTION_VOLTAGE = 0.2;
-    
+
     public final double SLIP_CURRENT_AMPS = getDoubleConstant("com", "slip_current");
     public final double SPEED_AT_12V_MPS = getDoubleConstant("com", "speed_at_12v");
     public final double COUPLE_RATIO = getDoubleConstant("com", "couple_ratio");
@@ -81,16 +81,15 @@ public class SwerveConstants extends MwConstants {
     // =============================================================================
     // CONTROL AND OPERATIONAL CONSTANTS
     // =============================================================================
-    
+
     public final double CONTROLLER_DEADBAND = 0.05;
     public final double MAX_TRANSLATION_RATE = getDoubleConstant("com", "max_translation_rate");
     public final double MAX_ANGULAR_RATE = getDoubleConstant("com", "max_angular_rate");
 
-    
     // =============================================================================
     // CHOREO PATH FOLLOWING CONSTANTS
     // =============================================================================
-    
+
     public final boolean FLIP_TRAJECTORY_ON_RED = true;
     public final double CHOREO_TRANSLATION_ERROR_MARGIN = Units.inchesToMeters(1.0);
     public final double CHOREO_X_CONTROLLER_KP = 0.0;
@@ -106,7 +105,7 @@ public class SwerveConstants extends MwConstants {
     // =============================================================================
     // TRACTOR BEAM CONSTANTS
     // =============================================================================
-    
+
     public final double TRACTOR_BEAM_TRANSLATION_ERROR_MARGIN = Units.inchesToMeters(0.5);
     public final double TRACTOR_BEAM_STATIC_FRICTION_CONSTANT = 0.1;
     public final double TRACTOR_BEAM_CONTROLLER_KP = 0.0;
@@ -116,7 +115,7 @@ public class SwerveConstants extends MwConstants {
     // =============================================================================
     // SWERVE MODULE CONFIGURATION OBJECTS
     // =============================================================================
-    
+
     public final FxMotorConfig DRIVE_MOTOR_CONFIG = new FxMotorConfig();
     public final FxMotorConfig STEER_MOTOR_CONFIG = new FxMotorConfig();
 
@@ -133,14 +132,13 @@ public class SwerveConstants extends MwConstants {
     public final SwerveDriveConfig SWERVE_DRIVE_CONFIG;
     public final DriveTrainSimulationConfig SIM_SWERVE_DRIVE_CONFIG;
 
-    
     // =============================================================================
     // CONSTRUCTOR - SWERVE CONFIGURATION INITIALIZATION
     // =============================================================================
 
     @SuppressWarnings("unchecked")
     public SwerveConstants() {
-        
+
         // Load base motor configurations from config files
         DRIVE_MOTOR_CONFIG.loadFromConfig("swerve", "com", "drive_motor");
         STEER_MOTOR_CONFIG.loadFromConfig("swerve", "com", "steer_motor");
@@ -157,14 +155,14 @@ public class SwerveConstants extends MwConstants {
         FL_MODULE_CONFIG.location_y = Units.inchesToMeters(getDoubleConstant("fl", "y_position"));
         FL_MODULE_TRANSLATION =
                 new Translation2d(FL_MODULE_CONFIG.location_x, FL_MODULE_CONFIG.location_y);
-        
+
         // FL Drive Motor Configuration
         final FxMotorConfig FL_DRIVE_MOTOR_CONFIG = new FxMotorConfig(DRIVE_MOTOR_CONFIG);
         FL_DRIVE_MOTOR_CONFIG.can_id = getIntConstant("fl", "drive_id");
         FL_DRIVE_MOTOR_CONFIG.config.MotorOutput.Inverted =
                 PhoenixUtil.toInvertedValue(getBoolConstant("fl", "invert_drive"));
         FL_MODULE_CONFIG.drive_motor_config = FL_DRIVE_MOTOR_CONFIG;
-        
+
         // FL Steer Motor Configuration
         final FxMotorConfig FL_STEER_MOTOR_CONFIG = new FxMotorConfig(STEER_MOTOR_CONFIG);
         FL_STEER_MOTOR_CONFIG.can_id = getIntConstant("fl", "steer_id");
@@ -182,14 +180,14 @@ public class SwerveConstants extends MwConstants {
         FR_MODULE_CONFIG.location_y = Units.inchesToMeters(getDoubleConstant("fr", "y_position"));
         FR_MODULE_TRANSLATION =
                 new Translation2d(FR_MODULE_CONFIG.location_x, FR_MODULE_CONFIG.location_y);
-        
+
         // FR Drive Motor Configuration
         final FxMotorConfig FR_DRIVE_MOTOR_CONFIG = new FxMotorConfig(DRIVE_MOTOR_CONFIG);
         FR_DRIVE_MOTOR_CONFIG.can_id = getIntConstant("fr", "drive_id");
         FR_DRIVE_MOTOR_CONFIG.config.MotorOutput.Inverted =
                 PhoenixUtil.toInvertedValue(getBoolConstant("fr", "invert_drive"));
         FR_MODULE_CONFIG.drive_motor_config = FR_DRIVE_MOTOR_CONFIG;
-        
+
         // FR Steer Motor Configuration
         final FxMotorConfig FR_STEER_MOTOR_CONFIG = new FxMotorConfig(STEER_MOTOR_CONFIG);
         FR_STEER_MOTOR_CONFIG.can_id = getIntConstant("fr", "steer_id");
@@ -207,14 +205,14 @@ public class SwerveConstants extends MwConstants {
         BL_MODULE_CONFIG.location_y = Units.inchesToMeters(getDoubleConstant("bl", "y_position"));
         BL_MODULE_TRANSLATION =
                 new Translation2d(BL_MODULE_CONFIG.location_x, BL_MODULE_CONFIG.location_y);
-        
+
         // BL Drive Motor Configuration
         final FxMotorConfig BL_DRIVE_MOTOR_CONFIG = new FxMotorConfig(DRIVE_MOTOR_CONFIG);
         BL_DRIVE_MOTOR_CONFIG.can_id = getIntConstant("bl", "drive_id");
         BL_DRIVE_MOTOR_CONFIG.config.MotorOutput.Inverted =
                 PhoenixUtil.toInvertedValue(getBoolConstant("bl", "invert_drive"));
         BL_MODULE_CONFIG.drive_motor_config = BL_DRIVE_MOTOR_CONFIG;
-        
+
         // BL Steer Motor Configuration
         final FxMotorConfig BL_STEER_MOTOR_CONFIG = new FxMotorConfig(STEER_MOTOR_CONFIG);
         BL_STEER_MOTOR_CONFIG.can_id = getIntConstant("bl", "steer_id");
@@ -232,14 +230,14 @@ public class SwerveConstants extends MwConstants {
         BR_MODULE_CONFIG.location_y = Units.inchesToMeters(getDoubleConstant("br", "y_position"));
         BR_MODULE_TRANSLATION =
                 new Translation2d(BR_MODULE_CONFIG.location_x, BR_MODULE_CONFIG.location_y);
-        
+
         // BR Drive Motor Configuration
         final FxMotorConfig BR_DRIVE_MOTOR_CONFIG = new FxMotorConfig(DRIVE_MOTOR_CONFIG);
         BR_DRIVE_MOTOR_CONFIG.can_id = getIntConstant("br", "drive_id");
         BR_DRIVE_MOTOR_CONFIG.config.MotorOutput.Inverted =
                 PhoenixUtil.toInvertedValue(getBoolConstant("br", "invert_drive"));
         BR_MODULE_CONFIG.drive_motor_config = BR_DRIVE_MOTOR_CONFIG;
-        
+
         // BR Steer Motor Configuration
         final FxMotorConfig BR_STEER_MOTOR_CONFIG = new FxMotorConfig(STEER_MOTOR_CONFIG);
         BR_STEER_MOTOR_CONFIG.can_id = getIntConstant("br", "steer_id");
