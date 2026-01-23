@@ -8,6 +8,7 @@ import dev.doglog.DogLog;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import frc.robot.Robot;
@@ -124,5 +125,9 @@ public class LocalizationSubsystem extends MwSubsystem<LocalizationStates, Local
      */
     public Pose2d getFieldPose() {
         return field_pose_estimator_.getEstimatedPosition();
+    }
+
+    public ChassisSpeeds getChassisSpeedsFieldRelative(){
+        return ChassisSpeeds.fromRobotRelativeSpeeds(SwerveSubsystem.getInstance().getChassisSpeeds(), getFieldPose().getRotation());
     }
 }
