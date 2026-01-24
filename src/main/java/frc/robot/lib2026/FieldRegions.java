@@ -109,46 +109,54 @@ public class FieldRegions {
             "HOLD_ZONE");
     public static PolygonRegion NEUTRAL_ZONE = new PolygonRegion(
             new Translation2d[] {
-                    new Translation2d(4.031,0),
-                    new Translation2d(4.031,8.07),
-                    new Translation2d(13.491,8.07),
-                    new Translation2d(13.491,0),
-                    new Translation2d(4.031,0),
+                    new Translation2d(4.031, 0),
+                    new Translation2d(4.031, 8.07),
+                    new Translation2d(13.491, 8.07),
+                    new Translation2d(13.491, 0),
+                    new Translation2d(4.031, 0),
             },
             "NEUTRAL_ZONE");
 
     public static PolygonRegion OPP_HOLD_ZONE = new PolygonRegion(
             new Translation2d[] {
-                    new Translation2d(12.301,0),
-                    new Translation2d(12.301,8.07),
-                    new Translation2d(13.491,8.07),
-                    new Translation2d(13.491,0),
-                    new Translation2d(12.301,0),
+                    new Translation2d(12.301, 0),
+                    new Translation2d(12.301, 8.07),
+                    new Translation2d(13.491, 8.07),
+                    new Translation2d(13.491, 0),
+                    new Translation2d(12.301, 0),
             },
             "OPP_HOLD_ZONE");
 
+    public static PolygonRegion OPP_ALLIANCE_ZONE = new PolygonRegion(
+            new Translation2d[] {
+                    new Translation2d(12.516, 0),
+                    new Translation2d(12.516, 8.07),
+                    new Translation2d(16.541, 8.07),
+                    new Translation2d(16.541, 0),
+                    new Translation2d(12.516, 0),
+            },
+            "OPP_ALLIANCE_ZONE");
+
     public static PolygonRegion OPP_ALLIANCE_HOLD_ZONE = new PolygonRegion(
             new Translation2d[] {
-                
-            }
-    )
+                    new Translation2d(12.301, 3.43),
+                    new Translation2d(12.301, 4.62),
+                    new Translation2d(16.541, 4.62),
+                    new Translation2d(16.541, 3.43),
+                    new Translation2d(12.301, 3.43),
+            },
+            "OPP_ALLIANCE_HOLD_ZONE");
 
-
-    public static ArrayList<PolygonRegion> HOLD_REGIONS =
-            new ArrayList<>(
-                List.of(
+    public static ArrayList<PolygonRegion> HOLD_REGIONS = new ArrayList<>(
+            List.of(
                     HOLD_ZONE,
                     OPP_HOLD_ZONE,
                     OPP_ALLIANCE_HOLD_ZONE));
-            public static void flipRegions() {
-                DataLogManager.log("Flipping Regions to" + DriverStation.getAlliance().get().toString());
-            
-            
-            
-            populateTable();
-            }
 
+    public static void flipRegions() {
+        DataLogManager.log("Flipping Regions to" + DriverStation.getAlliance().get().toString());
 
+        populateTable();
+    }
 
-
-        }
+}
