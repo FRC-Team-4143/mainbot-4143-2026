@@ -9,6 +9,8 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterStates;
+import frc.robot.subsystems.hopper.HopperSubsystem;
+import frc.robot.subsystems.hopper.HopperConstants.HopperStates;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 import java.util.Optional;
@@ -17,6 +19,7 @@ public abstract class OI {
 
     // Sets up both controllers
     private static CommandXboxController driver_controller_ = new CommandXboxController(0);
+    private static CommandXboxController operator_controller_ = new CommandXboxController(1);
 
     public static void configureBindings() {
         DriverStation.silenceJoystickConnectionWarning(true);
@@ -32,6 +35,9 @@ public abstract class OI {
                                 () ->
                                         ShooterSubsystem.getInstance()
                                                 .setWantedState(ShooterStates.AIMING)));
+        operator_controller_.rightBumper().whileTrue(Commands.startEnd(
+            () -> HopperSubsystem.getInstance().setWantedState(HopperStates.SHOOTING),
+            () -> HopperSubsystem.getInstance().setWantedState(HopperStates.IDLE)));
     }
 
     /**
@@ -53,6 +59,18 @@ public abstract class OI {
      */
     public static double getDriverJoystickRightX() {
         return driver_controller_.getRightX();
+    }
+
+    public static double getOperatorJoystickRightX() {
+        return operator_controller_.getRightX();
+    }
+
+    public static double getOperatorJoystickRightY() {
+        return operator_controller_.getRightY();
+    }
+
+    public static double getOperatorJoystickLeftY() {
+        return operator_controller_.getLeftY();
     }
 
     /**

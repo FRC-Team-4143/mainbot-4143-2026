@@ -127,7 +127,8 @@ public class LocalizationSubsystem extends MwSubsystem<LocalizationStates, Local
         return field_pose_estimator_.getEstimatedPosition();
     }
 
-    public ChassisSpeeds getChassisSpeedsFieldRelative(){
-        return ChassisSpeeds.fromRobotRelativeSpeeds(SwerveSubsystem.getInstance().getChassisSpeeds(), getFieldPose().getRotation());
+    public ChassisSpeeds getChassisSpeedsFieldRelative() {
+        return ChassisSpeeds.fromRobotRelativeSpeeds(
+                SwerveSubsystem.getInstance().getChassisSpeeds(), getFieldPose().getRotation());
     }
 }

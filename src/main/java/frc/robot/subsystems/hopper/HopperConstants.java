@@ -16,7 +16,7 @@ public class HopperConstants extends MwConstants {
 
     // Indexer Configs
     public final int INDEXER_ID = 20;
-    public final boolean INDEXER_INVERTED = false;
+    public final boolean INDEXER_INVERTED = true;
     public final double INDEXER_GEAR_RATIO = 1.0;
     public final FxMotorConfig INDEXER_MOTOR_CONFIG = new FxMotorConfig();
 

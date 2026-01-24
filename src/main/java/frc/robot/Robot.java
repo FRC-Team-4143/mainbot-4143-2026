@@ -87,6 +87,7 @@ public class Robot extends TimedRobot {
         } else {
             SwerveSubsystem.getInstance().setWantedState(SwerveStates.FIELD_CENTRIC);
         }
+        ShooterSubsystem.getInstance().setWantedState(ShooterStates.MANUAL);
     }
 
     @Override
