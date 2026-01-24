@@ -5,8 +5,6 @@ import com.marswars.subsystem.MwConstants;
 import com.marswars.util.FxMotorConfig;
 import com.marswars.util.FxMotorConfig.FxMotorType;
 
-import edu.wpi.first.math.util.Units;
-
 public class HopperContstants extends MwConstants {
 
     public enum HopperStates {
@@ -39,5 +37,4 @@ public class HopperContstants extends MwConstants {
         FEED_MOTOR_CONFIG.canbus_name = "rio";
         FEED_MOTOR_CONFIG.config = new TalonFXConfiguration();
     }
-
 }

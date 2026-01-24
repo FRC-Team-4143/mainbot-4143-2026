@@ -22,17 +22,19 @@ public class HopperSubsytem extends MwSubsystem<HopperStates, HopperContstants> 
 
     public HopperSubsytem() {
         super(HopperStates.IDLE, new HopperContstants());
-        Feeder = new RollerMech(
-                getSubsystemKey(),
-                "Feeder",
-                List.of(CONSTANTS.FEED_MOTOR_CONFIG),
-                CONSTANTS.FEED_GEAR_RATIO);
+        Feeder =
+                new RollerMech(
+                        getSubsystemKey(),
+                        "Feeder",
+                        List.of(CONSTANTS.FEED_MOTOR_CONFIG),
+                        CONSTANTS.FEED_GEAR_RATIO);
 
-        Hopper = new RollerMech(
-                getSubsystemKey(),
-                "Hopper",
-                List.of(CONSTANTS.HOPPER_MOTOR_CONFIG),
-                CONSTANTS.HOPPER_GEAR_RATIO);
+        Hopper =
+                new RollerMech(
+                        getSubsystemKey(),
+                        "Hopper",
+                        List.of(CONSTANTS.HOPPER_MOTOR_CONFIG),
+                        CONSTANTS.HOPPER_GEAR_RATIO);
     }
 
     /*
