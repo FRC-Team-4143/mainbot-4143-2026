@@ -26,39 +26,6 @@ public abstract class OI {
         DriverStation.silenceJoystickConnectionWarning(true);
 
         driver_controller_.rightStick().onTrue(SwerveSubsystem.getInstance().toggleFieldCentric());
-        driver_controller_
-                .a()
-                .whileTrue(
-                        Commands.startEnd(
-                                () -> {
-                                    SwerveSubsystem.getInstance()
-                                            .setDesiredRotationLock(Rotation2d.fromDegrees(90));
-                                    SwerveSubsystem.getInstance()
-                                            .setWantedState(SwerveStates.ROTATION_LOCK);
-                                },
-                                () ->
-                                        SwerveSubsystem.getInstance()
-                                                .setWantedState(SwerveStates.FIELD_CENTRIC)));
-        operator_controller_
-                .rightBumper()
-                .whileTrue(
-                        Commands.startEnd(
-                                () ->
-                                        HopperSubsystem.getInstance()
-                                                .setWantedState(HopperStates.SHOOTING),
-                                () ->
-                                        HopperSubsystem.getInstance()
-                                                .setWantedState(HopperStates.IDLE)));
-        driver_controller_
-                .x()
-                .whileTrue(
-                        Commands.startEnd(
-                                () ->
-                                        ShooterSubsystem.getInstance()
-                                                .setWantedState(ShooterStates.SHOOT),
-                                () ->
-                                        ShooterSubsystem.getInstance()
-                                                .setWantedState(ShooterStates.AIMING)));
     }
 
     /**
@@ -95,7 +62,8 @@ public abstract class OI {
     }
 
     /**
-     * @return driver controller joystick pov angle in degs. empty if nothing is pressed
+     * @return driver controller joystick pov angle in degs. empty if nothing is
+     *         pressed
      */
     public static Optional<Rotation2d> getDriverJoystickPOV() {
         int pov = driver_controller_.getHID().getPOV();
