@@ -39,7 +39,7 @@ public class HopperConstants extends MwConstants {
 
         FEEDER_MOTOR_CONFIG.can_id = FEEDER_ID;
         FEEDER_MOTOR_CONFIG.motor_type = FxMotorType.X60;
-        FEEDER_MOTOR_CONFIG.canbus_name = "rio";
+        FEEDER_MOTOR_CONFIG.canbus_name = "CANivore";
         FEEDER_MOTOR_CONFIG.config = new TalonFXConfiguration();
     }
 }
