@@ -2,23 +2,25 @@ package frc.robot.subsystems.gamestates;
 
 import com.marswars.subsystem.MwSubsystem;
 import com.marswars.subsystem.SubsystemIoBase;
+
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.RobotState;
+import frc.robot.lib2026.FieldRegions;
 import frc.robot.subsystems.gamestates.GameStatesConstants.GameStates;
+import frc.robot.subsystems.localization.LocalizationSubsystem;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class GameStatesSubsystem extends MwSubsystem<GameStates, GameStatesConstants> {
 
-    // Variables
-    Boolean in_alliance_zone_ = false;
-    Boolean in_neutral_zone_ = false;
+    // Variables, temporary
     Boolean goal_active_ = false;
     Boolean operator_presses_climb_button_ = false;
     Boolean full_load_ = false;
-    Boolean in_hold_zone_ = false;
     boolean pass_overide_ = false;
     Boolean auto_climb_ready_ = false;
-    Boolean teleop_start_ = false;
-    Boolean down_climb_finished_ = false;
 
     public GameStatesSubsystem() {
         super(GameStates.HOLD, new GameStatesConstants());
@@ -28,56 +30,55 @@ public class GameStatesSubsystem extends MwSubsystem<GameStates, GameStatesConst
     public void updateLogic(double timestamp) {
         switch (system_state_) {
             case HOLD:
-            //shooter innactive 
-            //hopper holding and accepting balls unless full
-            //pickup active to allow ball intake unless full
-            //climber inactive
+                // shooter innactive
+                // hopper holding and accepting balls unless full
+                // pickup active to allow ball intake unless full
+                // climber inactive
                 break;
             case SCORE:
-            //shooter active
-            //hopper holding and accepting balls unless full
-            //pickup active to allow ball intake unless full
-            //climber inactive
+                // shooter active
+                // hopper holding and accepting balls unless full
+                // pickup active to allow ball intake unless full
+                // climber inactive
                 break;
             case PASS:
-            //shooter active
-            //hopper holding and accepting balls unless full
-            //pickup active to allow ball intake unless full
-            //climber inactive
+                // shooter active
+                // hopper holding and accepting balls unless full
+                // pickup active to allow ball intake unless full
+                // climber inactive
                 break;
             case AUTO_CLIMB:
-            //shooter inactive
-            //hopper holding balls only
-            //pickup innactve
-            //climber actively climbing
+                // shooter inactive
+                // hopper holding balls only
+                // pickup innactve
+                // climber actively climbing
                 break;
             case TELEOP_CLIMB:
-            //shooter inactive
-            //hopper holding balls only
-            //pickup innactve
-            //climber actively climbing up
+                // shooter inactive
+                // hopper holding balls only
+                // pickup innactve
+                // climber actively climbing up
                 break;
             case DOWN_CLIMB:
-            //shooter inactive
-            //hopper holding balls only
-            //pickup innactve
-            //climber actively climbing down
+                // shooter inactive
+                // hopper holding balls only
+                // pickup innactve
+                // climber actively climbing down
                 break;
         }
     }
 
     public void handleStateTransition(GameStates wanted) {
+        Pose2d robotpose = LocalizationSubsystem.getInstance().getFieldPose();
         // transtions out of TELEOP_CLIMB, no transtions
         if (system_state_ == GameStates.TELEOP_CLIMB) {
             system_state_ = GameStates.TELEOP_CLIMB;
             return;
         }
         // HOLD transitions
-        if (system_state_ == GameStates.HOLD && in_alliance_zone_ && goal_active_) {
+        if (system_state_ == GameStates.HOLD && inAllianceZone(robotpose) && goal_active_) {
             system_state_ = GameStates.SCORE;
-        } else if (system_state_ == GameStates.HOLD && in_neutral_zone_) {
-            system_state_ = GameStates.PASS;
-        } else if (system_state_ == GameStates.HOLD && pass_overide_) {
+        } else if (system_state_ == GameStates.HOLD && (passZone(robotpose) || pass_overide_)) {
             system_state_ = GameStates.PASS;
         } else if (system_state_ == GameStates.HOLD && auto_climb_ready_) {
             system_state_ = GameStates.AUTO_CLIMB;
@@ -85,10 +86,8 @@ public class GameStatesSubsystem extends MwSubsystem<GameStates, GameStatesConst
             system_state_ = GameStates.TELEOP_CLIMB;
         } else {
         } // empty to not interfere with rest of state machine
-        // SCORE transistions
-        if (system_state_ == GameStates.SCORE && in_neutral_zone_) {
-            system_state_ = GameStates.HOLD;
-        } else if (system_state_ == GameStates.SCORE && !goal_active_) {
+          // SCORE transistions
+        if (system_state_ == GameStates.SCORE && (passZone(robotpose) || !goal_active_)) {
             system_state_ = GameStates.HOLD;
         } else if (system_state_ == GameStates.SCORE && auto_climb_ready_) {
             system_state_ = GameStates.AUTO_CLIMB;
@@ -96,20 +95,18 @@ public class GameStatesSubsystem extends MwSubsystem<GameStates, GameStatesConst
             system_state_ = GameStates.TELEOP_CLIMB;
         } else {
         } // empty to not interfere with rest of state machine
-        // PASS transistions
-        if (system_state_ == GameStates.PASS && in_hold_zone_) {
-            system_state_ = GameStates.HOLD;
-        } else if (system_state_ == GameStates.PASS && !pass_overide_) {
+          // PASS transistions
+        if (system_state_ == GameStates.PASS && (inHoldZone() || !pass_overide_)) {
             system_state_ = GameStates.HOLD;
         } else {
         } // empty to not interfere with rest of state machine
-        // AUTO_CLIMB transitions
-        if (system_state_ == GameStates.AUTO_CLIMB && teleop_start_) {
+          // AUTO_CLIMB transitions
+        if (system_state_ == GameStates.AUTO_CLIMB && isTeleop()) {
             system_state_ = GameStates.DOWN_CLIMB;
         } else {
         } // empty to not interfere with rest of state machine
-        // DOWN_CLIMB transistions
-        if (system_state_ == GameStates.DOWN_CLIMB && down_climb_finished_) {
+          // DOWN_CLIMB transistions
+        if (system_state_ == GameStates.DOWN_CLIMB && downClimbFinished()) {
             system_state_ = GameStates.HOLD;
         } else {
         } // empty to not interfere with rest of state machine
@@ -123,5 +120,27 @@ public class GameStatesSubsystem extends MwSubsystem<GameStates, GameStatesConst
     @Override
     public void reset() {
         system_state_ = GameStates.HOLD;
+    }
+
+    // methods to determin wich state is in wich region
+    private boolean inAllianceZone(Pose2d pose) {
+        return FieldRegions.ALLIANCE_ZONE.contains(pose);
+    }
+
+    private boolean passZone(Pose2d pose) {
+        return FieldRegions.NEUTRAL_ZONE.contains(pose) ||
+                FieldRegions.OPP_ALLIANCE_ZONE.contains(pose);
+    }
+
+    private boolean inHoldZone(Pose2d pose) {
+        return FieldRegions.HOLD_REGIONS.contains(pose);
+    }
+
+    private boolean isTeleop() {
+        return RobotState.isTeleop();
+    }
+
+    private boolean downClimbFinished() {
+        return false;
     }
 }
