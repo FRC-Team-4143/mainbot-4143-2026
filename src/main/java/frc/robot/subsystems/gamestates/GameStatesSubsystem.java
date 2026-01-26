@@ -1,5 +1,8 @@
 package frc.robot.subsystems.gamestates;
 
+import com.marswars.geometry.PolygonRegion;
+import com.fasterxml.jackson.databind.jsontype.PolymorphicTypeValidator;
+import com.marswars.geometry.PolygonRegion;
 import com.marswars.subsystem.MwSubsystem;
 import com.marswars.subsystem.SubsystemIoBase;
 
@@ -12,6 +15,7 @@ import frc.robot.subsystems.localization.LocalizationSubsystem;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.locks.Condition;
 
 public class GameStatesSubsystem extends MwSubsystem<GameStates, GameStatesConstants> {
 
@@ -96,7 +100,7 @@ public class GameStatesSubsystem extends MwSubsystem<GameStates, GameStatesConst
         } else {
         } // empty to not interfere with rest of state machine
           // PASS transistions
-        if (system_state_ == GameStates.PASS && (inHoldZone() || !pass_overide_)) {
+        if (system_state_ == GameStates.PASS && (inHoldZone(robotpose) || !pass_overide_)) {
             system_state_ = GameStates.HOLD;
         } else {
         } // empty to not interfere with rest of state machine
@@ -133,8 +137,14 @@ public class GameStatesSubsystem extends MwSubsystem<GameStates, GameStatesConst
     }
 
     private boolean inHoldZone(Pose2d pose) {
-        return FieldRegions.HOLD_REGIONS.contains(pose);
+        boolean in_zone = false;
+        for (int i = 0; i < FieldRegions.HOLD_REGIONS.size(); i++) {
+            in_zone = (in_zone || FieldRegions.HOLD_REGIONS.get(i).contains(pose));
+        }
+        return in_zone;
     }
+
+    // condition much be in any hold zone
 
     private boolean isTeleop() {
         return RobotState.isTeleop();
