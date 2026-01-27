@@ -1,12 +1,13 @@
 package frc.robot.lib2026;
 
+import com.marswars.geometry.AllianceFlipUtil;
 import com.marswars.geometry.PolygonRegion;
 import edu.wpi.first.math.geometry.Translation2d;
 import java.util.ArrayList;
 import java.util.List;
 
 public class FieldRegions {
-    public static PolygonRegion ALLIANCE_ZONE =
+    public static final PolygonRegion ALLIANCE_ZONE =
             new PolygonRegion(
                     new Translation2d[] {
                         new Translation2d(0, 0),
@@ -17,7 +18,7 @@ public class FieldRegions {
                     },
                     "ALLIANCE_ZONE");
 
-    public static PolygonRegion LEFT_PASS_REGION =
+    public static final PolygonRegion LEFT_PASS_REGION =
             new PolygonRegion(
                     new Translation2d[] {
                         new Translation2d(5.153, 4.021),
@@ -28,7 +29,7 @@ public class FieldRegions {
                     },
                     "LEFT_PASS_REGIONs");
 
-    public static PolygonRegion RIGHT_PASS_REGION =
+    public static final PolygonRegion RIGHT_PASS_REGION =
             new PolygonRegion(
                     new Translation2d[] {
                         new Translation2d(5.153, 0),
@@ -39,7 +40,7 @@ public class FieldRegions {
                     },
                     "RIGHT_PASS_REGION");
 
-    public static PolygonRegion HUB_REGION =
+    public static final PolygonRegion HUB_REGION =
             new PolygonRegion(
                     new Translation2d[] {
                         new Translation2d(4.031, 3.43),
@@ -49,7 +50,7 @@ public class FieldRegions {
                         new Translation2d(4.031, 3.43),
                     },
                     "HUB_REGION");
-    public static PolygonRegion OPP_HUB_REGION =
+    public static final PolygonRegion OPP_HUB_REGION =
             new PolygonRegion(
                     new Translation2d[] {
                         new Translation2d(11.355, 3.43),
@@ -60,7 +61,7 @@ public class FieldRegions {
                     },
                     "OPP_HUB_REGION");
 
-    public static PolygonRegion TOWER_REGION =
+    public static final PolygonRegion TOWER_REGION =
             new PolygonRegion(
                     new Translation2d[] {
                         new Translation2d(0, 3.148584),
@@ -71,7 +72,7 @@ public class FieldRegions {
                     },
                     "TOWER_REGION");
 
-    public static PolygonRegion OPP_TOWER_REGION =
+    public static final PolygonRegion OPP_TOWER_REGION =
             new PolygonRegion(
                     new Translation2d[] {
                         new Translation2d(15.466, 3.726688),
@@ -82,7 +83,7 @@ public class FieldRegions {
                     },
                     "OPP_TOWER_REGION");
 
-    public static PolygonRegion DEPOT_REGION =
+    public static final PolygonRegion DEPOT_REGION =
             new PolygonRegion(
                     new Translation2d[] {
                         new Translation2d(0, 5.42),
@@ -93,7 +94,7 @@ public class FieldRegions {
                     },
                     "DEPOT_REGION");
 
-    public static PolygonRegion OPP_DEPOT_REGION =
+    public static final PolygonRegion OPP_DEPOT_REGION =
             new PolygonRegion(
                     new Translation2d[] {
                         new Translation2d(15.851, 1.570736),
@@ -104,7 +105,7 @@ public class FieldRegions {
                     },
                     "OPP_DEPOT_REGION");
 
-    public static PolygonRegion HOLD_ZONE =
+    public static final PolygonRegion HOLD_ZONE =
             new PolygonRegion(
                     new Translation2d[] {
                         new Translation2d(4.015594, 0),
@@ -114,7 +115,7 @@ public class FieldRegions {
                         new Translation2d(4.015594, 0),
                     },
                     "HOLD_ZONE");
-    public static PolygonRegion NEUTRAL_ZONE =
+    public static final PolygonRegion NEUTRAL_ZONE =
             new PolygonRegion(
                     new Translation2d[] {
                         new Translation2d(4.625594, 0),
@@ -125,7 +126,7 @@ public class FieldRegions {
                     },
                     "NEUTRAL_ZONE");
 
-    public static PolygonRegion OPP_HOLD_ZONE =
+    public static final PolygonRegion OPP_HOLD_ZONE =
             new PolygonRegion(
                     new Translation2d[] {
                         new Translation2d(11.355, 0),
@@ -136,7 +137,7 @@ public class FieldRegions {
                     },
                     "OPP_HOLD_ZONE");
 
-    public static PolygonRegion OPP_ALLIANCE_ZONE =
+    public static final PolygonRegion OPP_ALLIANCE_ZONE =
             new PolygonRegion(
                     new Translation2d[] {
                         new Translation2d(12.516, 0),
@@ -147,7 +148,7 @@ public class FieldRegions {
                     },
                     "OPP_ALLIANCE_ZONE");
 
-    public static PolygonRegion OPP_ALLIANCE_HOLD_ZONE =
+    public static final PolygonRegion OPP_ALLIANCE_HOLD_ZONE =
             new PolygonRegion(
                     new Translation2d[] {
                         new Translation2d(12.301, 3.43),
@@ -161,5 +162,22 @@ public class FieldRegions {
     public static ArrayList<PolygonRegion> HOLD_REGIONS =
             new ArrayList<>(List.of(HOLD_ZONE, OPP_HOLD_ZONE, OPP_ALLIANCE_HOLD_ZONE));
 
-    public static void flipRegions() {}
+    public static void flipRegions(boolean flip) {
+        if (flip) {
+            AllianceFlipUtil.apply(DEPOT_REGION);
+            AllianceFlipUtil.apply(ALLIANCE_ZONE);
+            AllianceFlipUtil.apply(OPP_ALLIANCE_HOLD_ZONE);
+            AllianceFlipUtil.apply(OPP_ALLIANCE_ZONE);
+            AllianceFlipUtil.apply(OPP_DEPOT_REGION);
+            AllianceFlipUtil.apply(OPP_HOLD_ZONE);
+            AllianceFlipUtil.apply(OPP_HUB_REGION);
+            AllianceFlipUtil.apply(OPP_TOWER_REGION);
+            AllianceFlipUtil.apply(TOWER_REGION);
+            AllianceFlipUtil.apply(HUB_REGION);
+            AllianceFlipUtil.apply(HOLD_ZONE);
+            AllianceFlipUtil.apply(NEUTRAL_ZONE);
+            AllianceFlipUtil.apply(RIGHT_PASS_REGION);
+            AllianceFlipUtil.apply(LEFT_PASS_REGION);
+        }
+    }
 }

@@ -1,21 +1,14 @@
 package frc.robot.subsystems.gamestates;
 
-import com.marswars.geometry.PolygonRegion;
-import com.fasterxml.jackson.databind.jsontype.PolymorphicTypeValidator;
-import com.marswars.geometry.PolygonRegion;
 import com.marswars.subsystem.MwSubsystem;
 import com.marswars.subsystem.SubsystemIoBase;
-
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.RobotState;
 import frc.robot.lib2026.FieldRegions;
 import frc.robot.subsystems.gamestates.GameStatesConstants.GameStates;
 import frc.robot.subsystems.localization.LocalizationSubsystem;
-
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.locks.Condition;
 
 public class GameStatesSubsystem extends MwSubsystem<GameStates, GameStatesConstants> {
 
@@ -90,7 +83,7 @@ public class GameStatesSubsystem extends MwSubsystem<GameStates, GameStatesConst
             system_state_ = GameStates.TELEOP_CLIMB;
         } else {
         } // empty to not interfere with rest of state machine
-          // SCORE transistions
+        // SCORE transistions
         if (system_state_ == GameStates.SCORE && (passZone(robotpose) || !goal_active_)) {
             system_state_ = GameStates.HOLD;
         } else if (system_state_ == GameStates.SCORE && auto_climb_ready_) {
@@ -99,17 +92,17 @@ public class GameStatesSubsystem extends MwSubsystem<GameStates, GameStatesConst
             system_state_ = GameStates.TELEOP_CLIMB;
         } else {
         } // empty to not interfere with rest of state machine
-          // PASS transistions
+        // PASS transistions
         if (system_state_ == GameStates.PASS && (inHoldZone(robotpose) || !pass_overide_)) {
             system_state_ = GameStates.HOLD;
         } else {
         } // empty to not interfere with rest of state machine
-          // AUTO_CLIMB transitions
+        // AUTO_CLIMB transitions
         if (system_state_ == GameStates.AUTO_CLIMB && isTeleop()) {
             system_state_ = GameStates.DOWN_CLIMB;
         } else {
         } // empty to not interfere with rest of state machine
-          // DOWN_CLIMB transistions
+        // DOWN_CLIMB transistions
         if (system_state_ == GameStates.DOWN_CLIMB && downClimbFinished()) {
             system_state_ = GameStates.HOLD;
         } else {
@@ -132,8 +125,8 @@ public class GameStatesSubsystem extends MwSubsystem<GameStates, GameStatesConst
     }
 
     private boolean passZone(Pose2d pose) {
-        return FieldRegions.NEUTRAL_ZONE.contains(pose) ||
-                FieldRegions.OPP_ALLIANCE_ZONE.contains(pose);
+        return FieldRegions.NEUTRAL_ZONE.contains(pose)
+                || FieldRegions.OPP_ALLIANCE_ZONE.contains(pose);
     }
 
     private boolean inHoldZone(Pose2d pose) {
