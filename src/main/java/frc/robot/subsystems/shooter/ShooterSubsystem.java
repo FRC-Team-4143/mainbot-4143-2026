@@ -39,34 +39,32 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
 
     public ShooterSubsystem() {
         super(ShooterStates.IDLE, new ShooterConstants());
-        indexer_ =
-                new RollerMech(
-                        getSubsystemKey(),
-                        "Indexer",
-                        List.of(CONSTANTS.INDEX_MOTOR_CONFIG),
-                        CONSTANTS.INDEXER_GEAR_RATIO);
-        flywheel_ =
-                new FlywheelMech(
-                        getSubsystemKey(),
-                        List.of(
-                                CONSTANTS.SHOOTER_LEADER_MOTOR_CONFIG,
-                                CONSTANTS.SHOOTER_FOLLOWER_MOTOR_CONFIG),
-                        CONSTANTS.FLYWHEEL_GEAR_RATIO,
-                        CONSTANTS.FLYWHEEL_INERTIA,
-                        CONSTANTS.FLYWHEEL_WHEEL_RADIUS_METERS);
-        hood_ =
-                new RollerMech(
-                        getSubsystemKey(),
-                        "Hood",
-                        List.of(CONSTANTS.HOOD_MOTOR_CONFIGS),
-                        CONSTANTS.HOOD_GEAR_RATIO);
+        indexer_ = new RollerMech(
+                getSubsystemKey(),
+                "Indexer",
+                List.of(CONSTANTS.INDEX_MOTOR_CONFIG),
+                CONSTANTS.INDEXER_GEAR_RATIO);
+        flywheel_ = new FlywheelMech(
+                getSubsystemKey(),
+                List.of(
+                        CONSTANTS.SHOOTER_LEADER_MOTOR_CONFIG,
+                        CONSTANTS.SHOOTER_FOLLOWER_MOTOR_CONFIG),
+                CONSTANTS.FLYWHEEL_GEAR_RATIO,
+                CONSTANTS.FLYWHEEL_INERTIA,
+                CONSTANTS.FLYWHEEL_WHEEL_RADIUS_METERS);
+        hood_ = new RollerMech(
+                getSubsystemKey(),
+                "Hood",
+                List.of(CONSTANTS.HOOD_MOTOR_CONFIGS),
+                CONSTANTS.HOOD_GEAR_RATIO);
 
-        turret_ =
-                new TurretMech(
-                        getSubsystemKey(),
-                        List.of(CONSTANTS.TURRET_MOTOR_CONFIGS),
-                        CONSTANTS.TURRET_GEAR_RATIO,
-                        CONSTANTS.TURRET_MOI);
+        if (CONSTANTS.TURRET_ENABLED) {
+            turret_ = new TurretMech(
+                    getSubsystemKey(),
+                    List.of(CONSTANTS.TURRET_MOTOR_CONFIGS),
+                    CONSTANTS.TURRET_GEAR_RATIO,
+                    CONSTANTS.TURRET_MOI);
+        }
 
         DogLog.tunable(
                 getSubsystemKey() + "Flywheel/EffFactor",
@@ -116,21 +114,27 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
                 flywheel_.setTargetVelocity(
                         flywheel_omega_); // calculate flywheel speed from exit speed
                 indexer_.setTargetDutyCycle(0);
-                turret_.setTargetPosition(solution.heading_angle);
+                if (CONSTANTS.TURRET_ENABLED) {
+                    turret_.setTargetPosition(solution.heading_angle);
+                }
                 hood_.setTargetPosition(solution.exit_angle);
                 break;
             case DUMP:
                 flywheel_.setTargetVelocity(
                         flywheel_omega_); // calculate flywheel speed from exit speed
                 indexer_.setTargetDutyCycle(-CONSTANTS.INDEXER_DUTY_CYCLE);
-                turret_.setTargetDutyCycle(0);
+                if (CONSTANTS.TURRET_ENABLED) {
+                    turret_.setTargetDutyCycle(0);
+                }
                 hood_.setTargetPosition(0);
                 break;
             case SHOOT:
                 flywheel_.setTargetVelocity(
                         flywheel_omega_); // calculate flywheel speed from exit speed
                 indexer_.setTargetDutyCycle(CONSTANTS.INDEXER_DUTY_CYCLE);
-                turret_.setTargetPosition(solution.heading_angle);
+                if (CONSTANTS.TURRET_ENABLED) {
+                    turret_.setTargetPosition(solution.heading_angle);
+                }
                 hood_.setTargetPosition(solution.exit_angle);
                 break;
             default:
@@ -138,14 +142,18 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
                 flywheel_.setTargetVelocity(
                         flywheel_omega_); // calculate flywheel speed from exit speed
                 indexer_.setTargetDutyCycle(0);
-                turret_.setTargetPosition(0);
+                if (CONSTANTS.TURRET_ENABLED) {
+                    turret_.setTargetPosition(0);
+                }
                 hood_.setTargetPosition(0);
                 break;
             case MANUAL:
                 indexer_.setTargetDutyCycle(.8);
-                turret_.setTargetPosition(turret_.getCurrentPosition()+OI.getOperatorJoystickRightX());
-                hood_.setTargetPosition(hood_.getCurrentPosition()+OI.getOperatorJoystickRightY());
-                flywheel_.setTargetVelocity(flywheel_.getCurrentVelocity()+OI.getOperatorJoystickLeftY());
+                if (CONSTANTS.TURRET_ENABLED) {
+                    turret_.setTargetPosition(turret_.getCurrentPosition() + OI.getOperatorJoystickRightX());
+                }
+                hood_.setTargetPosition(hood_.getCurrentPosition() + OI.getOperatorJoystickRightY());
+                flywheel_.setTargetVelocity(flywheel_.getCurrentVelocity() + OI.getOperatorJoystickLeftY());
                 break;
             case PROFILE:
                 // code does NOTHING to allow for testing
@@ -164,7 +172,11 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
 
     @Override
     public List<SubsystemIoBase> getIos() {
-        return Arrays.asList(indexer_, flywheel_, hood_, turret_);
+        if (CONSTANTS.TURRET_ENABLED) {
+            return Arrays.asList(indexer_, flywheel_, hood_, turret_);
+        } else {
+            return Arrays.asList(indexer_, flywheel_, hood_);
+        }
     }
 
     @Override
@@ -174,9 +186,9 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
 
     public boolean shooterIsReady() {
         return MathUtil.isNear(
-                        flywheel_omega_,
-                        flywheel_.getCurrentVelocity(),
-                        CONSTANTS.FLYWHEEL_SPEED_TOLERANCE)
+                flywheel_omega_,
+                flywheel_.getCurrentVelocity(),
+                CONSTANTS.FLYWHEEL_SPEED_TOLERANCE)
                 && MathUtil.isNear(
                         newHeadingAngle,
                         turret_.getCurrentPosition(),
