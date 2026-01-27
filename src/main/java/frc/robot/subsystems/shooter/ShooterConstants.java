@@ -47,10 +47,7 @@ public class ShooterConstants extends MwConstants {
     public final double FLYWHEEL_GEAR_RATIO = 1.0;
     public final double FLYWHEEL_WHEEL_RADIUS_METERS = Units.inchesToMeters(3);
     public final double FLYWHEEL_MASS_KG = 2.3; // kg, approximate
-    public final double FLYWHEEL_INERTIA =
-            0.5
-                    * FLYWHEEL_MASS_KG
-                    * Math.pow(FLYWHEEL_WHEEL_RADIUS_METERS, 2.0); // kg m^2, approximate
+    public final double FLYWHEEL_INERTIA = 0.5 * FLYWHEEL_MASS_KG * Math.pow(FLYWHEEL_WHEEL_RADIUS_METERS, 2.0); // kg m^2, approximate
     public final double FLYWHEEL_EFF_FACTOR = 1.0;
     public final double FLYWHEEL_SPEED_TOLERANCE = 1.0;
     public final Slot1Configs FLYWHEEL_VELOCITY_GAINS =

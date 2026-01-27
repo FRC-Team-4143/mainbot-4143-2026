@@ -76,6 +76,7 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
 
     @Override
     public void handleStateTransition(ShooterStates wanted) {
+        Pose2d robotPose = LocalizationSubsystem.getInstance().getFieldPose();
         if (wanted == ShooterStates.SHOOT && !(system_state_ == ShooterStates.AIMING)) {
             setWantedState(ShooterStates.AIMING);
         }
@@ -83,18 +84,6 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
             setWantedState(ShooterStates.SHOOT);
         } else {
             system_state_ = wanted;
-        }
-    }
-
-    @Override
-    public void updateLogic(double timestamp) {
-        Pose2d robotPose = LocalizationSubsystem.getInstance().getFieldPose();
-        solution = CONSTANTS.SOLVER.getSolution(robotPose);
-        if (solution.valid) {
-            flywheel_omega_ =
-                    solution.velocity
-                            / CONSTANTS.FLYWHEEL_WHEEL_RADIUS_METERS
-                            * flywheel_eff_factor_;
         }
         newHeadingAngle = solution.heading_angle - robotPose.getRotation().getRadians();
         if (newHeadingAngle > CONSTANTS.MAX_TURRET_WRAP) {
@@ -108,6 +97,19 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
                 setWantedState(ShooterStates.AIMING);
             }
         }
+    }
+
+    @Override
+    public void updateLogic(double timestamp) {
+        Pose2d robotPose = LocalizationSubsystem.getInstance().getFieldPose();
+        solution = CONSTANTS.SOLVER.getSolution(robotPose);
+        if (solution.valid) {
+            flywheel_omega_ =
+                    solution.velocity
+                            / CONSTANTS.FLYWHEEL_WHEEL_RADIUS_METERS
+                            * flywheel_eff_factor_;
+        }
+        
         switch (system_state_) {
             case TRACKING:
             case AIMING:
