@@ -43,29 +43,26 @@ public class HopperSubsystem extends MwSubsystem<HopperStates, HopperConstants> 
     @Override
     public void handleStateTransition(HopperStates wanted) {
         boolean jammed = isJammed();
-        DogLog.log(getSubsystemKey()+"jammed", jammed);
+        DogLog.log(getSubsystemKey() + "jammed", jammed);
         if (jammed && (system_state_ == HopperStates.SHOOTING)) {
             system_state_ = HopperStates.UNJAMA;
+            hopper_timer_.reset();
             hopper_timer_.start();
         }
-        if (hopper_timer_.hasElapsed(0.5) && (system_state_ == HopperStates.UNJAMA)
-                || (system_state_ == HopperStates.UNJAMB)) {
+        if (hopper_timer_.hasElapsed(0.5) && ((system_state_ == HopperStates.UNJAMA)
+                || (system_state_ == HopperStates.UNJAMB))) {
             system_state_ = (system_state_ == HopperStates.UNJAMA)
                     ? HopperStates.UNJAMB
                     : HopperStates.UNJAMA;
             hopper_timer_.reset();
         }
-        if ((system_state_ == HopperStates.IDLE) && (wanted == HopperStates.UNJAMB)) {
-            system_state_ = HopperStates.UNJAMA;
-        }
-        if ((system_state_ == HopperStates.SHOOTING) && (wanted == HopperStates.UNJAMB)) {
-            system_state_ = HopperStates.UNJAMA;
-        }
         if ((system_state_ == HopperStates.UNJAMA) && (!jammed)) {
             system_state_ = HopperStates.SHOOTING;
+            hopper_timer_.stop();
         }
-        if (((system_state_ == HopperStates.UNJAMB) && (wanted == HopperStates.IDLE))) {
+        if ((system_state_ == HopperStates.UNJAMB) && (!jammed)) {
             system_state_ = HopperStates.SHOOTING;
+            hopper_timer_.stop();
         }
         if ((system_state_ == HopperStates.IDLE) && (wanted == HopperStates.SHOOTING)) {
             system_state_ = HopperStates.SHOOTING;
@@ -103,10 +100,8 @@ public class HopperSubsystem extends MwSubsystem<HopperStates, HopperConstants> 
 
     // return true if jammed, false otherwise
     public boolean isJammed() {
-        if (system_state_ == HopperStates.UNJAMB) {
-            return true;
-        }
-        boolean jamCondition_ = hopper_.getLeaderCurrent() > CONSTANTS.HOPPER_DANGER_CURRENT;
+
+        boolean jamCondition_ = Math.abs(hopper_.getLeaderCurrent()) > CONSTANTS.HOPPER_DANGER_CURRENT;
         return debouncer_.calculate(jamCondition_);
     }
 
