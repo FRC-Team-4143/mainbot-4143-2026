@@ -10,11 +10,14 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.subsystems.hopper.HopperConstants.HopperStates;
+import frc.robot.subsystems.hopper.HopperSubsystem;
+import frc.robot.subsystems.shooter.ShooterConstants.ShooterStates;
+import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.swerve.SwerveConstants;
 import frc.robot.subsystems.swerve.SwerveConstants.SwerveStates;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 import java.util.Optional;
-import org.ironmaple.simulation.SimulatedArena;
 
 public class Robot extends TimedRobot {
 
@@ -84,6 +87,7 @@ public class Robot extends TimedRobot {
         } else {
             SwerveSubsystem.getInstance().setWantedState(SwerveStates.FIELD_CENTRIC);
         }
+        ShooterSubsystem.getInstance().setWantedState(ShooterStates.MANUAL);
     }
 
     @Override
@@ -92,6 +96,8 @@ public class Robot extends TimedRobot {
     @Override
     public void testInit() {
         CommandScheduler.getInstance().cancelAll();
+        ShooterSubsystem.getInstance().setWantedState(ShooterStates.PROFILE);
+        HopperSubsystem.getInstance().setWantedState(HopperStates.PROFILE);
     }
 
     @Override
@@ -109,6 +115,6 @@ public class Robot extends TimedRobot {
     @Override
     public void simulationPeriodic() {
         // Update the physics simulation - this is CRITICAL for proper simulation data
-        SimulatedArena.getInstance().simulationPeriodic();
+        SimulatedRobotState.update();
     }
 }

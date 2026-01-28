@@ -3,38 +3,38 @@ package frc.robot.subsystems.hopper;
 import com.marswars.mechanisms.RollerMech;
 import com.marswars.subsystem.MwSubsystem;
 import com.marswars.subsystem.SubsystemIoBase;
-import frc.robot.subsystems.hopper.HopperContstants.HopperStates;
+import frc.robot.subsystems.hopper.HopperConstants.HopperStates;
 import java.util.Arrays;
 import java.util.List;
 
-public class HopperSubsytem extends MwSubsystem<HopperStates, HopperContstants> {
-    private static HopperSubsytem instance_ = null;
+public class HopperSubsystem extends MwSubsystem<HopperStates, HopperConstants> {
+    private static HopperSubsystem instance_ = null;
 
-    public static HopperSubsytem getInstance() {
+    public static HopperSubsystem getInstance() {
         if (instance_ == null) {
-            instance_ = new HopperSubsytem();
+            instance_ = new HopperSubsystem();
         }
         return instance_;
     }
 
-    private RollerMech Feeder;
-    private RollerMech Hopper;
+    private RollerMech feeder_;
+    private RollerMech indexer_;
 
-    public HopperSubsytem() {
-        super(HopperStates.IDLE, new HopperContstants());
-        Feeder =
+    public HopperSubsystem() {
+        super(HopperStates.IDLE, new HopperConstants());
+        feeder_ =
                 new RollerMech(
                         getSubsystemKey(),
                         "Feeder",
-                        List.of(CONSTANTS.FEED_MOTOR_CONFIG),
-                        CONSTANTS.FEED_GEAR_RATIO);
+                        List.of(CONSTANTS.FEEDER_MOTOR_CONFIG),
+                        CONSTANTS.FEEDER_GEAR_RATIO);
 
-        Hopper =
+        indexer_ =
                 new RollerMech(
                         getSubsystemKey(),
                         "Hopper",
-                        List.of(CONSTANTS.HOPPER_MOTOR_CONFIG),
-                        CONSTANTS.HOPPER_GEAR_RATIO);
+                        List.of(CONSTANTS.INDEXER_MOTOR_CONFIG),
+                        CONSTANTS.INDEXER_GEAR_RATIO);
     }
 
     /*
@@ -46,14 +46,14 @@ public class HopperSubsytem extends MwSubsystem<HopperStates, HopperContstants> 
     public void updateLogic(double timestamp) {
         switch (system_state_) {
             case IDLE:
-                Feeder.setTargetDutyCycle(0.0);
-                Hopper.setTargetDutyCycle(0.0);
+                feeder_.setTargetDutyCycle(0.0);
+                indexer_.setTargetDutyCycle(0.0);
                 break;
             case STIRRING:
                 break;
             case SHOOTING:
-                Feeder.setTargetDutyCycle(.5);
-                Hopper.setTargetDutyCycle(.5);
+                feeder_.setTargetDutyCycle(CONSTANTS.FEEDER_DUTY_CYCLE_SHOOT);
+                indexer_.setTargetDutyCycle(CONSTANTS.INDEXER_DUTY_CYCLE_SHOOT);
                 break;
             case PROFILE:
                 break;
@@ -63,7 +63,7 @@ public class HopperSubsytem extends MwSubsystem<HopperStates, HopperContstants> 
 
     @Override
     public List<SubsystemIoBase> getIos() {
-        return Arrays.asList(Feeder, Hopper);
+        return Arrays.asList(feeder_, indexer_);
     }
 
     @Override

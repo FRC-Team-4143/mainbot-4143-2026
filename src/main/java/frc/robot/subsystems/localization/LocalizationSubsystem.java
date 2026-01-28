@@ -8,6 +8,7 @@ import dev.doglog.DogLog;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import frc.robot.Robot;
@@ -15,7 +16,6 @@ import frc.robot.subsystems.localization.LocalizationConstants.LocalizationState
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 import java.util.Arrays;
 import java.util.List;
-import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
 
 public class LocalizationSubsystem extends MwSubsystem<LocalizationStates, LocalizationConstants> {
@@ -104,9 +104,6 @@ public class LocalizationSubsystem extends MwSubsystem<LocalizationStates, Local
                 break;
         }
 
-        if (IS_SIM) {
-            simulateArena();
-        }
         DogLog.log(getSubsystemKey() + "SmoothPose", getSmoothPose());
         DogLog.log(getSubsystemKey() + "FieldPose", getFieldPose());
     }
@@ -130,15 +127,8 @@ public class LocalizationSubsystem extends MwSubsystem<LocalizationStates, Local
         return field_pose_estimator_.getEstimatedPosition();
     }
 
-    // Private Helper Methods
-
-    /** Simulate the Arena and log game pieces */
-    private void simulateArena() {
-        DogLog.log(
-                getSubsystemKey() + "FieldSimulation/Fuel",
-                SimulatedArena.getInstance().getGamePiecesArrayByType("Fuel"));
-        DogLog.log(
-                getSubsystemKey() + "FieldSimulation/RobotPose",
-                swerve_sim_.getSimulatedDriveTrainPose());
+    public ChassisSpeeds getChassisSpeedsFieldRelative() {
+        return ChassisSpeeds.fromRobotRelativeSpeeds(
+                SwerveSubsystem.getInstance().getChassisSpeeds(), getFieldPose().getRotation());
     }
 }
