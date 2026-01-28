@@ -75,7 +75,7 @@ public class GameStatesSubsystem extends MwSubsystem<GameStates, GameStatesConst
         // HOLD transitions
         if (system_state_ == GameStates.HOLD && inAllianceZone(robotpose) && goal_active_) {
             system_state_ = GameStates.SCORE;
-        } else if (system_state_ == GameStates.HOLD && (passZone(robotpose) || pass_overide_)) {
+        } else if (system_state_ == GameStates.HOLD && (isPassZone(robotpose) || pass_overide_)) {
             system_state_ = GameStates.PASS;
         } else if (system_state_ == GameStates.HOLD && auto_climb_ready_) {
             system_state_ = GameStates.AUTO_CLIMB;
@@ -84,7 +84,7 @@ public class GameStatesSubsystem extends MwSubsystem<GameStates, GameStatesConst
         } else {
         } // empty to not interfere with rest of state machine
         // SCORE transistions
-        if (system_state_ == GameStates.SCORE && (passZone(robotpose) || !goal_active_)) {
+        if (system_state_ == GameStates.SCORE && (isPassZone(robotpose) || !goal_active_)) {
             system_state_ = GameStates.HOLD;
         } else if (system_state_ == GameStates.SCORE && auto_climb_ready_) {
             system_state_ = GameStates.AUTO_CLIMB;
@@ -98,12 +98,12 @@ public class GameStatesSubsystem extends MwSubsystem<GameStates, GameStatesConst
         } else {
         } // empty to not interfere with rest of state machine
         // AUTO_CLIMB transitions
-        if (system_state_ == GameStates.AUTO_CLIMB && isTeleop()) {
+        if (system_state_ == GameStates.AUTO_CLIMB && RobotState.isTeleop()) {
             system_state_ = GameStates.DOWN_CLIMB;
         } else {
         } // empty to not interfere with rest of state machine
         // DOWN_CLIMB transistions
-        if (system_state_ == GameStates.DOWN_CLIMB && downClimbFinished()) {
+        if (system_state_ == GameStates.DOWN_CLIMB && isDownClimbFinished()) {
             system_state_ = GameStates.HOLD;
         } else {
         } // empty to not interfere with rest of state machine
@@ -124,7 +124,7 @@ public class GameStatesSubsystem extends MwSubsystem<GameStates, GameStatesConst
         return FieldRegions.ALLIANCE_ZONE.contains(pose);
     }
 
-    private boolean passZone(Pose2d pose) {
+    private boolean isPassZone(Pose2d pose) {
         return FieldRegions.NEUTRAL_ZONE.contains(pose)
                 || FieldRegions.OPP_ALLIANCE_ZONE.contains(pose);
     }
@@ -139,11 +139,7 @@ public class GameStatesSubsystem extends MwSubsystem<GameStates, GameStatesConst
 
     // condition much be in any hold zone
 
-    private boolean isTeleop() {
-        return RobotState.isTeleop();
-    }
-
-    private boolean downClimbFinished() {
+    private boolean isDownClimbFinished() {
         return false;
     }
 }

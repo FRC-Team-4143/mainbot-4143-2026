@@ -27,7 +27,7 @@ public class FieldRegions {
                         new Translation2d(16.513, 4.021),
                         new Translation2d(5.153, 4.021),
                     },
-                    "LEFT_PASS_REGIONs");
+                    "LEFT_PASS_REGION");
 
     public static final PolygonRegion RIGHT_PASS_REGION =
             new PolygonRegion(
