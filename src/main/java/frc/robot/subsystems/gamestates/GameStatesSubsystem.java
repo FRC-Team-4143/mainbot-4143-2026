@@ -7,6 +7,9 @@ import edu.wpi.first.wpilibj.RobotState;
 import frc.robot.lib2026.FieldRegions;
 import frc.robot.subsystems.gamestates.GameStatesConstants.GameStates;
 import frc.robot.subsystems.localization.LocalizationSubsystem;
+import frc.robot.subsystems.shooter.ShooterSubsystem;
+import frc.robot.subsystems.shooter.ShooterConstants.ShooterStates;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,6 +28,21 @@ public class GameStatesSubsystem extends MwSubsystem<GameStates, GameStatesConst
 
     // state machine transtions (incomplete)
     public void updateLogic(double timestamp) {
+        
+        //After high arc editing capabilities are added to MWLib, adjust the method in shooter subsystem then add here.
+
+        if(FieldRegions.LEFT_PASS_REGION.contains(LocalizationSubsystem.getInstance().getFieldPose())){
+            ShooterSubsystem.getInstance().setTarget(CONSTANTS.LEFT_PASS_TRANSLATION);
+        }
+        else if(FieldRegions.RIGHT_PASS_REGION.contains(LocalizationSubsystem.getInstance().getFieldPose())){
+            ShooterSubsystem.getInstance().setTarget(CONSTANTS.RIGHT_PASS_TRANSLATION);
+        }
+        else if(FieldRegions.ALLIANCE_ZONE.contains(LocalizationSubsystem.getInstance().getFieldPose())){
+            ShooterSubsystem.getInstance().setTarget(CONSTANTS.HUB_TRANSLATION);
+        }
+        else if(FieldRegions.HOLD_REGIONS.contains(LocalizationSubsystem.getInstance().getFieldPose())){
+            ShooterSubsystem.getInstance().setWantedState(ShooterStates.AIMING);
+        }
         switch (system_state_) {
             case HOLD:
                 // shooter innactive

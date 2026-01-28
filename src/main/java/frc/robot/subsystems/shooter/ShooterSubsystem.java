@@ -10,8 +10,10 @@ import dev.doglog.DogLog;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import frc.robot.OI;
+import frc.robot.lib2026.FieldRegions;
 import frc.robot.subsystems.localization.LocalizationSubsystem;
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterStates;
 import java.util.Arrays;
@@ -209,5 +211,11 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
                         CONSTANTS.HOOD_ANGLE_TOLERANCE);
         }
         
+    }
+    public void setTarget(Translation3d target){
+        CONSTANTS.SOLVER.setTarget(target);
+    }
+    public void setHighArc(boolean highArc){
+        //CONSTANTS.SOLVER.setHighArc(highArc) - Not implemented in MWLib as of typing this
     }
 }
