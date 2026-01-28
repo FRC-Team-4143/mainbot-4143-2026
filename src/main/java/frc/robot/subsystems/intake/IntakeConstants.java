@@ -8,10 +8,9 @@ import com.marswars.util.FxMotorConfig.FxMotorType;
 public class IntakeConstants extends MwConstants {
 
     public enum IntakeStates {
-        PARK,
-        UNDEPLOYED,
+        CLOSED,
         DEPLOYED,
-        ACTIVATED;
+        ROLLING;
     }
 
     // Intake Configs
@@ -21,7 +20,7 @@ public class IntakeConstants extends MwConstants {
     public final FxMotorConfig INTAKE_MOTOR_CONFIG = new FxMotorConfig();
 
     // Arm Configs
-    public final int ARMMOTOR_ID = 20; // Place holder
+    public final int ARMMOTOR_ID = 21; // Place holder
     public final boolean ARMMOTOR_INVERTED = false; // Place Holder
     public final double ARM_GEAR_RATIO = 1.0; // Place Holder
     public final FxMotorConfig ARM_MOTOR_CONFIG = new FxMotorConfig();
@@ -37,5 +36,7 @@ public class IntakeConstants extends MwConstants {
         ARM_MOTOR_CONFIG.motor_type = FxMotorType.FALCON500; // placeholder
         ARM_MOTOR_CONFIG.canbus_name = "CANivore"; // placeholder
         ARM_MOTOR_CONFIG.config = new TalonFXConfiguration();
+        ARM_MOTOR_CONFIG.config.Slot0.kP = 5.0;
+        
     }
 }

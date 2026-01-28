@@ -23,7 +23,7 @@ public class IntakeSubsystem extends MwSubsystem<IntakeStates, IntakeConstants> 
     private RollerMech armer_;
 
     public IntakeSubsystem() {
-        super(IntakeStates.PARK, new IntakeConstants());
+        super(IntakeStates.CLOSED, new IntakeConstants());
         intaker_ = new RollerMech(
                 getSubsystemKey(),
                 "Intaker",
@@ -40,45 +40,46 @@ public class IntakeSubsystem extends MwSubsystem<IntakeStates, IntakeConstants> 
     @Override
     public void updateLogic(double timestamp) { // all placeholders right now
         switch (system_state_) {
-            case PARK:
-                intaker_.setTargetPosition(0.0);
-                armer_.setTargetPosition(0.0);
-                break;
-            case UNDEPLOYED:
-                intaker_.setTargetPosition(0.0);
+            case CLOSED:
+                intaker_.setTargetDutyCycle(0.0);
                 armer_.setTargetPosition(0.0);
                 break;
             case DEPLOYED:
-                intaker_.setTargetPosition(0.0);
+                intaker_.setTargetDutyCycle(0.0);
                 armer_.setTargetPosition(0.5);
                 break;
-            case ACTIVATED:
-                intaker_.setTargetPosition(0.5);
-                armer_.setTargetPosition(0.0);
+            case ROLLING:
+                intaker_.setTargetDutyCycle(0.5);
+                armer_.setTargetPosition(0.5);
                 break;
 
         }
     }
 
-    protected void handleStateTransistion(IntakeStates wantedState) {
-        if ((system_state_ == IntakeStates.ACTIVATED)
-                && ((wantedState == IntakeStates.UNDEPLOYED) || (wantedState == IntakeStates.PARK))) {
+    protected void handleStateTransition(IntakeStates wantedState) {
+        if ((system_state_ == IntakeStates.CLOSED) && (wantedState == IntakeStates.ROLLING)) {
             system_state_ = IntakeStates.DEPLOYED;
-        } else if ((system_state_ == IntakeStates.UNDEPLOYED) && (wantedState == IntakeStates.ACTIVATED)) {
+        }
+        else if ((system_state_ == IntakeStates.ROLLING) && (wantedState == IntakeStates.CLOSED)) {
             system_state_ = IntakeStates.DEPLOYED;
-        } else if ((system_state_ == IntakeStates.PARK)
-                && ((wantedState == IntakeStates.UNDEPLOYED) || (wantedState == IntakeStates.ACTIVATED))) {
+        }
+        else if ((system_state_ == IntakeStates.CLOSED) && (wantedState == IntakeStates.DEPLOYED)) {
             system_state_ = IntakeStates.DEPLOYED;
-        } else if ((system_state_ == IntakeStates.DEPLOYED) && (wantedState == IntakeStates.PARK)) {
-            system_state_ = IntakeStates.UNDEPLOYED;
-        } else {
-            system_state_ = wantedState;
+        }
+        else if ((system_state_ == IntakeStates.DEPLOYED) && (wantedState == IntakeStates.CLOSED)) {
+            system_state_ = IntakeStates.CLOSED;
+        }
+        else if ((system_state_ == IntakeStates.DEPLOYED) && (wantedState == IntakeStates.ROLLING)) {
+            system_state_ = IntakeStates.ROLLING;
+        }
+        else if ((system_state_ == IntakeStates.ROLLING) && (wantedState == IntakeStates.DEPLOYED)) {
+            system_state_ = IntakeStates.DEPLOYED;
         }
     }
 
     @Override
     public void reset() {
-        system_state_ = IntakeStates.PARK;
+        system_state_ = IntakeStates.CLOSED;
     }
 
     @Override

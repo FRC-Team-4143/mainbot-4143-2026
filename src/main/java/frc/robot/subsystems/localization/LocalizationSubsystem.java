@@ -42,15 +42,12 @@ public class LocalizationSubsystem extends MwSubsystem<LocalizationStates, Local
 
         SwerveDriveKinematics kinematics = SwerveSubsystem.getInstance().getKinematics();
         Rotation2d gyro_angle = SwerveSubsystem.getInstance().getGyroRotation();
-        SwerveModulePosition[] module_positions =
-                SwerveSubsystem.getInstance().getModulePositions();
+        SwerveModulePosition[] module_positions = SwerveSubsystem.getInstance().getModulePositions();
 
-        smooth_pose_estimator_ =
-                new SwerveDrivePoseEstimator(
-                        kinematics, gyro_angle, module_positions, CONSTANTS.START_POSE);
-        field_pose_estimator_ =
-                new SwerveDrivePoseEstimator(
-                        kinematics, gyro_angle, module_positions, CONSTANTS.START_POSE);
+        smooth_pose_estimator_ = new SwerveDrivePoseEstimator(
+                kinematics, gyro_angle, module_positions, CONSTANTS.START_POSE);
+        field_pose_estimator_ = new SwerveDrivePoseEstimator(
+                kinematics, gyro_angle, module_positions, CONSTANTS.START_POSE);
 
         if (IS_SIM) {
             swerve_sim_ = SwerveSubsystem.getInstance().getSwerveSimulation();
@@ -94,8 +91,7 @@ public class LocalizationSubsystem extends MwSubsystem<LocalizationStates, Local
                 if (IS_SIM && swerve_sim_ != null) {
                     Pose2d simPose = swerve_sim_.getSimulatedDriveTrainPose();
                     Rotation2d gyroRotation = SwerveSubsystem.getInstance().getGyroRotation();
-                    SwerveModulePosition[] modulePositions =
-                            SwerveSubsystem.getInstance().getModulePositions();
+                    SwerveModulePosition[] modulePositions = SwerveSubsystem.getInstance().getModulePositions();
 
                     // Reset both pose estimators to the simulation pose
                     smooth_pose_estimator_.resetPosition(gyroRotation, modulePositions, simPose);

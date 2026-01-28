@@ -12,6 +12,8 @@ import frc.robot.subsystems.shooter.ShooterConstants.ShooterStates;
 import frc.robot.subsystems.hopper.HopperSubsystem;
 import frc.robot.subsystems.hopper.HopperConstants.HopperStates;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
+import frc.robot.subsystems.intake.IntakeSubsystem;
+import frc.robot.subsystems.intake.IntakeConstants.IntakeStates;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 import java.util.Optional;
 
@@ -38,6 +40,16 @@ public abstract class OI {
         operator_controller_.rightBumper().whileTrue(Commands.startEnd(
             () -> HopperSubsystem.getInstance().setWantedState(HopperStates.SHOOTING),
             () -> HopperSubsystem.getInstance().setWantedState(HopperStates.IDLE)));
+        // driver_controller_.a().whileTrue(Commands.startEnd(() ->
+        // Superstructure.getInstance().requestMove(Targets.L3), () ->
+        // Superstructure.getInstance().requestMove(Targets.CORAL_INTAKE)));
+
+        driver_controller_.x()
+                .onTrue(Commands.runOnce(() -> IntakeSubsystem.getInstance().setWantedState(IntakeStates.DEPLOYED)));
+        driver_controller_.b()
+                .onTrue(Commands.runOnce(() -> IntakeSubsystem.getInstance().setWantedState(IntakeStates.CLOSED)));
+        driver_controller_.y()
+                .onTrue(Commands.runOnce(() -> IntakeSubsystem.getInstance().setWantedState(IntakeStates.ROLLING)));
     }
 
     /**
@@ -74,7 +86,8 @@ public abstract class OI {
     }
 
     /**
-     * @return driver controller joystick pov angle in degs. empty if nothing is pressed
+     * @return driver controller joystick pov angle in degrees, empty if nothing is
+     *         pressed
      */
     public static Optional<Rotation2d> getDriverJoystickPOV() {
         int pov = driver_controller_.getHID().getPOV();
