@@ -83,18 +83,21 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
         } else {
             system_state_ = wanted;
         }
-        newHeadingAngle = solution.heading_angle - robotPose.getRotation().getRadians();
-        if (newHeadingAngle > CONSTANTS.MAX_TURRET_WRAP) {
-            newHeadingAngle -= 2 * Math.PI;
-            if (system_state_ == ShooterStates.SHOOT) {
-                setWantedState(ShooterStates.AIMING);
-            }
-        } else if (newHeadingAngle < -CONSTANTS.MAX_TURRET_WRAP) {
-            newHeadingAngle += 2 * Math.PI;
-            if (system_state_ == ShooterStates.SHOOT) {
-                setWantedState(ShooterStates.AIMING);
+        if(CONSTANTS.TURRET_ENABLED){
+            newHeadingAngle = solution.heading_angle - robotPose.getRotation().getRadians();
+            if (newHeadingAngle > CONSTANTS.MAX_TURRET_WRAP) {
+                newHeadingAngle -= 2 * Math.PI;
+                if (system_state_ == ShooterStates.SHOOT) {
+                    setWantedState(ShooterStates.AIMING);
+                }
+            } else if (newHeadingAngle < -CONSTANTS.MAX_TURRET_WRAP) {
+                newHeadingAngle += 2 * Math.PI;
+                if (system_state_ == ShooterStates.SHOOT) {
+                    setWantedState(ShooterStates.AIMING);
+                }
             }
         }
+        
     }
 
     @Override
@@ -111,8 +114,7 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
         switch (system_state_) {
             case TRACKING:
             case AIMING:
-                flywheel_.setTargetVelocity(
-                        flywheel_omega_); // calculate flywheel speed from exit speed
+                flywheel_.setTargetVelocity(flywheel_omega_); // calculate flywheel speed from exit speed
                 indexer_.setTargetDutyCycle(0);
                 if (CONSTANTS.TURRET_ENABLED) {
                     turret_.setTargetPosition(solution.heading_angle);
@@ -120,8 +122,7 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
                 hood_.setTargetPosition(solution.exit_angle);
                 break;
             case DUMP:
-                flywheel_.setTargetVelocity(
-                        flywheel_omega_); // calculate flywheel speed from exit speed
+                flywheel_.setTargetVelocity(flywheel_omega_); // calculate flywheel speed from exit speed
                 indexer_.setTargetDutyCycle(-CONSTANTS.INDEXER_DUTY_CYCLE);
                 if (CONSTANTS.TURRET_ENABLED) {
                     turret_.setTargetDutyCycle(0);
@@ -129,8 +130,7 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
                 hood_.setTargetPosition(0);
                 break;
             case SHOOT:
-                flywheel_.setTargetVelocity(
-                        flywheel_omega_); // calculate flywheel speed from exit speed
+                flywheel_.setTargetVelocity(flywheel_omega_); // calculate flywheel speed from exit speed
                 indexer_.setTargetDutyCycle(CONSTANTS.INDEXER_DUTY_CYCLE);
                 if (CONSTANTS.TURRET_ENABLED) {
                     turret_.setTargetPosition(solution.heading_angle);
@@ -139,8 +139,7 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
                 break;
             default:
             case IDLE:
-                flywheel_.setTargetVelocity(
-                        flywheel_omega_); // calculate flywheel speed from exit speed
+                flywheel_.setTargetVelocity(flywheel_omega_); // calculate flywheel speed from exit speed
                 indexer_.setTargetDutyCycle(0);
                 if (CONSTANTS.TURRET_ENABLED) {
                     turret_.setTargetPosition(0);
@@ -185,7 +184,8 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
     }
 
     public boolean shooterIsReady() {
-        return MathUtil.isNear(
+        if(CONSTANTS.TURRET_ENABLED){
+            return MathUtil.isNear(
                 flywheel_omega_,
                 flywheel_.getCurrentVelocity(),
                 CONSTANTS.FLYWHEEL_SPEED_TOLERANCE)
@@ -197,5 +197,17 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
                         solution.exit_angle,
                         hood_.getCurrentPosition(),
                         CONSTANTS.HOOD_ANGLE_TOLERANCE);
+        }
+        else{
+            return MathUtil.isNear(
+                flywheel_omega_,
+                flywheel_.getCurrentVelocity(),
+                CONSTANTS.FLYWHEEL_SPEED_TOLERANCE)
+                && MathUtil.isNear(
+                        solution.exit_angle,
+                        hood_.getCurrentPosition(),
+                        CONSTANTS.HOOD_ANGLE_TOLERANCE);
+        }
+        
     }
 }
