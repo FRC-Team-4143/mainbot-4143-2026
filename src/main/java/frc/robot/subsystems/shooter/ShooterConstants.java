@@ -13,34 +13,34 @@ import edu.wpi.first.math.util.Units;
 
 public class ShooterConstants extends MwConstants {
 
-    // =============================================================================
-    // ENUMS AND STATE DEFINITIONS
-    // =============================================================================
+        // =============================================================================
+        // ENUMS AND STATE DEFINITIONS
+        // =============================================================================
 
-    public enum ShooterStates {
-        AIMING,
-        DUMP,
-        SHOOT,
-        IDLE,
-        TRACKING,
-        MANUAL,
-        PROFILE
-    }
+        public enum ShooterStates {
+                AIMING,
+                DUMP,
+                SHOOT,
+                IDLE,
+                TRACKING,
+                MANUAL,
+                PROFILE
+        }
 
-    // =============================================================================
-    // CAN IDS AND HARDWARE CONFIGURATION
-    // =============================================================================
+        // =============================================================================
+        // CAN IDS AND HARDWARE CONFIGURATION
+        // =============================================================================
 
-    // Motor CAN IDs
-    public final int SHOOTER_LEADER_ID = 10;
-    public final int SHOOTER_FOLLOWER_ID = 11;
-    public final int INDEXER_ID = 12;
-    public final int HOOD_ID = 13;
-    public final int TURRET_ID = 15;
+        // Motor CAN IDs
+        public final int SHOOTER_LEADER_ID = 10;
+        public final int SHOOTER_FOLLOWER_ID = 11;
+        public final int INDEXER_ID = 12;
+        public final int HOOD_ID = 13;
+        public final int TURRET_ID = 15;
 
-    // =============================================================================
-    // MECHANICAL CONSTANTS - FLYWHEEL
-    // =============================================================================
+        // =============================================================================
+        // MECHANICAL CONSTANTS - FLYWHEEL
+        // =============================================================================
 
     public final boolean FLYWHEEL_LEADER_INVERTED = true;
     public final boolean FLYWHEEL_FOLLOWER_INVERTED = false;
@@ -53,119 +53,118 @@ public class ShooterConstants extends MwConstants {
     public final Slot1Configs FLYWHEEL_VELOCITY_GAINS =
             new Slot1Configs().withKP(0.5).withKV(0.117);
 
-    // =============================================================================
-    // MECHANICAL CONSTANTS - INDEXER
-    // =============================================================================
+        // =============================================================================
+        // MECHANICAL CONSTANTS - INDEXER
+        // =============================================================================
 
-    public final boolean INDEXER_INVERTED = false;
-    public final double INDEXER_GEAR_RATIO = 1.0;
+        public final boolean INDEXER_INVERTED = false;
+        public final double INDEXER_GEAR_RATIO = 1.0;
 
-    // =============================================================================
-    // MECHANICAL CONSTANTS - HOOD
-    // =============================================================================
+        // =============================================================================
+        // MECHANICAL CONSTANTS - HOOD
+        // =============================================================================
 
-    public final boolean HOOD_INVERTED = false;
-    public final double HOOD_GEAR_RATIO = 1.0;
-    public final double HOOD_MIN_ANGLE = 0;
-    public final double HOOD_MAX_ANGLE = 0;
-    public final double HOOD_ANGLE_TOLERANCE = 1.0;
-    public final Slot0Configs HOOD_POSITION_GAINS = new Slot0Configs().withKP(30).withKD(0.15);
+        public final boolean HOOD_INVERTED = false;
+        public final double HOOD_GEAR_RATIO = 1.0;
+        public final double HOOD_MIN_ANGLE = 0;
+        public final double HOOD_MAX_ANGLE = 0;
+        public final double HOOD_ANGLE_TOLERANCE = 1.0;
+        public final Slot0Configs HOOD_POSITION_GAINS = new Slot0Configs().withKP(30).withKD(0.15);
 
-    // =============================================================================
-    // MECHANICAL CONSTANTS - TURRET (needs actual values)
-    // =============================================================================
+        // =============================================================================
+        // MECHANICAL CONSTANTS - TURRET (needs actual values)
+        // =============================================================================
 
-    public final double TURRET_GEAR_RATIO = 1.0;
-    public final double TURRET_MOI = 0.001;
-    public final double TURRET_ANGLE_TOLERANCE = 1.0;
-    public final Slot0Configs TURRET_POSITION_GAINS =
-        new Slot0Configs().withKP(10);
+        public final double TURRET_GEAR_RATIO = 1.0;
+        public final double TURRET_MOI = 0.001;
+        public final double TURRET_ANGLE_TOLERANCE = 1.0;
+        public final Slot0Configs TURRET_POSITION_GAINS = new Slot0Configs().withKP(10);
 
-    // =============================================================================
-    // CONTROL AND OPERATIONAL CONSTANTS
-    // =============================================================================
+        // =============================================================================
+        // CONTROL AND OPERATIONAL CONSTANTS
+        // =============================================================================
 
-    public final double INDEXER_DUTY_CYCLE = 0.3; // 30% power for indexing
-    public final Translation3d HUB_TRANSLATION =
-            new Translation3d(4.611624, 4.021328, 1.397); // where the hub is
-    public final double LAUNCH_HEIGHT = 0.613;
-    public final LaunchTrajectory SOLVER =
-            new LaunchTrajectory(HUB_TRANSLATION, LAUNCH_HEIGHT, true);
-    public final double MAX_TURRET_WRAP = Units.degreesToRadians(190);
+        public final double INDEXER_DUTY_CYCLE = 0.3; // 30% power for indexing
+        public final Translation3d HUB_TRANSLATION = new Translation3d(4.611624, 4.021328, 1.397); // where the hub is
+        public final double LAUNCH_HEIGHT = 0.613;
+        public final LaunchTrajectory SOLVER = new LaunchTrajectory(HUB_TRANSLATION, LAUNCH_HEIGHT, true);
+        public final double MAX_TURRET_WRAP = Units.degreesToRadians(190);
 
-    // =============================================================================
-    // MOTOR CONFIGURATION OBJECTS
-    // =============================================================================
+        // =============================================================================
+        // MOTOR CONFIGURATION OBJECTS
+        // =============================================================================
 
-    public final FxMotorConfig SHOOTER_LEADER_MOTOR_CONFIG = new FxMotorConfig();
-    public final FxMotorConfig SHOOTER_FOLLOWER_MOTOR_CONFIG = new FxMotorConfig();
-    public final FxMotorConfig INDEX_MOTOR_CONFIG = new FxMotorConfig();
-    public final FxMotorConfig HOOD_MOTOR_CONFIGS = new FxMotorConfig();
-    public final FxMotorConfig TURRET_MOTOR_CONFIGS = new FxMotorConfig();
+        public final FxMotorConfig SHOOTER_LEADER_MOTOR_CONFIG = new FxMotorConfig();
+        public final FxMotorConfig SHOOTER_FOLLOWER_MOTOR_CONFIG = new FxMotorConfig();
+        public final FxMotorConfig INDEX_MOTOR_CONFIG = new FxMotorConfig();
+        public final FxMotorConfig HOOD_MOTOR_CONFIGS = new FxMotorConfig();
+        public final FxMotorConfig TURRET_MOTOR_CONFIGS = new FxMotorConfig();
+        public final boolean TURRET_ENABLED = true;
 
-    // =============================================================================
-    // CONSTRUCTOR - MOTOR CONFIGURATION INITIALIZATION
-    // =============================================================================
+        // =============================================================================
+        // CONSTRUCTOR - MOTOR CONFIGURATION INITIALIZATION
+        // =============================================================================
 
-    public ShooterConstants() {
-        // Configure Indexer Motor
-        INDEX_MOTOR_CONFIG.can_id = INDEXER_ID;
-        INDEX_MOTOR_CONFIG.motor_type = FxMotorType.X44;
-        INDEX_MOTOR_CONFIG.canbus_name = "CANivore";
-        INDEX_MOTOR_CONFIG.config = new TalonFXConfiguration();
+        public ShooterConstants() {
+                // Configure Indexer Motor
+                INDEX_MOTOR_CONFIG.can_id = INDEXER_ID;
+                INDEX_MOTOR_CONFIG.motor_type = FxMotorType.X44;
+                INDEX_MOTOR_CONFIG.canbus_name = "CANivore";
+                INDEX_MOTOR_CONFIG.config = new TalonFXConfiguration();
 
-        // Configure Shooter Leader Motor
-        SHOOTER_LEADER_MOTOR_CONFIG.can_id = SHOOTER_LEADER_ID;
-        SHOOTER_LEADER_MOTOR_CONFIG.motor_type = FxMotorType.X60;
-        SHOOTER_LEADER_MOTOR_CONFIG.canbus_name = "CANivore";
-        SHOOTER_LEADER_MOTOR_CONFIG.config = new TalonFXConfiguration();
-        SHOOTER_LEADER_MOTOR_CONFIG.config.MotorOutput.Inverted =
-                PhoenixUtil.toInvertedValue(FLYWHEEL_LEADER_INVERTED);
-        SHOOTER_LEADER_MOTOR_CONFIG.config.Slot1 = FLYWHEEL_VELOCITY_GAINS;
+                // Configure Shooter Leader Motor
+                SHOOTER_LEADER_MOTOR_CONFIG.can_id = SHOOTER_LEADER_ID;
+                SHOOTER_LEADER_MOTOR_CONFIG.motor_type = FxMotorType.X60;
+                SHOOTER_LEADER_MOTOR_CONFIG.canbus_name = "CANivore";
+                SHOOTER_LEADER_MOTOR_CONFIG.config = new TalonFXConfiguration();
+                SHOOTER_LEADER_MOTOR_CONFIG.config.MotorOutput.Inverted = PhoenixUtil
+                                .toInvertedValue(FLYWHEEL_LEADER_INVERTED);
+                SHOOTER_LEADER_MOTOR_CONFIG.config.Slot1 = FLYWHEEL_VELOCITY_GAINS;
 
-        // Configure Shooter Follower Motor
-        SHOOTER_FOLLOWER_MOTOR_CONFIG.can_id = SHOOTER_FOLLOWER_ID;
-        SHOOTER_FOLLOWER_MOTOR_CONFIG.motor_type = FxMotorType.X60;
-        SHOOTER_FOLLOWER_MOTOR_CONFIG.canbus_name = "CANivore";
-        SHOOTER_FOLLOWER_MOTOR_CONFIG.config = new TalonFXConfiguration();
-        SHOOTER_FOLLOWER_MOTOR_CONFIG.config.MotorOutput.Inverted =
-                PhoenixUtil.toInvertedValue(FLYWHEEL_FOLLOWER_INVERTED);
+                // Configure Shooter Follower Motor
+                SHOOTER_FOLLOWER_MOTOR_CONFIG.can_id = SHOOTER_FOLLOWER_ID;
+                SHOOTER_FOLLOWER_MOTOR_CONFIG.motor_type = FxMotorType.X60;
+                SHOOTER_FOLLOWER_MOTOR_CONFIG.canbus_name = "CANivore";
+                SHOOTER_FOLLOWER_MOTOR_CONFIG.config = new TalonFXConfiguration();
+                SHOOTER_FOLLOWER_MOTOR_CONFIG.config.MotorOutput.Inverted = PhoenixUtil
+                                .toInvertedValue(FLYWHEEL_FOLLOWER_INVERTED);
 
-        // Configure Hood Motor
-        HOOD_MOTOR_CONFIGS.can_id = HOOD_ID;
-        HOOD_MOTOR_CONFIGS.motor_type = FxMotorType.X60;
-        HOOD_MOTOR_CONFIGS.canbus_name = "CANivore";
-        HOOD_MOTOR_CONFIGS.config = new TalonFXConfiguration();
-        HOOD_MOTOR_CONFIGS.config.Slot0 = HOOD_POSITION_GAINS;
+                // Configure Hood Motor
+                HOOD_MOTOR_CONFIGS.can_id = HOOD_ID;
+                HOOD_MOTOR_CONFIGS.motor_type = FxMotorType.X60;
+                HOOD_MOTOR_CONFIGS.canbus_name = "CANivore";
+                HOOD_MOTOR_CONFIGS.config = new TalonFXConfiguration();
+                HOOD_MOTOR_CONFIGS.config.Slot0 = HOOD_POSITION_GAINS;
 
-        // Configure Turret Motor
-        TURRET_MOTOR_CONFIGS.can_id = TURRET_ID;
-        TURRET_MOTOR_CONFIGS.motor_type = FxMotorType.X44;
-        TURRET_MOTOR_CONFIGS.canbus_name = "CANivore";
-        TURRET_MOTOR_CONFIGS.config = new TalonFXConfiguration();
-        TURRET_MOTOR_CONFIGS.config.Slot0 = TURRET_POSITION_GAINS;
+                // Configure Turret Motor
+                TURRET_MOTOR_CONFIGS.can_id = TURRET_ID;
+                TURRET_MOTOR_CONFIGS.motor_type = FxMotorType.X44;
+                TURRET_MOTOR_CONFIGS.canbus_name = "CANivore";
+                TURRET_MOTOR_CONFIGS.config = new TalonFXConfiguration();
+                TURRET_MOTOR_CONFIGS.config.Slot0 = TURRET_POSITION_GAINS;
 
-        // Solver Map Population
-        SOLVER.addVelocityPoint(0.0, 6.283);
-        SOLVER.addVelocityPoint(0.5, 6.382);
-        SOLVER.addVelocityPoint(1.0, 6.635);
-        SOLVER.addVelocityPoint(1.5, 6.977);
-        SOLVER.addVelocityPoint(2.0, 7.367);
-        SOLVER.addVelocityPoint(2.5, 7.764);
-        SOLVER.addVelocityPoint(3.0, 8.160);
-        SOLVER.addVelocityPoint(3.5, 8.544);
-        SOLVER.addVelocityPoint(4.0, 8.928);
-        SOLVER.addVelocityPoint(4.5, 9.288);
-        SOLVER.addVelocityPoint(5.0, 9.648);
-        SOLVER.addVelocityPoint(5.5, 9.996);
-        SOLVER.addVelocityPoint(6.0, 10.332);
-        SOLVER.addVelocityPoint(6.5, 10.656);
-        SOLVER.addVelocityPoint(7.0, 10.980);
-        SOLVER.addVelocityPoint(7.5, 11.292);
-        SOLVER.addVelocityPoint(8.0, 11.592);
-        SOLVER.addVelocityPoint(8.5, 11.892);
-        SOLVER.addVelocityPoint(9.0, 12.180);
-        SOLVER.addVelocityPoint(9.5, 12.456);
-        SOLVER.addVelocityPoint(10.0, 12.744);
-    }
+                // Solver Map Population
+                SOLVER.addVelocityPoint(0.0, 6.283);
+                SOLVER.addVelocityPoint(0.5, 6.382);
+                SOLVER.addVelocityPoint(1.0, 6.635);
+                SOLVER.addVelocityPoint(1.5, 6.977);
+                SOLVER.addVelocityPoint(2.0, 7.367);
+                SOLVER.addVelocityPoint(2.5, 7.764);
+                SOLVER.addVelocityPoint(3.0, 8.160);
+                SOLVER.addVelocityPoint(3.5, 8.544);
+                SOLVER.addVelocityPoint(4.0, 8.928);
+                SOLVER.addVelocityPoint(4.5, 9.288);
+                SOLVER.addVelocityPoint(5.0, 9.648);
+                SOLVER.addVelocityPoint(5.5, 9.996);
+                SOLVER.addVelocityPoint(6.0, 10.332);
+                SOLVER.addVelocityPoint(6.5, 10.656);
+                SOLVER.addVelocityPoint(7.0, 10.980);
+                SOLVER.addVelocityPoint(7.5, 11.292);
+                SOLVER.addVelocityPoint(8.0, 11.592);
+                SOLVER.addVelocityPoint(8.5, 11.892);
+                SOLVER.addVelocityPoint(9.0, 12.180);
+                SOLVER.addVelocityPoint(9.5, 12.456);
+                SOLVER.addVelocityPoint(10.0, 12.744);
+        }
+
 }
