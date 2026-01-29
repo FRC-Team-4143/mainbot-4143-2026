@@ -13,8 +13,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
-import org.ironmaple.simulation.drivesims.COTS;
-import org.ironmaple.simulation.drivesims.configs.DriveTrainSimulationConfig;
 
 public class SwerveConstants extends MwConstants {
 
@@ -28,7 +26,6 @@ public class SwerveConstants extends MwConstants {
         CHOREO_PATH,
         ROTATION_LOCK,
         TRACTOR_BEAM,
-        SIMPLE_SIM_CONTROL, // Temporary simple simulation control bypassing swerve math
         IDLE
     }
 
@@ -130,7 +127,6 @@ public class SwerveConstants extends MwConstants {
     public final Translation2d BR_MODULE_TRANSLATION;
 
     public final SwerveDriveConfig SWERVE_DRIVE_CONFIG;
-    public final DriveTrainSimulationConfig SIM_SWERVE_DRIVE_CONFIG;
 
     // =============================================================================
     // CONSTRUCTOR - SWERVE CONFIGURATION INITIALIZATION
@@ -254,28 +250,5 @@ public class SwerveConstants extends MwConstants {
                         BR_MODULE_CONFIG,
                         PIGEON2_ID,
                         PIGEON2_CANBUS_NAME);
-
-        // ---------------------------------
-        // Swerve Drive Simulation Configuration
-        // ---------------------------------
-        SIM_SWERVE_DRIVE_CONFIG =
-                DriveTrainSimulationConfig.Default()
-                        .withBumperSize(
-                                Meters.of(BUMPER_LENGTH_METERS), Meters.of(BUMPER_WIDTH_METERS))
-                        .withRobotMass(Kilograms.of(ROBOT_MASS_KG))
-                        .withCustomModuleTranslations(
-                                new Translation2d[] {
-                                    FL_MODULE_TRANSLATION,
-                                    FR_MODULE_TRANSLATION,
-                                    BL_MODULE_TRANSLATION,
-                                    BR_MODULE_TRANSLATION
-                                })
-                        .withGyro(COTS.ofPigeon2())
-                        .withSwerveModules(
-                                COTS.ofMark4i(
-                                        DCMotor.getKrakenX60(1),
-                                        DCMotor.getKrakenX60(1),
-                                        COTS.WHEELS.VEX_GRIP_V2.cof,
-                                        2));
     }
 }
