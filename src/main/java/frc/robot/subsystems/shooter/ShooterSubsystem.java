@@ -91,7 +91,7 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
         }
 
         // Current 4143 robot does not have a turret (wrapping logic is not need for the drivetrain)
-        if (CONSTANTS.TURRET_ENABLED && (solution != null && solution.valid)) {
+        if (CONSTANTS.TURRET_ENABLED && solution.valid) {
             newHeadingAngle = solution.heading_angle - robotPose.getRotation().getRadians();
             if (newHeadingAngle > CONSTANTS.MAX_TURRET_WRAP) {
                 newHeadingAngle -= 2 * Math.PI;
