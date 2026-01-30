@@ -7,7 +7,6 @@ package frc.robot;
 import com.marswars.proxy_server.ProxyServer;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.subsystems.hopper.HopperConstants.HopperStates;
@@ -15,8 +14,9 @@ import frc.robot.subsystems.hopper.HopperSubsystem;
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterStates;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.swerve.SwerveConstants;
-import frc.robot.subsystems.swerve.SwerveConstants.SwerveStates;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
+import frc.robot.subsystems.swerve.SwerveConstants.SwerveStates;
+
 import java.util.Optional;
 
 public class Robot extends TimedRobot {
@@ -80,13 +80,7 @@ public class Robot extends TimedRobot {
     public void teleopInit() {
         ProxyServer.syncMatchData();
         CommandScheduler.getInstance().cancelAll();
-
-        // In simulation, keep simple sim control. Otherwise use robot centric.
-        if (RobotBase.isSimulation()) {
-            SwerveSubsystem.getInstance().setWantedState(SwerveStates.SIMPLE_SIM_CONTROL);
-        } else {
-            SwerveSubsystem.getInstance().setWantedState(SwerveStates.FIELD_CENTRIC);
-        }
+        SwerveSubsystem.getInstance().setWantedState(SwerveStates.FIELD_CENTRIC);
         ShooterSubsystem.getInstance().setWantedState(ShooterStates.MANUAL);
     }
 

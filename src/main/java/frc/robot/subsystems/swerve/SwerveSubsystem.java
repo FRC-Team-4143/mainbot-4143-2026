@@ -22,19 +22,16 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.OI;
-import frc.robot.subsystems.localization.LocalizationConstants.LocalizationStates;
 import frc.robot.subsystems.localization.LocalizationSubsystem;
 import frc.robot.subsystems.swerve.SwerveConstants.OperatorPerspective;
 import frc.robot.subsystems.swerve.SwerveConstants.SwerveStates;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
 
 public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> {
 
@@ -95,11 +92,7 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
     public SwerveSubsystem() {
         super(SwerveStates.IDLE, new SwerveConstants());
 
-        swerve_mech_ =
-                new SwerveMech(
-                        getSubsystemKey(),
-                        CONSTANTS.SWERVE_DRIVE_CONFIG,
-                        CONSTANTS.SIM_SWERVE_DRIVE_CONFIG);
+        swerve_mech_ = new SwerveMech(getSubsystemKey(), CONSTANTS.SWERVE_DRIVE_CONFIG);
 
         // Initialize drive mode requests
         field_centric_request_ =
@@ -159,9 +152,6 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
             case CHOREO_PATH:
                 choreoPathState();
                 break;
-            case SIMPLE_SIM_CONTROL:
-                simpleSimulationControlState();
-                break;
             case IDLE:
             default:
                 swerve_mech_.setChassisRequest(new ChassisRequest.Idle());
@@ -204,11 +194,6 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
                     }
                     case ROTATION_LOCK -> SwerveStates.ROTATION_LOCK;
                     case TRACTOR_BEAM -> SwerveStates.TRACTOR_BEAM;
-                    case SIMPLE_SIM_CONTROL -> {
-                        LocalizationSubsystem.getInstance()
-                                .setWantedState(LocalizationStates.SIMPLE_SIM_CONTROL);
-                        yield SwerveStates.SIMPLE_SIM_CONTROL;
-                    }
                     default -> SwerveStates.IDLE;
                 };
     }
@@ -292,31 +277,6 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
         }
     }
 
-    /**
-     * Handles the SIMPLE_SIM_CONTROL state by directly updating the robot's pose in simulation
-     * based on joystick inputs. This bypasses all swerve drive mathematics and provides a simple
-     * way to control the robot in simulation for testing purposes. This method only works in
-     * simulation mode.
-     */
-    private void simpleSimulationControlState() {
-        // Get joystick inputs (already scaled by MAX_TRANSLATION_RATE and MAX_ANGULAR_RATE)
-        Twist2d joystick_inputs = calculateSpeedsBasedOnJoystickInputs();
-
-        // Convert velocities (m/s, rad/s) to movement per cycle (m/cycle, rad/cycle)
-        // Assuming 20ms loop time (50 Hz)
-        double loop_time = 0.02; // seconds
-        double translation_scale = loop_time; // Convert m/s to m/cycle
-        double rotation_scale = loop_time; // Convert rad/s to rad/cycle
-
-        // Use the MW-Lib method to apply simple simulation control
-        // This automatically fakes chassis speeds for realistic feedback
-        swerve_mech_.applySimpleSimulationControl(
-                joystick_inputs, translation_scale, rotation_scale);
-
-        // Still need to set some chassis request to keep the swerve system happy
-        swerve_mech_.setChassisRequest(new ChassisRequest.Idle());
-    }
-
     // ------------------------------------------------
     // Chassis Control Methods
     // ------------------------------------------------
@@ -328,6 +288,7 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
      */
     public void setDesiredChoreoTrajectory(Trajectory<SwerveSample> trajectory) {
         desired_choreo_traj_ = trajectory;
+        DogLog.log(getSubsystemKey() + "Choreo/Trajectory", desired_choreo_traj_.getPoses());
     }
 
     /**
@@ -337,7 +298,7 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
      */
     public void setDesiredTractorBeamPose(Pose2d pose) {
         desired_tractor_beam_pose_ = pose;
-        max_lin_vel_for_tractor_beam_ = Double.NaN;
+        max_lin_vel_for_tractor_beam_ = CONSTANTS.MAX_TRANSLATION_RATE;
         max_ang_vel_for_tractor_beam_ = Double.NaN;
     }
 
@@ -349,7 +310,7 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
      */
     public void setDesiredTractorBeamPoseWithMaxLinVel(Pose2d pose, double max_lin_vel) {
         max_lin_vel_for_tractor_beam_ = max_lin_vel;
-        max_lin_vel_for_tractor_beam_ = Double.NaN;
+        max_ang_vel_for_tractor_beam_ = Double.NaN;
         desired_tractor_beam_pose_ = pose;
     }
 
@@ -360,8 +321,8 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
      * @param max_ang_vel maximum angular velocity for the robot to reach the target pose
      */
     public void setDesiredTractorBeamPoseWithMaxAngVel(Pose2d pose, double max_ang_vel) {
-        max_lin_vel_for_tractor_beam_ = max_ang_vel;
-        max_lin_vel_for_tractor_beam_ = Double.NaN;
+        max_lin_vel_for_tractor_beam_ = CONSTANTS.MAX_TRANSLATION_RATE;
+        max_ang_vel_for_tractor_beam_ = max_ang_vel;
         desired_tractor_beam_pose_ = pose;
     }
 
@@ -395,26 +356,6 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
                         setWantedState(SwerveStates.ROBOT_CENTRIC);
                     } else {
                         setWantedState(SwerveStates.FIELD_CENTRIC);
-                    }
-                });
-    }
-
-    /**
-     * Toggles simple simulation control mode. In this mode, joystick inputs directly control the
-     * robot's pose in simulation, bypassing all swerve drive mathematics. This only works in
-     * simulation mode.
-     *
-     * @return Command to toggle simple simulation control
-     */
-    public Command toggleSimpleSimulationControl() {
-        return Commands.runOnce(
-                () -> {
-                    if (RobotBase.isSimulation()) {
-                        if (system_state_ == SwerveStates.SIMPLE_SIM_CONTROL) {
-                            setWantedState(SwerveStates.FIELD_CENTRIC);
-                        } else {
-                            setWantedState(SwerveStates.SIMPLE_SIM_CONTROL);
-                        }
                     }
                 });
     }
@@ -610,15 +551,6 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
     /** Returns the raw gyro rotation */
     public Rotation2d getGyroRotation() {
         return swerve_mech_.getRawGyroRotation();
-    }
-
-    /**
-     * Returns the swerve drive simulation instance.
-     *
-     * @return SwerveDriveSimulation object representing the swerve drive simulation
-     */
-    public SwerveDriveSimulation getSwerveSimulation() {
-        return swerve_mech_.getSwerveSimulation();
     }
 
     /**

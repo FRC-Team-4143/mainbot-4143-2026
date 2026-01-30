@@ -16,7 +16,6 @@ import frc.robot.subsystems.localization.LocalizationConstants.LocalizationState
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 import java.util.Arrays;
 import java.util.List;
-import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
 
 public class LocalizationSubsystem extends MwSubsystem<LocalizationStates, LocalizationConstants> {
     private static LocalizationSubsystem instance_ = null;
@@ -33,9 +32,6 @@ public class LocalizationSubsystem extends MwSubsystem<LocalizationStates, Local
     private SwerveDrivePoseEstimator field_pose_estimator_;
     private List<SwerveMeasurement> swerve_measurements_;
 
-    private final boolean IS_SIM = Robot.isSimulation();
-    private SwerveDriveSimulation swerve_sim_;
-
     public LocalizationSubsystem() {
         // (Default State, Constants Class)
         super(LocalizationStates.ACTIVE, new LocalizationConstants());
@@ -51,11 +47,6 @@ public class LocalizationSubsystem extends MwSubsystem<LocalizationStates, Local
         field_pose_estimator_ =
                 new SwerveDrivePoseEstimator(
                         kinematics, gyro_angle, module_positions, CONSTANTS.START_POSE);
-
-        if (IS_SIM) {
-            swerve_sim_ = SwerveSubsystem.getInstance().getSwerveSimulation();
-            swerve_sim_.setSimulationWorldPose(CONSTANTS.START_POSE);
-        }
     }
 
     @Override
@@ -81,25 +72,12 @@ public class LocalizationSubsystem extends MwSubsystem<LocalizationStates, Local
                             swerve_measurements_.get(i).module_positions);
                     // DO NOT ADD ANY VISION MEASUREMENTS TO THIS ESTIMATOR
 
-                    // Update Field Post Estimator
+                    // Update Field Pose Estimator
                     field_pose_estimator_.updateWithTime(
                             swerve_measurements_.get(i).timestamp,
                             swerve_measurements_.get(i).gyro_yaw,
                             swerve_measurements_.get(i).module_positions);
                     // This pose estimator will later have vision measurements added to it
-                }
-                break;
-            case SIMPLE_SIM_CONTROL:
-                // Directly override pose estimators with simulation pose
-                if (IS_SIM && swerve_sim_ != null) {
-                    Pose2d simPose = swerve_sim_.getSimulatedDriveTrainPose();
-                    Rotation2d gyroRotation = SwerveSubsystem.getInstance().getGyroRotation();
-                    SwerveModulePosition[] modulePositions =
-                            SwerveSubsystem.getInstance().getModulePositions();
-
-                    // Reset both pose estimators to the simulation pose
-                    smooth_pose_estimator_.resetPosition(gyroRotation, modulePositions, simPose);
-                    field_pose_estimator_.resetPosition(gyroRotation, modulePositions, simPose);
                 }
                 break;
         }
