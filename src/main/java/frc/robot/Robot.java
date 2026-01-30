@@ -4,7 +4,6 @@
 
 package frc.robot;
 
-import com.marswars.proxy_server.ProxyServer;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -30,7 +29,6 @@ public class Robot extends TimedRobot {
 
         // Configure External Interfaces
         OI.configureBindings();
-        ProxyServer.configureServer();
     }
 
     @Override
@@ -38,9 +36,6 @@ public class Robot extends TimedRobot {
 
     @Override
     public void robotPeriodic() {
-        // updates data from chassis proxy server
-        ProxyServer.updateData();
-
         // Call the scheduler so that commands work for buttons
         CommandScheduler.getInstance().run();
 
@@ -78,7 +73,6 @@ public class Robot extends TimedRobot {
 
     @Override
     public void teleopInit() {
-        ProxyServer.syncMatchData();
         CommandScheduler.getInstance().cancelAll();
         SwerveSubsystem.getInstance().setWantedState(SwerveStates.FIELD_CENTRIC);
         ShooterSubsystem.getInstance().setWantedState(ShooterStates.MANUAL);
