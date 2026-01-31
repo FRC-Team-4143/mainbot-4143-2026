@@ -31,14 +31,6 @@ public class HubActiveMonitor {
   //Code for no data received yet
 }
 }
-public void 
-if(flipRegions == true) {
-
-}
-
-
-
-
 
 
 

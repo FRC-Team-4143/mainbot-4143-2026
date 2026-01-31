@@ -24,6 +24,7 @@ public class SwerveConstants extends MwConstants {
         CHOREO_PATH_ROTATION_LOCK,
         ROTATION_LOCK,
         TRACTOR_BEAM,
+        DESIRED_CHASSIS_SPEED,
         IDLE
     }
 
@@ -128,7 +129,6 @@ public class SwerveConstants extends MwConstants {
     // CONSTRUCTOR - SWERVE CONFIGURATION INITIALIZATION
     // =============================================================================
 
-    @SuppressWarnings("unchecked")
     public SwerveConstants() {
 
         // Load base motor configurations from config files

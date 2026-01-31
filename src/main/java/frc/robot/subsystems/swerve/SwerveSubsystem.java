@@ -76,7 +76,9 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
     private Rotation2d desired_rotation_lock_rot_ = new Rotation2d();
     private Translation2d desired_rotation_lock_cor_ = new Translation2d();
     private double tele_op_velocity_scalar_ = 1.0;
-
+    private double max_lin_vel_for_chassis_speed_;
+    private Rotation2d desired_chassis_speed_rotation_;
+    private ChassisSpeeds desired_chassis_speed_;
     // IO Members
     private SwerveMech swerve_mech_;
     private Rotation2d operator_forward_direction_ = OperatorPerspective.BLUE_ALLIANCE.heading;
@@ -164,6 +166,9 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
                 break;
             case TRACTOR_BEAM:
                 tractorBeamState();
+                break;
+            case DESIRED_CHASSIS_SPEED:
+                chassisSpeedState();
                 break;
             case ROTATION_LOCK:
                 swerve_mech_.setChassisRequest(
@@ -290,6 +295,21 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
                             .withTwist(new Twist2d(x_component, y_component, 0.0))
                             .withTargetHeading(desired_tractor_beam_pose_.getRotation())
                             .withMaxAbsRotationalRate(max_ang_vel_for_tractor_beam_));
+        }
+    }
+
+    private void chassisSpeedState() {
+        if (Double.isNaN(max_lin_vel_for_chassis_speed_)) {
+            swerve_mech_.setChassisRequest(
+                    rotation_lock_request_
+                            .withTwist(desired_chassis_speed_.toTwist2d(0.02))
+                            .withTargetHeading(desired_chassis_speed_rotation_));
+        } else {
+            swerve_mech_.setChassisRequest(
+                    rotation_lock_request_
+                            .withTwist(desired_chassis_speed_.toTwist2d(0.02))
+                            .withTargetHeading(desired_chassis_speed_rotation_)
+                            .withMaxAbsRotationalRate(max_lin_vel_for_chassis_speed_));
         }
     }
 
@@ -443,6 +463,14 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
         desired_tractor_beam_pose_ = pose;
     }
 
+    public void setDesiredChassisWithMaxLinVel(Rotation2d rotation, double max_lin_vel) {
+        max_lin_vel_for_chassis_speed_ = max_lin_vel;
+        desired_chassis_speed_rotation_ = rotation;
+    }
+    public void robotCentricFacingAngle(Rotation2d rotation, ChassisSpeeds speeds) {
+        desired_chassis_speed_rotation_ = rotation;
+        desired_chassis_speed_ = speeds;
+    }
     /**
      * Updates the internal target for the robot to face in ROTATION_LOCK or
      * CHOREO_PATH_ROTATION_LOCK
