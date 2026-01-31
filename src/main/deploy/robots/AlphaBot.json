@@ -97,7 +97,7 @@
       "y_position": 7.5,
       "invert_drive": false,
       "module_type": "MK4I",
-      "module_gearing": "L2+"
+      "module_gearing": "L3"
     },
     "fr": {
       "drive_id": 3,
@@ -107,7 +107,7 @@
       "y_position": -7.5,
       "invert_drive": false,
       "module_type": "MK4I",
-      "module_gearing": "L2+"
+      "module_gearing": "L3"
     },
     "bl": {
       "drive_id": 5,
@@ -117,7 +117,7 @@
       "y_position": 7.5,
       "invert_drive": false,
       "module_type": "MK4I",
-      "module_gearing": "L2+"
+      "module_gearing": "L3"
     },
     "br": {
       "drive_id": 7,
@@ -127,7 +127,7 @@
       "y_position": -7.5,
       "invert_drive": false,
       "module_type": "MK4I",
-      "module_gearing": "L2+"
+      "module_gearing": "L3"
     }
   },
   "elevator": {
