@@ -467,10 +467,7 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
         max_lin_vel_for_chassis_speed_ = max_lin_vel;
         desired_chassis_speed_rotation_ = rotation;
     }
-    public void robotCentricFacingAngle(Rotation2d rotation, ChassisSpeeds speeds) {
-        desired_chassis_speed_rotation_ = rotation;
-        desired_chassis_speed_ = speeds;
-    }
+
     /**
      * Updates the internal target for the robot to face in ROTATION_LOCK or
      * CHOREO_PATH_ROTATION_LOCK
