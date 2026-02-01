@@ -183,11 +183,12 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
                         if (system_state_ != SwerveStates.CHOREO_PATH) {
                             // In simulation set the robot to the start pose of the trajectory
                             // This should be temporary until we have an auto framework
-                            if(IS_SIM){
+                            if (IS_SIM) {
                                 LocalizationSubsystem.getInstance()
                                         .resetPoseEstimator(
                                                 desired_choreo_traj_
-                                                        .getInitialPose(CONSTANTS.FLIP_TRAJECTORY_ON_RED)
+                                                        .getInitialPose(
+                                                                CONSTANTS.FLIP_TRAJECTORY_ON_RED)
                                                         .get());
                             }
 
@@ -299,7 +300,9 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
      */
     public void setDesiredChoreoTrajectory(Trajectory<SwerveSample> trajectory) {
         desired_choreo_traj_ = trajectory;
-        DogLog.log(getSubsystemKey() + "Choreo/Trajectory", (CONSTANTS.FLIP_TRAJECTORY_ON_RED ? trajectory.flipped() : trajectory).getPoses());
+        DogLog.log(
+                getSubsystemKey() + "Choreo/Trajectory",
+                (CONSTANTS.FLIP_TRAJECTORY_ON_RED ? trajectory.flipped() : trajectory).getPoses());
     }
 
     /**
@@ -410,7 +413,8 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
      */
     public void setOperatorForwardDirection(OperatorPerspective reference) {
         operator_forward_direction_ = reference.heading;
-        CONSTANTS.FLIP_TRAJECTORY_ON_RED = (reference.heading == OperatorPerspective.RED_ALLIANCE.heading);
+        CONSTANTS.FLIP_TRAJECTORY_ON_RED =
+                (reference.heading == OperatorPerspective.RED_ALLIANCE.heading);
     }
 
     /**
