@@ -8,6 +8,7 @@ import com.marswars.vision.VisionSimulation;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import frc.robot.subsystems.localization.LocalizationSubsystem;
+import frc.robot.subsystems.localization.LocalizationConstants.LocalizationStates;
 import frc.robot.subsystems.simulation.SimulationConstants.SimulationStates;
 import java.util.Arrays;
 import java.util.List;
@@ -35,6 +36,7 @@ public class SimulationSubsystem extends MwSubsystem<SimulationStates, Simulatio
                             .initializeVisionSimulation(
                                     LocalizationSubsystem.getInstance().getAprilTagLayout());
             vision_sim_.addDefaultCameras();
+            LocalizationSubsystem.getInstance().setWantedState(LocalizationStates.VISION_SIM);
         }
     }
 
