@@ -87,7 +87,7 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
         } else {
             system_state_ = wanted;
         }
-        if (CONSTANTS.TURRET_ENABLED) {
+        if (CONSTANTS.TURRET_ENABLED && (solution != null && solution.valid)) {
             newHeadingAngle = solution.heading_angle - robotPose.getRotation().getRadians();
             if (newHeadingAngle > CONSTANTS.MAX_TURRET_WRAP) {
                 newHeadingAngle -= 2 * Math.PI;
