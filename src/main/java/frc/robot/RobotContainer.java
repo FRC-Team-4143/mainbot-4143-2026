@@ -5,9 +5,11 @@
 package frc.robot;
 
 import com.marswars.subsystem.SubsystemManager;
+import edu.wpi.first.wpilibj.RobotBase;
 import frc.robot.subsystems.hopper.HopperSubsystem;
 import frc.robot.subsystems.localization.LocalizationSubsystem;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
+import frc.robot.subsystems.simulation.SimulationSubsystem;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 
 public class RobotContainer extends SubsystemManager {
@@ -27,6 +29,11 @@ public class RobotContainer extends SubsystemManager {
         registerSubsystem(LocalizationSubsystem.getInstance());
         registerSubsystem(ShooterSubsystem.getInstance());
         registerSubsystem(HopperSubsystem.getInstance());
+
+        // Only enable the simulation subsystem if we are in simulation
+        if (RobotBase.isSimulation()) {
+            registerSubsystem(SimulationSubsystem.getInstance());
+        }
 
         // !!!!! LEAVE THESE LINES AS THE LAST LINE IN THE CONSTRUCTOR !!!!!!
         reset();
