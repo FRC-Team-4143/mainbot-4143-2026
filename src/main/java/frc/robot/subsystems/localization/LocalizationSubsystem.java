@@ -85,11 +85,6 @@ public class LocalizationSubsystem extends MwSubsystem<LocalizationStates, Local
         DogLog.log(getSubsystemKey() + "FieldPose", getFieldPose());
     }
 
-    // Only override if you need custom state transitions!
-    // @Override
-    // public void handleStateTransition(LocalizationStates wanted) {
-    // }
-
     /**
      * @return The smoothed pose estimate of the robot.
      */
@@ -104,6 +99,18 @@ public class LocalizationSubsystem extends MwSubsystem<LocalizationStates, Local
         return field_pose_estimator_.getEstimatedPosition();
     }
 
+    /**
+     * Resets both pose estimators to a new pose.
+     * @param new_pose The new pose to reset to
+     */
+    public void resetPoseEstimator(Pose2d new_pose) {
+        smooth_pose_estimator_.resetPose(new_pose);
+        field_pose_estimator_.resetPose(new_pose);
+    }
+
+    /**
+     * @return The chassis speeds in field-relative vectors
+     */
     public ChassisSpeeds getChassisSpeedsFieldRelative() {
         return ChassisSpeeds.fromRobotRelativeSpeeds(
                 SwerveSubsystem.getInstance().getChassisSpeeds(), getFieldPose().getRotation());

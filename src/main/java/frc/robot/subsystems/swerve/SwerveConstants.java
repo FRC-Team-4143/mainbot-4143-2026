@@ -83,7 +83,7 @@ public class SwerveConstants extends MwConstants {
     // CHOREO PATH FOLLOWING CONSTANTS
     // =============================================================================
 
-    public final boolean FLIP_TRAJECTORY_ON_RED = true;
+    public boolean FLIP_TRAJECTORY_ON_RED = false;
     public final double CHOREO_TRANSLATION_ERROR_MARGIN = Units.inchesToMeters(1.0);
     public final double CHOREO_X_CONTROLLER_KP = 0.0;
     public final double CHOREO_X_CONTROLLER_KI = 0.0;

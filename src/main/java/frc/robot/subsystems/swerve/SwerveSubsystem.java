@@ -22,6 +22,7 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -76,7 +77,7 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
 
     // IO Members
     private SwerveMech swerve_mech_;
-
+    private final boolean IS_SIM = RobotBase.isSimulation();
     private Rotation2d operator_forward_direction_ = OperatorPerspective.BLUE_ALLIANCE.heading;
 
     private ChassisRequest.FieldCentric field_centric_request_;
@@ -180,6 +181,16 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
                     case ROBOT_CENTRIC -> SwerveStates.ROBOT_CENTRIC;
                     case CHOREO_PATH -> {
                         if (system_state_ != SwerveStates.CHOREO_PATH) {
+                            // In simulation set the robot to the start pose of the trajectory
+                            // This should be temporary until we have an auto framework
+                            if(IS_SIM){
+                                LocalizationSubsystem.getInstance()
+                                        .resetPoseEstimator(
+                                                desired_choreo_traj_
+                                                        .getInitialPose(CONSTANTS.FLIP_TRAJECTORY_ON_RED)
+                                                        .get());
+                            }
+
                             choreo_timer_.restart();
                             choreo_sample_to_apply_ =
                                     desired_choreo_traj_.sampleAt(
@@ -288,7 +299,7 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
      */
     public void setDesiredChoreoTrajectory(Trajectory<SwerveSample> trajectory) {
         desired_choreo_traj_ = trajectory;
-        DogLog.log(getSubsystemKey() + "Choreo/Trajectory", desired_choreo_traj_.getPoses());
+        DogLog.log(getSubsystemKey() + "Choreo/Trajectory", (CONSTANTS.FLIP_TRAJECTORY_ON_RED ? trajectory.flipped() : trajectory).getPoses());
     }
 
     /**
@@ -399,6 +410,7 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
      */
     public void setOperatorForwardDirection(OperatorPerspective reference) {
         operator_forward_direction_ = reference.heading;
+        CONSTANTS.FLIP_TRAJECTORY_ON_RED = (reference.heading == OperatorPerspective.RED_ALLIANCE.heading);
     }
 
     /**
