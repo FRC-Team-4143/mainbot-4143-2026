@@ -4,12 +4,15 @@
 
 package frc.robot;
 
-import com.marswars.proxy_server.ProxyServer;
+import com.marswars.auto.Auto;
+import com.marswars.auto.AutoManager;
+import com.marswars.geometry.AllianceFlipUtil;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.autos.Left_Start_Neutral_Outpost_Climb;
+import frc.robot.lib2026.FieldConstants;
 import frc.robot.subsystems.hopper.HopperConstants.HopperStates;
 import frc.robot.subsystems.hopper.HopperSubsystem;
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterStates;
@@ -21,16 +24,23 @@ import java.util.Optional;
 
 public class Robot extends TimedRobot {
 
-    private Alliance alliance_ = Alliance.Blue; // Current alliance, used to set driver perspective
+    private Alliance alliance_ = null; // Current alliance, used to set driver perspective
     private RobotContainer robot_container_;
 
     public Robot() {
         // Load the subsystems
         robot_container_ = RobotContainer.getInstance();
+        AllianceFlipUtil.configureFieldGeometry(
+                FieldConstants.FIELD_SYMMETRY_TYPE, FieldConstants.FIELD_CENTER);
 
         // Configure External Interfaces
         OI.configureBindings();
-        ProxyServer.configureServer();
+
+        // Initialize AutoManager and register auto routines
+        AutoManager.getInstance()
+                .registerAutos(
+                        // Add your auto routines here as you create them
+                        new Left_Start_Neutral_Outpost_Climb());
     }
 
     @Override
@@ -38,14 +48,20 @@ public class Robot extends TimedRobot {
 
     @Override
     public void robotPeriodic() {
-        // updates data from chassis proxy server
-        ProxyServer.updateData();
-
         // Call the scheduler so that commands work for buttons
         CommandScheduler.getInstance().run();
-
         // run the main robot loop for each subsystem
         robot_container_.doControlLoop();
+
+        // Only allow changing alliance perspective when not connected to FMS (at home practice
+        // field)
+        if (!DriverStation.isFMSAttached() && hasAllianceChanged()) {
+            SwerveSubsystem.getInstance()
+                    .setOperatorForwardDirection(
+                            alliance_ == Alliance.Blue
+                                    ? SwerveConstants.OperatorPerspective.BLUE_ALLIANCE
+                                    : SwerveConstants.OperatorPerspective.RED_ALLIANCE);
+        }
     }
 
     @Override
@@ -53,22 +69,21 @@ public class Robot extends TimedRobot {
 
     @Override
     public void disabledPeriodic() {
-        Optional<Alliance> alliance = DriverStation.getAlliance();
-        if (alliance.isPresent()) {
-
-            if (alliance.get() != alliance_) {
-                alliance_ = alliance.get();
-                SwerveSubsystem.getInstance()
-                        .setOperatorForwardDirection(
-                                alliance_ == Alliance.Blue
-                                        ? SwerveConstants.OperatorPerspective.BLUE_ALLIANCE
-                                        : SwerveConstants.OperatorPerspective.RED_ALLIANCE);
-            }
+        // Allow chaning alliance perspective while disabled
+        if (hasAllianceChanged()) {
+            SwerveSubsystem.getInstance()
+                    .setOperatorForwardDirection(
+                            alliance_ == Alliance.Blue
+                                    ? SwerveConstants.OperatorPerspective.BLUE_ALLIANCE
+                                    : SwerveConstants.OperatorPerspective.RED_ALLIANCE);
         }
     }
 
     @Override
-    public void autonomousInit() {}
+    public void autonomousInit() {
+        Auto selected_auto = AutoManager.getInstance().getSelectedAuto();
+        CommandScheduler.getInstance().schedule(selected_auto);
+    }
 
     @Override
     public void autonomousPeriodic() {}
@@ -78,15 +93,8 @@ public class Robot extends TimedRobot {
 
     @Override
     public void teleopInit() {
-        ProxyServer.syncMatchData();
         CommandScheduler.getInstance().cancelAll();
-
-        // In simulation, keep simple sim control. Otherwise use robot centric.
-        if (RobotBase.isSimulation()) {
-            SwerveSubsystem.getInstance().setWantedState(SwerveStates.SIMPLE_SIM_CONTROL);
-        } else {
-            SwerveSubsystem.getInstance().setWantedState(SwerveStates.FIELD_CENTRIC);
-        }
+        SwerveSubsystem.getInstance().setWantedState(SwerveStates.FIELD_CENTRIC);
         ShooterSubsystem.getInstance().setWantedState(ShooterStates.MANUAL);
     }
 
@@ -106,15 +114,20 @@ public class Robot extends TimedRobot {
     @Override
     public void testExit() {}
 
-    @Override
-    public void simulationInit() {
-        // Configure the simulated robot state
-        SimulatedRobotState.configure();
-    }
-
-    @Override
-    public void simulationPeriodic() {
-        // Update the physics simulation - this is CRITICAL for proper simulation data
-        SimulatedRobotState.update();
+    /**
+     * Check if the alliance has changed since the last check
+     *
+     * @return true if the alliance has changed, false otherwise
+     */
+    public boolean hasAllianceChanged() {
+        Optional<Alliance> current_alliance = DriverStation.getAlliance();
+        if (alliance_ == null && current_alliance.isPresent()) {
+            alliance_ = current_alliance.get();
+            return true;
+        } else if (current_alliance.isPresent() && alliance_ != current_alliance.get()) {
+            alliance_ = current_alliance.get();
+            return true;
+        }
+        return false;
     }
 }

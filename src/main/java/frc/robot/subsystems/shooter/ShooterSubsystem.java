@@ -39,31 +39,36 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
 
     public ShooterSubsystem() {
         super(ShooterStates.IDLE, new ShooterConstants());
-        indexer_ = new RollerMech(
-                getSubsystemKey(),
-                "Indexer",
-                List.of(CONSTANTS.INDEX_MOTOR_CONFIG),
-                CONSTANTS.INDEXER_GEAR_RATIO);
-        flywheel_ = new FlywheelMech(
-                getSubsystemKey(),
-                List.of(
-                        CONSTANTS.SHOOTER_LEADER_MOTOR_CONFIG,
-                        CONSTANTS.SHOOTER_FOLLOWER_MOTOR_CONFIG),
-                CONSTANTS.FLYWHEEL_GEAR_RATIO,
-                CONSTANTS.FLYWHEEL_INERTIA,
-                CONSTANTS.FLYWHEEL_WHEEL_RADIUS_METERS);
-        hood_ = new RollerMech(
-                getSubsystemKey(),
-                "Hood",
-                List.of(CONSTANTS.HOOD_MOTOR_CONFIGS),
-                CONSTANTS.HOOD_GEAR_RATIO);
+        indexer_ =
+                new RollerMech(
+                        getSubsystemKey(),
+                        "Indexer",
+                        List.of(CONSTANTS.INDEX_MOTOR_CONFIG),
+                        CONSTANTS.INDEXER_GEAR_RATIO);
+        flywheel_ =
+                new FlywheelMech(
+                        getSubsystemKey(),
+                        List.of(
+                                CONSTANTS.SHOOTER_LEADER_MOTOR_CONFIG,
+                                CONSTANTS.SHOOTER_FOLLOWER_MOTOR_CONFIG),
+                        CONSTANTS.FLYWHEEL_GEAR_RATIO,
+                        CONSTANTS.FLYWHEEL_INERTIA,
+                        CONSTANTS.FLYWHEEL_WHEEL_RADIUS_METERS);
+        hood_ =
+                new RollerMech(
+                        getSubsystemKey(),
+                        "Hood",
+                        List.of(CONSTANTS.HOOD_MOTOR_CONFIGS),
+                        CONSTANTS.HOOD_GEAR_RATIO);
 
+        // Current 4143 robot does not have a turret
         if (CONSTANTS.TURRET_ENABLED) {
-            turret_ = new TurretMech(
-                    getSubsystemKey(),
-                    List.of(CONSTANTS.TURRET_MOTOR_CONFIGS),
-                    CONSTANTS.TURRET_GEAR_RATIO,
-                    CONSTANTS.TURRET_MOI);
+            turret_ =
+                    new TurretMech(
+                            getSubsystemKey(),
+                            List.of(CONSTANTS.TURRET_MOTOR_CONFIGS),
+                            CONSTANTS.TURRET_GEAR_RATIO,
+                            CONSTANTS.TURRET_MOI);
         }
 
         DogLog.tunable(
@@ -83,7 +88,9 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
         } else {
             system_state_ = wanted;
         }
-        if(CONSTANTS.TURRET_ENABLED){
+
+        // Current 4143 robot does not have a turret (wrapping logic is not need for the drivetrain)
+        if (CONSTANTS.TURRET_ENABLED && (solution != null && solution.valid)) {
             newHeadingAngle = solution.heading_angle - robotPose.getRotation().getRadians();
             if (newHeadingAngle > CONSTANTS.MAX_TURRET_WRAP) {
                 newHeadingAngle -= 2 * Math.PI;
@@ -97,7 +104,6 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
                 }
             }
         }
-        
     }
 
     @Override
@@ -110,49 +116,43 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
                             / CONSTANTS.FLYWHEEL_WHEEL_RADIUS_METERS
                             * flywheel_eff_factor_;
         }
-        
+
         switch (system_state_) {
             case TRACKING:
             case AIMING:
-                flywheel_.setTargetVelocity(flywheel_omega_); // calculate flywheel speed from exit speed
+                flywheel_.setTargetVelocity(flywheel_omega_);
                 indexer_.setTargetDutyCycle(0);
-                if (CONSTANTS.TURRET_ENABLED) {
-                    turret_.setTargetPosition(solution.heading_angle);
-                }
                 hood_.setTargetPosition(solution.exit_angle);
+                if (CONSTANTS.TURRET_ENABLED) turret_.setTargetPosition(solution.heading_angle);
                 break;
             case DUMP:
-                flywheel_.setTargetVelocity(flywheel_omega_); // calculate flywheel speed from exit speed
+                flywheel_.setTargetVelocity(flywheel_omega_);
                 indexer_.setTargetDutyCycle(-CONSTANTS.INDEXER_DUTY_CYCLE);
-                if (CONSTANTS.TURRET_ENABLED) {
-                    turret_.setTargetDutyCycle(0);
-                }
                 hood_.setTargetPosition(0);
+                if (CONSTANTS.TURRET_ENABLED) turret_.setTargetDutyCycle(0);
                 break;
             case SHOOT:
-                flywheel_.setTargetVelocity(flywheel_omega_); // calculate flywheel speed from exit speed
+                flywheel_.setTargetVelocity(flywheel_omega_);
                 indexer_.setTargetDutyCycle(CONSTANTS.INDEXER_DUTY_CYCLE);
-                if (CONSTANTS.TURRET_ENABLED) {
-                    turret_.setTargetPosition(solution.heading_angle);
-                }
                 hood_.setTargetPosition(solution.exit_angle);
+                if (CONSTANTS.TURRET_ENABLED) turret_.setTargetPosition(solution.heading_angle);
                 break;
             default:
             case IDLE:
-                flywheel_.setTargetVelocity(flywheel_omega_); // calculate flywheel speed from exit speed
+                flywheel_.setTargetVelocity(flywheel_omega_);
                 indexer_.setTargetDutyCycle(0);
-                if (CONSTANTS.TURRET_ENABLED) {
-                    turret_.setTargetPosition(0);
-                }
                 hood_.setTargetPosition(0);
+                if (CONSTANTS.TURRET_ENABLED) turret_.setTargetPosition(0);
                 break;
             case MANUAL:
                 indexer_.setTargetDutyCycle(.8);
-                if (CONSTANTS.TURRET_ENABLED) {
-                    turret_.setTargetPosition(turret_.getCurrentPosition() + OI.getOperatorJoystickRightX());
-                }
-                hood_.setTargetPosition(hood_.getCurrentPosition() + OI.getOperatorJoystickRightY());
-                flywheel_.setTargetVelocity(flywheel_.getCurrentVelocity() + OI.getOperatorJoystickLeftY());
+                hood_.setTargetPosition(
+                        hood_.getCurrentPosition() + OI.getOperatorJoystickRightY());
+                flywheel_.setTargetVelocity(
+                        flywheel_.getCurrentVelocity() + OI.getOperatorJoystickLeftY());
+                if (CONSTANTS.TURRET_ENABLED)
+                    turret_.setTargetPosition(
+                            turret_.getCurrentPosition() + OI.getOperatorJoystickRightX());
                 break;
             case PROFILE:
                 // code does NOTHING to allow for testing
@@ -171,6 +171,7 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
 
     @Override
     public List<SubsystemIoBase> getIos() {
+        // Current 4143 robot does not have a turret
         if (CONSTANTS.TURRET_ENABLED) {
             return Arrays.asList(indexer_, flywheel_, hood_, turret_);
         } else {
@@ -183,31 +184,26 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
         system_state_ = ShooterStates.IDLE;
     }
 
+    /**
+     * Check if the shooter is ready to shoot
+     *
+     * @return true all the active mechanisms are at within tolerance of their target
+     *     positions/velocities
+     */
     public boolean shooterIsReady() {
-        if(CONSTANTS.TURRET_ENABLED){
-            return MathUtil.isNear(
-                flywheel_omega_,
-                flywheel_.getCurrentVelocity(),
-                CONSTANTS.FLYWHEEL_SPEED_TOLERANCE)
+        return ((CONSTANTS.TURRET_ENABLED)
+                        ? MathUtil.isNear(
+                                newHeadingAngle,
+                                turret_.getCurrentPosition(),
+                                CONSTANTS.TURRET_ANGLE_TOLERANCE)
+                        : true)
                 && MathUtil.isNear(
-                        newHeadingAngle,
-                        turret_.getCurrentPosition(),
-                        CONSTANTS.TURRET_ANGLE_TOLERANCE)
-                && MathUtil.isNear(
-                        solution.exit_angle,
-                        hood_.getCurrentPosition(),
-                        CONSTANTS.HOOD_ANGLE_TOLERANCE);
-        }
-        else{
-            return MathUtil.isNear(
-                flywheel_omega_,
-                flywheel_.getCurrentVelocity(),
-                CONSTANTS.FLYWHEEL_SPEED_TOLERANCE)
+                        flywheel_omega_,
+                        flywheel_.getCurrentVelocity(),
+                        CONSTANTS.FLYWHEEL_SPEED_TOLERANCE)
                 && MathUtil.isNear(
                         solution.exit_angle,
                         hood_.getCurrentPosition(),
                         CONSTANTS.HOOD_ANGLE_TOLERANCE);
-        }
-        
     }
 }
