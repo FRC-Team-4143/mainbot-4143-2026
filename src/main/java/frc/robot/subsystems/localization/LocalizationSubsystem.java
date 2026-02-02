@@ -8,7 +8,6 @@ import com.marswars.swerve_lib.PhoenixOdometryThread;
 import com.marswars.swerve_lib.SwerveMeasurements.SwerveMeasurement;
 import dev.doglog.DogLog;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
-import edu.wpi.first.math.estimator.PoseEstimator;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
@@ -53,10 +52,10 @@ public class LocalizationSubsystem extends MwSubsystem<LocalizationStates, Local
 
         smooth_pose_estimator_ =
                 new SwerveDrivePoseEstimator(
-                        kinematics, gyro_angle, module_positions, CONSTANTS.START_POSE);
+                        kinematics, gyro_angle, module_positions, Pose2d.kZero);
         field_pose_estimator_ =
                 new SwerveDrivePoseEstimator(
-                        kinematics, gyro_angle, module_positions, CONSTANTS.START_POSE);
+                        kinematics, gyro_angle, module_positions, Pose2d.kZero);
     }
 
     @Override
@@ -72,9 +71,11 @@ public class LocalizationSubsystem extends MwSubsystem<LocalizationStates, Local
     @Override
     public void updateLogic(double timestamp) {
         // Get latest swerve measurements from odometry thread
-        List<SwerveMeasurement> swerve_measurements_ = PhoenixOdometryThread.getInstance().getSwerveSamples();
+        List<SwerveMeasurement> swerve_measurements_ =
+                PhoenixOdometryThread.getInstance().getSwerveSamples();
         // Get latest vision measurements from proxy server
-        List<TagSolutionData> vision_measurements = ProxyServerThread.getInstance().getLatestTagSolutions();
+        List<TagSolutionData> vision_measurements =
+                ProxyServerThread.getInstance().getLatestTagSolutions();
 
         switch (system_state_) {
             case ODOM_ONLY: // This state uses only odometry data
@@ -112,10 +113,12 @@ public class LocalizationSubsystem extends MwSubsystem<LocalizationStates, Local
 
     /**
      * Applies vision measurements from the proxy server to the field pose estimator.
+     *
      * @param pose_estimator The pose estimator to update
      * @param vision_measurements The list of vision measurements to apply
      */
-    private void applyVisionMeasurements(SwerveDrivePoseEstimator pose_estimator, List<TagSolutionData> vision_measurements) {
+    private void applyVisionMeasurements(
+            SwerveDrivePoseEstimator pose_estimator, List<TagSolutionData> vision_measurements) {
         for (TagSolutionData vision_data : vision_measurements) {
             // Add vision measurement to field pose estimator
             pose_estimator.addVisionMeasurement(
@@ -123,10 +126,8 @@ public class LocalizationSubsystem extends MwSubsystem<LocalizationStates, Local
 
             // Log detected tag poses and estimated vision poses
             for (int tag_pose : vision_data.detectedIds) {
-                Optional<Pose3d> tag_layout_pose =
-                        CONSTANTS.APRIL_TAG_LAYOUT.getTagPose(tag_pose);
-                if (tag_layout_pose.isPresent())
-                    detected_tag_poses_.add(tag_layout_pose.get());
+                Optional<Pose3d> tag_layout_pose = CONSTANTS.APRIL_TAG_LAYOUT.getTagPose(tag_pose);
+                if (tag_layout_pose.isPresent()) detected_tag_poses_.add(tag_layout_pose.get());
             }
             estimated_vision_poses_.add(vision_data.pose);
         }
@@ -134,35 +135,36 @@ public class LocalizationSubsystem extends MwSubsystem<LocalizationStates, Local
 
     /**
      * Applies swerve measurements to the given pose estimator.
+     *
      * @param pose_estimator The pose estimator to update
      * @param swerve_measurements The list of swerve measurements to apply
      */
-    private void applySwerveMeasurements(SwerveDrivePoseEstimator pose_estimator, List<SwerveMeasurement> swerve_measurements) {
+    private void applySwerveMeasurements(
+            SwerveDrivePoseEstimator pose_estimator, List<SwerveMeasurement> swerve_measurements) {
         for (int i = 0; i < swerve_measurements.size(); i++) {
             SwerveMeasurement measurement = swerve_measurements.get(i);
 
             // Update the given Pose Estimator
             pose_estimator.updateWithTime(
-                    measurement.timestamp,
-                    measurement.gyro_yaw,
-                    measurement.module_positions);
+                    measurement.timestamp, measurement.gyro_yaw, measurement.module_positions);
         }
     }
 
     /**
      * Applies swerve measurements to the given pose estimator with noise.
-     * @param pose_estimator  The pose estimator to update
+     *
+     * @param pose_estimator The pose estimator to update
      * @param swerve_measurements The list of swerve measurements to apply (noise will be added)
      */
-    private void applyNoisySwerveMeasurements(SwerveDrivePoseEstimator pose_estimator, List<SwerveMeasurement> swerve_measurements) {
+    private void applyNoisySwerveMeasurements(
+            SwerveDrivePoseEstimator pose_estimator, List<SwerveMeasurement> swerve_measurements) {
         for (int i = 0; i < swerve_measurements.size(); i++) {
-            SwerveMeasurement measurement = SimulationSubsystem.getInstance().addNoise(swerve_measurements.get(i));
+            SwerveMeasurement measurement =
+                    SimulationSubsystem.getInstance().addNoise(swerve_measurements.get(i));
 
             // Update the given Pose Estimator
             pose_estimator.updateWithTime(
-                    measurement.timestamp,
-                    measurement.gyro_yaw,
-                    measurement.module_positions);
+                    measurement.timestamp, measurement.gyro_yaw, measurement.module_positions);
         }
     }
 

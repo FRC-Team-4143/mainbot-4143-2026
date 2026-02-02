@@ -3,8 +3,6 @@ package frc.robot.subsystems.localization;
 import com.marswars.subsystem.MwConstants;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 
 public class LocalizationConstants extends MwConstants {
 
@@ -15,7 +13,6 @@ public class LocalizationConstants extends MwConstants {
         FULL
     }
 
-    public final Pose2d START_POSE = new Pose2d(3.0, 3.0, Rotation2d.kZero);
     public final AprilTagFieldLayout APRIL_TAG_LAYOUT =
             AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltWelded);
 
