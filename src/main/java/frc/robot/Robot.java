@@ -49,7 +49,6 @@ public class Robot extends TimedRobot {
     public void disabledPeriodic() {
         Optional<Alliance> alliance = DriverStation.getAlliance();
         if (alliance.isPresent()) {
-
             if (alliance.get() != alliance_) {
                 alliance_ = alliance.get();
                 SwerveSubsystem.getInstance()
@@ -92,16 +91,4 @@ public class Robot extends TimedRobot {
 
     @Override
     public void testExit() {}
-
-    @Override
-    public void simulationInit() {
-        // Configure the simulated robot state
-        SimulatedRobotState.configure();
-    }
-
-    @Override
-    public void simulationPeriodic() {
-        // Update the physics simulation - this is CRITICAL for proper simulation data
-        SimulatedRobotState.update();
-    }
 }

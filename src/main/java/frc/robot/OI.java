@@ -4,6 +4,9 @@
 
 package frc.robot;
 
+import choreo.Choreo;
+import choreo.trajectory.SwerveSample;
+import choreo.trajectory.Trajectory;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -12,6 +15,7 @@ import frc.robot.subsystems.hopper.HopperConstants.HopperStates;
 import frc.robot.subsystems.hopper.HopperSubsystem;
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterStates;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
+import frc.robot.subsystems.swerve.SwerveConstants.SwerveStates;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 import java.util.Optional;
 
@@ -35,6 +39,22 @@ public abstract class OI {
                                 () ->
                                         ShooterSubsystem.getInstance()
                                                 .setWantedState(ShooterStates.AIMING)));
+        driver_controller_
+                .b()
+                .whileTrue(
+                        Commands.startEnd(
+                                () -> {
+                                    SwerveSubsystem.getInstance()
+                                            .setDesiredChoreoTrajectory(
+                                                    (Trajectory<SwerveSample>)
+                                                            Choreo.loadTrajectory("LeftSideAuto")
+                                                                    .get());
+                                    SwerveSubsystem.getInstance()
+                                            .setWantedState(SwerveStates.CHOREO_PATH);
+                                },
+                                () ->
+                                        SwerveSubsystem.getInstance()
+                                                .setWantedState(SwerveStates.FIELD_CENTRIC)));
         operator_controller_
                 .rightBumper()
                 .whileTrue(
