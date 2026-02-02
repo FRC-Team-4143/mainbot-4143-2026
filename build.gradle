@@ -16,6 +16,7 @@ def ROBOT_MAIN_CLASS = "frc.robot.Main"
 spotless {
     java {
         target 'src/**/*.java'
+        targetExclude 'src/main/java/frc/robot/autos/ChoreoTraj.java', 'src/main/java/frc/robot/autos/ChoreoVars.java'
         googleJavaFormat('1.23.0').aosp().reflowLongStrings()
         removeUnusedImports()
         trimTrailingWhitespace()
