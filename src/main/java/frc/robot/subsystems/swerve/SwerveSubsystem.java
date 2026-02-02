@@ -9,6 +9,7 @@ import com.marswars.swerve_lib.ChassisRequest.XPositiveReference;
 import com.marswars.swerve_lib.SwerveMech;
 import com.marswars.swerve_lib.module.Module.DriveControlMode;
 import com.marswars.swerve_lib.module.Module.SteerControlMode;
+import com.marswars.util.TunablePid;
 import dev.doglog.DogLog;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
@@ -22,7 +23,6 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -51,14 +51,14 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
     private Optional<SwerveSample> choreo_sample_to_apply_;
     private final PIDController choreo_x_controller_ =
             new PIDController(
-                    CONSTANTS.CHOREO_X_CONTROLLER_KP,
-                    CONSTANTS.CHOREO_X_CONTROLLER_KI,
-                    CONSTANTS.CHOREO_X_CONTROLLER_KD);
+                    CONSTANTS.CHOREO_TRANSLATION_CONTROLLER_KP,
+                    CONSTANTS.CHOREO_TRANSLATION_CONTROLLER_KI,
+                    CONSTANTS.CHOREO_TRANSLATION_CONTROLLER_KD);
     private final PIDController choreo_y_controller_ =
             new PIDController(
-                    CONSTANTS.CHOREO_Y_CONTROLLER_KP,
-                    CONSTANTS.CHOREO_Y_CONTROLLER_KI,
-                    CONSTANTS.CHOREO_Y_CONTROLLER_KD);
+                    CONSTANTS.CHOREO_TRANSLATION_CONTROLLER_KP,
+                    CONSTANTS.CHOREO_TRANSLATION_CONTROLLER_KI,
+                    CONSTANTS.CHOREO_TRANSLATION_CONTROLLER_KD);
     private final PIDController choreo_theta_controller_ =
             new PIDController(
                     CONSTANTS.CHOREO_THETA_CONTROLLER_KP,
@@ -77,12 +77,12 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
 
     // IO Members
     private SwerveMech swerve_mech_;
-    private final boolean IS_SIM = RobotBase.isSimulation();
     private Rotation2d operator_forward_direction_ = OperatorPerspective.BLUE_ALLIANCE.heading;
 
     private ChassisRequest.FieldCentric field_centric_request_;
     private ChassisRequest.RobotCentric robot_centric_request_;
     private ChassisRequest.FieldCentricFacingAngle rotation_lock_request_;
+    private ChassisRequest.FieldCentricFacingAngle choreo_rotation_lock_request_;
     private ChassisRequest.ApplyFieldSpeeds field_speeds_request_;
 
     /**
@@ -115,11 +115,30 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
                         .withSteerRequestType(SteerControlMode.CLOSED_LOOP)
                         .withDeadband(CONSTANTS.MAX_TRANSLATION_RATE * 0.01)
                         .withRotationalDeadband(CONSTANTS.MAX_ANGULAR_RATE * 0.01)
+                        .withHeadingController(CONSTANTS.HEADING_CONTROLLER)
                         .withXPositiveReference(XPositiveReference.OperatorPerspective);
+        choreo_rotation_lock_request_ =
+                new ChassisRequest.FieldCentricFacingAngle()
+                        .withDriveRequestType(DriveControlMode.OPEN_LOOP)
+                        .withSteerRequestType(SteerControlMode.CLOSED_LOOP)
+                        .withDeadband(CONSTANTS.MAX_TRANSLATION_RATE * 0.01)
+                        .withRotationalDeadband(CONSTANTS.MAX_ANGULAR_RATE * 0.01)
+                        .withHeadingController(CONSTANTS.HEADING_CONTROLLER)
+                        .withXPositiveReference(XPositiveReference.TowardsRedAlliance);
         field_speeds_request_ =
                 new ChassisRequest.ApplyFieldSpeeds()
                         .withDriveRequestType(DriveControlMode.CLOSED_LOOP)
                         .withSteerRequestType(SteerControlMode.CLOSED_LOOP);
+
+        TunablePid.create(getSubsystemKey() + "TractorBeam/Gains", tractor_beam_controller_);
+        TunablePid.create(
+                getSubsystemKey() + "ChoreoPath/Translation/Gains",
+                choreo_x_controller_,
+                choreo_y_controller_);
+        TunablePid.create(
+                getSubsystemKey() + "ChoreoPath/Rotation/Gains", choreo_theta_controller_);
+        TunablePid.create(
+                getSubsystemKey() + "RotationLock/Gains", rotation_lock_request_.HeadingController);
     }
 
     public List<SubsystemIoBase> getIos() {
@@ -153,6 +172,9 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
             case CHOREO_PATH:
                 choreoPathState();
                 break;
+            case CHOREO_PATH_ROTATION_LOCK:
+                choreoPathRotationLockState();
+                break;
             case IDLE:
             default:
                 swerve_mech_.setChassisRequest(new ChassisRequest.Idle());
@@ -180,18 +202,11 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
                     case FIELD_CENTRIC -> SwerveStates.FIELD_CENTRIC;
                     case ROBOT_CENTRIC -> SwerveStates.ROBOT_CENTRIC;
                     case CHOREO_PATH -> {
-                        if (system_state_ != SwerveStates.CHOREO_PATH) {
-                            // In simulation set the robot to the start pose of the trajectory
-                            // This should be temporary until we have an auto framework
-                            if (IS_SIM) {
-                                LocalizationSubsystem.getInstance()
-                                        .resetPoseEstimator(
-                                                desired_choreo_traj_
-                                                        .getInitialPose(
-                                                                CONSTANTS.FLIP_TRAJECTORY_ON_RED)
-                                                        .get());
-                            }
-
+                        // If we are not already in a choreo path state, restart the timer
+                        // The additional check is needed to prevent resetting the timer when
+                        // switching between the two choreo states
+                        if (system_state_ != SwerveStates.CHOREO_PATH
+                                && system_state_ != SwerveStates.CHOREO_PATH_ROTATION_LOCK) {
                             choreo_timer_.restart();
                             choreo_sample_to_apply_ =
                                     desired_choreo_traj_.sampleAt(
@@ -202,6 +217,24 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
                                     desired_choreo_traj_.sampleAt(
                                             choreo_timer_.get(), CONSTANTS.FLIP_TRAJECTORY_ON_RED);
                             yield SwerveStates.CHOREO_PATH;
+                        }
+                    }
+                    case CHOREO_PATH_ROTATION_LOCK -> {
+                        // If we are not already in a choreo path state, restart the timer
+                        // The additional check is needed to prevent resetting the timer when
+                        // switching between the two choreo states
+                        if (system_state_ != SwerveStates.CHOREO_PATH_ROTATION_LOCK
+                                && system_state_ != SwerveStates.CHOREO_PATH) {
+                            choreo_timer_.restart();
+                            choreo_sample_to_apply_ =
+                                    desired_choreo_traj_.sampleAt(
+                                            choreo_timer_.get(), CONSTANTS.FLIP_TRAJECTORY_ON_RED);
+                            yield SwerveStates.CHOREO_PATH_ROTATION_LOCK;
+                        } else {
+                            choreo_sample_to_apply_ =
+                                    desired_choreo_traj_.sampleAt(
+                                            choreo_timer_.get(), CONSTANTS.FLIP_TRAJECTORY_ON_RED);
+                            yield SwerveStates.CHOREO_PATH_ROTATION_LOCK;
                         }
                     }
                     case ROTATION_LOCK -> SwerveStates.ROTATION_LOCK;
@@ -270,8 +303,6 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
             DogLog.log(
                     getSubsystemKey() + "Choreo/sample/DesiredChassisSpeeds",
                     sample.getChassisSpeeds());
-            DogLog.log(getSubsystemKey() + "Choreo/sample/ModuleForcesX", sample.moduleForcesX());
-            DogLog.log(getSubsystemKey() + "Choreo/sample/ModuleForcesY", sample.moduleForcesY());
             Pose2d pose = LocalizationSubsystem.getInstance().getFieldPose();
             ChassisSpeeds target_speeds = sample.getChassisSpeeds();
             target_speeds.vxMetersPerSecond +=
@@ -289,24 +320,78 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
         }
     }
 
+    /**
+     * Handles the CHOREO_PATH_ROTATION_LOCK state by applying chassis speeds based on the current
+     * trajectory sample, but overriding the rotation to a fixed desired rotation.
+     */
+    private void choreoPathRotationLockState() {
+        if (choreo_sample_to_apply_.isPresent()) {
+            SwerveSample sample = choreo_sample_to_apply_.get();
+            DogLog.log(getSubsystemKey() + "Choreo/TimerValue", choreo_timer_.get());
+            DogLog.log(getSubsystemKey() + "Choreo/TrajName", desired_choreo_traj_.name());
+            DogLog.log(getSubsystemKey() + "Choreo/TotalTime", desired_choreo_traj_.getTotalTime());
+            // Generate new pose with overridden rotation
+            Pose2d overridden_pose =
+                    new Pose2d(sample.getPose().getTranslation(), desired_rotation_lock_rot_);
+            DogLog.log(getSubsystemKey() + "Choreo/sample/DesiredPose", overridden_pose);
+            // Generate new chassis speeds with overridden rotation speed
+            ChassisSpeeds overridden_speeds = sample.getChassisSpeeds();
+            overridden_speeds.omegaRadiansPerSecond = 0.0;
+            DogLog.log(getSubsystemKey() + "Choreo/sample/DesiredChassisSpeeds", overridden_speeds);
+            Pose2d pose = LocalizationSubsystem.getInstance().getFieldPose();
+            ChassisSpeeds target_speeds = overridden_speeds;
+            target_speeds.vxMetersPerSecond +=
+                    choreo_x_controller_.calculate(pose.getX(), sample.x);
+            target_speeds.vyMetersPerSecond +=
+                    choreo_y_controller_.calculate(pose.getY(), sample.y);
+
+            swerve_mech_.setChassisRequest(
+                    choreo_rotation_lock_request_
+                            .withTwist(target_speeds.toTwist2d(1.0))
+                            .withTargetHeading(desired_rotation_lock_rot_));
+        } else {
+            // If no sample is available, we will just stop the robot
+            swerve_mech_.setChassisRequest(new ChassisRequest.Idle());
+        }
+    }
+
     // ------------------------------------------------
     // Chassis Control Methods
     // ------------------------------------------------
 
     /**
-     * Updates the internal target for the robot to follow and begins CHOREO_PATH
+     * Updates the internal target for the robot to follow in CHOREO_PATH or
+     * CHOREO_PATH_ROTATION_LOCK
      *
      * @param trajectory the trajectory for the robot to follow
      */
     public void setDesiredChoreoTrajectory(Trajectory<SwerveSample> trajectory) {
         desired_choreo_traj_ = trajectory;
+
+        // Reset the timer if we are already in a choreo path state to restart the new trajectory
+        if (system_state_ == SwerveStates.CHOREO_PATH
+                || system_state_ == SwerveStates.CHOREO_PATH_ROTATION_LOCK) {
+            choreo_timer_.reset();
+        }
+
+        // Log the trajectory poses for debugging
         DogLog.log(
                 getSubsystemKey() + "Choreo/Trajectory",
                 (CONSTANTS.FLIP_TRAJECTORY_ON_RED ? trajectory.flipped() : trajectory).getPoses());
     }
 
     /**
-     * Updates the internal target for the robot to reach and begins TRACTOR_BEAM
+     * Command version of {@link #setDesiredChoreoTrajectory(Trajectory)}
+     *
+     * @param trajectory the trajectory for the robot to follow
+     * @return A command that sets the desired choreo trajectory
+     */
+    public Command setDesiredChoreoTrajectoryCommand(Trajectory<SwerveSample> trajectory) {
+        return Commands.runOnce(() -> setDesiredChoreoTrajectory(trajectory));
+    }
+
+    /**
+     * Updates the internal target for the robot to reach in TRACTOR_BEAM
      *
      * @param target_pose target pose for the robot to reach
      */
@@ -317,7 +402,7 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
     }
 
     /**
-     * Updates the internal target for the robot to reach and begins TRACTOR_BEAM
+     * Updates the internal target for the robot to reach in TRACTOR_BEAM
      *
      * @param pose target pose for the robot to reach
      * @param max_lin_vel maximum linear velocity for the robot to reach the target pose
@@ -329,7 +414,7 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
     }
 
     /**
-     * Updates the internal target for the robot to reach and begins TRACTOR_BEAM
+     * Updates the internal target for the robot to reach in TRACTOR_BEAM
      *
      * @param pose target pose for the robot to reach
      * @param max_ang_vel maximum angular velocity for the robot to reach the target pose
@@ -341,7 +426,7 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
     }
 
     /**
-     * Updates the internal target for the robot to reach and begins TRACTOR_BEAM
+     * Updates the internal target for the robot to reach in TRACTOR_BEAM
      *
      * @param pose target pose for the robot to reach
      * @param max_lin_vel maximum linear velocity for the robot to reach the target pose
@@ -355,7 +440,8 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
     }
 
     /**
-     * Updates the internal target for the robot to face and begins ROTATION_LOCK
+     * Updates the internal target for the robot to face in ROTATION_LOCK or
+     * CHOREO_PATH_ROTATION_LOCK
      *
      * @param rotation
      */
@@ -363,6 +449,11 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
         desired_rotation_lock_rot_ = rotation;
     }
 
+    /**
+     * Toggles between FIELD_CENTRIC and ROBOT_CENTRIC modes.
+     *
+     * @return A command that toggles the field centric mode
+     */
     public Command toggleFieldCentric() {
         return Commands.runOnce(
                 () -> {
@@ -415,6 +506,9 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
         operator_forward_direction_ = reference.heading;
         CONSTANTS.FLIP_TRAJECTORY_ON_RED =
                 (reference.heading == OperatorPerspective.RED_ALLIANCE.heading);
+        DogLog.log(
+                getSubsystemKey() + "OperatorForwardDirection",
+                operator_forward_direction_.getDegrees());
     }
 
     /**
@@ -464,20 +558,54 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
     }
 
     /**
+     * Checks if the choreo trajectory time has elapsed.
+     *
+     * @return true if the choreo trajectory time has elapsed, false otherwise
+     */
+    public boolean hasChoreoTimeElapsed() {
+        if (system_state_ != SwerveStates.CHOREO_PATH
+                && system_state_ != SwerveStates.CHOREO_PATH_ROTATION_LOCK) {
+            return false;
+        }
+        return choreo_timer_.get() >= desired_choreo_traj_.getTotalTime();
+    }
+
+    /**
+     * Checks if the choreo trajectory time has elapsed for a specified total time.
+     *
+     * @param total_time the total time to check against
+     * @return true if the choreo trajectory time has elapsed, false otherwise
+     */
+    public boolean hasChoreoTimeElapsed(double total_time) {
+        if (system_state_ != SwerveStates.CHOREO_PATH
+                && system_state_ != SwerveStates.CHOREO_PATH_ROTATION_LOCK) {
+            return false;
+        }
+        return choreo_timer_.get() >= total_time;
+    }
+
+    /**
      * Checks if the robot is at the choreo setpoint.
      *
      * @return true if the robot is at the choreo setpoint, false otherwise
      */
     public boolean isAtChoreoSetpoint() {
-        if (system_state_ != SwerveStates.CHOREO_PATH) {
+        if (system_state_ != SwerveStates.CHOREO_PATH
+                && system_state_ != SwerveStates.CHOREO_PATH_ROTATION_LOCK) {
             return false;
         }
         return MathUtil.isNear(
-                        desired_choreo_traj_.getFinalPose(true).get().getX(),
+                        desired_choreo_traj_
+                                .getFinalPose(CONSTANTS.FLIP_TRAJECTORY_ON_RED)
+                                .get()
+                                .getX(),
                         LocalizationSubsystem.getInstance().getFieldPose().getX(),
                         CONSTANTS.CHOREO_TRANSLATION_ERROR_MARGIN)
                 && MathUtil.isNear(
-                        desired_choreo_traj_.getFinalPose(true).get().getY(),
+                        desired_choreo_traj_
+                                .getFinalPose(CONSTANTS.FLIP_TRAJECTORY_ON_RED)
+                                .get()
+                                .getY(),
                         LocalizationSubsystem.getInstance().getFieldPose().getY(),
                         CONSTANTS.CHOREO_TRANSLATION_ERROR_MARGIN);
     }
@@ -491,11 +619,17 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
     public boolean isAtEndOfChoreoTrajectoryOrTractorBeam() {
         if (desired_choreo_traj_ != null) {
             return (MathUtil.isNear(
-                                    desired_choreo_traj_.getFinalPose(true).get().getX(),
+                                    desired_choreo_traj_
+                                            .getFinalPose(CONSTANTS.FLIP_TRAJECTORY_ON_RED)
+                                            .get()
+                                            .getX(),
                                     LocalizationSubsystem.getInstance().getFieldPose().getX(),
                                     CONSTANTS.CHOREO_TRANSLATION_ERROR_MARGIN))
                             && MathUtil.isNear(
-                                    desired_choreo_traj_.getFinalPose(true).get().getY(),
+                                    desired_choreo_traj_
+                                            .getFinalPose(CONSTANTS.FLIP_TRAJECTORY_ON_RED)
+                                            .get()
+                                            .getY(),
                                     LocalizationSubsystem.getInstance().getFieldPose().getY(),
                                     CONSTANTS.CHOREO_TRANSLATION_ERROR_MARGIN)
                     || isAtTractorBeamSetpoint();
