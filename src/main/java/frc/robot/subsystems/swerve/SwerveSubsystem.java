@@ -77,7 +77,6 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
 
     // IO Members
     private SwerveMech swerve_mech_;
-    private final boolean IS_SIM = RobotBase.isSimulation();
     private Rotation2d operator_forward_direction_ = OperatorPerspective.BLUE_ALLIANCE.heading;
 
     private ChassisRequest.FieldCentric field_centric_request_;
@@ -153,6 +152,9 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
             case CHOREO_PATH:
                 choreoPathState();
                 break;
+            case CHOREO_PATH_ROTATION_LOCK:
+                choreoPathRotationOverrideState();
+                break;
             case IDLE:
             default:
                 swerve_mech_.setChassisRequest(new ChassisRequest.Idle());
@@ -180,18 +182,7 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
                     case FIELD_CENTRIC -> SwerveStates.FIELD_CENTRIC;
                     case ROBOT_CENTRIC -> SwerveStates.ROBOT_CENTRIC;
                     case CHOREO_PATH -> {
-                        if (system_state_ != SwerveStates.CHOREO_PATH) {
-                            // In simulation set the robot to the start pose of the trajectory
-                            // This should be temporary until we have an auto framework
-                            if (IS_SIM) {
-                                LocalizationSubsystem.getInstance()
-                                        .resetPoseEstimator(
-                                                desired_choreo_traj_
-                                                        .getInitialPose(
-                                                                CONSTANTS.FLIP_TRAJECTORY_ON_RED)
-                                                        .get());
-                            }
-
+                        if (system_state_ != SwerveStates.CHOREO_PATH && system_state_ != SwerveStates.CHOREO_PATH_ROTATION_LOCK) {
                             choreo_timer_.restart();
                             choreo_sample_to_apply_ =
                                     desired_choreo_traj_.sampleAt(
@@ -202,6 +193,20 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
                                     desired_choreo_traj_.sampleAt(
                                             choreo_timer_.get(), CONSTANTS.FLIP_TRAJECTORY_ON_RED);
                             yield SwerveStates.CHOREO_PATH;
+                        }
+                    }
+                    case CHOREO_PATH_ROTATION_LOCK -> {
+                        if (system_state_ != SwerveStates.CHOREO_PATH_ROTATION_LOCK && system_state_ != SwerveStates.CHOREO_PATH) {
+                            choreo_timer_.restart();
+                            choreo_sample_to_apply_ =
+                                    desired_choreo_traj_.sampleAt(
+                                            choreo_timer_.get(), CONSTANTS.FLIP_TRAJECTORY_ON_RED);
+                            yield SwerveStates.CHOREO_PATH_ROTATION_LOCK;
+                        } else {
+                            choreo_sample_to_apply_ =
+                                    desired_choreo_traj_.sampleAt(
+                                            choreo_timer_.get(), CONSTANTS.FLIP_TRAJECTORY_ON_RED);
+                            yield SwerveStates.CHOREO_PATH_ROTATION_LOCK;
                         }
                     }
                     case ROTATION_LOCK -> SwerveStates.ROTATION_LOCK;
@@ -270,8 +275,6 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
             DogLog.log(
                     getSubsystemKey() + "Choreo/sample/DesiredChassisSpeeds",
                     sample.getChassisSpeeds());
-            DogLog.log(getSubsystemKey() + "Choreo/sample/ModuleForcesX", sample.moduleForcesX());
-            DogLog.log(getSubsystemKey() + "Choreo/sample/ModuleForcesY", sample.moduleForcesY());
             Pose2d pose = LocalizationSubsystem.getInstance().getFieldPose();
             ChassisSpeeds target_speeds = sample.getChassisSpeeds();
             target_speeds.vxMetersPerSecond +=
@@ -289,12 +292,46 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
         }
     }
 
+    /**
+     * Handles the CHOREO_PATH_ROTATION_OVERRIDE state by applying chassis speeds based on the
+     * current trajectory sample, but overriding the rotation to a fixed desired rotation.
+     */
+    private void choreoPathRotationOverrideState() {
+        if (choreo_sample_to_apply_.isPresent()) {
+            SwerveSample sample = choreo_sample_to_apply_.get();
+            DogLog.log(getSubsystemKey() + "Choreo/TimerValue", choreo_timer_.get());
+            DogLog.log(getSubsystemKey() + "Choreo/TrajName", desired_choreo_traj_.name());
+            DogLog.log(getSubsystemKey() + "Choreo/TotalTime", desired_choreo_traj_.getTotalTime());
+            // Generate new pose with overridden rotation
+            Pose2d overridden_pose = new Pose2d(sample.getPose().getTranslation(), desired_rotation_lock_rot_);
+            DogLog.log(getSubsystemKey() + "Choreo/sample/DesiredPose", overridden_pose);
+            // Generate new chassis speeds with overridden rotation speed
+            ChassisSpeeds overridden_speeds = sample.getChassisSpeeds();
+            overridden_speeds.omegaRadiansPerSecond = 0.0;
+            DogLog.log(
+                    getSubsystemKey() + "Choreo/sample/DesiredChassisSpeeds",
+                    overridden_speeds);
+            Pose2d pose = LocalizationSubsystem.getInstance().getFieldPose();
+            ChassisSpeeds target_speeds = overridden_speeds;
+            target_speeds.vxMetersPerSecond +=
+                    choreo_x_controller_.calculate(pose.getX(), sample.x);
+            target_speeds.vyMetersPerSecond +=
+                    choreo_y_controller_.calculate(pose.getY(), sample.y);
+            swerve_mech_.setChassisRequest(rotation_lock_request_
+                .withTwist(target_speeds.toTwist2d(1.0))
+                .withTargetHeading(desired_rotation_lock_rot_));
+        } else {
+            // If no sample is available, we will just stop the robot
+            swerve_mech_.setChassisRequest(new ChassisRequest.Idle());
+        }
+    }
+
     // ------------------------------------------------
     // Chassis Control Methods
     // ------------------------------------------------
 
     /**
-     * Updates the internal target for the robot to follow and begins CHOREO_PATH
+     * Updates the internal target for the robot to follow in CHOREO_PATH or CHOREO_PATH_ROTATION_LOCK
      *
      * @param trajectory the trajectory for the robot to follow
      */
@@ -306,7 +343,7 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
     }
 
     /**
-     * Updates the internal target for the robot to reach and begins TRACTOR_BEAM
+     * Updates the internal target for the robot to reach in TRACTOR_BEAM
      *
      * @param target_pose target pose for the robot to reach
      */
@@ -317,7 +354,7 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
     }
 
     /**
-     * Updates the internal target for the robot to reach and begins TRACTOR_BEAM
+     * Updates the internal target for the robot to reach in TRACTOR_BEAM
      *
      * @param pose target pose for the robot to reach
      * @param max_lin_vel maximum linear velocity for the robot to reach the target pose
@@ -329,7 +366,7 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
     }
 
     /**
-     * Updates the internal target for the robot to reach and begins TRACTOR_BEAM
+     * Updates the internal target for the robot to reach in TRACTOR_BEAM
      *
      * @param pose target pose for the robot to reach
      * @param max_ang_vel maximum angular velocity for the robot to reach the target pose
@@ -341,7 +378,7 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
     }
 
     /**
-     * Updates the internal target for the robot to reach and begins TRACTOR_BEAM
+     * Updates the internal target for the robot to reach in TRACTOR_BEAM
      *
      * @param pose target pose for the robot to reach
      * @param max_lin_vel maximum linear velocity for the robot to reach the target pose
@@ -355,7 +392,7 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
     }
 
     /**
-     * Updates the internal target for the robot to face and begins ROTATION_LOCK
+     * Updates the internal target for the robot to face in ROTATION_LOCK or CHOREO_PATH_ROTATION_LOCK
      *
      * @param rotation
      */
@@ -363,6 +400,10 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
         desired_rotation_lock_rot_ = rotation;
     }
 
+    /**
+     * Toggles between FIELD_CENTRIC and ROBOT_CENTRIC modes.
+     * @return A command that toggles the field centric mode
+     */
     public Command toggleFieldCentric() {
         return Commands.runOnce(
                 () -> {
