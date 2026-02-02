@@ -1,5 +1,6 @@
 package frc.robot.subsystems.swerve;
 
+import com.ctre.phoenix6.swerve.utility.PhoenixPIDController;
 import com.marswars.subsystem.MwConstants;
 import com.marswars.swerve_lib.SwerveDriveConfig;
 import com.marswars.swerve_lib.module.ModuleType;
@@ -79,6 +80,7 @@ public class SwerveConstants extends MwConstants {
     public final double CONTROLLER_DEADBAND = 0.05;
     public final double MAX_TRANSLATION_RATE = getDoubleConstant("com", "max_translation_rate");
     public final double MAX_ANGULAR_RATE = getDoubleConstant("com", "max_angular_rate");
+    public final PhoenixPIDController HEADING_CONTROLLER = new PhoenixPIDController(7.3, 0.0, 0.07);
 
     // =============================================================================
     // CHOREO PATH FOLLOWING CONSTANTS
@@ -86,12 +88,9 @@ public class SwerveConstants extends MwConstants {
 
     public boolean FLIP_TRAJECTORY_ON_RED = false;
     public final double CHOREO_TRANSLATION_ERROR_MARGIN = Units.inchesToMeters(1.0);
-    public final double CHOREO_X_CONTROLLER_KP = 0.0;
-    public final double CHOREO_X_CONTROLLER_KI = 0.0;
-    public final double CHOREO_X_CONTROLLER_KD = 0.0;
-    public final double CHOREO_Y_CONTROLLER_KP = 0.0;
-    public final double CHOREO_Y_CONTROLLER_KI = 0.0;
-    public final double CHOREO_Y_CONTROLLER_KD = 0.0;
+    public final double CHOREO_TRANSLATION_CONTROLLER_KP = 0.0;
+    public final double CHOREO_TRANSLATION_CONTROLLER_KI = 0.0;
+    public final double CHOREO_TRANSLATION_CONTROLLER_KD = 0.0;
     public final double CHOREO_THETA_CONTROLLER_KP = 0.0;
     public final double CHOREO_THETA_CONTROLLER_KI = 0.0;
     public final double CHOREO_THETA_CONTROLLER_KD = 0.0;
