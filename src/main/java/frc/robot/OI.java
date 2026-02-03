@@ -67,14 +67,12 @@ public abstract class OI {
                 .whileTrue(
                         Commands.startEnd(
                                 () -> {
-                                    SwerveSubsystem.getInstance()
-                                            .setDesiredRotationLockCOR(new Rotation2d(1.0, 1.0),
-                                                    new Translation2d(0.5,0.5) );
+                                    
                                     SwerveSubsystem.getInstance()
                                             .setWantedState(SwerveStates.ROTATION_LOCK);
                                 },
                                 () -> SwerveSubsystem.getInstance()
-                                        .setWantedState(SwerveStates.ROTATION_LOCK)));
+                                        .setWantedState(SwerveStates.FIELD_CENTRIC)));
         // ===============================================
     }
 

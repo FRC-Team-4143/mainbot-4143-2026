@@ -450,13 +450,14 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
      * @param rotation
      */
     public void setDesiredRotationLock(Rotation2d rotation) {
-        desired_rotation_lock_rot_ = rotation;
-        desired_rotation_lock_cor_ = Translation2d.kZero;
+        setDesiredRotationLockCOR(rotation, Translation2d.kZero);
     }
 
     public void setDesiredRotationLockCOR(Rotation2d rotation, Translation2d center_point) {
         desired_rotation_lock_rot_ = rotation;
         desired_rotation_lock_cor_ = center_point;
+        DogLog.log(getSubsystemKey()+"Rotation/rotation", desired_rotation_lock_rot_);
+        DogLog.log(getSubsystemKey()+"Rotation/center of rotation", desired_rotation_lock_cor_);
     }
 
     /**
