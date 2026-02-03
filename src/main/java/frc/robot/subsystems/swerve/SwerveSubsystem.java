@@ -49,7 +49,7 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
     Trajectory<SwerveSample> desired_choreo_traj_;
     private final Timer choreo_timer_ = new Timer();
     private Optional<SwerveSample> choreo_sample_to_apply_;
-    private final PIDController choreo_x_controller_ =
+        private final PIDController choreo_x_controller_ =
             new PIDController(
                     CONSTANTS.CHOREO_TRANSLATION_CONTROLLER_KP,
                     CONSTANTS.CHOREO_TRANSLATION_CONTROLLER_KI,
@@ -64,15 +64,16 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
                     CONSTANTS.CHOREO_THETA_CONTROLLER_KP,
                     CONSTANTS.CHOREO_THETA_CONTROLLER_KI,
                     CONSTANTS.CHOREO_THETA_CONTROLLER_KD);
+
     private Pose2d desired_tractor_beam_pose_ = new Pose2d();
     private double max_lin_vel_for_tractor_beam_;
     private double max_ang_vel_for_tractor_beam_;
-    private final PIDController tractor_beam_controller_ =
-            new PIDController(
-                    CONSTANTS.TRACTOR_BEAM_CONTROLLER_KP,
-                    CONSTANTS.TRACTOR_BEAM_CONTROLLER_KI,
-                    CONSTANTS.TRACTOR_BEAM_CONTROLLER_KD);
+    private final PIDController tractor_beam_controller_ = new PIDController(
+            CONSTANTS.TRACTOR_BEAM_CONTROLLER_KP,
+            CONSTANTS.TRACTOR_BEAM_CONTROLLER_KI,
+            CONSTANTS.TRACTOR_BEAM_CONTROLLER_KD);
     private Rotation2d desired_rotation_lock_rot_ = new Rotation2d();
+    private Translation2d desired_rotation_lock_cor_ = new Translation2d();
     private double tele_op_velocity_scalar_ = 1.0;
 
     // IO Members
@@ -96,7 +97,7 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
         swerve_mech_ = new SwerveMech(getSubsystemKey(), CONSTANTS.SWERVE_DRIVE_CONFIG);
 
         // Initialize drive mode requests
-        field_centric_request_ =
+           field_centric_request_ =
                 new ChassisRequest.FieldCentric()
                         .withDriveRequestType(DriveControlMode.OPEN_LOOP)
                         .withSteerRequestType(SteerControlMode.CLOSED_LOOP)
@@ -146,7 +147,8 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
     }
 
     @Override
-    public void reset() {}
+    public void reset() {
+    }
 
     @Override
     public void updateLogic(double timestamp) {
@@ -167,7 +169,9 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
                 swerve_mech_.setChassisRequest(
                         rotation_lock_request_
                                 .withTargetHeading(desired_rotation_lock_rot_)
-                                .withTwist(calculateSpeedsBasedOnJoystickInputs()));
+                                .withTwist(calculateSpeedsBasedOnJoystickInputs())
+                                .withCenterOfRotation(desired_rotation_lock_cor_));
+
                 break;
             case CHOREO_PATH:
                 choreoPathState();
@@ -197,7 +201,7 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
      */
     @Override
     protected void handleStateTransition(SwerveStates wanted_state) {
-        system_state_ =
+                system_state_ =
                 switch (wanted_state) {
                     case FIELD_CENTRIC -> SwerveStates.FIELD_CENTRIC;
                     case ROBOT_CENTRIC -> SwerveStates.ROBOT_CENTRIC;
@@ -244,27 +248,25 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
     }
 
     /**
-     * Handles the TRACTOR_BEAM state by calculating the necessary chassis speeds to move towards
+     * Handles the TRACTOR_BEAM state by calculating the necessary chassis speeds to
+     * move towards
      * the desired tractor beam pose.
      */
     private void tractorBeamState() {
-        Translation2d translation_to_desired_point =
-                desired_tractor_beam_pose_
-                        .getTranslation()
-                        .minus(LocalizationSubsystem.getInstance().getFieldPose().getTranslation());
+        Translation2d translation_to_desired_point = desired_tractor_beam_pose_
+                .getTranslation()
+                .minus(LocalizationSubsystem.getInstance().getFieldPose().getTranslation());
         double linear_distance = translation_to_desired_point.getNorm();
         double friction_constant = 0.0;
         if (linear_distance >= Units.inchesToMeters(0.5)) {
-            friction_constant =
-                    CONSTANTS.TRACTOR_BEAM_STATIC_FRICTION_CONSTANT
-                            * CONSTANTS.MAX_TRANSLATION_RATE;
+            friction_constant = CONSTANTS.TRACTOR_BEAM_STATIC_FRICTION_CONSTANT
+                    * CONSTANTS.MAX_TRANSLATION_RATE;
         }
         Rotation2d direction_of_travel = translation_to_desired_point.getAngle();
-        double velocity_output =
-                Math.min(
-                        Math.abs(tractor_beam_controller_.calculate(linear_distance, 0))
-                                + friction_constant,
-                        max_lin_vel_for_tractor_beam_);
+        double velocity_output = Math.min(
+                Math.abs(tractor_beam_controller_.calculate(linear_distance, 0))
+                        + friction_constant,
+                max_lin_vel_for_tractor_beam_);
         double x_component = velocity_output * direction_of_travel.getCos();
         double y_component = velocity_output * direction_of_travel.getSin();
 
@@ -290,7 +292,8 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
     }
 
     /**
-     * Handles the CHOREO_PATH state by applying the appropriate chassis speeds based on the current
+     * Handles the CHOREO_PATH state by applying the appropriate chassis speeds
+     * based on the current
      * trajectory sample and PID controller outputs.
      */
     private void choreoPathState() {
@@ -305,13 +308,10 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
                     sample.getChassisSpeeds());
             Pose2d pose = LocalizationSubsystem.getInstance().getFieldPose();
             ChassisSpeeds target_speeds = sample.getChassisSpeeds();
-            target_speeds.vxMetersPerSecond +=
-                    choreo_x_controller_.calculate(pose.getX(), sample.x);
-            target_speeds.vyMetersPerSecond +=
-                    choreo_y_controller_.calculate(pose.getY(), sample.y);
-            target_speeds.omegaRadiansPerSecond +=
-                    choreo_theta_controller_.calculate(
-                            pose.getRotation().getRadians(), sample.heading);
+            target_speeds.vxMetersPerSecond += choreo_x_controller_.calculate(pose.getX(), sample.x);
+            target_speeds.vyMetersPerSecond += choreo_y_controller_.calculate(pose.getY(), sample.y);
+            target_speeds.omegaRadiansPerSecond += choreo_theta_controller_.calculate(
+                    pose.getRotation().getRadians(), sample.heading);
 
             swerve_mech_.setChassisRequest(field_speeds_request_.withSpeeds(target_speeds));
         } else {
@@ -404,8 +404,9 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
     /**
      * Updates the internal target for the robot to reach in TRACTOR_BEAM
      *
-     * @param pose target pose for the robot to reach
-     * @param max_lin_vel maximum linear velocity for the robot to reach the target pose
+     * @param pose        target pose for the robot to reach
+     * @param max_lin_vel maximum linear velocity for the robot to reach the target
+     *                    pose
      */
     public void setDesiredTractorBeamPoseWithMaxLinVel(Pose2d pose, double max_lin_vel) {
         max_lin_vel_for_tractor_beam_ = max_lin_vel;
@@ -416,8 +417,9 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
     /**
      * Updates the internal target for the robot to reach in TRACTOR_BEAM
      *
-     * @param pose target pose for the robot to reach
-     * @param max_ang_vel maximum angular velocity for the robot to reach the target pose
+     * @param pose        target pose for the robot to reach
+     * @param max_ang_vel maximum angular velocity for the robot to reach the target
+     *                    pose
      */
     public void setDesiredTractorBeamPoseWithMaxAngVel(Pose2d pose, double max_ang_vel) {
         max_lin_vel_for_tractor_beam_ = CONSTANTS.MAX_TRANSLATION_RATE;
@@ -428,9 +430,11 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
     /**
      * Updates the internal target for the robot to reach in TRACTOR_BEAM
      *
-     * @param pose target pose for the robot to reach
-     * @param max_lin_vel maximum linear velocity for the robot to reach the target pose
-     * @param max_ang_vel maximum angular velocity for the robot to reach the target pose
+     * @param pose        target pose for the robot to reach
+     * @param max_lin_vel maximum linear velocity for the robot to reach the target
+     *                    pose
+     * @param max_ang_vel maximum angular velocity for the robot to reach the target
+     *                    pose
      */
     public void setTractorBeamPoseWithConstraints(
             Pose2d pose, double max_lin_vel, double max_ang_vel) {
@@ -447,6 +451,12 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
      */
     public void setDesiredRotationLock(Rotation2d rotation) {
         desired_rotation_lock_rot_ = rotation;
+        desired_rotation_lock_cor_ = Translation2d.kZero;
+    }
+
+    public void setDesiredRotationLockCOR(Rotation2d rotation, Translation2d center_point) {
+        desired_rotation_lock_rot_ = rotation;
+        desired_rotation_lock_cor_ = center_point;
     }
 
     /**
@@ -472,27 +482,25 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
     /**
      * Calculates chassis speeds based on joystick inputs.
      *
-     * @return the controller inputs as a Twist2d object, where the x and y components represent the
-     *     translation speeds and the theta component represents the angular speed
+     * @return the controller inputs as a Twist2d object, where the x and y
+     *         components represent the
+     *         translation speeds and the theta component represents the angular
+     *         speed
      */
     private Twist2d calculateSpeedsBasedOnJoystickInputs() {
         if (DriverStation.getAlliance().isEmpty()) {
             return new Twist2d();
         }
 
-        double x_magnitude =
-                -MathUtil.applyDeadband(OI.getDriverJoystickLeftY(), CONSTANTS.CONTROLLER_DEADBAND);
-        double y_magnitude =
-                -MathUtil.applyDeadband(OI.getDriverJoystickLeftX(), CONSTANTS.CONTROLLER_DEADBAND);
-        double angular_magnitude =
-                -MathUtil.applyDeadband(
-                        OI.getDriverJoystickRightX(), CONSTANTS.CONTROLLER_DEADBAND);
+        double x_magnitude = -MathUtil.applyDeadband(OI.getDriverJoystickLeftY(), CONSTANTS.CONTROLLER_DEADBAND);
+        double y_magnitude = -MathUtil.applyDeadband(OI.getDriverJoystickLeftX(), CONSTANTS.CONTROLLER_DEADBAND);
+        double angular_magnitude = -MathUtil.applyDeadband(
+                OI.getDriverJoystickRightX(), CONSTANTS.CONTROLLER_DEADBAND);
 
-        Twist2d twist =
-                new Twist2d(
-                        x_magnitude * CONSTANTS.MAX_TRANSLATION_RATE * tele_op_velocity_scalar_,
-                        y_magnitude * CONSTANTS.MAX_TRANSLATION_RATE * tele_op_velocity_scalar_,
-                        angular_magnitude * CONSTANTS.MAX_ANGULAR_RATE);
+        Twist2d twist = new Twist2d(
+                x_magnitude * CONSTANTS.MAX_TRANSLATION_RATE * tele_op_velocity_scalar_,
+                y_magnitude * CONSTANTS.MAX_TRANSLATION_RATE * tele_op_velocity_scalar_,
+                angular_magnitude * CONSTANTS.MAX_ANGULAR_RATE);
         DogLog.log(getSubsystemKey() + "RequestedTwist", twist);
         return twist;
     }
@@ -530,11 +538,10 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
      * @return true if the robot is at the tractor beam setpoint, false otherwise
      */
     public boolean isAtTractorBeamSetpoint() {
-        double distance =
-                desired_tractor_beam_pose_
-                        .getTranslation()
-                        .minus(LocalizationSubsystem.getInstance().getFieldPose().getTranslation())
-                        .getNorm();
+        double distance = desired_tractor_beam_pose_
+                .getTranslation()
+                .minus(LocalizationSubsystem.getInstance().getFieldPose().getTranslation())
+                .getNorm();
         return MathUtil.isNear(0.0, distance, CONSTANTS.TRACTOR_BEAM_TRANSLATION_ERROR_MARGIN);
     }
 
@@ -551,7 +558,8 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
      * Checks if the robot is at the desired rotation within a specified tolerance.
      *
      * @param tolerance the tolerance in radians
-     * @return true if the robot is at the desired rotation within the tolerance, false otherwise
+     * @return true if the robot is at the desired rotation within the tolerance,
+     *         false otherwise
      */
     public boolean isAtDesiredRotation(double tolerance) {
         return rotation_lock_request_.HeadingController.getPositionError() < tolerance;
@@ -595,7 +603,7 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
             return false;
         }
         return MathUtil.isNear(
-                        desired_choreo_traj_
+                       desired_choreo_traj_
                                 .getFinalPose(CONSTANTS.FLIP_TRAJECTORY_ON_RED)
                                 .get()
                                 .getX(),
@@ -611,10 +619,12 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
     }
 
     /**
-     * Checks if the robot is at the end of the choreo trajectory or at the tractor beam setpoint.
+     * Checks if the robot is at the end of the choreo trajectory or at the tractor
+     * beam setpoint.
      *
-     * @return true if the robot is at the end of the choreo trajectory or at the tractor beam
-     *     setpoint, false otherwise
+     * @return true if the robot is at the end of the choreo trajectory or at the
+     *         tractor beam
+     *         setpoint, false otherwise
      */
     public boolean isAtEndOfChoreoTrajectoryOrTractorBeam() {
         if (desired_choreo_traj_ != null) {
@@ -644,14 +654,13 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
      * @return the distance from the choreo endpoint in meters
      */
     public double getDistanceFromChoreoEndpoint() {
-        double distance =
-                Math.abs(
-                        desired_choreo_traj_
-                                .getFinalPose(CONSTANTS.FLIP_TRAJECTORY_ON_RED)
-                                .get()
-                                .minus(LocalizationSubsystem.getInstance().getFieldPose())
-                                .getTranslation()
-                                .getNorm());
+        double distance = Math.abs(
+                desired_choreo_traj_
+                        .getFinalPose(CONSTANTS.FLIP_TRAJECTORY_ON_RED)
+                        .get()
+                        .minus(LocalizationSubsystem.getInstance().getFieldPose())
+                        .getTranslation()
+                        .getNorm());
         return distance;
     }
 
@@ -661,11 +670,10 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
      * @return the distance from the tractor beam setpoint in meters
      */
     public double getDistanceFromTractorBeamSetpoint() {
-        double diff =
-                desired_tractor_beam_pose_
-                        .getTranslation()
-                        .minus(LocalizationSubsystem.getInstance().getFieldPose().getTranslation())
-                        .getNorm();
+        double diff = desired_tractor_beam_pose_
+                .getTranslation()
+                .minus(LocalizationSubsystem.getInstance().getFieldPose().getTranslation())
+                .getNorm();
         return diff;
     }
 
@@ -683,12 +691,18 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
         return Commands.runOnce(() -> swerve_mech_.setGyro(operator_forward_direction_));
     }
 
-    /** Returns the module states (turn angles and drive velocities) for all of the modules. */
+    /**
+     * Returns the module states (turn angles and drive velocities) for all of the
+     * modules.
+     */
     public SwerveModuleState[] getModuleStates() {
         return swerve_mech_.getModuleStates();
     }
 
-    /** Returns the module positions (turn angles and drive positions) for all of the modules. */
+    /**
+     * Returns the module positions (turn angles and drive positions) for all of the
+     * modules.
+     */
     public SwerveModulePosition[] getModulePositions() {
         return swerve_mech_.getModulePositions();
     }
