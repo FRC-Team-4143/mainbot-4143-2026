@@ -20,21 +20,28 @@ public class HubActiveMonitor {
   {
     case 'B' :
       //Blue case code
+    hubActive();
       break;
     case 'R' :
       //Red case code
+    hubActive();
       break;
     default :
       //This is corrupt data
+
       break;
   }
 } else {
   //Code for no data received yet
+
+}
+public void hubActive(String gameData){
+if( AllianceSide == gameData) {
+  hubActive = false;
+}else{
+hubActive = true;
 }}
 
-if( AllianceSide == 'B') {
-  
-}
 
 
 
@@ -42,5 +49,4 @@ if( AllianceSide == 'B') {
 
 
 
-
-}
+}}
