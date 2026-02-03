@@ -2,6 +2,9 @@
   "disabled_subsystems": [ ],
   "swerve": {
     "com": {
+      "base_length": 27.5,
+      "base_width": 27.5,
+      "bumper_height": 3.0,
       "slip_current": 50,
       "speed_at_12v": 5.0,
       "couple_ratio": 3.5,
@@ -130,102 +133,7 @@
       "module_gearing": "L2+"
     }
   },
-  "elevator": {
-    "elevator_mech": {
-      "leader_motor": {
-        "bus_name": "rio",
-        "bus_id": 12,
-        "type": "X60",
-        "inverted": false,
-        "brake_mode": true,
-        "slot0": {
-          "ks": 0.0,
-          "kv": 0.0,
-          "ka": 0.0,
-          "kg": 0.21,
-          "kp": 35.0,
-          "ki": 0.0,
-          "kd": 0.0
-        },
-        "slot1": {
-          "ks": 0.2,
-          "kv": 0.1,
-          "ka": 0.02,
-          "kg": 0.3,
-          "kp": 8.0,
-          "ki": 0.0,
-          "kd": 0.0
-        },
-        "motion_magic": {
-          "enabled": false,
-          "cruise_velocity": 10000,
-          "acceleration": 6000,
-          "jerk": 0
-        },
-        "supply_limit": {
-          "enabled": true,
-          "current_limit": 40,
-          "trigger_time": 0.1
-        },
-        "stator_limit": {
-          "enabled": true,
-          "current_limit": 40
-        }
-      },
-      "gear_ratio": 10.0,
-      "drum_radius": 0.025,
-      "carrige_mass": 5.0,
-      "rigging_ratio": 2.0,
-      "max_extension": 1.5
-    }
-  },
-  "arm": {
-    "arm_mech": {
-      "leader_motor": {
-        "bus_name": "rio",
-        "bus_id": 12,
-        "type": "X60",
-        "inverted": false,
-        "brake_mode": true,
-        "slot0": {
-          "ks": 0.0,
-          "kv": 0.0,
-          "ka": 0.0,
-          "kg": 0.21,
-          "kp": 35.0,
-          "ki": 0.0,
-          "kd": 0.0
-        },
-        "slot1": {
-          "ks": 0.2,
-          "kv": 0.1,
-          "ka": 0.02,
-          "kg": 0.3,
-          "kp": 8.0,
-          "ki": 0.0,
-          "kd": 0.0
-        },
-        "motion_magic": {
-          "enabled": false,
-          "cruise_velocity": 10000,
-          "acceleration": 6000,
-          "jerk": 0
-        },
-        "supply_limit": {
-          "enabled": true,
-          "current_limit": 40,
-          "trigger_time": 0.1
-        },
-        "stator_limit": {
-          "enabled": true,
-          "current_limit": 40
-        }
-      },
-      "gear_ratio": 10.0,
-      "length": 0.025,
-      "mass": 5.0,
-      "min_angle": -180,
-      "max_angle": 180
-    }
+  "intake":{
+    "max_extension": 12.0
   }
 }
