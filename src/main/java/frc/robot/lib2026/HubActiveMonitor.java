@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 public class HubActiveMonitor {
     public String gameData = DriverStation.getGameSpecificMessage();
     public boolean hubActive = false;
+    public char AllianceSide = 'B';
     {
 
         if( DriverStation.isAutonomous() == true){
@@ -29,8 +30,16 @@ public class HubActiveMonitor {
   }
 } else {
   //Code for no data received yet
+}}
+
+if( AllianceSide == 'B') {
+  
 }
-}
+
+
+
+
+
 
 
 
