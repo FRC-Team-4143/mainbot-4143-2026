@@ -1,33 +1,20 @@
 package frc.robot.subsystems.Climber;
 
+import java.lang.constant.ConstantDesc;
 import java.util.Arrays;
 import java.util.List;
 
-import com.marswars.mechanisms.RollerMech;
+import org.ejml.interfaces.decomposition.LUDecomposition_F32;
+
 import com.marswars.mechanisms.ArmMech;
+import com.marswars.mechanisms.RollerMech;
 import com.marswars.subsystem.MwSubsystem;
 import com.marswars.subsystem.SubsystemIoBase;
 
-import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.robot.subsystems.Climber.ClimberConstants.ClimberStates;
 
 public class ClimberSubsystem extends MwSubsystem<ClimberStates, ClimberConstants> {
     private static ClimberSubsystem instance_ = null;
-
-    // temporary varibale for state machine transstions
-    private static boolean teleop_climb_state_enabled_ = false;
-    private static boolean teleop_climb_state_canceled_ = false;
-    private static boolean auto_climb_state_enabled_ = false;
-    private static boolean all_other_attachments_retracted_ = false;
-    private static boolean extended_ = false;
-    private static boolean finished_deploying_ = false;
-    private static boolean robot_allined_and_ready_ = false;
-    private static boolean engaged_ = false;
-    private static boolean finished_teleop_climb_up_ = false;
-    private static boolean finished_teleop_climb_down_ = false;
-    private static boolean finshed_auto_clim_up_ = false;
-    private static boolean down_climb_state_enabled_ = false;
-    private static boolean finished_auto_climb_down_ = false;
 
     public static ClimberSubsystem getInstance() {
         if (instance_ == null) {
@@ -36,18 +23,18 @@ public class ClimberSubsystem extends MwSubsystem<ClimberStates, ClimberConstant
         return instance_;
     }
 
-    private RollerMech Extender;
-    private ArmMech Arm;
+    private RollerMech Extender_;
+    private ArmMech Arm_;
 
     // climer constructor
     public ClimberSubsystem() {
-        super(ClimberStates.STORED, new ClimberConstants());
-        Extender = new RollerMech(
+        super(ClimberStates.STOWED, new ClimberConstants());
+        Extender_ = new RollerMech(
                 getSubsystemKey(),
                 "Extender",
                 List.of(CONSTANTS.EXTENDER_MOTOR_CONFIG),
                 CONSTANTS.EXTENDER_GEAR_RATIO);
-        Arm = new ArmMech(
+        Arm_ = new ArmMech(
                 getSubsystemKey(),
                 "Arm",
                 List.of(CONSTANTS.ARM_MOTOR_CONFIG),
@@ -62,56 +49,55 @@ public class ClimberSubsystem extends MwSubsystem<ClimberStates, ClimberConstant
     @Override
     public void updateLogic(double timestamp) {
         switch (system_state_) {
-            case STORED:
+            case STOWED:
+            Extender_.setTargetPosition(CONSTANTS.EXTENDER_STOWED_ANGLE);
                 break;
-            case EXTENDING:
+            case DEPLOY:
+            Extender_.setTargetPosition(CONSTANTS.EXTENDER_DEPLOYED_ANGLE);
                 break;
-            case DEPLOYED:
+            case L1_CLIMB:
+            Arm_.setTargetPosition(CONSTANTS.ARM_L1_CLIMB);
                 break;
-            case TELEOP_ENGAGE:
+            case L1_DOWN:
+            Arm_.setTargetPosition(CONSTANTS.ARM_L0_POSITION);
                 break;
-            case TELEOP_CLIMB_UP:
-                break;
-            case IDLE_FINALE:
-                break;
-            case TELEOP_CLIMB_DOWN:
-                break;
-            case AUTO_ENGAGE:
-                break;
-            case AUTO_CLIMB_UP:
-                break;
-            case IDLE_AUTO:
-                break;
-            case AUTO_CLIMB_DOWN:
-                break;
-            case DISENGAGE:
-                break;
-            case STORING:
+            case L3_CLIMB:
+            Arm_.setTargetPosition(CONSTANTS.ARM_L3_CLIMB);
                 break;
         }
     }
 
-    public void handleStateTransistion(ClimberStates wanted) {
-        if (system_state_ == ClimberStates.STORED && all_other_attachments_retracted_ && (teleop_climb_state_enabled_ || auto_climb_state_enabled_)) {
-            system_state_ = ClimberStates.EXTENDING;
+    // states transitions, tell what each state can transition too based on conditions
+    public void handleStateTransistion(ClimberStates wanted_state) {
+        if (system_state_ == ClimberStates.STOWED && wanted_state == ClimberStates.DEPLOY) {
+            system_state_ = ClimberStates.DEPLOY;
         } else {
-        } //no other actions
-        if (system_state_ == ClimberStates.EXTENDING && extended_) {
-            system_state_ = ClimberStates.DEPLOYED;
-        } else if (system_state_ == ClimberStates.EXTENDING && teleop_climb_state_canceled_) {
-            system_state_ = ClimberStates.STORING;
+        } //no command
+        if (system_state_ == ClimberStates.DEPLOY && wanted_state == ClimberStates.L1_CLIMB) {
+            system_state_ = ClimberStates.L1_CLIMB;
+        } else if (system_state_ == ClimberStates.DEPLOY && wanted_state == ClimberStates.L3_CLIMB) {
+            system_state_ = ClimberStates.L3_CLIMB;
+        } else if (system_state_ == ClimberStates.DEPLOY && wanted_state == ClimberStates.STOWED) {
+            system_state_ = ClimberStates.STOWED;
         } else {
-        } // no other actions
-
+        } // no commands
+        if (system_state_ == ClimberStates.L1_CLIMB && wanted_state == ClimberStates.L1_DOWN) {
+            system_state_ = ClimberStates.L1_DOWN;
+        } else {
+        } // no commands
+        if (system_state_ == ClimberStates.L1_DOWN && wanted_state == ClimberStates.DEPLOY) {
+            system_state_ = ClimberStates.DEPLOY;
+        } else {
+        } // no commands
     }
 
     @Override
     public List<SubsystemIoBase> getIos() {
-        return Arrays.asList(Extender, Arm);
+        return Arrays.asList(Extender_, Arm_);
     }
 
     @Override
     public void reset() {
-        system_state_ = ClimberStates.STORED;
+        system_state_ = ClimberStates.STOWED;
     }
 }

@@ -1,13 +1,12 @@
 package frc.robot.subsystems.Climber;
 
-import static edu.wpi.first.units.Units.Meter;
-
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.marswars.subsystem.MwConstants;
 import com.marswars.util.FxMotorConfig;
 import com.marswars.util.FxMotorConfig.FxMotorType;
 
-import edu.wpi.first.units.Units;
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.units.Unit;
 
 // IMPORTANT
 // Change ALL placeholders BEFORE branch merge
@@ -15,41 +14,38 @@ import edu.wpi.first.units.Units;
 
 public class ClimberConstants extends MwConstants {
     public enum ClimberStates {
-        STORED,
-        EXTENDING,
-        DEPLOYED,
-        TELEOP_ENGAGE,
-        TELEOP_CLIMB_UP,
-        IDLE_FINALE,
-        TELEOP_CLIMB_DOWN,
-        AUTO_ENGAGE,
-        AUTO_CLIMB_UP,
-        IDLE_AUTO,
-        AUTO_CLIMB_DOWN,
-        DISENGAGE,
-        STORING
+        STOWED,
+        DEPLOY,
+        L1_CLIMB,
+        L1_DOWN,
+        L3_CLIMB
     }
 
-    //Extender configs
-    public final int  EXTENDERMOTER_ID = 1; //Place holder
-    public final boolean EXTENDERMOTER_INVERTED = false; //Place Holder
-    public final double EXTENDER_GEAR_RATIO = 1.0; //place holder
+    // Extender configs
+    public final int EXTENDERMOTER_ID = 21; //may change
+    public final boolean EXTENDERMOTER_INVERTED = false; // Place Holder
+    public final double EXTENDER_GEAR_RATIO = 1.0; // place holder
     public final FxMotorConfig EXTENDER_MOTOR_CONFIG = new FxMotorConfig();
+    public final double EXTENDER_DEPLOYED_ANGLE = (1 * Math.PI)/2; // angle of extender being out
+    public final double EXTENDER_STOWED_ANGLE = 0; // angle of extender being stowed
 
-    //Arm configs
-    public final int  ARM_MOTER_ID = 1; //Place holder
-    public final boolean ARM_MOTER_INVERTED = false; //Place Holder
-    public final double ARM_GEAR_RATIO = 1.0; //place holder
+    // Arm configs
+    public final int ARM_MOTER_ID = 22; //may change
+    public final boolean ARM_MOTER_INVERTED = false; // Place Holder
+    public final double ARM_GEAR_RATIO = 1.0; // place holder
     public final FxMotorConfig ARM_MOTOR_CONFIG = new FxMotorConfig();
     public final double ARM_LENGTH = 1.0; // Meters, Place Holder
     public final double ARM_MASS = 1.0; // KG, Place Holder
-    public final double ARM_MIN_ANGLE = 1.0; // Radians, Place Holder
-    public final double ARM_MAX_ANGLE = 2.0; // Radians, Place Holder
+    public final double ARM_MIN_ANGLE = -2.0 * Math.PI; // Radians, min rotation angle
+    public final double ARM_MAX_ANGLE = 2.0 * Math.PI; // Radians, max rotation angle
+    public final double ARM_L1_CLIMB = (1 * Math.PI)/6; //Radians, auto climb climb angle
+    public final double ARM_L3_CLIMB = 1 * Math.PI; // radians, teleop climb height
+    public final double ARM_L0_POSITION = 0;// angle for the arm to return to
 
     public ClimberConstants() {
         // Configure Indexer Motor
         EXTENDER_MOTOR_CONFIG.can_id = EXTENDERMOTER_ID;
-        EXTENDER_MOTOR_CONFIG.motor_type = FxMotorType.FALCON500; //Place Holder
+        EXTENDER_MOTOR_CONFIG.motor_type = FxMotorType.FALCON500; // Place Holder
         EXTENDER_MOTOR_CONFIG.canbus_name = "CANivore"; // Place Holder
         EXTENDER_MOTOR_CONFIG.config = new TalonFXConfiguration(); // Place Holder
 
