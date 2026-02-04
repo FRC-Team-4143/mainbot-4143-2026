@@ -60,20 +60,6 @@ public abstract class OI {
                                         .setWantedState(ShooterStates.SHOOT),
                                 () -> ShooterSubsystem.getInstance()
                                         .setWantedState(ShooterStates.AIMING)));
-        // ===============================================
-        // CONTER OF ROTATION TEST CONTROLL
-        driver_controller_
-                .b()
-                .whileTrue(
-                        Commands.startEnd(
-                                () -> {
-                                    
-                                    SwerveSubsystem.getInstance()
-                                            .setWantedState(SwerveStates.ROTATION_LOCK);
-                                },
-                                () -> SwerveSubsystem.getInstance()
-                                        .setWantedState(SwerveStates.FIELD_CENTRIC)));
-        // ===============================================
     }
 
     /**
