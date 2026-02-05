@@ -45,22 +45,22 @@ public class HopperSubsystem extends MwSubsystem<HopperStates, HopperConstants> 
         boolean jammed = isJammed();
         DogLog.log(getSubsystemKey() + "jammed", jammed);
         if (jammed && (system_state_ == HopperStates.SHOOTING)) {
-            system_state_ = HopperStates.UNJAMA;
+            system_state_ = HopperStates.UNJAM_REVERSE;
             hopper_timer_.reset();
             hopper_timer_.start();
         }
-        if (hopper_timer_.hasElapsed(0.5) && ((system_state_ == HopperStates.UNJAMA)
-                || (system_state_ == HopperStates.UNJAMB))) {
-            system_state_ = (system_state_ == HopperStates.UNJAMA)
-                    ? HopperStates.UNJAMB
-                    : HopperStates.UNJAMA;
+        if (hopper_timer_.hasElapsed(CONSTANTS.UNJAMM_TIMMER) && ((system_state_ == HopperStates.UNJAM_REVERSE)
+                || (system_state_ == HopperStates.UNJAM_FORWARD))) {
+            system_state_ = (system_state_ == HopperStates.UNJAM_REVERSE)
+                    ? HopperStates.UNJAM_FORWARD
+                    : HopperStates.UNJAM_REVERSE;
             hopper_timer_.reset();
         }
-        if ((system_state_ == HopperStates.UNJAMA) && (!jammed)) {
+        if ((system_state_ == HopperStates.UNJAM_REVERSE) && (!jammed)) {
             system_state_ = HopperStates.SHOOTING;
             hopper_timer_.stop();
         }
-        if ((system_state_ == HopperStates.UNJAMB) && (!jammed)) {
+        if ((system_state_ == HopperStates.UNJAM_FORWARD) && (!jammed)) {
             system_state_ = HopperStates.SHOOTING;
             hopper_timer_.stop();
         }
@@ -84,11 +84,11 @@ public class HopperSubsystem extends MwSubsystem<HopperStates, HopperConstants> 
                 hopper_.setTargetDutyCycle(CONSTANTS.HOPPER_DUTY_CYCLE);
                 feeder_.setTargetDutyCycle(CONSTANTS.FEED_DUTY_CYCLE);
                 break;
-            case UNJAMA:
-                hopper_.setTargetDutyCycle(-CONSTANTS.FEED_DUTY_CYCLE);
+            case UNJAM_REVERSE:
+                hopper_.setTargetDutyCycle(-CONSTANTS.HOPPER_DUTY_CYCLE);
                 feeder_.setTargetDutyCycle(-CONSTANTS.FEED_DUTY_CYCLE);
                 break;
-            case UNJAMB:
+            case UNJAM_FORWARD:
                 hopper_.setTargetDutyCycle(CONSTANTS.HOPPER_DUTY_CYCLE);
                 feeder_.setTargetDutyCycle(CONSTANTS.FEED_DUTY_CYCLE);
                 break;
@@ -98,13 +98,19 @@ public class HopperSubsystem extends MwSubsystem<HopperStates, HopperConstants> 
         // Log Data
     }
 
-    // return true if jammed, false otherwise
+    /**
+     * returns true if jammed, false otherwise
+     * @return
+     */
     public boolean isJammed() {
 
-        boolean jamCondition_ = Math.abs(hopper_.getLeaderCurrent()) > CONSTANTS.HOPPER_DANGER_CURRENT;
-        return debouncer_.calculate(jamCondition_);
+        boolean jamCondition = Math.abs(hopper_.getLeaderCurrent()) > CONSTANTS.HOPPER_DANGER_CURRENT;
+        return debouncer_.calculate(jamCondition);
     }
 
+    /**
+     * appies turqu to simulate a jam
+     */
     public void fakeJam() {
         hopper_.applyLoadTorque(50000);
     }
