@@ -22,9 +22,9 @@ public class SwerveConstants extends MwConstants {
         ROBOT_CENTRIC,
         CHOREO_PATH,
         CHOREO_PATH_ROTATION_LOCK,
-        ROTATION_LOCK,
+        FIELD_CENTRIC_ROTATION_LOCK,
         TRACTOR_BEAM,
-        DESIRED_CHASSIS_SPEED,
+        CHASSIS_SPEED_ROTATION_LOCK,
         IDLE
     }
 

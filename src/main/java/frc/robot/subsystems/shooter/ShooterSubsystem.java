@@ -14,6 +14,7 @@ import edu.wpi.first.math.util.Units;
 import frc.robot.OI;
 import frc.robot.subsystems.localization.LocalizationSubsystem;
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterStates;
+import frc.robot.subsystems.swerve.SwerveConstants.SwerveStates;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 import java.util.Arrays;
 import java.util.List;
@@ -127,10 +128,11 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
                 if (CONSTANTS.TURRET_ENABLED) {
                     turret_.setTargetPosition(solution.heading_angle);
                 } else {
+                    SwerveSubsystem.getInstance().setWantedState(SwerveStates.FIELD_CENTRIC_ROTATION_LOCK);
                     SwerveSubsystem.getInstance()
                             .setDesiredRotationLockCOR(
                                     Rotation2d.fromRadians(solution.heading_angle),
-                                    CONSTANTS.SHOOTER_CENTER); // placeholder Translation
+                                    CONSTANTS.SHOOTER_CENTER);
                 }
                 ;
                 break;
@@ -143,6 +145,13 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
             case SHOOT:
                 flywheel_.setTargetVelocity(flywheel_omega_);
                 indexer_.setTargetDutyCycle(CONSTANTS.INDEXER_DUTY_CYCLE);
+                if (CONSTANTS.TURRET_ENABLED) {
+                    turret_.setTargetPosition(solution.heading_angle);
+                } else {
+                    SwerveSubsystem.getInstance().setWantedState(SwerveStates.FIELD_CENTRIC_ROTATION_LOCK);
+                    SwerveSubsystem.getInstance()
+                            .setDesiredRotationLock(new Rotation2d(solution.heading_angle));
+                }
                 hood_.setTargetPosition(solution.exit_angle);
                 if (CONSTANTS.TURRET_ENABLED) turret_.setTargetPosition(solution.heading_angle);
                 break;
