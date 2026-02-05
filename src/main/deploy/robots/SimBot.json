@@ -135,5 +135,12 @@
   },
   "intake":{
     "max_extension": 12.0
+  },
+  "shooter":{
+    "translation":{
+      "x": 0.0,
+      "y": 0.0,
+      "z": 24.18
+    }
   }
 }

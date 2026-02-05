@@ -234,4 +234,12 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
                 && MathUtil.isNear(
                         clamped, hood_.getCurrentPosition(), CONSTANTS.HOOD_POSITION_TOLERANCE);
     }
+
+    /**
+     * Get the current trajectory solution
+     * @return TrajectorySol object representing the current solution
+     */
+    public TrajectorySol getCurrentSolution() {
+        return solution;
+    }
 }

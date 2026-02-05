@@ -24,6 +24,12 @@ public class SimulationConstants extends MwConstants {
     public final double MODULE_POSITION_NOISE_STD_DEV = 0.01; // meters (1cm per reading)
 
     // =============================================================================
+    // SHOOTER SIMULATION
+    // =============================================================================
+    public final double SHOOTER_LAUNCH_HEIGHT =
+            Units.inchesToMeters(LOADER.getDoubleValue("shooter", "translation", "z"));
+
+    // =============================================================================
     // INTAKE SIMULATION
     // =============================================================================
     public final boolean SIM_FUEL_ENABLED = true;

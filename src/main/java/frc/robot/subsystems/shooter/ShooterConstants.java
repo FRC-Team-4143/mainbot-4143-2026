@@ -96,7 +96,7 @@ public class ShooterConstants extends MwConstants {
     public final double INDEXER_DUTY_CYCLE = 0.3; // 30% power for indexing
     public final Translation3d HUB_TRANSLATION =
             new Translation3d(4.611624, 4.021328, 1.397); // where the hub is
-    public final double LAUNCH_HEIGHT = 0.613;
+    public final double LAUNCH_HEIGHT = Units.inchesToMeters(getDoubleConstant("translation", "z"));
     public final LaunchTrajectory SOLVER =
             new LaunchTrajectory(HUB_TRANSLATION, LAUNCH_HEIGHT, true);
     public final double MAX_TURRET_WRAP = Units.degreesToRadians(190);

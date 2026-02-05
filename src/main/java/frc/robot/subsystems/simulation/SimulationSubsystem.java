@@ -2,6 +2,7 @@ package frc.robot.subsystems.simulation;
 
 import com.marswars.auto.AutoManager;
 import com.marswars.geometry.AllianceFlipUtil;
+import com.marswars.geometry.LaunchTrajectory.TrajectorySol;
 import com.marswars.proxy_server.ProxyServerThread;
 import com.marswars.subsystem.MwSubsystem;
 import com.marswars.subsystem.SubsystemIoBase;
@@ -17,8 +18,14 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import frc.robot.lib2026.FuelSim;
 import frc.robot.subsystems.localization.LocalizationConstants.LocalizationStates;
+import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.localization.LocalizationSubsystem;
 import frc.robot.subsystems.simulation.SimulationConstants.SimulationStates;
+
+import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.Radians;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -60,6 +67,7 @@ public class SimulationSubsystem extends MwSubsystem<SimulationStates, Simulatio
                                 ? LocalizationSubsystem.getInstance()::getSmoothPose
                                 : LocalizationSubsystem.getInstance()::getFieldPose,
                         LocalizationSubsystem.getInstance()::getChassisSpeedsFieldRelative);
+        FuelSim.getInstance().enableAirResistance();
 
         // Setup Intake Similation
         FuelSim.getInstance()
@@ -106,6 +114,24 @@ public class SimulationSubsystem extends MwSubsystem<SimulationStates, Simulatio
     @Override
     public void reset() {
         system_state_ = SimulationStates.ACTIVE;
+    }
+
+    /** Launches a fuel from the shooter in the simulation. */
+    public void launchFuel(){
+        TrajectorySol solution = ShooterSubsystem.getInstance().getCurrentSolution();
+
+        // If the current solution is not valid, do not try to launch fuel!!!
+        // This should never happen during normal operation, but could happen during testing
+        if(!solution.valid){
+            return;
+        }
+
+        FuelSim.getInstance().launchFuel(
+            MetersPerSecond.of(solution.velocity), 
+            Radians.of(solution.exit_angle),
+            Radians.of(solution.heading_angle), 
+            Meters.of(CONSTANTS.SHOOTER_LAUNCH_HEIGHT));
+        hopper_fuel_count_--;
     }
 
     /** Resets the simulation for autonomous mode. */
