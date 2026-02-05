@@ -68,15 +68,16 @@ public class ShooterConstants extends MwConstants {
     // =============================================================================
 
     public final boolean HOOD_INVERTED = true;
-    public final double HOOD_GEAR_RATIO = 1.0;//(1.0/5.0)*(40.0/372.0);
-        // Min/max physical hood angles (radians). Configure to match the mechanical limits
-        public final double HOOD_MIN_ANGLE = Units.degreesToRadians(45);
-        public final double HOOD_MAX_ANGLE = Units.degreesToRadians(83.673);
-        public final double HOOD_HOME_POSITION = Units.degreesToRadians(83.673);
+    public final double HOOD_GEAR_RATIO = (5.0 * (372.0 / 40.0)); // motor rotations / output mechanism rotations
+    // Min/max physical hood angles (radians). Configure to match the mechanical limits
+    public final double HOOD_MIN_ANGLE = Units.degreesToRadians(45);
+    public final double HOOD_MAX_ANGLE = Units.degreesToRadians(83.673);
+    public final double HOOD_HOME_POSITION = Units.degreesToRadians(83.673);
 
-        // Tolerances are expressed in hood position units (not radians) for comparing against
-        // the mech's current position/readback.
-        public final double HOOD_POSITION_TOLERANCE = 0.05;
+    // Tolerances are expressed in hood position units (radians) for comparing against
+    // the mech's current position/readback.
+    public final double HOOD_POSITION_TOLERANCE =
+            Units.degreesToRadians(2.0); // 2 degrees tolerance
     public final Slot0Configs HOOD_POSITION_GAINS = new Slot0Configs().withKP(30).withKD(0.15);
 
     // =============================================================================
@@ -144,6 +145,7 @@ public class ShooterConstants extends MwConstants {
         HOOD_MOTOR_CONFIGS.motor_type = FxMotorType.X60;
         HOOD_MOTOR_CONFIGS.canbus_name = "CANivore";
         HOOD_MOTOR_CONFIGS.config = new TalonFXConfiguration();
+        HOOD_MOTOR_CONFIGS.config.MotorOutput.Inverted = PhoenixUtil.toInvertedValue(HOOD_INVERTED);
         HOOD_MOTOR_CONFIGS.config.Slot0 = HOOD_POSITION_GAINS;
 
         // Configure Turret Motor
