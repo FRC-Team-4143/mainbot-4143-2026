@@ -7,39 +7,73 @@ import com.marswars.util.FxMotorConfig.FxMotorType;
 
 public class HopperConstants extends MwConstants {
 
+    // =============================================================================
+    // ENUMS AND STATE DEFINITIONS
+    // =============================================================================
+
     public enum HopperStates {
         IDLE,
-        STIRRING,
         SHOOTING,
+        UNJAM_REVERSE,
+        UNJAM_FORWARD,
         PROFILE
     }
 
-    // Indexer Configs
-    public final int INDEXER_ID = 20;
-    public final boolean INDEXER_INVERTED = true;
-    public final double INDEXER_GEAR_RATIO = 1.0;
-    public final FxMotorConfig INDEXER_MOTOR_CONFIG = new FxMotorConfig();
+    // =============================================================================
+    // CAN IDS AND HARDWARE CONFIGURATION
+    // =============================================================================
 
-    // Feed Configs
-    public final int FEEDER_ID = 21;
-    public final boolean FEEDER_INVERTED = false;
-    public final double FEEDER_GEAR_RATIO = 1.0;
-    public final FxMotorConfig FEEDER_MOTOR_CONFIG = new FxMotorConfig();
+    // Motor CAN IDs
+    public final int HOPPER_MOTOR_ID = 20;
+    public final int FEED_MOTOR_ID = 21;
 
-    // Control Setpoints
-    public final double INDEXER_DUTY_CYCLE_SHOOT = 0.5;
-    public final double FEEDER_DUTY_CYCLE_SHOOT = 0.5;
+    // =============================================================================
+    // MECHANICAL CONSTANTS - HOPPER
+    // =============================================================================
+
+    public final boolean HOPPER_MOTOR_INVERTED = false;
+    public final double HOPPER_GEAR_RATIO = 1.0;
+    public final double HOPPER_DANGER_CURRENT = 20;
+    public final double HOPPER_DUTY_CYCLE = 0.5;
+
+    // =============================================================================
+    // MECHANICAL CONSTANTS - FEED
+    // =============================================================================
+
+    public final boolean FEED_MOTOR_INVERTED = false;
+    public final double FEED_GEAR_RATIO = 1.0;
+    public final double FEED_DANGER_CURRENT = 0.0;
+    public final double FEED_DUTY_CYCLE = 0.5;
+
+    // =============================================================================
+    // CONTROL AND OPERATIONAL CONSTANTS
+    // =============================================================================
+
+    public final double DEBOUNCE_TIME = 0.1;
+    public final double UNJAMM_TIMER = 0.5;
+
+    // =============================================================================
+    // MOTOR CONFIGURATION OBJECTS
+    // =============================================================================
+
+    public final FxMotorConfig HOPPER_MOTOR_CONFIG = new FxMotorConfig();
+    public final FxMotorConfig FEED_MOTOR_CONFIG = new FxMotorConfig();
+
+    // =============================================================================
+    // CONSTRUCTOR - MOTOR CONFIGURATION INITIALIZATION
+    // =============================================================================
 
     public HopperConstants() {
-        // Configure Indexer Motor
-        INDEXER_MOTOR_CONFIG.can_id = INDEXER_ID;
-        INDEXER_MOTOR_CONFIG.motor_type = FxMotorType.FALCON500;
-        INDEXER_MOTOR_CONFIG.canbus_name = "CANivore";
-        INDEXER_MOTOR_CONFIG.config = new TalonFXConfiguration();
+        // Configure Hopper Motor
+        HOPPER_MOTOR_CONFIG.can_id = HOPPER_MOTOR_ID;
+        HOPPER_MOTOR_CONFIG.motor_type = FxMotorType.FALCON500;
+        HOPPER_MOTOR_CONFIG.canbus_name = "CANivore";
+        HOPPER_MOTOR_CONFIG.config = new TalonFXConfiguration();
 
-        FEEDER_MOTOR_CONFIG.can_id = FEEDER_ID;
-        FEEDER_MOTOR_CONFIG.motor_type = FxMotorType.X60;
-        FEEDER_MOTOR_CONFIG.canbus_name = "CANivore";
-        FEEDER_MOTOR_CONFIG.config = new TalonFXConfiguration();
+        // Configure Feed Motor
+        FEED_MOTOR_CONFIG.can_id = FEED_MOTOR_ID;
+        FEED_MOTOR_CONFIG.motor_type = FxMotorType.X60;
+        FEED_MOTOR_CONFIG.canbus_name = "rio";
+        FEED_MOTOR_CONFIG.config = new TalonFXConfiguration();
     }
 }
