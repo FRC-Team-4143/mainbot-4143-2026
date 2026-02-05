@@ -56,7 +56,8 @@ public abstract class OI {
     }
 
     /**
-     * @return driver controller joystick pov angle in degs. empty if nothing is pressed
+     * @return driver controller joystick pov angle in degrees, empty if nothing is
+     *         pressed
      */
     public static Optional<Rotation2d> getDriverJoystickPOV() {
         int pov = driver_controller_.getHID().getPOV();

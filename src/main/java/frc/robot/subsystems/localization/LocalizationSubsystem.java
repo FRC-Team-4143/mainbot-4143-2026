@@ -47,8 +47,7 @@ public class LocalizationSubsystem extends MwSubsystem<LocalizationStates, Local
 
         SwerveDriveKinematics kinematics = SwerveSubsystem.getInstance().getKinematics();
         Rotation2d gyro_angle = SwerveSubsystem.getInstance().getGyroRotation();
-        SwerveModulePosition[] module_positions =
-                SwerveSubsystem.getInstance().getModulePositions();
+        SwerveModulePosition[] module_positions = SwerveSubsystem.getInstance().getModulePositions();
 
         smooth_pose_estimator_ =
                 new SwerveDrivePoseEstimator(
