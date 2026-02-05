@@ -59,7 +59,7 @@ public class SimulationSubsystem extends MwSubsystem<SimulationStates, Simulatio
             vision_sim_.addCamera("Front-Camera", CONSTANTS.FRONT_CAMERA_TRANSFORM);
             vision_sim_.addCamera("Left-Camera", CONSTANTS.LEFT_CAMERA_TRANSFORM);
             vision_sim_.addCamera("Right-Camera", CONSTANTS.RIGHT_CAMERA_TRANSFORM);
-            LocalizationSubsystem.getInstance().setWantedState(LocalizationStates.VISION_SIM);
+            LocalizationSubsystem.getInstance().enableSwerveMeasurementNoise();
         }
 
         // Setup Fuel Simulation

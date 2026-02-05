@@ -8,6 +8,7 @@ import com.marswars.swerve_lib.PhoenixOdometryThread;
 import com.marswars.swerve_lib.SwerveMeasurements.SwerveMeasurement;
 import dev.doglog.DogLog;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
@@ -24,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public class LocalizationSubsystem extends MwSubsystem<LocalizationStates, LocalizationConstants> {
     private static LocalizationSubsystem instance_ = null;
@@ -43,6 +45,7 @@ public class LocalizationSubsystem extends MwSubsystem<LocalizationStates, Local
     // vision detection logging
     private ArrayList<Pose3d> detected_tag_poses_ = new ArrayList<Pose3d>();
     private ArrayList<Pose2d> estimated_vision_poses_ = new ArrayList<Pose2d>();
+    private boolean swerve_noise_enabled_ = false;
 
     public LocalizationSubsystem() {
         // (Default State, Constants Class)
@@ -81,19 +84,38 @@ public class LocalizationSubsystem extends MwSubsystem<LocalizationStates, Local
                 ProxyServerThread.getInstance().getLatestTagSolutions();
 
         switch (system_state_) {
-            case ODOM_ONLY: // This state uses only odometry data
+            case SHOOTING_FOCUS:
                 applySwerveMeasurements(smooth_pose_estimator_, swerve_measurements_);
-                applySwerveMeasurements(field_pose_estimator_, swerve_measurements_);
+                if (swerve_noise_enabled_) {
+                    applyNoisySwerveMeasurements(field_pose_estimator_, swerve_measurements_);
+                } else {
+                    applySwerveMeasurements(field_pose_estimator_, swerve_measurements_);
+                }
+                applyFilteredVisionMeasurements(field_pose_estimator_, vision_measurements, 
+                    CONSTANTS.SHOOTING_FOCUS_TAG_IDS,
+                    CONSTANTS.SHOOTING_FOCUSED_COVARIANCE,
+                    CONSTANTS.SHOOTING_NOT_FOCUSED_COVARIANCE);
                 break;
-            case VISION_SIM: // This state uses noisy odometry + simulated vision data
+            case CLIMBING_FOCUS:
                 applySwerveMeasurements(smooth_pose_estimator_, swerve_measurements_);
-                applyNoisySwerveMeasurements(field_pose_estimator_, swerve_measurements_);
-                applyVisionMeasurements(field_pose_estimator_, vision_measurements);
+                if (swerve_noise_enabled_) {
+                    applyNoisySwerveMeasurements(field_pose_estimator_, swerve_measurements_);
+                } else {
+                    applySwerveMeasurements(field_pose_estimator_, swerve_measurements_);
+                }
+                applyFilteredVisionMeasurements(field_pose_estimator_, vision_measurements,
+                    CONSTANTS.CLIMBING_FOCUS_TAG_IDS,
+                    CONSTANTS.CLIMBING_FOCUSED_COVARIANCE,
+                    CONSTANTS.CLIMBING_NOT_FOCUSED_COVARIANCE);
                 break;
-            case FULL:
+            case FULL: // This state uses full odometry + vision data
             default:
                 applySwerveMeasurements(smooth_pose_estimator_, swerve_measurements_);
-                applySwerveMeasurements(field_pose_estimator_, swerve_measurements_);
+                if (swerve_noise_enabled_) {
+                    applyNoisySwerveMeasurements(field_pose_estimator_, swerve_measurements_);
+                } else {
+                    applySwerveMeasurements(field_pose_estimator_, swerve_measurements_);
+                }
                 applyVisionMeasurements(field_pose_estimator_, vision_measurements);
                 break;
         }
@@ -139,6 +161,37 @@ public class LocalizationSubsystem extends MwSubsystem<LocalizationStates, Local
         }
     }
 
+    private void applyFilteredVisionMeasurements(
+            SwerveDrivePoseEstimator pose_estimator, List<TagSolutionData> vision_measurements, Set<Integer> filtered_ids, Matrix<N3, N1> included, Matrix<N3, N1> excluded) {
+        for (TagSolutionData vision_data : vision_measurements) {
+            // Check if any detected tag ID is in the filtered set (O(1) lookup)
+            boolean contains_filtered_id = false;
+            for (int detected_id : vision_data.detectedIds) {
+                if (filtered_ids.contains(detected_id)) {
+                    contains_filtered_id = true;
+                    break;
+                }
+            }
+
+            // Apply the appropriate standard deviation matrix
+            if (contains_filtered_id) {
+                // Use the "included" matrix for measurements containing filtered tags
+                pose_estimator.addVisionMeasurement(
+                        vision_data.pose, vision_data.timestamp.getSeconds(), included);
+            } else {
+                // Use the "excluded" matrix for measurements not containing filtered tags
+                pose_estimator.addVisionMeasurement(
+                        vision_data.pose, vision_data.timestamp.getSeconds(), excluded);
+            }
+
+            // Log detected tag poses and estimated vision poses
+            for (int tag_pose : vision_data.detectedIds) {
+                Optional<Pose3d> tag_layout_pose = CONSTANTS.APRIL_TAG_LAYOUT.getTagPose(tag_pose);
+                if (tag_layout_pose.isPresent()) detected_tag_poses_.add(tag_layout_pose.get());
+            }
+            estimated_vision_poses_.add(vision_data.pose);
+        }
+    }
     /**
      * Applies swerve measurements to the given pose estimator.
      *
@@ -198,6 +251,9 @@ public class LocalizationSubsystem extends MwSubsystem<LocalizationStates, Local
         field_pose_estimator_.resetPose(new_pose);
     }
 
+    /**
+     * @return The AprilTag field layout
+     */
     public AprilTagFieldLayout getAprilTagLayout() {
         return CONSTANTS.APRIL_TAG_LAYOUT;
     }
@@ -208,5 +264,10 @@ public class LocalizationSubsystem extends MwSubsystem<LocalizationStates, Local
     public ChassisSpeeds getChassisSpeedsFieldRelative() {
         return ChassisSpeeds.fromRobotRelativeSpeeds(
                 SwerveSubsystem.getInstance().getChassisSpeeds(), getFieldPose().getRotation());
+    }
+
+    /** Enables noise addition to swerve measurements for simulation. */
+    public void enableSwerveMeasurementNoise() {
+        swerve_noise_enabled_ = true;
     }
 }
