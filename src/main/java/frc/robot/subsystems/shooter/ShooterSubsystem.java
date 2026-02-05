@@ -35,6 +35,7 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
 
     private double flywheel_eff_factor_ = CONSTANTS.FLYWHEEL_EFF_FACTOR;
     private double flywheel_omega_ = 0;
+    private double clamped;
     TrajectorySol solution;
     double newHeadingAngle;
 
@@ -61,6 +62,7 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
                         "Hood",
                         List.of(CONSTANTS.HOOD_MOTOR_CONFIGS),
                         CONSTANTS.HOOD_GEAR_RATIO);
+        hood_.setCurrentPosition(CONSTANTS.HOOD_HOME_POSITION);
 
         // Current 4143 robot does not have a turret
         if (CONSTANTS.TURRET_ENABLED) {
@@ -117,6 +119,21 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
                             / CONSTANTS.FLYWHEEL_WHEEL_RADIUS_METERS
                             * flywheel_eff_factor_;
         }
+        newHeadingAngle = solution.heading_angle - robotPose.getRotation().getRadians();
+        if (newHeadingAngle > CONSTANTS.MAX_TURRET_WRAP) {
+            newHeadingAngle -= 2 * Math.PI;
+            if (system_state_ == ShooterStates.SHOOT) {
+                setWantedState(ShooterStates.AIMING);
+            }
+        } else if (newHeadingAngle < -CONSTANTS.MAX_TURRET_WRAP) {
+            newHeadingAngle += 2 * Math.PI;
+            if (system_state_ == ShooterStates.SHOOT) {
+                setWantedState(ShooterStates.AIMING);
+            }
+        }
+        clamped =
+                MathUtil.clamp(
+                        solution.exit_angle, CONSTANTS.HOOD_MIN_ANGLE, CONSTANTS.HOOD_MAX_ANGLE);
 
         switch (system_state_) {
             case TRACKING:
@@ -211,8 +228,10 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
                         flywheel_.getCurrentVelocity(),
                         CONSTANTS.FLYWHEEL_SPEED_TOLERANCE)
                 && MathUtil.isNear(
-                        solution.exit_angle,
-                        hood_.getCurrentPosition(),
-                        CONSTANTS.HOOD_ANGLE_TOLERANCE);
+                        newHeadingAngle,
+                        turret_.getCurrentPosition(),
+                        CONSTANTS.TURRET_ANGLE_TOLERANCE)
+                && MathUtil.isNear(
+                        clamped, hood_.getCurrentPosition(), CONSTANTS.HOOD_POSITION_TOLERANCE);
     }
 }
