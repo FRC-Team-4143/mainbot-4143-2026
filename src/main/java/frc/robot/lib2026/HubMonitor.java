@@ -8,7 +8,6 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 public class HubMonitor {
 
     String gameData;
-    ActiveAlliance SAA; // Second Active Alliance
 
     public enum ActiveAlliance {
         RED_ACTIVE,
@@ -18,17 +17,15 @@ public class HubMonitor {
     }
 
     // returns the first alliance that has an active hub
-    public ActiveAlliance firstActiveAlliance() { //some changes may need to be made to SAA
+    public ActiveAlliance firstActiveAlliance() { // some changes may need to be made to SAA
 
         gameData = DriverStation.getGameSpecificMessage();
 
         if (gameData.length() > 0) {
             switch (gameData.charAt(0)) {
                 case 'B':
-                    SAA = ActiveAlliance.BLUE_ACTIVE;
                     return ActiveAlliance.RED_ACTIVE;
                 case 'R':
-                    SAA = ActiveAlliance.RED_ACTIVE;
                     return ActiveAlliance.BLUE_ACTIVE;
                 default:
                     return ActiveAlliance.INVALID;
@@ -73,11 +70,17 @@ public class HubMonitor {
         } else if (matchTime > 105) {
             return firstActiveAlliance();
         } else if (matchTime > 80) {
-            return SAA;
+            if (firstActiveAlliance() == ActiveAlliance.RED_ACTIVE) {
+                return ActiveAlliance.BLUE_ACTIVE;
+            }
+            return ActiveAlliance.RED_ACTIVE;
         } else if (matchTime > 55) {
             return firstActiveAlliance();
         } else if (matchTime > 30) {
-            return SAA;
+            if (firstActiveAlliance() == ActiveAlliance.RED_ACTIVE) {
+                return ActiveAlliance.BLUE_ACTIVE;
+            }
+            return ActiveAlliance.RED_ACTIVE;
         } else if (matchTime > 0) {
             return ActiveAlliance.BOTH_ACTIVE;
         } else {
