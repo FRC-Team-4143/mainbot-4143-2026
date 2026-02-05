@@ -37,6 +37,5 @@ public class IntakeConstants extends MwConstants {
         ARM_MOTOR_CONFIG.canbus_name = "CANivore"; // placeholder
         ARM_MOTOR_CONFIG.config = new TalonFXConfiguration();
         ARM_MOTOR_CONFIG.config.Slot0.kP = 5.0;
-        
     }
 }

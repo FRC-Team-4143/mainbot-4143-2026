@@ -4,7 +4,6 @@ import com.marswars.mechanisms.ArmMech;
 import com.marswars.mechanisms.RollerMech;
 import com.marswars.subsystem.MwSubsystem;
 import com.marswars.subsystem.SubsystemIoBase;
-
 import edu.wpi.first.math.MathUtil;
 import frc.robot.subsystems.Climber.ClimberConstants.ClimberStates;
 import java.util.Arrays;
@@ -79,9 +78,13 @@ public class ClimberSubsystem extends MwSubsystem<ClimberStates, ClimberConstant
             system_state_ = ClimberStates.DEPLOY;
         } else {
         } // no command
-        if (system_state_ == ClimberStates.DEPLOY && isDeployed() && wanted_state == ClimberStates.L1_CLIMB) {
+        if (system_state_ == ClimberStates.DEPLOY
+                && isDeployed()
+                && wanted_state == ClimberStates.L1_CLIMB) {
             system_state_ = ClimberStates.L1_CLIMB;
-        } else if (system_state_ == ClimberStates.DEPLOY && isDeployed() && wanted_state == ClimberStates.L3_CLIMB) {
+        } else if (system_state_ == ClimberStates.DEPLOY
+                && isDeployed()
+                && wanted_state == ClimberStates.L3_CLIMB) {
             system_state_ = ClimberStates.L3_CLIMB;
         } else if (system_state_ == ClimberStates.DEPLOY && wanted_state == ClimberStates.STOWED) {
             system_state_ = ClimberStates.STOWED;
@@ -108,6 +111,9 @@ public class ClimberSubsystem extends MwSubsystem<ClimberStates, ClimberConstant
     }
 
     private boolean isDeployed() {
-        return (MathUtil.isNear(CONSTANTS.EXTENDER_DEPLOYED_ANGLE, Extender_.getCurrentPosition(), CONSTANTS.EXTENDER_TOLERANCE_ANGLE));
+        return (MathUtil.isNear(
+                CONSTANTS.EXTENDER_DEPLOYED_ANGLE,
+                Extender_.getCurrentPosition(),
+                CONSTANTS.EXTENDER_TOLERANCE_ANGLE));
     }
 }

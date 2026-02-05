@@ -1,13 +1,11 @@
 package frc.robot.subsystems.intake;
 
-import java.util.Arrays;
-import java.util.List;
-
 import com.marswars.mechanisms.RollerMech;
 import com.marswars.subsystem.MwSubsystem;
 import com.marswars.subsystem.SubsystemIoBase;
-
 import frc.robot.subsystems.intake.IntakeConstants.IntakeStates;
+import java.util.Arrays;
+import java.util.List;
 
 public class IntakeSubsystem extends MwSubsystem<IntakeStates, IntakeConstants> {
     private static IntakeSubsystem instance_ = null;
@@ -24,17 +22,19 @@ public class IntakeSubsystem extends MwSubsystem<IntakeStates, IntakeConstants> 
 
     public IntakeSubsystem() {
         super(IntakeStates.CLOSED, new IntakeConstants());
-        intaker_ = new RollerMech(
-                getSubsystemKey(),
-                "Intaker",
-                List.of(CONSTANTS.INTAKE_MOTOR_CONFIG),
-                CONSTANTS.INTAKE_GEAR_RATIO);
+        intaker_ =
+                new RollerMech(
+                        getSubsystemKey(),
+                        "Intaker",
+                        List.of(CONSTANTS.INTAKE_MOTOR_CONFIG),
+                        CONSTANTS.INTAKE_GEAR_RATIO);
 
-        armer_ = new RollerMech(
-                getSubsystemKey(),
-                "Armer",
-                List.of(CONSTANTS.ARM_MOTOR_CONFIG),
-                CONSTANTS.ARM_GEAR_RATIO);
+        armer_ =
+                new RollerMech(
+                        getSubsystemKey(),
+                        "Armer",
+                        List.of(CONSTANTS.ARM_MOTOR_CONFIG),
+                        CONSTANTS.ARM_GEAR_RATIO);
     }
 
     @Override
@@ -52,27 +52,26 @@ public class IntakeSubsystem extends MwSubsystem<IntakeStates, IntakeConstants> 
                 intaker_.setTargetDutyCycle(0.5);
                 armer_.setTargetPosition(0.5);
                 break;
-
         }
     }
 
     protected void handleStateTransition(IntakeStates wantedState) {
         if ((system_state_ == IntakeStates.CLOSED) && (wantedState == IntakeStates.ROLLING)) {
             system_state_ = IntakeStates.DEPLOYED;
-        }
-        else if ((system_state_ == IntakeStates.ROLLING) && (wantedState == IntakeStates.CLOSED)) {
+        } else if ((system_state_ == IntakeStates.ROLLING)
+                && (wantedState == IntakeStates.CLOSED)) {
             system_state_ = IntakeStates.DEPLOYED;
-        }
-        else if ((system_state_ == IntakeStates.CLOSED) && (wantedState == IntakeStates.DEPLOYED)) {
+        } else if ((system_state_ == IntakeStates.CLOSED)
+                && (wantedState == IntakeStates.DEPLOYED)) {
             system_state_ = IntakeStates.DEPLOYED;
-        }
-        else if ((system_state_ == IntakeStates.DEPLOYED) && (wantedState == IntakeStates.CLOSED)) {
+        } else if ((system_state_ == IntakeStates.DEPLOYED)
+                && (wantedState == IntakeStates.CLOSED)) {
             system_state_ = IntakeStates.CLOSED;
-        }
-        else if ((system_state_ == IntakeStates.DEPLOYED) && (wantedState == IntakeStates.ROLLING)) {
+        } else if ((system_state_ == IntakeStates.DEPLOYED)
+                && (wantedState == IntakeStates.ROLLING)) {
             system_state_ = IntakeStates.ROLLING;
-        }
-        else if ((system_state_ == IntakeStates.ROLLING) && (wantedState == IntakeStates.DEPLOYED)) {
+        } else if ((system_state_ == IntakeStates.ROLLING)
+                && (wantedState == IntakeStates.DEPLOYED)) {
             system_state_ = IntakeStates.DEPLOYED;
         }
     }
