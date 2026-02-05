@@ -6,14 +6,7 @@ package frc.robot;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.subsystems.hopper.HopperConstants.HopperStates;
-import frc.robot.subsystems.shooter.ShooterSubsystem;
-import frc.robot.subsystems.intake.IntakeSubsystem;
-import frc.robot.subsystems.intake.IntakeConstants.IntakeStates;
-import frc.robot.subsystems.hopper.HopperSubsystem;
-import frc.robot.subsystems.swerve.SwerveConstants.SwerveStates;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 import java.util.Optional;
 
@@ -27,40 +20,6 @@ public abstract class OI {
         DriverStation.silenceJoystickConnectionWarning(true);
 
         driver_controller_.rightStick().onTrue(SwerveSubsystem.getInstance().toggleFieldCentric());
-        driver_controller_
-                .a()
-                .whileTrue(
-                        Commands.startEnd(
-                                () -> {
-                                    SwerveSubsystem.getInstance()
-                                            .setDesiredRotationLock(Rotation2d.fromDegrees(90));
-                                    SwerveSubsystem.getInstance()
-                                            .setWantedState(SwerveStates.ROTATION_LOCK);
-                                },
-                                () ->
-                                        SwerveSubsystem.getInstance()
-                                                .setWantedState(SwerveStates.FIELD_CENTRIC)));
-        operator_controller_
-                .rightBumper()
-                .whileTrue(
-                        Commands.startEnd(
-                                () ->
-                                        HopperSubsystem.getInstance()
-                                                .setWantedState(HopperStates.SHOOTING),
-                                () ->
-                                        HopperSubsystem.getInstance()
-                                                .setWantedState(HopperStates.IDLE)));
-      
-        operator_controller_.rightBumper().whileTrue(Commands.startEnd(
-            () -> HopperSubsystem.getInstance().setWantedState(HopperStates.SHOOTING),
-            () -> HopperSubsystem.getInstance().setWantedState(HopperStates.IDLE)));
-
-        driver_controller_.x()
-                .onTrue(Commands.runOnce(() -> IntakeSubsystem.getInstance().setWantedState(IntakeStates.DEPLOYED)));
-        driver_controller_.b()
-                .onTrue(Commands.runOnce(() -> IntakeSubsystem.getInstance().setWantedState(IntakeStates.CLOSED)));
-        driver_controller_.y()
-                .onTrue(Commands.runOnce(() -> IntakeSubsystem.getInstance().setWantedState(IntakeStates.ROLLING)));
     }
 
     /**

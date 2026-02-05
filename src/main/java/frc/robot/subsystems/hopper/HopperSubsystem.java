@@ -3,6 +3,9 @@ package frc.robot.subsystems.hopper;
 import com.marswars.mechanisms.RollerMech;
 import com.marswars.subsystem.MwSubsystem;
 import com.marswars.subsystem.SubsystemIoBase;
+import dev.doglog.DogLog;
+import edu.wpi.first.math.filter.Debouncer;
+import edu.wpi.first.wpilibj.Timer;
 import frc.robot.subsystems.hopper.HopperConstants.HopperStates;
 import java.util.Arrays;
 import java.util.List;
@@ -18,7 +21,10 @@ public class HopperSubsystem extends MwSubsystem<HopperStates, HopperConstants> 
     }
 
     private RollerMech feeder_;
-    private RollerMech indexer_;
+    private RollerMech hopper_;
+    private final Timer hopper_timer_ = new Timer();
+    private Debouncer debouncer_ =
+            new Debouncer(CONSTANTS.DEBOUNCE_TIME, Debouncer.DebounceType.kBoth);
 
     public HopperSubsystem() {
         super(HopperStates.IDLE, new HopperConstants());
@@ -26,44 +32,95 @@ public class HopperSubsystem extends MwSubsystem<HopperStates, HopperConstants> 
                 new RollerMech(
                         getSubsystemKey(),
                         "Feeder",
-                        List.of(CONSTANTS.FEEDER_MOTOR_CONFIG),
-                        CONSTANTS.FEEDER_GEAR_RATIO);
+                        List.of(CONSTANTS.FEED_MOTOR_CONFIG),
+                        CONSTANTS.FEED_GEAR_RATIO);
 
-        indexer_ =
+        hopper_ =
                 new RollerMech(
                         getSubsystemKey(),
                         "Hopper",
-                        List.of(CONSTANTS.INDEXER_MOTOR_CONFIG),
-                        CONSTANTS.INDEXER_GEAR_RATIO);
+                        List.of(CONSTANTS.HOPPER_MOTOR_CONFIG),
+                        CONSTANTS.HOPPER_GEAR_RATIO);
     }
 
-    /*
-     * @override
-     * public void handleStateTransistion(HopperStates wanted){
-     * }
-     */
+    @Override
+    public void handleStateTransition(HopperStates wanted) {
+        boolean jammed = isJammed();
+        DogLog.log(getSubsystemKey() + "Jammed", jammed);
+        if (jammed && (system_state_ == HopperStates.SHOOTING)) {
+            system_state_ = HopperStates.UNJAM_REVERSE;
+            hopper_timer_.reset();
+            hopper_timer_.start();
+        }
+        if (hopper_timer_.hasElapsed(CONSTANTS.UNJAMM_TIMER)
+                && ((system_state_ == HopperStates.UNJAM_REVERSE)
+                        || (system_state_ == HopperStates.UNJAM_FORWARD))) {
+            system_state_ =
+                    (system_state_ == HopperStates.UNJAM_REVERSE)
+                            ? HopperStates.UNJAM_FORWARD
+                            : HopperStates.UNJAM_REVERSE;
+            hopper_timer_.reset();
+        }
+        if ((system_state_ == HopperStates.UNJAM_REVERSE) && (!jammed)) {
+            system_state_ = HopperStates.SHOOTING;
+            hopper_timer_.stop();
+        }
+        if ((system_state_ == HopperStates.UNJAM_FORWARD) && (!jammed)) {
+            system_state_ = HopperStates.SHOOTING;
+            hopper_timer_.stop();
+        }
+        if ((system_state_ == HopperStates.IDLE) && (wanted == HopperStates.SHOOTING)) {
+            system_state_ = HopperStates.SHOOTING;
+        }
+        if ((system_state_ == HopperStates.SHOOTING) && (wanted == HopperStates.IDLE)) {
+            system_state_ = HopperStates.IDLE;
+        }
+    }
+
     @Override
     public void updateLogic(double timestamp) {
         switch (system_state_) {
             case IDLE:
+                hopper_.setTargetDutyCycle(0.0);
                 feeder_.setTargetDutyCycle(0.0);
-                indexer_.setTargetDutyCycle(0.0);
-                break;
-            case STIRRING:
                 break;
             case SHOOTING:
-                feeder_.setTargetDutyCycle(CONSTANTS.FEEDER_DUTY_CYCLE_SHOOT);
-                indexer_.setTargetDutyCycle(CONSTANTS.INDEXER_DUTY_CYCLE_SHOOT);
+                hopper_.setTargetDutyCycle(CONSTANTS.HOPPER_DUTY_CYCLE);
+                feeder_.setTargetDutyCycle(CONSTANTS.FEED_DUTY_CYCLE);
+                break;
+            case UNJAM_REVERSE:
+                hopper_.setTargetDutyCycle(-CONSTANTS.HOPPER_DUTY_CYCLE);
+                feeder_.setTargetDutyCycle(-CONSTANTS.FEED_DUTY_CYCLE);
+                break;
+            case UNJAM_FORWARD:
+                hopper_.setTargetDutyCycle(CONSTANTS.HOPPER_DUTY_CYCLE);
+                feeder_.setTargetDutyCycle(CONSTANTS.FEED_DUTY_CYCLE);
                 break;
             case PROFILE:
                 break;
         }
-        // Log Data
+    }
+
+    /**
+     * returns true if jammed, false otherwise
+     *
+     * @return
+     */
+    public boolean isJammed() {
+
+        boolean jamCondition =
+                Math.abs(hopper_.getLeaderCurrent()) > CONSTANTS.HOPPER_DANGER_CURRENT;
+        return debouncer_.calculate(jamCondition);
+    }
+
+    /** appies turqu to simulate a jam */
+    public void fakeJam() {
+        hopper_.applyLoadTorque(50000);
     }
 
     @Override
     public List<SubsystemIoBase> getIos() {
-        return Arrays.asList(feeder_, indexer_);
+        return Arrays.asList(feeder_, hopper_);
     }
 
     @Override
