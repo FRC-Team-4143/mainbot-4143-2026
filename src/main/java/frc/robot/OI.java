@@ -5,18 +5,15 @@
 package frc.robot;
 
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.subsystems.hopper.HopperConstants.HopperStates;
 import frc.robot.subsystems.hopper.HopperSubsystem;
+import frc.robot.subsystems.shooter.ShooterConstants.ShooterStates;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
-import frc.robot.subsystems.shooter.ShooterConstants;//imported for center of rotation test
-import frc.robot.subsystems.shooter.ShooterConstants.ShooterStates;//imported for center of rotation test
-import frc.robot.subsystems.swerve.SwerveSubsystem;
 import frc.robot.subsystems.swerve.SwerveConstants.SwerveStates;
-import frc.robot.subsystems.swerve.SwerveConstants;//imported for test
+import frc.robot.subsystems.swerve.SwerveSubsystem;
 import java.util.Optional;
 
 public abstract class OI {
@@ -56,10 +53,12 @@ public abstract class OI {
                 .x()
                 .whileTrue(
                         Commands.startEnd(
-                                () -> ShooterSubsystem.getInstance()
-                                        .setWantedState(ShooterStates.SHOOT),
-                                () -> ShooterSubsystem.getInstance()
-                                        .setWantedState(ShooterStates.AIMING)));
+                                () ->
+                                        ShooterSubsystem.getInstance()
+                                                .setWantedState(ShooterStates.SHOOT),
+                                () ->
+                                        ShooterSubsystem.getInstance()
+                                                .setWantedState(ShooterStates.AIMING)));
     }
 
     /**
@@ -96,8 +95,7 @@ public abstract class OI {
     }
 
     /**
-     * @return driver controller joystick pov angle in degs. empty if nothing is
-     *         pressed
+     * @return driver controller joystick pov angle in degs. empty if nothing is pressed
      */
     public static Optional<Rotation2d> getDriverJoystickPOV() {
         int pov = driver_controller_.getHID().getPOV();

@@ -7,8 +7,6 @@ import com.marswars.swerve_lib.module.ModuleType;
 import com.marswars.swerve_lib.module.SwerveModuleConfig;
 import com.marswars.util.FxMotorConfig;
 import com.marswars.util.PhoenixUtil;
-
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
@@ -59,7 +57,6 @@ public class SwerveConstants extends MwConstants {
             Units.inchesToMeters(34.75); // Length of the bumpers in meters (x axis : front -> back)
     public final double BUMPER_THICKNESS_METERS =
             Units.inchesToMeters(3.0); // Thickness of the bumpers in meters
-   
 
     // =============================================================================
     // MOTOR AND MECHANICAL CONSTANTS
