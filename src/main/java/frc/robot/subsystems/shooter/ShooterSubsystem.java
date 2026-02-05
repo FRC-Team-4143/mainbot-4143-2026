@@ -14,6 +14,7 @@ import edu.wpi.first.math.util.Units;
 import frc.robot.OI;
 import frc.robot.subsystems.localization.LocalizationSubsystem;
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterStates;
+import frc.robot.subsystems.swerve.SwerveSubsystem;
 import java.util.Arrays;
 import java.util.List;
 
@@ -140,7 +141,15 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
                 flywheel_.setTargetVelocity(flywheel_omega_);
                 indexer_.setTargetDutyCycle(0);
                 hood_.setTargetPosition(solution.exit_angle);
-                if (CONSTANTS.TURRET_ENABLED) turret_.setTargetPosition(solution.heading_angle);
+                if (CONSTANTS.TURRET_ENABLED) {
+                    turret_.setTargetPosition(solution.heading_angle);
+                } else {
+                    SwerveSubsystem.getInstance()
+                            .setDesiredRotationLockCOR(
+                                    Rotation2d.fromRadians(solution.heading_angle),
+                                    CONSTANTS.SHOOTER_CENTER); // placeholder Translation
+                }
+                ;
                 break;
             case DUMP:
                 flywheel_.setTargetVelocity(flywheel_omega_);

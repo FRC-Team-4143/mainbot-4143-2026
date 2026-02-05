@@ -64,6 +64,7 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
                     CONSTANTS.CHOREO_THETA_CONTROLLER_KP,
                     CONSTANTS.CHOREO_THETA_CONTROLLER_KI,
                     CONSTANTS.CHOREO_THETA_CONTROLLER_KD);
+
     private Pose2d desired_tractor_beam_pose_ = new Pose2d();
     private double max_lin_vel_for_tractor_beam_;
     private double max_ang_vel_for_tractor_beam_;
@@ -73,6 +74,7 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
                     CONSTANTS.TRACTOR_BEAM_CONTROLLER_KI,
                     CONSTANTS.TRACTOR_BEAM_CONTROLLER_KD);
     private Rotation2d desired_rotation_lock_rot_ = new Rotation2d();
+    private Translation2d desired_rotation_lock_cor_ = new Translation2d();
     private double tele_op_velocity_scalar_ = 1.0;
 
     // IO Members
@@ -167,7 +169,9 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
                 swerve_mech_.setChassisRequest(
                         rotation_lock_request_
                                 .withTargetHeading(desired_rotation_lock_rot_)
-                                .withTwist(calculateSpeedsBasedOnJoystickInputs()));
+                                .withTwist(calculateSpeedsBasedOnJoystickInputs())
+                                .withCenterOfRotation(desired_rotation_lock_cor_));
+
                 break;
             case CHOREO_PATH:
                 choreoPathState();
@@ -446,7 +450,21 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
      * @param rotation
      */
     public void setDesiredRotationLock(Rotation2d rotation) {
+        setDesiredRotationLockCOR(rotation, Translation2d.kZero);
+    }
+
+    /**
+     * Updates the internal target for the robot to face turing around a desired center point in
+     * ROTATION_LOCK or CHOREO_PATH_ROTATION_LOCK
+     *
+     * @param rotation
+     * @param center_point
+     */
+    public void setDesiredRotationLockCOR(Rotation2d rotation, Translation2d center_point) {
         desired_rotation_lock_rot_ = rotation;
+        desired_rotation_lock_cor_ = center_point;
+        DogLog.log(getSubsystemKey() + "Rotation/rotation", desired_rotation_lock_rot_);
+        DogLog.log(getSubsystemKey() + "Rotation/center of rotation", desired_rotation_lock_cor_);
     }
 
     /**
