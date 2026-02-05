@@ -8,6 +8,7 @@ import com.marswars.subsystem.MwConstants;
 import com.marswars.util.FxMotorConfig;
 import com.marswars.util.FxMotorConfig.FxMotorType;
 import com.marswars.util.PhoenixUtil;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 
@@ -86,7 +87,6 @@ public class ShooterConstants extends MwConstants {
     // =============================================================================
     // CONTROL AND OPERATIONAL CONSTANTS
     // =============================================================================
-
     public final double INDEXER_DUTY_CYCLE = 0.3; // 30% power for indexing
     public final Translation3d HUB_TRANSLATION =
             new Translation3d(4.611624, 4.021328, 1.397); // where the hub is
@@ -94,6 +94,7 @@ public class ShooterConstants extends MwConstants {
     public final LaunchTrajectory SOLVER =
             new LaunchTrajectory(HUB_TRANSLATION, LAUNCH_HEIGHT, true);
     public final double MAX_TURRET_WRAP = Units.degreesToRadians(190);
+    public final Translation2d SHOOTER_CENTER = new Translation2d(0.171, 0.079);
 
     // =============================================================================
     // MOTOR CONFIGURATION OBJECTS
@@ -104,7 +105,7 @@ public class ShooterConstants extends MwConstants {
     public final FxMotorConfig INDEX_MOTOR_CONFIG = new FxMotorConfig();
     public final FxMotorConfig HOOD_MOTOR_CONFIGS = new FxMotorConfig();
     public final FxMotorConfig TURRET_MOTOR_CONFIGS = new FxMotorConfig();
-    public final boolean TURRET_ENABLED = true;
+    public final boolean TURRET_ENABLED = false;
 
     // =============================================================================
     // CONSTRUCTOR - MOTOR CONFIGURATION INITIALIZATION

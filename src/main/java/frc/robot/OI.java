@@ -10,6 +10,8 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.subsystems.hopper.HopperConstants.HopperStates;
 import frc.robot.subsystems.hopper.HopperSubsystem;
+import frc.robot.subsystems.shooter.ShooterConstants.ShooterStates;
+import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.swerve.SwerveConstants.SwerveStates;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 import java.util.Optional;
@@ -47,6 +49,16 @@ public abstract class OI {
                                 () ->
                                         HopperSubsystem.getInstance()
                                                 .setWantedState(HopperStates.IDLE)));
+        driver_controller_
+                .x()
+                .whileTrue(
+                        Commands.startEnd(
+                                () ->
+                                        ShooterSubsystem.getInstance()
+                                                .setWantedState(ShooterStates.SHOOT),
+                                () ->
+                                        ShooterSubsystem.getInstance()
+                                                .setWantedState(ShooterStates.AIMING)));
     }
 
     /**
