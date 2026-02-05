@@ -3,7 +3,7 @@ package frc.robot.subsystems.hopper;
 import com.marswars.mechanisms.RollerMech;
 import com.marswars.subsystem.MwSubsystem;
 import com.marswars.subsystem.SubsystemIoBase;
-
+import dev.doglog.DogLog;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.subsystems.hopper.HopperConstants.HopperStates;
@@ -23,37 +23,42 @@ public class HopperSubsystem extends MwSubsystem<HopperStates, HopperConstants> 
     private RollerMech feeder_;
     private RollerMech hopper_;
     private final Timer hopper_timer_ = new Timer();
-    private Debouncer debouncer_ = new Debouncer(CONSTANTS.DEBOUNCE_TIME, Debouncer.DebounceType.kBoth);
+    private Debouncer debouncer_ =
+            new Debouncer(CONSTANTS.DEBOUNCE_TIME, Debouncer.DebounceType.kBoth);
 
     public HopperSubsystem() {
-        super(HopperStates.IDLE, new HopperContstants());
-        feeder_ = new RollerMech(
-                getSubsystemKey(),
-                "Feeder",
-                List.of(CONSTANTS.FEED_MOTOR_CONFIG),
-                CONSTANTS.FEED_GEAR_RATIO);
+        super(HopperStates.IDLE, new HopperConstants());
+        feeder_ =
+                new RollerMech(
+                        getSubsystemKey(),
+                        "Feeder",
+                        List.of(CONSTANTS.FEED_MOTOR_CONFIG),
+                        CONSTANTS.FEED_GEAR_RATIO);
 
-        hopper_ = new RollerMech(
-                getSubsystemKey(),
-                "Hopper",
-                List.of(CONSTANTS.HOPPER_MOTOR_CONFIG),
-                CONSTANTS.HOPPER_GEAR_RATIO);
+        hopper_ =
+                new RollerMech(
+                        getSubsystemKey(),
+                        "Hopper",
+                        List.of(CONSTANTS.HOPPER_MOTOR_CONFIG),
+                        CONSTANTS.HOPPER_GEAR_RATIO);
     }
 
     @Override
     public void handleStateTransition(HopperStates wanted) {
         boolean jammed = isJammed();
-        DogLog.log(getSubsystemKey() + "jammed", jammed);
+        DogLog.log(getSubsystemKey() + "Jammed", jammed);
         if (jammed && (system_state_ == HopperStates.SHOOTING)) {
             system_state_ = HopperStates.UNJAM_REVERSE;
             hopper_timer_.reset();
             hopper_timer_.start();
         }
-        if (hopper_timer_.hasElapsed(CONSTANTS.UNJAMM_TIMMER) && ((system_state_ == HopperStates.UNJAM_REVERSE)
-                || (system_state_ == HopperStates.UNJAM_FORWARD))) {
-            system_state_ = (system_state_ == HopperStates.UNJAM_REVERSE)
-                    ? HopperStates.UNJAM_FORWARD
-                    : HopperStates.UNJAM_REVERSE;
+        if (hopper_timer_.hasElapsed(CONSTANTS.UNJAMM_TIMER)
+                && ((system_state_ == HopperStates.UNJAM_REVERSE)
+                        || (system_state_ == HopperStates.UNJAM_FORWARD))) {
+            system_state_ =
+                    (system_state_ == HopperStates.UNJAM_REVERSE)
+                            ? HopperStates.UNJAM_FORWARD
+                            : HopperStates.UNJAM_REVERSE;
             hopper_timer_.reset();
         }
         if ((system_state_ == HopperStates.UNJAM_REVERSE) && (!jammed)) {
@@ -70,7 +75,6 @@ public class HopperSubsystem extends MwSubsystem<HopperStates, HopperConstants> 
         if ((system_state_ == HopperStates.SHOOTING) && (wanted == HopperStates.IDLE)) {
             system_state_ = HopperStates.IDLE;
         }
-
     }
 
     @Override
@@ -95,22 +99,21 @@ public class HopperSubsystem extends MwSubsystem<HopperStates, HopperConstants> 
             case PROFILE:
                 break;
         }
-        // Log Data
     }
 
     /**
      * returns true if jammed, false otherwise
+     *
      * @return
      */
     public boolean isJammed() {
 
-        boolean jamCondition = Math.abs(hopper_.getLeaderCurrent()) > CONSTANTS.HOPPER_DANGER_CURRENT;
+        boolean jamCondition =
+                Math.abs(hopper_.getLeaderCurrent()) > CONSTANTS.HOPPER_DANGER_CURRENT;
         return debouncer_.calculate(jamCondition);
     }
 
-    /**
-     * appies turqu to simulate a jam
-     */
+    /** appies turqu to simulate a jam */
     public void fakeJam() {
         hopper_.applyLoadTorque(50000);
     }
