@@ -122,7 +122,7 @@ public class SimulationSubsystem extends MwSubsystem<SimulationStates, Simulatio
 
         // If the current solution is not valid, do not try to launch fuel!!!
         // This should never happen during normal operation, but could happen during testing
-        if(!solution.valid){
+        if(!solution.valid || hopper_fuel_count_ <= 0){
             return;
         }
 
