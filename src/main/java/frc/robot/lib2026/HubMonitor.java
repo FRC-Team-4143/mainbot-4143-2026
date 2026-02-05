@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 public class HubMonitor {
 
     String gameData;
+    ActiveAlliance first_active_alliance_;
 
     public enum ActiveAlliance {
         RED_ACTIVE,
@@ -16,8 +17,15 @@ public class HubMonitor {
         BOTH_ACTIVE;
     }
 
+    // updates the first_active_alliance_ variable with type ActiveAlliance to the
+    // first alliance with a working hub
+    public void updateActiveAlliance() {
+        first_active_alliance_ = firstActiveAlliance();
+    }
+
     // returns the first alliance that has an active hub
-    public ActiveAlliance firstActiveAlliance() { // some changes may need to be made to SAA
+    // return type: ActiveAlliance
+    public ActiveAlliance firstActiveAlliance() {
 
         gameData = DriverStation.getGameSpecificMessage();
 
@@ -35,6 +43,9 @@ public class HubMonitor {
         }
     }
 
+    // returns true if our hub is active
+    // parameter: matchTime in seconds remaining
+    // return type: boolean
     public boolean getActive(double matchTime) {
         Optional<Alliance> alliance = DriverStation.getAlliance();
         if (alliance.isPresent()) {
@@ -62,22 +73,25 @@ public class HubMonitor {
      * Shift 4: 55-30, SAA
      * Endgame: 30-0, Both
      */
+
+    // returns what team has an active hub
+    // parameter: matchTime in seconds remaining
     public ActiveAlliance getActiveAlliance(double matchTime) {
         if (matchTime > 140) {
             return ActiveAlliance.BOTH_ACTIVE;
         } else if (matchTime > 130) {
             return ActiveAlliance.BOTH_ACTIVE;
         } else if (matchTime > 105) {
-            return firstActiveAlliance();
+            return first_active_alliance_;
         } else if (matchTime > 80) {
-            if (firstActiveAlliance() == ActiveAlliance.RED_ACTIVE) {
+            if (first_active_alliance_ == ActiveAlliance.RED_ACTIVE) {
                 return ActiveAlliance.BLUE_ACTIVE;
             }
             return ActiveAlliance.RED_ACTIVE;
         } else if (matchTime > 55) {
-            return firstActiveAlliance();
+            return first_active_alliance_;
         } else if (matchTime > 30) {
-            if (firstActiveAlliance() == ActiveAlliance.RED_ACTIVE) {
+            if (first_active_alliance_ == ActiveAlliance.RED_ACTIVE) {
                 return ActiveAlliance.BLUE_ACTIVE;
             }
             return ActiveAlliance.RED_ACTIVE;
