@@ -19,6 +19,9 @@ import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import frc.robot.lib2026.FuelSim;
 import frc.robot.subsystems.localization.LocalizationConstants.LocalizationStates;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
+import frc.robot.subsystems.shooter.ShooterConstants.ShooterStates;
+import frc.robot.subsystems.intake.IntakeSubsystem;
+import frc.robot.subsystems.intake.IntakeConstants.IntakeStates;
 import frc.robot.subsystems.localization.LocalizationSubsystem;
 import frc.robot.subsystems.simulation.SimulationConstants.SimulationStates;
 
@@ -44,6 +47,7 @@ public class SimulationSubsystem extends MwSubsystem<SimulationStates, Simulatio
     private MwVisionSim vision_sim_;
     private int hopper_fuel_count_ = 0;
     private final Random noise_generator_ = new Random();
+    private double last_shot_timestamp_ = 0.0;
 
     public SimulationSubsystem() {
         super(SimulationStates.ACTIVE, new SimulationConstants());
@@ -76,7 +80,7 @@ public class SimulationSubsystem extends MwSubsystem<SimulationStates, Simulatio
                         -CONSTANTS.BASE_LENGTH / 2.0,
                         -CONSTANTS.BASE_WIDTH / 2.0,
                         CONSTANTS.BASE_WIDTH / 2.0,
-                        () -> hopper_fuel_count_ < CONSTANTS.HOPPER_CAPACITY,
+                        () -> hopper_fuel_count_ < CONSTANTS.HOPPER_CAPACITY && IntakeSubsystem.getInstance().getSystemState() == IntakeStates.ROLLING,
                         () -> hopper_fuel_count_++);
 
         // Start Fuel Simulation
@@ -97,6 +101,14 @@ public class SimulationSubsystem extends MwSubsystem<SimulationStates, Simulatio
         if (CONSTANTS.SIM_VISION_ENABLED) {
             Pose2d robot_pose = LocalizationSubsystem.getInstance().getSmoothPose();
             ProxyServerThread.getInstance().updateVisionSimulation(robot_pose);
+        }
+
+        if(ShooterSubsystem.getInstance().getSystemState() == ShooterStates.SHOOT && hopper_fuel_count_ > 0 && CONSTANTS.SIM_FUEL_ENABLED){
+            // Rate limit shooting to 15 balls per second
+            if (timestamp - last_shot_timestamp_ >= CONSTANTS.SECONDS_PER_SHOT) {
+                launchFuel();
+                last_shot_timestamp_ = timestamp;
+            }
         }
 
         // FuelSim
@@ -122,7 +134,7 @@ public class SimulationSubsystem extends MwSubsystem<SimulationStates, Simulatio
 
         // If the current solution is not valid, do not try to launch fuel!!!
         // This should never happen during normal operation, but could happen during testing
-        if(!solution.valid || hopper_fuel_count_ <= 0){
+        if(!solution.valid){
             return;
         }
 

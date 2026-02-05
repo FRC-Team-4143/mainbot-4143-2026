@@ -28,6 +28,7 @@ public class SimulationConstants extends MwConstants {
     // =============================================================================
     public final double SHOOTER_LAUNCH_HEIGHT =
             Units.inchesToMeters(LOADER.getDoubleValue("shooter", "translation", "z"));
+    public final double SECONDS_PER_SHOT = 1.0 / 15.0; // balls per second
 
     // =============================================================================
     // INTAKE SIMULATION
