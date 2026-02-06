@@ -29,7 +29,15 @@ public class SimulationConstants extends MwConstants {
     public final double SHOOTER_LAUNCH_HEIGHT =
             Units.inchesToMeters(LOADER.getDoubleValue("shooter", "translation", "z"));
     public final double SECONDS_PER_SHOT = 1.0 / 15.0; // balls per second
-
+    
+    // Flywheel load calculation:
+    // Based on momentum transfer: τ_avg = (m_ball × v_launch × r_flywheel) / Δt_contact
+    // Fuel mass ≈ 0.203 kg, launch velocity ≈ 12 m/s, flywheel radius ≈ 0.0762 m
+    // Contact time ≈ 0.02 s → τ_avg ≈ 9.3 N⋅m per shot
+    public final double FUEL_MASS_KG = 0.448 * 0.45392; // kg (from FuelSim)
+    public final double CONTACT_TIME_SEC = 0.02; // seconds, time ball is in contact with flywheel
+    public final double FLYWHEEL_RADIUS_M = Units.inchesToMeters(3); // meters (from ShooterConstants)
+    
     // =============================================================================
     // INTAKE SIMULATION
     // =============================================================================

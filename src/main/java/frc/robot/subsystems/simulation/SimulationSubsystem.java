@@ -103,7 +103,7 @@ public class SimulationSubsystem extends MwSubsystem<SimulationStates, Simulatio
             ProxyServerThread.getInstance().updateVisionSimulation(robot_pose);
         }
 
-        if(ShooterSubsystem.getInstance().getSystemState() == ShooterStates.SHOOT && hopper_fuel_count_ > 0 && CONSTANTS.SIM_FUEL_ENABLED){
+        if(ShooterSubsystem.getInstance().getSystemState() == ShooterStates.SHOOT /*&& hopper_fuel_count_ > 0*/ && CONSTANTS.SIM_FUEL_ENABLED){
             // Rate limit shooting to 15 balls per second
             if (timestamp - last_shot_timestamp_ >= CONSTANTS.SECONDS_PER_SHOT) {
                 launchFuel();
@@ -130,18 +130,10 @@ public class SimulationSubsystem extends MwSubsystem<SimulationStates, Simulatio
 
     /** Launches a fuel from the shooter in the simulation. */
     public void launchFuel(){
-        TrajectorySol solution = ShooterSubsystem.getInstance().getCurrentSolution();
-
-        // If the current solution is not valid, do not try to launch fuel!!!
-        // This should never happen during normal operation, but could happen during testing
-        if(!solution.valid){
-            return;
-        }
-
         FuelSim.getInstance().launchFuel(
-            MetersPerSecond.of(solution.velocity), 
-            Radians.of(solution.exit_angle),
-            Radians.of(solution.heading_angle), 
+            MetersPerSecond.of(ShooterSubsystem.getInstance().getLaunchVelocity()), 
+            Radians.of(ShooterSubsystem.getInstance().getLaunchAngle()),
+            Radians.of(LocalizationSubsystem.getInstance().getFieldPose().getRotation().getRadians()), 
             Meters.of(CONSTANTS.SHOOTER_LAUNCH_HEIGHT));
         hopper_fuel_count_--;
     }

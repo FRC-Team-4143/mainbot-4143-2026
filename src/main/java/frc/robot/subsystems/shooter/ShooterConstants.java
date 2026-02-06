@@ -24,7 +24,6 @@ public class ShooterConstants extends MwConstants {
         SHOOT,
         IDLE,
         TRACKING,
-        MANUAL,
         PROFILE
     }
 
@@ -53,7 +52,7 @@ public class ShooterConstants extends MwConstants {
                     * FLYWHEEL_MASS_KG
                     * Math.pow(FLYWHEEL_WHEEL_RADIUS_METERS, 2.0); // kg m^2, approximate
     public final double FLYWHEEL_EFF_FACTOR = 1.0;
-    public final double FLYWHEEL_SPEED_TOLERANCE = 1.0;
+    public final double FLYWHEEL_SPEED_TOLERANCE = 50.0;
     public final Slot1Configs FLYWHEEL_VELOCITY_GAINS =
             new Slot1Configs().withKP(0.5).withKV(0.117);
 
@@ -78,7 +77,7 @@ public class ShooterConstants extends MwConstants {
     // Tolerances are expressed in hood position units (radians) for comparing against
     // the mech's current position/readback.
     public final double HOOD_POSITION_TOLERANCE =
-            Units.degreesToRadians(2.0); // 2 degrees tolerance
+            Units.degreesToRadians(0.5); // 0.5 degrees tolerance
     public final Slot0Configs HOOD_POSITION_GAINS = new Slot0Configs().withKP(30).withKD(0.15);
 
     // =============================================================================
@@ -100,7 +99,9 @@ public class ShooterConstants extends MwConstants {
     public final LaunchTrajectory SOLVER =
             new LaunchTrajectory(HUB_TRANSLATION, LAUNCH_HEIGHT, true);
     public final double MAX_TURRET_WRAP = Units.degreesToRadians(190);
-    public final Translation2d SHOOTER_CENTER = new Translation2d(0.171, 0.079);
+    public final Translation2d SHOOTER_CENTER = new Translation2d(
+        getDoubleConstant("translation", "x"),
+        getDoubleConstant("translation", "y"));
 
     // =============================================================================
     // MOTOR CONFIGURATION OBJECTS
@@ -111,7 +112,7 @@ public class ShooterConstants extends MwConstants {
     public final FxMotorConfig INDEX_MOTOR_CONFIG = new FxMotorConfig();
     public final FxMotorConfig HOOD_MOTOR_CONFIGS = new FxMotorConfig();
     public final FxMotorConfig TURRET_MOTOR_CONFIGS = new FxMotorConfig();
-    public final boolean TURRET_ENABLED = false;
+    public final boolean TURRET_ENABLED = getBoolConstant("turret_enabled");
 
     // =============================================================================
     // CONSTRUCTOR - MOTOR CONFIGURATION INITIALIZATION
