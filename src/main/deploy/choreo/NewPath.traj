@@ -1,0 +1,34 @@
+{
+ "name":"NewPath",
+ "version":3,
+ "snapshot":{
+  "waypoints":[],
+  "constraints":[],
+  "targetDt":0.05
+ },
+ "params":{
+  "waypoints":[
+    {"x":{"exp":"3.5149919986724854 m", "val":3.514991998672486}, "y":{"exp":"4.117851257324219 m", "val":4.117851257324219}, "heading":{"exp":"0.8567055550511465 rad", "val":0.8567055550511465}, "intervals":40, "split":false, "fixTranslation":true, "fixHeading":true, "overrideIntervals":false},
+    {"x":{"exp":"1.3075133562088013 m", "val":1.3075133562088013}, "y":{"exp":"1.3950449228286743 m", "val":1.3950449228286743}, "heading":{"exp":"0 deg", "val":0.0}, "intervals":40, "split":false, "fixTranslation":true, "fixHeading":false, "overrideIntervals":false},
+    {"x":{"exp":"0.3538705110549927 m", "val":0.3538705110549927}, "y":{"exp":"0.7161805629730225 m", "val":0.7161805629730225}, "heading":{"exp":"0 deg", "val":0.0}, "intervals":40, "split":false, "fixTranslation":true, "fixHeading":true, "overrideIntervals":false},
+    {"x":{"exp":"2.1531636714935303 m", "val":2.1531636714935303}, "y":{"exp":"3.962862730026245 m", "val":3.962862730026245}, "heading":{"exp":"0 deg", "val":0.0}, "intervals":40, "split":false, "fixTranslation":true, "fixHeading":true, "overrideIntervals":false},
+    {"x":{"exp":"0.39466434717178345 m", "val":0.39466434717178345}, "y":{"exp":"5.951446056365967 m", "val":5.951446056365967}, "heading":{"exp":"0 deg", "val":0.0}, "intervals":40, "split":false, "fixTranslation":true, "fixHeading":true, "overrideIntervals":false}],
+  "constraints":[
+    {"from":"first", "to":null, "data":{"type":"StopPoint", "props":{}}, "enabled":true},
+    {"from":"last", "to":null, "data":{"type":"StopPoint", "props":{}}, "enabled":true},
+    {"from":"first", "to":"last", "data":{"type":"KeepInRectangle", "props":{"x":{"exp":"0 m", "val":0.0}, "y":{"exp":"0 m", "val":0.0}, "w":{"exp":"16.541 m", "val":16.541}, "h":{"exp":"8.0692 m", "val":8.0692}}}, "enabled":false},
+    {"from":2, "to":4, "data":{"type":"PointAt", "props":{"x":{"exp":"4.634784698486328 m", "val":4.634784698486328}, "y":{"exp":"4.045035362243652 m", "val":4.045035362243652}, "tolerance":{"exp":"1 deg", "val":0.017453292519943295}, "flip":false}}, "enabled":true}],
+  "targetDt":{
+   "exp":"0.05 s",
+   "val":0.05
+  }
+ },
+ "trajectory":{
+  "config":null,
+  "sampleType":null,
+  "waypoints":[],
+  "samples":[],
+  "splits":[]
+ },
+ "events":[]
+}
