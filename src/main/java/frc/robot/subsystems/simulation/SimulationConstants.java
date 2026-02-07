@@ -2,6 +2,8 @@ package frc.robot.subsystems.simulation;
 
 import com.marswars.subsystem.MwConstants;
 import com.marswars.util.ConstantsLoader;
+
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 
 public class SimulationConstants extends MwConstants {
@@ -26,8 +28,11 @@ public class SimulationConstants extends MwConstants {
     // =============================================================================
     // SHOOTER SIMULATION
     // =============================================================================
-    public final double SHOOTER_LAUNCH_HEIGHT =
-            Units.inchesToMeters(LOADER.getDoubleValue("shooter", "translation", "z"));
+    public final Translation3d SHOOTER_LAUNCH_OFFSET =
+            new Translation3d(
+                Units.inchesToMeters(LOADER.getDoubleValue("shooter", "translation", "x")),
+                Units.inchesToMeters(LOADER.getDoubleValue("shooter", "translation", "y")),
+                Units.inchesToMeters(LOADER.getDoubleValue("shooter", "translation", "z")));
     public final double SECONDS_PER_SHOT = 1.0 / 15.0; // balls per second
     
     // Flywheel load calculation:

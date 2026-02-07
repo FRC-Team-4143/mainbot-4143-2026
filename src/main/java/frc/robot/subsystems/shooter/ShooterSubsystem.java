@@ -141,6 +141,12 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
 
         switch (system_state_) {
             case TRACKING:
+                flywheel_.setTargetVelocity(flywheel_omega_);
+                indexer_.setTargetDutyCycle(0);
+                hood_.setTargetPosition(launch_exit_angle_);
+                if (CONSTANTS.TURRET_ENABLED) {
+                    turret_.setTargetPosition(launch_heading_);
+                }
             case AIMING:
                 flywheel_.setTargetVelocity(flywheel_omega_);
                 indexer_.setTargetDutyCycle(0);
