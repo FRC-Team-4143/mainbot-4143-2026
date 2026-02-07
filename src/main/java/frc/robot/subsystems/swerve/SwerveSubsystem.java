@@ -135,8 +135,7 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
                         .withSteerRequestType(SteerControlMode.CLOSED_LOOP)
                         .withDeadband(CONSTANTS.MAX_TRANSLATION_RATE * 0.01)
                         .withRotationalDeadband(CONSTANTS.MAX_ANGULAR_RATE * 0.01)
-                        .withHeadingController(CONSTANTS.HEADING_CONTROLLER)
-                        .withXPositiveReference(XPositiveReference.OperatorPerspective);
+                        .withHeadingController(CONSTANTS.HEADING_CONTROLLER);
         field_speeds_request_ =
                 new ChassisRequest.ApplyFieldSpeeds()
                         .withDriveRequestType(DriveControlMode.CLOSED_LOOP)
@@ -150,7 +149,8 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
         TunablePid.create(
                 getSubsystemKey() + "ChoreoPath/Rotation/Gains", choreo_theta_controller_);
         TunablePid.create(
-                getSubsystemKey() + "RotationLock/Gains", field_centric_rotation_lock_request_.HeadingController);
+                getSubsystemKey() + "RotationLock/Gains",
+                field_centric_rotation_lock_request_.HeadingController);
     }
 
     public List<SubsystemIoBase> getIos() {
@@ -180,7 +180,8 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
                         robot_centric_rotation_lock_request_
                                 .withTargetHeading(desired_rotation_lock_rot_)
                                 .withSpeeds(desired_chassis_speeds_));
-                DogLog.log(getSubsystemKey() + "RotationLock/ChassisSpeed", desired_chassis_speeds_);
+                DogLog.log(
+                        getSubsystemKey() + "RotationLock/ChassisSpeed", desired_chassis_speeds_);
                 break;
             case FIELD_CENTRIC_ROTATION_LOCK:
                 swerve_mech_.setChassisRequest(
@@ -463,6 +464,7 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
 
     /**
      * Updates the internal target for the robot to follow in CHASSIS_SPEED_ROTATION_LOCK
+     *
      * @param speeds desired chassis speeds
      * @param rotation desired rotation to lock to
      */
@@ -474,6 +476,7 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
     /**
      * Updates the internal target for the robot to face turing around a desired center point in
      * FIELD_CENTRIC_ROTATION_LOCK or CHOREO_PATH_ROTATION_LOCK
+     *
      * @param rotation desired rotation to lock to
      */
     public void setDesiredRotationLock(Rotation2d rotation) {
@@ -597,7 +600,8 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
      * @return true if the robot is at the desired rotation within the tolerance, false otherwise
      */
     public boolean isAtDesiredRotation(double tolerance) {
-        return field_centric_rotation_lock_request_.HeadingController.getPositionError() < tolerance;
+        return field_centric_rotation_lock_request_.HeadingController.getPositionError()
+                < tolerance;
     }
 
     /**
