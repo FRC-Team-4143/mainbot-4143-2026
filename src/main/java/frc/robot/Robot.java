@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.autos.Left_Start_Neutral_Outpost_Climb;
 import frc.robot.lib2026.FieldConstants;
+import frc.robot.lib2026.FieldRegions;
 import frc.robot.subsystems.hopper.HopperConstants.HopperStates;
 import frc.robot.subsystems.hopper.HopperSubsystem;
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterStates;
@@ -52,16 +53,6 @@ public class Robot extends TimedRobot {
         CommandScheduler.getInstance().run();
         // run the main robot loop for each subsystem
         robot_container_.doControlLoop();
-
-        // Only allow changing alliance perspective when not connected to FMS (at home practice
-        // field)
-        if (!DriverStation.isFMSAttached() && hasAllianceChanged()) {
-            SwerveSubsystem.getInstance()
-                    .setOperatorForwardDirection(
-                            alliance_ == Alliance.Blue
-                                    ? SwerveConstants.OperatorPerspective.BLUE_ALLIANCE
-                                    : SwerveConstants.OperatorPerspective.RED_ALLIANCE);
-        }
     }
 
     @Override
@@ -76,6 +67,7 @@ public class Robot extends TimedRobot {
                             alliance_ == Alliance.Blue
                                     ? SwerveConstants.OperatorPerspective.BLUE_ALLIANCE
                                     : SwerveConstants.OperatorPerspective.RED_ALLIANCE);
+            FieldRegions.flipRegions(true);
         }
     }
 
