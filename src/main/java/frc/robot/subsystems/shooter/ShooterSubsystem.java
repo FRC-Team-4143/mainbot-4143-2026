@@ -214,8 +214,9 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
     }
     public void setTarget(Translation3d target){
         CONSTANTS.SOLVER.setTarget(target);
+        DogLog.log("targetX", target.getX());
     }
     public void setHighArc(boolean highArc){
-        //CONSTANTS.SOLVER.setHighArc(highArc) - Not implemented in MWLib as of typing this
+        CONSTANTS.SOLVER.setHighArc(highArc);
     }
 }
