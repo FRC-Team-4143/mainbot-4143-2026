@@ -1,4 +1,4 @@
-package frc.robot.subsystems.Climber;
+package frc.robot.subsystems.climber;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.marswars.subsystem.MwConstants;
