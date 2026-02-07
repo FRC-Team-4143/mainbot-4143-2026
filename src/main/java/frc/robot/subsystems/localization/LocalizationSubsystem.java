@@ -44,8 +44,8 @@ public class LocalizationSubsystem extends MwSubsystem<LocalizationStates, Local
     private SwerveDrivePoseEstimator smooth_pose_estimator_;
     private SwerveDrivePoseEstimator field_pose_estimator_;
     private Field2d field_visualizer_ = new Field2d();
-    private Set<Integer> ShotFocus_ = CONSTANTS.SHOOTING_FOCUS_TAG_IDS_BLUE;
-    private Set<Integer> ClimbFocus_ = CONSTANTS.CLIMBING_FOCUS_TAG_IDS_BLUE;
+    private Set<Integer> shooting_focus_tags_ = CONSTANTS.SHOOTING_FOCUS_TAG_IDS_BLUE;
+    private Set<Integer> climbing_focus_tags_ = CONSTANTS.CLIMBING_FOCUS_TAG_IDS_BLUE;
 
     // vision detection logging
     private ArrayList<Pose3d> detected_tag_poses_ = new ArrayList<Pose3d>();
@@ -99,7 +99,7 @@ public class LocalizationSubsystem extends MwSubsystem<LocalizationStates, Local
                 applyFilteredVisionMeasurements(
                         field_pose_estimator_,
                         vision_measurements,
-                        ShotFocus_,
+                        shooting_focus_tags_,
                         CONSTANTS.SHOOTING_FOCUSED_COVARIANCE,
                         CONSTANTS.SHOOTING_NOT_FOCUSED_COVARIANCE);
                 break;
@@ -113,7 +113,7 @@ public class LocalizationSubsystem extends MwSubsystem<LocalizationStates, Local
                 applyFilteredVisionMeasurements(
                         field_pose_estimator_,
                         vision_measurements,
-                        ClimbFocus_,
+                        climbing_focus_tags_,
                         CONSTANTS.CLIMBING_FOCUSED_COVARIANCE,
                         CONSTANTS.CLIMBING_NOT_FOCUSED_COVARIANCE);
                 break;
@@ -287,11 +287,11 @@ public class LocalizationSubsystem extends MwSubsystem<LocalizationStates, Local
 
     public void setTagFocus(Alliance alliance) {
         if (alliance == Alliance.Blue) {
-            ShotFocus_ = CONSTANTS.SHOOTING_FOCUS_TAG_IDS_BLUE;
-            ClimbFocus_ = CONSTANTS.CLIMBING_FOCUS_TAG_IDS_BLUE;
+            shooting_focus_tags_ = CONSTANTS.SHOOTING_FOCUS_TAG_IDS_BLUE;
+            climbing_focus_tags_ = CONSTANTS.CLIMBING_FOCUS_TAG_IDS_BLUE;
         } else {
-            ShotFocus_ = CONSTANTS.SHOOTING_FOCUS_TAG_IDS_RED;
-            ClimbFocus_ = CONSTANTS.CLIMBING_FOCUS_TAG_IDS_RED;
+            shooting_focus_tags_ = CONSTANTS.SHOOTING_FOCUS_TAG_IDS_RED;
+            climbing_focus_tags_ = CONSTANTS.CLIMBING_FOCUS_TAG_IDS_RED;
         }
     }
     ;
