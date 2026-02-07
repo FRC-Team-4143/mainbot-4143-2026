@@ -10,6 +10,8 @@ import dev.doglog.DogLog;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import frc.robot.OI;
 import frc.robot.subsystems.localization.LocalizationSubsystem;
@@ -116,24 +118,29 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
     @Override
     public void updateLogic(double timestamp) {
         Pose2d robotPose = LocalizationSubsystem.getInstance().getFieldPose();
-        solution = CONSTANTS.SOLVER.getSolution(robotPose);
+        solution = CONSTANTS.SOLVER.getSolution(robotPose.transformBy(CONSTANTS.SHOOTER_CENTER));
         if (solution.valid) {
             flywheel_omega_ =
                     solution.velocity
                             / CONSTANTS.FLYWHEEL_WHEEL_RADIUS_METERS
                             * flywheel_eff_factor_;
         }
-        launch_heading_ = solution.heading_angle - robotPose.getRotation().getRadians();
-        if (launch_heading_ > CONSTANTS.MAX_TURRET_WRAP) {
-            launch_heading_ -= 2 * Math.PI;
-            if (system_state_ == ShooterStates.SHOOT) {
-                setWantedState(ShooterStates.AIMING);
+        if(CONSTANTS.TURRET_ENABLED){
+            launch_heading_ = solution.heading_angle - robotPose.getRotation().getRadians();
+            if (launch_heading_ > CONSTANTS.MAX_TURRET_WRAP) {
+                launch_heading_ -= 2 * Math.PI;
+                if (system_state_ == ShooterStates.SHOOT) {
+                    setWantedState(ShooterStates.AIMING);
+                }
+            } else if (launch_heading_ < -CONSTANTS.MAX_TURRET_WRAP) {
+                launch_heading_ += 2 * Math.PI;
+                if (system_state_ == ShooterStates.SHOOT) {
+                    setWantedState(ShooterStates.AIMING);
+                }
             }
-        } else if (launch_heading_ < -CONSTANTS.MAX_TURRET_WRAP) {
-            launch_heading_ += 2 * Math.PI;
-            if (system_state_ == ShooterStates.SHOOT) {
-                setWantedState(ShooterStates.AIMING);
-            }
+        }
+        else{
+            launch_heading_ = solution.heading_angle;
         }
         launch_exit_angle_ =
                 MathUtil.clamp(
@@ -147,6 +154,7 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
                 if (CONSTANTS.TURRET_ENABLED) {
                     turret_.setTargetPosition(launch_heading_);
                 }
+                break;
             case AIMING:
                 flywheel_.setTargetVelocity(flywheel_omega_);
                 indexer_.setTargetDutyCycle(0);
@@ -157,8 +165,8 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
                     SwerveSubsystem.getInstance()
                             .setDesiredRotationLockCOR(
                                     Rotation2d.fromRadians(launch_heading_),
-                                    CONSTANTS.SHOOTER_CENTER);
-                    SwerveSubsystem.getInstance().setWantedState(SwerveStates.ROTATION_LOCK);
+                                    new Translation2d(CONSTANTS.SHOOTER_CENTER.getX(), CONSTANTS.SHOOTER_CENTER.getY()));
+
                 }
                 break;
             case DUMP:
@@ -177,7 +185,7 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
                     SwerveSubsystem.getInstance()
                             .setDesiredRotationLockCOR(
                                     Rotation2d.fromRadians(launch_heading_),
-                                    CONSTANTS.SHOOTER_CENTER);
+                                    new Translation2d(CONSTANTS.SHOOTER_CENTER.getX(), CONSTANTS.SHOOTER_CENTER.getY()));
                     SwerveSubsystem.getInstance().setWantedState(SwerveStates.ROTATION_LOCK);
                 }
                 break;
