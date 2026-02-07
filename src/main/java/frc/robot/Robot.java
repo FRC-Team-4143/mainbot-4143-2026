@@ -16,6 +16,7 @@ import frc.robot.lib2026.FieldConstants;
 import frc.robot.lib2026.FieldRegions;
 import frc.robot.subsystems.hopper.HopperConstants.HopperStates;
 import frc.robot.subsystems.hopper.HopperSubsystem;
+import frc.robot.subsystems.localization.LocalizationSubsystem;
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterStates;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.swerve.SwerveConstants;
@@ -68,6 +69,7 @@ public class Robot extends TimedRobot {
                                     ? SwerveConstants.OperatorPerspective.BLUE_ALLIANCE
                                     : SwerveConstants.OperatorPerspective.RED_ALLIANCE);
             FieldRegions.flipRegions(true);
+            LocalizationSubsystem.getInstance().setTagFocus(alliance_);
         }
     }
 

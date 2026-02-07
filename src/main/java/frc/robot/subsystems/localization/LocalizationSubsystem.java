@@ -16,6 +16,9 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.localization.LocalizationConstants.LocalizationStates;
@@ -41,6 +44,8 @@ public class LocalizationSubsystem extends MwSubsystem<LocalizationStates, Local
     private SwerveDrivePoseEstimator smooth_pose_estimator_;
     private SwerveDrivePoseEstimator field_pose_estimator_;
     private Field2d field_visualizer_ = new Field2d();
+    private Set<Integer> ShotFocus_ = CONSTANTS.SHOOTING_FOCUS_TAG_IDS_BLUE;
+    private Set<Integer> ClimbFocus_ = CONSTANTS.CLIMBING_FOCUS_TAG_IDS_BLUE;
 
     // vision detection logging
     private ArrayList<Pose3d> detected_tag_poses_ = new ArrayList<Pose3d>();
@@ -91,10 +96,12 @@ public class LocalizationSubsystem extends MwSubsystem<LocalizationStates, Local
                 } else {
                     applySwerveMeasurements(field_pose_estimator_, swerve_measurements_);
                 }
-                applyFilteredVisionMeasurements(field_pose_estimator_, vision_measurements, 
-                    CONSTANTS.SHOOTING_FOCUS_TAG_IDS,
-                    CONSTANTS.SHOOTING_FOCUSED_COVARIANCE,
-                    CONSTANTS.SHOOTING_NOT_FOCUSED_COVARIANCE);
+                applyFilteredVisionMeasurements(
+                        field_pose_estimator_,
+                        vision_measurements,
+                        ShotFocus_,
+                        CONSTANTS.SHOOTING_FOCUSED_COVARIANCE,
+                        CONSTANTS.SHOOTING_NOT_FOCUSED_COVARIANCE);
                 break;
             case CLIMBING_FOCUS:
                 applySwerveMeasurements(smooth_pose_estimator_, swerve_measurements_);
@@ -103,10 +110,12 @@ public class LocalizationSubsystem extends MwSubsystem<LocalizationStates, Local
                 } else {
                     applySwerveMeasurements(field_pose_estimator_, swerve_measurements_);
                 }
-                applyFilteredVisionMeasurements(field_pose_estimator_, vision_measurements,
-                    CONSTANTS.CLIMBING_FOCUS_TAG_IDS,
-                    CONSTANTS.CLIMBING_FOCUSED_COVARIANCE,
-                    CONSTANTS.CLIMBING_NOT_FOCUSED_COVARIANCE);
+                applyFilteredVisionMeasurements(
+                        field_pose_estimator_,
+                        vision_measurements,
+                        ClimbFocus_,
+                        CONSTANTS.CLIMBING_FOCUSED_COVARIANCE,
+                        CONSTANTS.CLIMBING_NOT_FOCUSED_COVARIANCE);
                 break;
             case FULL: // This state uses full odometry + vision data
             default:
@@ -162,7 +171,11 @@ public class LocalizationSubsystem extends MwSubsystem<LocalizationStates, Local
     }
 
     private void applyFilteredVisionMeasurements(
-            SwerveDrivePoseEstimator pose_estimator, List<TagSolutionData> vision_measurements, Set<Integer> filtered_ids, Matrix<N3, N1> included, Matrix<N3, N1> excluded) {
+            SwerveDrivePoseEstimator pose_estimator,
+            List<TagSolutionData> vision_measurements,
+            Set<Integer> filtered_ids,
+            Matrix<N3, N1> included,
+            Matrix<N3, N1> excluded) {
         for (TagSolutionData vision_data : vision_measurements) {
             // Check if any detected tag ID is in the filtered set (O(1) lookup)
             boolean contains_filtered_id = false;
@@ -192,6 +205,7 @@ public class LocalizationSubsystem extends MwSubsystem<LocalizationStates, Local
             estimated_vision_poses_.add(vision_data.pose);
         }
     }
+
     /**
      * Applies swerve measurements to the given pose estimator.
      *
@@ -270,4 +284,15 @@ public class LocalizationSubsystem extends MwSubsystem<LocalizationStates, Local
     public void enableSwerveMeasurementNoise() {
         swerve_noise_enabled_ = true;
     }
+
+    public void setTagFocus(Alliance alliance) {
+        if (alliance == Alliance.Blue) {
+            ShotFocus_ = CONSTANTS.SHOOTING_FOCUS_TAG_IDS_BLUE;
+            ClimbFocus_ = CONSTANTS.CLIMBING_FOCUS_TAG_IDS_BLUE;
+        } else {
+            ShotFocus_ = CONSTANTS.SHOOTING_FOCUS_TAG_IDS_RED;
+            ClimbFocus_ = CONSTANTS.CLIMBING_FOCUS_TAG_IDS_RED;
+        }
+    }
+    ;
 }

@@ -17,12 +17,11 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import frc.robot.lib2026.FuelSim;
-import frc.robot.subsystems.localization.LocalizationConstants.LocalizationStates;
-import frc.robot.subsystems.shooter.ShooterSubsystem;
-import frc.robot.subsystems.shooter.ShooterConstants.ShooterStates;
-import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.intake.IntakeConstants.IntakeStates;
+import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.localization.LocalizationSubsystem;
+import frc.robot.subsystems.shooter.ShooterConstants.ShooterStates;
+import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.simulation.SimulationConstants.SimulationStates;
 
 import static edu.wpi.first.units.Units.MetersPerSecond;
