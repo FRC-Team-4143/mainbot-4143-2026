@@ -6,7 +6,9 @@ package frc.robot;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.subsystems.gamestates.GameStatesSubsystem;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 import java.util.Optional;
 
@@ -20,6 +22,12 @@ public abstract class OI {
         DriverStation.silenceJoystickConnectionWarning(true);
 
         driver_controller_.rightStick().onTrue(SwerveSubsystem.getInstance().toggleFieldCentric());
+        driver_controller_
+                .a()
+                .onTrue(Commands.runOnce(GameStatesSubsystem.getInstance()::GoalActive));
+        driver_controller_
+                .b()
+                .onTrue(Commands.runOnce(GameStatesSubsystem.getInstance()::GoalInactive));
     }
 
     /**

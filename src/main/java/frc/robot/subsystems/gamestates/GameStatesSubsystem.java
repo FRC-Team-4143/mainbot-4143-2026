@@ -7,10 +7,20 @@ import edu.wpi.first.wpilibj.RobotState;
 import frc.robot.lib2026.FieldRegions;
 import frc.robot.subsystems.gamestates.GameStatesConstants.GameStates;
 import frc.robot.subsystems.localization.LocalizationSubsystem;
+
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
 public class GameStatesSubsystem extends MwSubsystem<GameStates, GameStatesConstants> {
+    private static GameStatesSubsystem instance_ = null;
+
+    public static GameStatesSubsystem getInstance() {
+        if (instance_ == null) {
+            instance_ = new GameStatesSubsystem();
+        }
+        return instance_;
+    }
 
     // Variables, temporary
     Boolean goal_active_ = false;
@@ -65,6 +75,7 @@ public class GameStatesSubsystem extends MwSubsystem<GameStates, GameStatesConst
         }
     }
 
+    @Override
     public void handleStateTransition(GameStates wanted) {
         Pose2d robotpose = LocalizationSubsystem.getInstance().getFieldPose();
         // transtions out of TELEOP_CLIMB, no transtions
@@ -75,8 +86,10 @@ public class GameStatesSubsystem extends MwSubsystem<GameStates, GameStatesConst
         // HOLD transitions
         if (system_state_ == GameStates.HOLD && inAllianceZone(robotpose) && goal_active_) {
             system_state_ = GameStates.SCORE;
-        } else if (system_state_ == GameStates.HOLD && (isPassZone(robotpose) || pass_overide_)) {
+            System.out.println("hold to score");
+        } else if (system_state_ == GameStates.HOLD && (isPassZone(robotpose) || !pass_overide_) && !inHoldZone(robotpose) && !inAllianceZone(robotpose)) {
             system_state_ = GameStates.PASS;
+            System.out.println("hold to pass");
         } else if (system_state_ == GameStates.HOLD && auto_climb_ready_) {
             system_state_ = GameStates.AUTO_CLIMB;
         } else if (system_state_ == GameStates.HOLD && operator_presses_climb_button_) {
@@ -86,6 +99,7 @@ public class GameStatesSubsystem extends MwSubsystem<GameStates, GameStatesConst
         // SCORE transistions
         if (system_state_ == GameStates.SCORE && (isPassZone(robotpose) || !goal_active_)) {
             system_state_ = GameStates.HOLD;
+            System.out.println("score to hold");
         } else if (system_state_ == GameStates.SCORE && auto_climb_ready_) {
             system_state_ = GameStates.AUTO_CLIMB;
         } else if (system_state_ == GameStates.SCORE && operator_presses_climb_button_) {
@@ -93,8 +107,9 @@ public class GameStatesSubsystem extends MwSubsystem<GameStates, GameStatesConst
         } else {
         } // empty to not interfere with rest of state machine
         // PASS transistions
-        if (system_state_ == GameStates.PASS && (inHoldZone(robotpose) || !pass_overide_)) {
+        if (system_state_ == GameStates.PASS && (inHoldZone(robotpose) || inAllianceZone(robotpose) || pass_overide_)) {
             system_state_ = GameStates.HOLD;
+            System.out.println("pass to hold");
         } else {
         } // empty to not interfere with rest of state machine
         // AUTO_CLIMB transitions
@@ -141,5 +156,19 @@ public class GameStatesSubsystem extends MwSubsystem<GameStates, GameStatesConst
 
     private boolean isDownClimbFinished() {
         return false;
+    }
+
+    // for testing only
+
+    // set goal to active
+    public void GoalActive() {
+        goal_active_ = true;
+        return;
+    }
+
+    // sets goal to inactive
+    public void GoalInactive() {
+        goal_active_ = false;
+        return;
     }
 }
