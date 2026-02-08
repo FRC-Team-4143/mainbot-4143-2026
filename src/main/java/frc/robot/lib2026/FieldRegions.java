@@ -162,22 +162,25 @@ public class FieldRegions {
     public static ArrayList<PolygonRegion> HOLD_REGIONS =
             new ArrayList<>(List.of(HOLD_ZONE, OPP_HOLD_ZONE, OPP_ALLIANCE_HOLD_ZONE));
 
-    public static void flipRegions(boolean flip) {
-        if (flip) {
-            AllianceFlipUtil.apply(DEPOT_REGION);
-            AllianceFlipUtil.apply(ALLIANCE_ZONE);
-            AllianceFlipUtil.apply(OPP_ALLIANCE_HOLD_ZONE);
-            AllianceFlipUtil.apply(OPP_ALLIANCE_ZONE);
-            AllianceFlipUtil.apply(OPP_DEPOT_REGION);
-            AllianceFlipUtil.apply(OPP_HOLD_ZONE);
-            AllianceFlipUtil.apply(OPP_HUB_REGION);
-            AllianceFlipUtil.apply(OPP_TOWER_REGION);
-            AllianceFlipUtil.apply(TOWER_REGION);
-            AllianceFlipUtil.apply(HUB_REGION);
-            AllianceFlipUtil.apply(HOLD_ZONE);
-            AllianceFlipUtil.apply(NEUTRAL_ZONE);
-            AllianceFlipUtil.apply(RIGHT_PASS_REGION);
-            AllianceFlipUtil.apply(LEFT_PASS_REGION);
-        }
+    /**
+     * Flips the field regions based of FIELD_SYMMETRY type.
+     *
+     * @apiNote This does not keep track of Red/Blue
+     */
+    public static void flipRegions() {
+        AllianceFlipUtil.apply(DEPOT_REGION);
+        AllianceFlipUtil.apply(ALLIANCE_ZONE);
+        AllianceFlipUtil.apply(OPP_ALLIANCE_HOLD_ZONE);
+        AllianceFlipUtil.apply(OPP_ALLIANCE_ZONE);
+        AllianceFlipUtil.apply(OPP_DEPOT_REGION);
+        AllianceFlipUtil.apply(OPP_HOLD_ZONE);
+        AllianceFlipUtil.apply(OPP_HUB_REGION);
+        AllianceFlipUtil.apply(OPP_TOWER_REGION);
+        AllianceFlipUtil.apply(TOWER_REGION);
+        AllianceFlipUtil.apply(HUB_REGION);
+        AllianceFlipUtil.apply(HOLD_ZONE);
+        AllianceFlipUtil.apply(NEUTRAL_ZONE);
+        AllianceFlipUtil.apply(RIGHT_PASS_REGION);
+        AllianceFlipUtil.apply(LEFT_PASS_REGION);
     }
 }

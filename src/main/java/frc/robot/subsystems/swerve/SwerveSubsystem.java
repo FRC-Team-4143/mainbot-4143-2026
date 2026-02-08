@@ -696,9 +696,9 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
         return Commands.runOnce(() -> swerve_mech_.setModuleOffsets());
     }
 
-    /** Zeros the gyro to the operator forward direction */
-    public Command zeroGyro() {
-        return Commands.runOnce(() -> swerve_mech_.setGyro(operator_forward_direction_));
+    /** Zeros the gyro yaw to the operator forward direction */
+    public Command zeroGyroYaw() {
+        return Commands.runOnce(() -> swerve_mech_.setGyroYaw(operator_forward_direction_));
     }
 
     /** Returns the module states (turn angles and drive velocities) for all of the modules. */
@@ -717,8 +717,13 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
     }
 
     /** Returns the raw gyro rotation */
-    public Rotation2d getGyroRotation() {
-        return swerve_mech_.getRawGyroRotation();
+    public Rotation2d getGyroYaw() {
+        return swerve_mech_.getGyroYaw();
+    }
+
+    /** Returns the raw gyro yaw rate */
+    public double getGyroYawRate() {
+        return swerve_mech_.getGyroYawRate();
     }
 
     /**

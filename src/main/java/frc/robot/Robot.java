@@ -68,7 +68,7 @@ public class Robot extends TimedRobot {
                             alliance_ == Alliance.Blue
                                     ? SwerveConstants.OperatorPerspective.BLUE_ALLIANCE
                                     : SwerveConstants.OperatorPerspective.RED_ALLIANCE);
-            FieldRegions.flipRegions(true);
+            FieldRegions.flipRegions();
             LocalizationSubsystem.getInstance().setTagFocus(alliance_);
         }
     }

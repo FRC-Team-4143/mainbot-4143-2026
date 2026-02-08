@@ -24,19 +24,19 @@ public record ChoreoTraj(
     Pose2d initialPoseBlue,
     Pose2d endPoseBlue
 ) {
-    public static final ChoreoTraj RightStartNeutralDepot = new ChoreoTraj(
-	    "RightStartNeutralDepot",
-	    OptionalInt.empty(),
-	    7.59556,
-	    new Pose2d(3.467, 2.649, Rotation2d.fromRadians(-2.324)),
-	    new Pose2d(0.416, 5.935, Rotation2d.fromRadians(-0.426))
-	);
-	public static final ChoreoTraj LeftStartNeutralOutpost = new ChoreoTraj(
+    public static final ChoreoTraj LeftStartNeutralOutpost = new ChoreoTraj(
 	    "LeftStartNeutralOutpost",
 	    OptionalInt.empty(),
 	    8.13343,
 	    new Pose2d(3.467, 5.603, Rotation2d.fromRadians(2.212)),
 	    new Pose2d(0.293, 0.733, Rotation2d.fromRadians(0))
+	);
+	public static final ChoreoTraj RightStartNeutralDepot = new ChoreoTraj(
+	    "RightStartNeutralDepot",
+	    OptionalInt.empty(),
+	    7.59556,
+	    new Pose2d(3.467, 2.649, Rotation2d.fromRadians(-2.324)),
+	    new Pose2d(0.416, 5.935, Rotation2d.fromRadians(-0.426))
 	);
 	public static final ChoreoTraj OutpostClimb = new ChoreoTraj(
 	    "OutpostClimb",
@@ -51,8 +51,8 @@ public record ChoreoTraj(
      * This allows for trajectory data to be looked up with strings during runtime.
      */
     public static final Map<String, ChoreoTraj> ALL_TRAJECTORIES = Map.ofEntries(
-    	Map.entry("RightStartNeutralDepot", RightStartNeutralDepot),
-		Map.entry("LeftStartNeutralOutpost", LeftStartNeutralOutpost),
+    	Map.entry("LeftStartNeutralOutpost", LeftStartNeutralOutpost),
+		Map.entry("RightStartNeutralDepot", RightStartNeutralDepot),
 		Map.entry("OutpostClimb", OutpostClimb)
     );
 

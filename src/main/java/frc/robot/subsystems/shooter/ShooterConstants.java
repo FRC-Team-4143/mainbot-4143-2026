@@ -8,7 +8,6 @@ import com.marswars.subsystem.MwConstants;
 import com.marswars.util.FxMotorConfig;
 import com.marswars.util.FxMotorConfig.FxMotorType;
 import com.marswars.util.PhoenixUtil;
-
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -103,11 +102,12 @@ public class ShooterConstants extends MwConstants {
     public final LaunchTrajectory SOLVER =
             new LaunchTrajectory(HUB_TRANSLATION, LAUNCH_HEIGHT, true);
     public final double MAX_TURRET_WRAP = Units.degreesToRadians(190);
-    public final Transform2d SHOOTER_CENTER = new Transform2d(
-        new Translation2d(
-            getDoubleConstant("translation", "x"),
-            getDoubleConstant("translation", "y")),
-        new Rotation2d());
+    public final Transform2d SHOOTER_CENTER =
+            new Transform2d(
+                    new Translation2d(
+                            getDoubleConstant("translation", "x"),
+                            getDoubleConstant("translation", "y")),
+                    new Rotation2d());
 
     // =============================================================================
     // MOTOR CONFIGURATION OBJECTS
