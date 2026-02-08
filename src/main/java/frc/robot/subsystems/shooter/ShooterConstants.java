@@ -8,6 +8,9 @@ import com.marswars.subsystem.MwConstants;
 import com.marswars.util.FxMotorConfig;
 import com.marswars.util.FxMotorConfig.FxMotorType;
 import com.marswars.util.PhoenixUtil;
+
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
@@ -24,7 +27,6 @@ public class ShooterConstants extends MwConstants {
         SHOOT,
         IDLE,
         TRACKING,
-        MANUAL,
         PROFILE
     }
 
@@ -53,7 +55,7 @@ public class ShooterConstants extends MwConstants {
                     * FLYWHEEL_MASS_KG
                     * Math.pow(FLYWHEEL_WHEEL_RADIUS_METERS, 2.0); // kg m^2, approximate
     public final double FLYWHEEL_EFF_FACTOR = 1.0;
-    public final double FLYWHEEL_SPEED_TOLERANCE = 1.0;
+    public final double FLYWHEEL_SPEED_TOLERANCE = 50.0;
     public final Slot1Configs FLYWHEEL_VELOCITY_GAINS =
             new Slot1Configs().withKP(0.5).withKV(0.117);
 
@@ -68,11 +70,18 @@ public class ShooterConstants extends MwConstants {
     // MECHANICAL CONSTANTS - HOOD
     // =============================================================================
 
-    public final boolean HOOD_INVERTED = false;
-    public final double HOOD_GEAR_RATIO = 1.0;
-    public final double HOOD_MIN_ANGLE = 0;
-    public final double HOOD_MAX_ANGLE = 0;
-    public final double HOOD_ANGLE_TOLERANCE = 1.0;
+    public final boolean HOOD_INVERTED = true;
+    public final double HOOD_GEAR_RATIO =
+            (5.0 * (372.0 / 40.0)); // motor rotations / output mechanism rotations
+    // Min/max physical hood angles (radians). Configure to match the mechanical limits
+    public final double HOOD_MIN_ANGLE = Units.degreesToRadians(45);
+    public final double HOOD_MAX_ANGLE = Units.degreesToRadians(83.673);
+    public final double HOOD_HOME_POSITION = Units.degreesToRadians(83.673);
+
+    // Tolerances are expressed in hood position units (radians) for comparing against
+    // the mech's current position/readback.
+    public final double HOOD_POSITION_TOLERANCE =
+            Units.degreesToRadians(0.5); // 0.5 degrees tolerance
     public final Slot0Configs HOOD_POSITION_GAINS = new Slot0Configs().withKP(30).withKD(0.15);
 
     // =============================================================================
@@ -90,11 +99,15 @@ public class ShooterConstants extends MwConstants {
     public final double INDEXER_DUTY_CYCLE = 0.3; // 30% power for indexing
     public final Translation3d HUB_TRANSLATION =
             new Translation3d(4.611624, 4.021328, 1.397); // where the hub is
-    public final double LAUNCH_HEIGHT = 0.613;
+    public final double LAUNCH_HEIGHT = Units.inchesToMeters(getDoubleConstant("translation", "z"));
     public final LaunchTrajectory SOLVER =
             new LaunchTrajectory(HUB_TRANSLATION, LAUNCH_HEIGHT, true);
     public final double MAX_TURRET_WRAP = Units.degreesToRadians(190);
-    public final Translation2d SHOOTER_CENTER = new Translation2d(0.171, 0.079);
+    public final Transform2d SHOOTER_CENTER = new Transform2d(
+        new Translation2d(
+            getDoubleConstant("translation", "x"),
+            getDoubleConstant("translation", "y")),
+        new Rotation2d());
 
     // =============================================================================
     // MOTOR CONFIGURATION OBJECTS
@@ -105,7 +118,7 @@ public class ShooterConstants extends MwConstants {
     public final FxMotorConfig INDEX_MOTOR_CONFIG = new FxMotorConfig();
     public final FxMotorConfig HOOD_MOTOR_CONFIGS = new FxMotorConfig();
     public final FxMotorConfig TURRET_MOTOR_CONFIGS = new FxMotorConfig();
-    public final boolean TURRET_ENABLED = false;
+    public final boolean TURRET_ENABLED = getBoolConstant("turret_enabled");
 
     // =============================================================================
     // CONSTRUCTOR - MOTOR CONFIGURATION INITIALIZATION
@@ -140,6 +153,7 @@ public class ShooterConstants extends MwConstants {
         HOOD_MOTOR_CONFIGS.motor_type = FxMotorType.X60;
         HOOD_MOTOR_CONFIGS.canbus_name = "CANivore";
         HOOD_MOTOR_CONFIGS.config = new TalonFXConfiguration();
+        HOOD_MOTOR_CONFIGS.config.MotorOutput.Inverted = PhoenixUtil.toInvertedValue(HOOD_INVERTED);
         HOOD_MOTOR_CONFIGS.config.Slot0 = HOOD_POSITION_GAINS;
 
         // Configure Turret Motor

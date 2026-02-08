@@ -15,6 +15,8 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.localization.LocalizationConstants.LocalizationStates;
 import frc.robot.subsystems.simulation.SimulationSubsystem;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
@@ -36,6 +38,7 @@ public class LocalizationSubsystem extends MwSubsystem<LocalizationStates, Local
 
     private SwerveDrivePoseEstimator smooth_pose_estimator_;
     private SwerveDrivePoseEstimator field_pose_estimator_;
+    private Field2d field_visualizer_ = new Field2d();
 
     // vision detection logging
     private ArrayList<Pose3d> detected_tag_poses_ = new ArrayList<Pose3d>();
@@ -95,9 +98,12 @@ public class LocalizationSubsystem extends MwSubsystem<LocalizationStates, Local
                 break;
         }
 
+        field_visualizer_.setRobotPose(getFieldPose());
+
         // Log the pose estimates
         DogLog.log(getSubsystemKey() + "SmoothPose", getSmoothPose());
         DogLog.log(getSubsystemKey() + "FieldPose", getFieldPose());
+        SmartDashboard.putData("Field", field_visualizer_);
 
         // Log vision detections
         DogLog.log(

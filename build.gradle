@@ -94,7 +94,7 @@ repositories {
         }
     }
     // flatDir{
-    //     dirs 'C:/Users/FIRSTMentor/Documents/MW-Lib/build/libs'
+    //     dirs '/prj/frc/MW-Lib/build/libs'
     // }
 }
 
