@@ -17,14 +17,18 @@ public class HubMonitor {
         BOTH_ACTIVE;
     }
 
-    // updates the first_active_alliance_ variable with type ActiveAlliance to the
-    // first alliance with a working hub
+   /** Updates the first_active_alliance_ variable with the first alliance that has an active hub. */
     public void updateActiveAlliance() {
         first_active_alliance_ = firstActiveAlliance();
     }
+    public void manualUpdateActiveAlliance(ActiveAlliance alliance) {
+        first_active_alliance_ = alliance;
+    }
 
-    // returns the first alliance that has an active hub
-    // return type: ActiveAlliance
+   /**
+    * Determines the first alliance that has an active hub based on the game data provided by the DriverStation.
+    * @return
+    */
     public ActiveAlliance firstActiveAlliance() {
 
         gameData = DriverStation.getGameSpecificMessage();
@@ -43,9 +47,11 @@ public class HubMonitor {
         }
     }
 
-    // returns true if our hub is active
-    // parameter: matchTime in seconds remaining
-    // return type: boolean
+    /**
+     * 
+     * @param matchTime
+     * @return
+     */
     public boolean getActive(double matchTime) {
         Optional<Alliance> alliance = DriverStation.getAlliance();
         if (alliance.isPresent()) {
@@ -65,7 +71,7 @@ public class HubMonitor {
      * MatchTime: in seconds
      * FAA: First Active Alliance
      * SAA: Second Active Alliance
-     * Auto: 160-140, Both
+     * Auto: 160-140 or 20-10 in match time, Both
      * Transition Shift: 140-130, Both
      * Shift 1: 130-105, FAA
      * Shift 2: 105-80, SAA
