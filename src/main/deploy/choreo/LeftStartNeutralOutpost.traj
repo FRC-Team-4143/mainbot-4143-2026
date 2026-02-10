@@ -307,5 +307,5 @@
   "splits":[0]
  },
  "events":[
-   {"name":"Marker", "from":{"target":5, "targetTimestamp":3.90044, "offset":{"exp":"0 s", "val":0.0}}, "event":null}]
+   {"name":"Shooting", "from":{"target":5, "targetTimestamp":3.90044, "offset":{"exp":"0 s", "val":0.0}}, "event":null}]
 }
