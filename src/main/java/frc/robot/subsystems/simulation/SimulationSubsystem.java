@@ -3,8 +3,6 @@ package frc.robot.subsystems.simulation;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.Radians;
 
-import com.marswars.auto.AutoManager;
-import com.marswars.geometry.AllianceFlipUtil;
 import com.marswars.proxy_server.ProxyServerThread;
 import com.marswars.subsystem.MwSubsystem;
 import com.marswars.subsystem.SubsystemIoBase;
@@ -14,8 +12,6 @@ import dev.doglog.DogLog;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import frc.robot.lib2026.FuelSim;
@@ -27,7 +23,6 @@ import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.simulation.SimulationConstants.SimulationStates;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 import java.util.Random;
 
 public class SimulationSubsystem extends MwSubsystem<SimulationStates, SimulationConstants> {
@@ -92,10 +87,6 @@ public class SimulationSubsystem extends MwSubsystem<SimulationStates, Simulatio
         resetForAuto();
     }
 
-    // @Override
-    // public void handleStateTransition(SimulationStates wanted) {
-    // }
-
     @Override
     public void updateLogic(double timestamp) {
         // Vision Simulation
@@ -155,12 +146,7 @@ public class SimulationSubsystem extends MwSubsystem<SimulationStates, Simulatio
     /** Resets the simulation for autonomous mode. */
     public void resetForAuto() {
         // Move robot to starting pose
-        Pose2d start_pose = AutoManager.getInstance().getSelectedAuto().getStartPose();
-        Optional<Alliance> alliance = DriverStation.getAlliance();
-        if (alliance.isPresent() && alliance.get() == Alliance.Red) {
-            start_pose = AllianceFlipUtil.apply(start_pose);
-        }
-        LocalizationSubsystem.getInstance().resetPoseEstimator(start_pose);
+        LocalizationSubsystem.getInstance().resetPoseEstimatorAuto();
 
         // Reset fuel simulation
         hopper_fuel_count_ = 0;

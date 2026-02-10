@@ -53,9 +53,9 @@ public class LocalizationConstants extends MwConstants {
     // Measurements with larger rotation differences will be discarded
     public final double MAX_ROTATION_DIFFERENCE = Units.degreesToRadians(360.0);
 
-    // Maximum allowed yaw rate (rotation speed) for accepting vision measurements (radians per second)
+    // Maximum allowed yaw rate (rotation speed) for accepting vision measurements (radians per
+    // second)
     public final double YAW_RATE_DISCARD = Units.degreesToRadians(720.0);
-
 
     // =============================================================================
     // CONSTRUCTOR

@@ -1,5 +1,7 @@
 package frc.robot.subsystems.localization;
 
+import com.marswars.auto.AutoManager;
+import com.marswars.geometry.AllianceFlipUtil;
 import com.marswars.proxy_server.ProxyServerThread;
 import com.marswars.proxy_server.TagSolutionPacket.TagSolutionData;
 import com.marswars.subsystem.MwSubsystem;
@@ -18,6 +20,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -77,6 +80,9 @@ public class LocalizationSubsystem extends MwSubsystem<LocalizationStates, Local
                         Pose2d.kZero,
                         CONSTANTS.DEFAULT_ODOM_COVARIANCE,
                         CONSTANTS.DEFAULT_VISION_COVARIANCE);
+
+        // Put the field visualizer on SmartDashboard once during initialization
+        SmartDashboard.putData("Field", field_visualizer_);
     }
 
     @Override
@@ -135,7 +141,6 @@ public class LocalizationSubsystem extends MwSubsystem<LocalizationStates, Local
         // Log the pose estimates
         DogLog.log(getSubsystemKey() + "SmoothPose", getSmoothPose());
         DogLog.log(getSubsystemKey() + "FieldPose", getFieldPose());
-        SmartDashboard.putData("Field", field_visualizer_);
 
         // Log vision detections
         DogLog.log(
@@ -199,7 +204,12 @@ public class LocalizationSubsystem extends MwSubsystem<LocalizationStates, Local
             }
 
             // Skip measurement if rotation difference is too large
-            double rotation_difference = Math.abs(getFieldPose().getRotation().minus(vision_data.pose.getRotation()).getRadians());
+            double rotation_difference =
+                    Math.abs(
+                            getFieldPose()
+                                    .getRotation()
+                                    .minus(vision_data.pose.getRotation())
+                                    .getRadians());
             if (rotation_difference > CONSTANTS.MAX_ROTATION_DIFFERENCE) {
                 continue;
             }
@@ -270,6 +280,20 @@ public class LocalizationSubsystem extends MwSubsystem<LocalizationStates, Local
     public void resetPoseEstimator(Pose2d new_pose) {
         smooth_pose_estimator_.resetPose(new_pose);
         field_pose_estimator_.resetPose(new_pose);
+    }
+
+    /**
+     * Resets the pose estimator to the starting pose for autonomous mode, considering alliance
+     * color.
+     */
+    public void resetPoseEstimatorAuto() {
+        // Move robot to starting pose
+        Pose2d start_pose = AutoManager.getInstance().getSelectedAuto().getStartPose();
+        Optional<Alliance> alliance = DriverStation.getAlliance();
+        if (alliance.isPresent() && alliance.get() == Alliance.Red) {
+            start_pose = AllianceFlipUtil.apply(start_pose);
+        }
+        resetPoseEstimator(start_pose);
     }
 
     /**
