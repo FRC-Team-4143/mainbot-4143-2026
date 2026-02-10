@@ -8,7 +8,6 @@ import com.marswars.subsystem.MwConstants;
 import com.marswars.util.FxMotorConfig;
 import com.marswars.util.FxMotorConfig.FxMotorType;
 import com.marswars.util.PhoenixUtil;
-
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -36,20 +35,25 @@ public class ShooterConstants extends MwConstants {
 
     // Motor CAN IDs
     public final int SHOOTER_LEADER_ID = 10;
-    public final int SHOOTER_FOLLOWER_ID = 11;
-    public final int INDEXER_ID = 12;
-    public final int HOOD_ID = 13;
-    public final int TURRET_ID = 15;
+    public final int SHOOTER_FOLLOWER_1_ID = 11;
+    public final int SHOOTER_FOLLOWER_2_ID = 12;
+    public final int SHOOTER_FOLLOWER_3_ID = 13;
+    public final int INDEXER_LEADER_ID = 14;
+    public final int INDEXER_FOLLOWER_ID = 15;
+    public final int HOOD_ID = 16;
+    public final int TURRET_ID = 19; // bookmark
 
     // =============================================================================
     // MECHANICAL CONSTANTS - FLYWHEEL
     // =============================================================================
 
-    public final boolean FLYWHEEL_LEADER_INVERTED = true;
-    public final boolean FLYWHEEL_FOLLOWER_INVERTED = false;
+    public final boolean FLYWHEEL_LEADER_INVERTED = false;
+    public final boolean FLYWHEEL_FOLLOWER_1_INVERTED = false;
+    public final boolean FLYWHEEL_FOLLOWER_2_INVERTED = false;
+    public final boolean FLYWHEEL_FOLLOWER_3_INVERTED = false;
     public final double FLYWHEEL_GEAR_RATIO = 1.0;
-    public final double FLYWHEEL_WHEEL_RADIUS_METERS = Units.inchesToMeters(3);
-    public final double FLYWHEEL_MASS_KG = 2.3; // kg, approximate
+    public final double FLYWHEEL_WHEEL_RADIUS_METERS = Units.inchesToMeters(2);
+    public final double FLYWHEEL_MASS_KG = Units.lbsToKilograms(3.5);
     public final double FLYWHEEL_INERTIA =
             0.5
                     * FLYWHEEL_MASS_KG
@@ -63,8 +67,9 @@ public class ShooterConstants extends MwConstants {
     // MECHANICAL CONSTANTS - INDEXER
     // =============================================================================
 
-    public final boolean INDEXER_INVERTED = false;
-    public final double INDEXER_GEAR_RATIO = 1.0;
+    public final boolean INDEXER_LEADER_INVERTED = false;
+    public final boolean INDEXER_FOLLOWER_INVERTED = false;
+    public final double INDEXER_GEAR_RATIO = 24.0 / 18.0;
 
     // =============================================================================
     // MECHANICAL CONSTANTS - HOOD
@@ -103,19 +108,22 @@ public class ShooterConstants extends MwConstants {
     public final LaunchTrajectory SOLVER =
             new LaunchTrajectory(HUB_TRANSLATION, LAUNCH_HEIGHT, true);
     public final double MAX_TURRET_WRAP = Units.degreesToRadians(190);
-    public final Transform2d SHOOTER_CENTER = new Transform2d(
-        new Translation2d(
-            getDoubleConstant("translation", "x"),
-            getDoubleConstant("translation", "y")),
-        new Rotation2d());
+    public final Transform2d SHOOTER_CENTER =
+            new Transform2d(
+                    new Translation2d(
+                            getDoubleConstant("translation", "x"),
+                            getDoubleConstant("translation", "y")),
+                    new Rotation2d());
 
     // =============================================================================
     // MOTOR CONFIGURATION OBJECTS
     // =============================================================================
-
     public final FxMotorConfig SHOOTER_LEADER_MOTOR_CONFIG = new FxMotorConfig();
-    public final FxMotorConfig SHOOTER_FOLLOWER_MOTOR_CONFIG = new FxMotorConfig();
-    public final FxMotorConfig INDEX_MOTOR_CONFIG = new FxMotorConfig();
+    public final FxMotorConfig SHOOTER_FOLLOWER_MOTOR_1_CONFIG = new FxMotorConfig();
+    public final FxMotorConfig SHOOTER_FOLLOWER_MOTOR_2_CONFIG = new FxMotorConfig();
+    public final FxMotorConfig SHOOTER_FOLLOWER_MOTOR_3_CONFIG = new FxMotorConfig();
+    public final FxMotorConfig INDEXER_LEADER_MOTOR_CONFIG = new FxMotorConfig();
+    public final FxMotorConfig INDEXER_FOLLOWER_MOTOR_CONFIG = new FxMotorConfig();
     public final FxMotorConfig HOOD_MOTOR_CONFIGS = new FxMotorConfig();
     public final FxMotorConfig TURRET_MOTOR_CONFIGS = new FxMotorConfig();
     public final boolean TURRET_ENABLED = getBoolConstant("turret_enabled");
@@ -125,33 +133,59 @@ public class ShooterConstants extends MwConstants {
     // =============================================================================
 
     public ShooterConstants() {
-        // Configure Indexer Motor
-        INDEX_MOTOR_CONFIG.can_id = INDEXER_ID;
-        INDEX_MOTOR_CONFIG.motor_type = FxMotorType.X44;
-        INDEX_MOTOR_CONFIG.canbus_name = "CANivore";
-        INDEX_MOTOR_CONFIG.config = new TalonFXConfiguration();
+        // Configure Indexer Leader Motor
+        INDEXER_LEADER_MOTOR_CONFIG.can_id = INDEXER_LEADER_ID;
+        INDEXER_LEADER_MOTOR_CONFIG.motor_type = FxMotorType.X44;
+        INDEXER_LEADER_MOTOR_CONFIG.canbus_name = "rio";
+        INDEXER_LEADER_MOTOR_CONFIG.config = new TalonFXConfiguration();
+        INDEXER_LEADER_MOTOR_CONFIG.config.MotorOutput.Inverted =
+                PhoenixUtil.toInvertedValue(INDEXER_LEADER_INVERTED);
+
+        // Configure Indexer FOLLOWER Motor
+        INDEXER_FOLLOWER_MOTOR_CONFIG.can_id = INDEXER_FOLLOWER_ID;
+        INDEXER_FOLLOWER_MOTOR_CONFIG.motor_type = FxMotorType.X44;
+        INDEXER_FOLLOWER_MOTOR_CONFIG.canbus_name = "rio";
+        INDEXER_FOLLOWER_MOTOR_CONFIG.config = new TalonFXConfiguration();
+        INDEXER_FOLLOWER_MOTOR_CONFIG.config.MotorOutput.Inverted =
+                PhoenixUtil.toInvertedValue(INDEXER_FOLLOWER_INVERTED);
 
         // Configure Shooter Leader Motor
         SHOOTER_LEADER_MOTOR_CONFIG.can_id = SHOOTER_LEADER_ID;
         SHOOTER_LEADER_MOTOR_CONFIG.motor_type = FxMotorType.X60;
-        SHOOTER_LEADER_MOTOR_CONFIG.canbus_name = "CANivore";
+        SHOOTER_LEADER_MOTOR_CONFIG.canbus_name = "rio";
         SHOOTER_LEADER_MOTOR_CONFIG.config = new TalonFXConfiguration();
         SHOOTER_LEADER_MOTOR_CONFIG.config.MotorOutput.Inverted =
                 PhoenixUtil.toInvertedValue(FLYWHEEL_LEADER_INVERTED);
         SHOOTER_LEADER_MOTOR_CONFIG.config.Slot1 = FLYWHEEL_VELOCITY_GAINS;
 
-        // Configure Shooter Follower Motor
-        SHOOTER_FOLLOWER_MOTOR_CONFIG.can_id = SHOOTER_FOLLOWER_ID;
-        SHOOTER_FOLLOWER_MOTOR_CONFIG.motor_type = FxMotorType.X60;
-        SHOOTER_FOLLOWER_MOTOR_CONFIG.canbus_name = "CANivore";
-        SHOOTER_FOLLOWER_MOTOR_CONFIG.config = new TalonFXConfiguration();
-        SHOOTER_FOLLOWER_MOTOR_CONFIG.config.MotorOutput.Inverted =
-                PhoenixUtil.toInvertedValue(FLYWHEEL_FOLLOWER_INVERTED);
+        // Configure Shooter Follower 1 Motor
+        SHOOTER_FOLLOWER_MOTOR_1_CONFIG.can_id = SHOOTER_FOLLOWER_1_ID;
+        SHOOTER_FOLLOWER_MOTOR_1_CONFIG.motor_type = FxMotorType.X60;
+        SHOOTER_FOLLOWER_MOTOR_1_CONFIG.canbus_name = "rio";
+        SHOOTER_FOLLOWER_MOTOR_1_CONFIG.config = new TalonFXConfiguration();
+        SHOOTER_FOLLOWER_MOTOR_1_CONFIG.config.MotorOutput.Inverted =
+                PhoenixUtil.toInvertedValue(FLYWHEEL_FOLLOWER_1_INVERTED);
+
+        // Configure Shooter Follower 2 Motor
+        SHOOTER_FOLLOWER_MOTOR_2_CONFIG.can_id = SHOOTER_FOLLOWER_2_ID;
+        SHOOTER_FOLLOWER_MOTOR_2_CONFIG.motor_type = FxMotorType.X60;
+        SHOOTER_FOLLOWER_MOTOR_2_CONFIG.canbus_name = "rio";
+        SHOOTER_FOLLOWER_MOTOR_2_CONFIG.config = new TalonFXConfiguration();
+        SHOOTER_FOLLOWER_MOTOR_2_CONFIG.config.MotorOutput.Inverted =
+                PhoenixUtil.toInvertedValue(FLYWHEEL_FOLLOWER_2_INVERTED);
+
+        // Configure Shooter Follower 3 Motor
+        SHOOTER_FOLLOWER_MOTOR_3_CONFIG.can_id = SHOOTER_FOLLOWER_3_ID;
+        SHOOTER_FOLLOWER_MOTOR_3_CONFIG.motor_type = FxMotorType.X60;
+        SHOOTER_FOLLOWER_MOTOR_3_CONFIG.canbus_name = "rio";
+        SHOOTER_FOLLOWER_MOTOR_3_CONFIG.config = new TalonFXConfiguration();
+        SHOOTER_FOLLOWER_MOTOR_3_CONFIG.config.MotorOutput.Inverted =
+                PhoenixUtil.toInvertedValue(FLYWHEEL_FOLLOWER_3_INVERTED);
 
         // Configure Hood Motor
         HOOD_MOTOR_CONFIGS.can_id = HOOD_ID;
-        HOOD_MOTOR_CONFIGS.motor_type = FxMotorType.X60;
-        HOOD_MOTOR_CONFIGS.canbus_name = "CANivore";
+        HOOD_MOTOR_CONFIGS.motor_type = FxMotorType.X44;
+        HOOD_MOTOR_CONFIGS.canbus_name = "rio";
         HOOD_MOTOR_CONFIGS.config = new TalonFXConfiguration();
         HOOD_MOTOR_CONFIGS.config.MotorOutput.Inverted = PhoenixUtil.toInvertedValue(HOOD_INVERTED);
         HOOD_MOTOR_CONFIGS.config.Slot0 = HOOD_POSITION_GAINS;
@@ -159,7 +193,7 @@ public class ShooterConstants extends MwConstants {
         // Configure Turret Motor
         TURRET_MOTOR_CONFIGS.can_id = TURRET_ID;
         TURRET_MOTOR_CONFIGS.motor_type = FxMotorType.X44;
-        TURRET_MOTOR_CONFIGS.canbus_name = "CANivore";
+        TURRET_MOTOR_CONFIGS.canbus_name = "rio";
         TURRET_MOTOR_CONFIGS.config = new TalonFXConfiguration();
         TURRET_MOTOR_CONFIGS.config.Slot0 = TURRET_POSITION_GAINS;
 
