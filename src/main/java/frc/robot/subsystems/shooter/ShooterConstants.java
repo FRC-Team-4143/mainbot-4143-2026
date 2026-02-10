@@ -184,7 +184,7 @@ public class ShooterConstants extends MwConstants {
 
         // Configure Hood Motor
         HOOD_MOTOR_CONFIGS.can_id = HOOD_ID;
-        HOOD_MOTOR_CONFIGS.motor_type = FxMotorType.X60;
+        HOOD_MOTOR_CONFIGS.motor_type = FxMotorType.X44;
         HOOD_MOTOR_CONFIGS.canbus_name = "rio";
         HOOD_MOTOR_CONFIGS.config = new TalonFXConfiguration();
         HOOD_MOTOR_CONFIGS.config.MotorOutput.Inverted = PhoenixUtil.toInvertedValue(HOOD_INVERTED);
