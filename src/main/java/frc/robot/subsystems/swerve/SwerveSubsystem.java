@@ -261,6 +261,7 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
                         }
                     }
                     case FIELD_CENTRIC_ROTATION_LOCK -> SwerveStates.FIELD_CENTRIC_ROTATION_LOCK;
+                    case CHASSIS_SPEED_ROTATION_LOCK -> SwerveStates.CHASSIS_SPEED_ROTATION_LOCK;
                     case TRACTOR_BEAM -> SwerveStates.TRACTOR_BEAM;
                     default -> SwerveStates.IDLE;
                 };
