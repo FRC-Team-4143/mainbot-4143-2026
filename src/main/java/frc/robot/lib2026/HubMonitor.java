@@ -17,19 +17,19 @@ public class HubMonitor {
         BOTH_ACTIVE;
     }
 
-    private int AUTO_LENGTH = 20;
-    private int TELEOP_LENGTH = (60 * 2) + 20;
-    private int SHIFT_LENGTH = 25;
-    private int TRANSITION_LENGTH = 10;
-    private int END_GAME_LENGTH = 30;
+    private final int AUTO_LENGTH = 20;
+    private final int TELEOP_LENGTH = (60 * 2) + 20;
+    private final int SHIFT_LENGTH = 25;
+    private final int TRANSITION_LENGTH = 10;
+    private final int END_GAME_LENGTH = 30;
 
-    private int AUTO = AUTO_LENGTH - AUTO_LENGTH; // Timer reads 20 - 0 (Entire AUTO period is active)
-    private int TRANSITION = TELEOP_LENGTH - TRANSITION_LENGTH; // Timer ends at 2:10
-    private int SHIFT_1 = TRANSITION - SHIFT_LENGTH; // Timer ends at 1:45
-    private int SHIFT_2 = SHIFT_1 - SHIFT_LENGTH; // Timer ends at 1:20
-    private int SHIFT_3 = SHIFT_2 - SHIFT_LENGTH; // Timer ends at 0:55
-    private int SHIFT_4 = SHIFT_3 - SHIFT_LENGTH; // Timer ends at 0:30
-    private int END_GAME = SHIFT_4 - END_GAME_LENGTH; // Timer ends at 0:00
+    private final int AUTO = AUTO_LENGTH - AUTO_LENGTH; // Timer reads 20 - 0 (Entire AUTO period is active)
+    private final int TRANSITION = TELEOP_LENGTH - TRANSITION_LENGTH; // Timer ends at 2:10
+    private final int SHIFT_1 = TRANSITION - SHIFT_LENGTH; // Timer ends at 1:45
+    private final int SHIFT_2 = SHIFT_1 - SHIFT_LENGTH; // Timer ends at 1:20
+    private final int SHIFT_3 = SHIFT_2 - SHIFT_LENGTH; // Timer ends at 0:55
+    private final int SHIFT_4 = SHIFT_3 - SHIFT_LENGTH; // Timer ends at 0:30
+    private final int END_GAME = SHIFT_4 - END_GAME_LENGTH; // Timer ends at 0:00
     // AUTO happens to fall in the end game time period (20 - 0)
 
    /** Updates the first_active_alliance_ variable with the first alliance that has an active hub. */
@@ -53,8 +53,8 @@ public class HubMonitor {
 
         game_data_ = DriverStation.getGameSpecificMessage();
 
-        if (gameData.length() > 0) {
-            switch (gameData.charAt(0)) {
+        if (game_data_.length() > 0) {
+            switch (game_data_.charAt(0)) {
                 case 'B':
                     return ActiveAlliance.RED_ACTIVE;
                 case 'R':
@@ -94,11 +94,11 @@ public class HubMonitor {
      */
     private ActiveAlliance getActiveAlliance(double match_time) {
         if(match_time > TRANSITION) return ActiveAlliance.BOTH_ACTIVE;
-        if(match_time > SHIFT_1) return (first_active_alliance_ == ActiveAlliance.RED_ACTIVE) ? ActiveAlliance.RED_ACTIVE : ActiveAlliance.BLUE_ACTIVE
-        if(match_time > SHIFT_2) return (first_active_alliance_ == ActiveAlliance.RED_ACTIVE) ? ActiveAlliance.BLUE_ACTIVE : ActiveAlliance.RED_ACTIVE
-        if(match_time > SHIFT_3) return (first_active_alliance_ == ActiveAlliance.RED_ACTIVE) ? ActiveAlliance.RED_ACTIVE : ActiveAlliance.BLUE_ACTIVE
-        if(match_time > SHIFT_4) return (first_active_alliance_ == ActiveAlliance.RED_ACTIVE) ? ActiveAlliance.BLUE_ACTIVE : ActiveAlliance.RED_ACTIVE
-        if(match > END_GAME || match > AUTO) return ActiveAlliance.BOTH_ACTIVE;
-        return ActiveAlliance.INVAILD;
+        if(match_time > SHIFT_1) return (first_active_alliance_ == ActiveAlliance.RED_ACTIVE) ? ActiveAlliance.RED_ACTIVE : ActiveAlliance.BLUE_ACTIVE;
+        if(match_time > SHIFT_2) return (first_active_alliance_ == ActiveAlliance.RED_ACTIVE) ? ActiveAlliance.BLUE_ACTIVE : ActiveAlliance.RED_ACTIVE;
+        if(match_time > SHIFT_3) return (first_active_alliance_ == ActiveAlliance.RED_ACTIVE) ? ActiveAlliance.RED_ACTIVE : ActiveAlliance.BLUE_ACTIVE;
+        if(match_time > SHIFT_4) return (first_active_alliance_ == ActiveAlliance.RED_ACTIVE) ? ActiveAlliance.BLUE_ACTIVE : ActiveAlliance.RED_ACTIVE;
+        if(match_time > END_GAME || match_time > AUTO) return ActiveAlliance.BOTH_ACTIVE;
+        return ActiveAlliance.INVALID;
     }
 }
