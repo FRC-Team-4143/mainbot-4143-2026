@@ -3,6 +3,7 @@ package frc.robot.subsystems.gamestates;
 import com.marswars.subsystem.MwSubsystem;
 import com.marswars.subsystem.SubsystemIoBase;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotState;
 import frc.robot.lib2026.FieldRegions;
 import frc.robot.subsystems.gamestates.GameStatesConstants.GameStates;
@@ -11,6 +12,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GameStatesSubsystem extends MwSubsystem<GameStates, GameStatesConstants> {
+
+    
 
     // Variables, temporary
     Boolean goal_active_ = false;
@@ -123,6 +126,9 @@ public class GameStatesSubsystem extends MwSubsystem<GameStates, GameStatesConst
     private boolean inAllianceZone(Pose2d pose) {
         return FieldRegions.ALLIANCE_ZONE.contains(pose);
     }
+    
+    
+    
 
     private boolean isPassZone(Pose2d pose) {
         return FieldRegions.NEUTRAL_ZONE.contains(pose)
@@ -141,5 +147,5 @@ public class GameStatesSubsystem extends MwSubsystem<GameStates, GameStatesConst
 
     private boolean isDownClimbFinished() {
         return false;
-    }
-}
+    }}
+

@@ -16,6 +16,7 @@ import edu.wpi.first.math.util.Units;
 import frc.robot.OI;
 import frc.robot.subsystems.localization.LocalizationSubsystem;
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterStates;
+import frc.robot.subsystems.swerve.SwerveConstants.SwerveStates;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 import frc.robot.subsystems.swerve.SwerveConstants.SwerveStates;
 
@@ -166,7 +167,6 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
                             .setDesiredRotationLockCOR(
                                     Rotation2d.fromRadians(launch_heading_),
                                     new Translation2d(CONSTANTS.SHOOTER_CENTER.getX(), CONSTANTS.SHOOTER_CENTER.getY()));
-
                 }
                 break;
             case DUMP:
@@ -186,7 +186,6 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
                             .setDesiredRotationLockCOR(
                                     Rotation2d.fromRadians(launch_heading_),
                                     new Translation2d(CONSTANTS.SHOOTER_CENTER.getX(), CONSTANTS.SHOOTER_CENTER.getY()));
-                    SwerveSubsystem.getInstance().setWantedState(SwerveStates.ROTATION_LOCK);
                 }
                 break;
             default:
