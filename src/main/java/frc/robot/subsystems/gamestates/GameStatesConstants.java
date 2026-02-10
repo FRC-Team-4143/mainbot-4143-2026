@@ -5,6 +5,11 @@ import com.marswars.subsystem.MwConstants;
 import edu.wpi.first.math.geometry.Translation3d;
 
 public class GameStatesConstants extends MwConstants {
+
+    // =============================================================================
+    // ENUMS AND STATE DEFINITIONS
+    // =============================================================================
+
     public enum GameStates {
         HOLD,
         SCORE,
