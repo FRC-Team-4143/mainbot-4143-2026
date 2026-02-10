@@ -2,8 +2,6 @@ package frc.robot.subsystems.gamestates;
 
 import com.marswars.subsystem.MwConstants;
 
-import edu.wpi.first.math.geometry.Translation3d;
-
 public class GameStatesConstants extends MwConstants {
 
     // =============================================================================
@@ -18,8 +16,4 @@ public class GameStatesConstants extends MwConstants {
         TELEOP_CLIMB,
         DOWN_CLIMB
     }
-    //POSITIONS OF SHOOTING TARGETS
-    public final Translation3d LEFT_PASS_TRANSLATION = new Translation3d(1,7.042,0); // where to pass to on the left side
-    public final Translation3d RIGHT_PASS_TRANSLATION = new Translation3d(1,1,0); // where to pass to on the left side
-    public final Translation3d HUB_TRANSLATION = new Translation3d(4.611624, 4.021328, 1.397); // where the hub is
 }

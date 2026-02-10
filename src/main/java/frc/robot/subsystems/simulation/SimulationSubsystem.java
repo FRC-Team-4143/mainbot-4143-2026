@@ -1,5 +1,8 @@
 package frc.robot.subsystems.simulation;
 
+import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.Radians;
+
 import com.marswars.auto.AutoManager;
 import com.marswars.geometry.AllianceFlipUtil;
 import com.marswars.proxy_server.ProxyServerThread;
@@ -10,24 +13,19 @@ import com.marswars.vision.MwVisionSim;
 import dev.doglog.DogLog;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import frc.robot.lib2026.FuelSim;
-import frc.robot.subsystems.localization.LocalizationConstants.LocalizationStates;
-import frc.robot.subsystems.shooter.ShooterSubsystem;
-import frc.robot.subsystems.shooter.ShooterConstants.ShooterStates;
-import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.intake.IntakeConstants.IntakeStates;
+import frc.robot.subsystems.intake.IntakeSubsystem;
+import frc.robot.subsystems.localization.LocalizationConstants.LocalizationStates;
 import frc.robot.subsystems.localization.LocalizationSubsystem;
+import frc.robot.subsystems.shooter.ShooterConstants.ShooterStates;
+import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.simulation.SimulationConstants.SimulationStates;
-
-import static edu.wpi.first.units.Units.MetersPerSecond;
-import static edu.wpi.first.units.Units.Radians;
-
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -81,7 +79,10 @@ public class SimulationSubsystem extends MwSubsystem<SimulationStates, Simulatio
                         -CONSTANTS.BASE_LENGTH / 2.0,
                         -CONSTANTS.BASE_WIDTH / 2.0,
                         CONSTANTS.BASE_WIDTH / 2.0,
-                        () -> hopper_fuel_count_ < CONSTANTS.HOPPER_CAPACITY && IntakeSubsystem.getInstance().getSystemState() == IntakeStates.ROLLING,
+                        () ->
+                                hopper_fuel_count_ < CONSTANTS.HOPPER_CAPACITY
+                                        && IntakeSubsystem.getInstance().getSystemState()
+                                                == IntakeStates.ROLLING,
                         () -> hopper_fuel_count_++);
 
         // Start Fuel Simulation
@@ -104,7 +105,9 @@ public class SimulationSubsystem extends MwSubsystem<SimulationStates, Simulatio
             ProxyServerThread.getInstance().updateVisionSimulation(robot_pose);
         }
 
-        if(ShooterSubsystem.getInstance().getSystemState() == ShooterStates.SHOOT && hopper_fuel_count_ > 0 && CONSTANTS.SIM_FUEL_ENABLED){
+        if (ShooterSubsystem.getInstance().getSystemState() == ShooterStates.SHOOT
+                && hopper_fuel_count_ > 0
+                && CONSTANTS.SIM_FUEL_ENABLED) {
             // Rate limit shooting to 15 balls per second
             if (timestamp - last_shot_timestamp_ >= CONSTANTS.SECONDS_PER_SHOT) {
                 launchFuel();
@@ -130,13 +133,23 @@ public class SimulationSubsystem extends MwSubsystem<SimulationStates, Simulatio
     }
 
     /** Launches a fuel from the shooter in the simulation. */
-    public void launchFuel(){
-        FuelSim.getInstance().launchFuel(
-            MetersPerSecond.of(ShooterSubsystem.getInstance().getLaunchVelocity()), 
-            Radians.of(ShooterSubsystem.getInstance().getLaunchAngle()),
-            Radians.of(LocalizationSubsystem.getInstance().getFieldPose().getRotation().getRadians()), 
-            CONSTANTS.SHOOTER_LAUNCH_OFFSET);
-        ShooterSubsystem.getInstance().applyLoadFromBall(CONSTANTS.FUEL_MASS_KG * ShooterSubsystem.getInstance().getLaunchVelocity() * CONSTANTS.FLYWHEEL_RADIUS_M / CONSTANTS.CONTACT_TIME_SEC);
+    public void launchFuel() {
+        FuelSim.getInstance()
+                .launchFuel(
+                        MetersPerSecond.of(ShooterSubsystem.getInstance().getLaunchVelocity()),
+                        Radians.of(ShooterSubsystem.getInstance().getLaunchAngle()),
+                        Radians.of(
+                                LocalizationSubsystem.getInstance()
+                                        .getFieldPose()
+                                        .getRotation()
+                                        .getRadians()),
+                        CONSTANTS.SHOOTER_LAUNCH_OFFSET);
+        ShooterSubsystem.getInstance()
+                .applyLoadFromBall(
+                        CONSTANTS.FUEL_MASS_KG
+                                * ShooterSubsystem.getInstance().getLaunchVelocity()
+                                * CONSTANTS.FLYWHEEL_RADIUS_M
+                                / CONSTANTS.CONTACT_TIME_SEC);
         hopper_fuel_count_--;
     }
 

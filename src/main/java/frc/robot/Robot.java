@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.autos.Left_Start_Neutral_Outpost_Climb;
 import frc.robot.lib2026.FieldConstants;
 import frc.robot.lib2026.FieldRegions;
+import frc.robot.lib2026.FieldTargets;
 import frc.robot.subsystems.hopper.HopperConstants.HopperStates;
 import frc.robot.subsystems.hopper.HopperSubsystem;
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterStates;
@@ -42,6 +43,9 @@ public class Robot extends TimedRobot {
                 .registerAutos(
                         // Add your auto routines here as you create them
                         new Left_Start_Neutral_Outpost_Climb());
+
+        // Set the default target for the shooter to be the hub
+        ShooterSubsystem.getInstance().setTarget(FieldTargets.Shooter.HUB);
     }
 
     @Override

@@ -3,20 +3,17 @@ package frc.robot.subsystems.gamestates;
 import com.marswars.subsystem.MwSubsystem;
 import com.marswars.subsystem.SubsystemIoBase;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotState;
 import frc.robot.lib2026.FieldRegions;
+import frc.robot.lib2026.FieldTargets;
 import frc.robot.subsystems.gamestates.GameStatesConstants.GameStates;
 import frc.robot.subsystems.localization.LocalizationSubsystem;
-import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterStates;
-
+import frc.robot.subsystems.shooter.ShooterSubsystem;
 import java.util.ArrayList;
 import java.util.List;
 
 public class GameStatesSubsystem extends MwSubsystem<GameStates, GameStatesConstants> {
-
-    
 
     // Variables, temporary
     Boolean goal_active_ = false;
@@ -31,19 +28,21 @@ public class GameStatesSubsystem extends MwSubsystem<GameStates, GameStatesConst
 
     // state machine transtions (incomplete)
     public void updateLogic(double timestamp) {
-        
-        //After high arc editing capabilities are added to MWLib, adjust the method in shooter subsystem then add here.
 
-        if(FieldRegions.LEFT_PASS_REGION.contains(LocalizationSubsystem.getInstance().getFieldPose())){
-            ShooterSubsystem.getInstance().setTarget(CONSTANTS.LEFT_PASS_TRANSLATION);
-        }
-        else if(FieldRegions.RIGHT_PASS_REGION.contains(LocalizationSubsystem.getInstance().getFieldPose())){
-            ShooterSubsystem.getInstance().setTarget(CONSTANTS.RIGHT_PASS_TRANSLATION);
-        }
-        else if(FieldRegions.ALLIANCE_ZONE.contains(LocalizationSubsystem.getInstance().getFieldPose())){
-            ShooterSubsystem.getInstance().setTarget(CONSTANTS.HUB_TRANSLATION);
-        }
-        else if(FieldRegions.HOLD_REGIONS.contains(LocalizationSubsystem.getInstance().getFieldPose())){
+        // After high arc editing capabilities are added to MWLib, adjust the method in shooter
+        // subsystem then add here.
+
+        if (FieldRegions.LEFT_PASS_REGION.contains(
+                LocalizationSubsystem.getInstance().getFieldPose())) {
+            ShooterSubsystem.getInstance().setTarget(FieldTargets.Shooter.LEFT_PASS);
+        } else if (FieldRegions.RIGHT_PASS_REGION.contains(
+                LocalizationSubsystem.getInstance().getFieldPose())) {
+            ShooterSubsystem.getInstance().setTarget(FieldTargets.Shooter.RIGHT_PASS);
+        } else if (FieldRegions.ALLIANCE_ZONE.contains(
+                LocalizationSubsystem.getInstance().getFieldPose())) {
+            ShooterSubsystem.getInstance().setTarget(FieldTargets.Shooter.HUB);
+        } else if (FieldRegions.HOLD_REGIONS.contains(
+                LocalizationSubsystem.getInstance().getFieldPose())) {
             ShooterSubsystem.getInstance().setWantedState(ShooterStates.AIMING);
         }
         switch (system_state_) {
@@ -144,9 +143,6 @@ public class GameStatesSubsystem extends MwSubsystem<GameStates, GameStatesConst
     private boolean inAllianceZone(Pose2d pose) {
         return FieldRegions.ALLIANCE_ZONE.contains(pose);
     }
-    
-    
-    
 
     private boolean isPassZone(Pose2d pose) {
         return FieldRegions.NEUTRAL_ZONE.contains(pose)
@@ -165,5 +161,5 @@ public class GameStatesSubsystem extends MwSubsystem<GameStates, GameStatesConst
 
     private boolean isDownClimbFinished() {
         return false;
-    }}
-
+    }
+}
