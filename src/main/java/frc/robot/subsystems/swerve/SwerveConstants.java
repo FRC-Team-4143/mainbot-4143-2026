@@ -153,7 +153,8 @@ public class SwerveConstants extends MwConstants {
         FL_DRIVE_MOTOR_CONFIG.can_id = getIntConstant("fl", "drive_id");
         FL_DRIVE_MOTOR_CONFIG.config.MotorOutput.Inverted =
                 PhoenixUtil.toInvertedValue(getBoolConstant("fl", "invert_drive"));
-        FL_DRIVE_MOTOR_CONFIG.config.Feedback.SensorToMechanismRatio = FL_MODULE_CONFIG.module_type.driveRatio;
+        FL_DRIVE_MOTOR_CONFIG.config.Feedback.SensorToMechanismRatio =
+                FL_MODULE_CONFIG.module_type.driveRatio;
         FL_MODULE_CONFIG.drive_motor_config = FL_DRIVE_MOTOR_CONFIG;
 
         // FL Steer Motor Configuration
@@ -179,7 +180,8 @@ public class SwerveConstants extends MwConstants {
         FR_DRIVE_MOTOR_CONFIG.can_id = getIntConstant("fr", "drive_id");
         FR_DRIVE_MOTOR_CONFIG.config.MotorOutput.Inverted =
                 PhoenixUtil.toInvertedValue(getBoolConstant("fr", "invert_drive"));
-        FR_DRIVE_MOTOR_CONFIG.config.Feedback.SensorToMechanismRatio = FR_MODULE_CONFIG.module_type.driveRatio;
+        FR_DRIVE_MOTOR_CONFIG.config.Feedback.SensorToMechanismRatio =
+                FR_MODULE_CONFIG.module_type.driveRatio;
         FR_MODULE_CONFIG.drive_motor_config = FR_DRIVE_MOTOR_CONFIG;
 
         // FR Steer Motor Configuration
@@ -205,7 +207,8 @@ public class SwerveConstants extends MwConstants {
         BL_DRIVE_MOTOR_CONFIG.can_id = getIntConstant("bl", "drive_id");
         BL_DRIVE_MOTOR_CONFIG.config.MotorOutput.Inverted =
                 PhoenixUtil.toInvertedValue(getBoolConstant("bl", "invert_drive"));
-        BL_DRIVE_MOTOR_CONFIG.config.Feedback.SensorToMechanismRatio = BL_MODULE_CONFIG.module_type.driveRatio;
+        BL_DRIVE_MOTOR_CONFIG.config.Feedback.SensorToMechanismRatio =
+                BL_MODULE_CONFIG.module_type.driveRatio;
         BL_MODULE_CONFIG.drive_motor_config = BL_DRIVE_MOTOR_CONFIG;
 
         // BL Steer Motor Configuration
@@ -231,7 +234,8 @@ public class SwerveConstants extends MwConstants {
         BR_DRIVE_MOTOR_CONFIG.can_id = getIntConstant("br", "drive_id");
         BR_DRIVE_MOTOR_CONFIG.config.MotorOutput.Inverted =
                 PhoenixUtil.toInvertedValue(getBoolConstant("br", "invert_drive"));
-        BR_DRIVE_MOTOR_CONFIG.config.Feedback.SensorToMechanismRatio = BR_MODULE_CONFIG.module_type.driveRatio;
+        BR_DRIVE_MOTOR_CONFIG.config.Feedback.SensorToMechanismRatio =
+                BR_MODULE_CONFIG.module_type.driveRatio;
         BR_MODULE_CONFIG.drive_motor_config = BR_DRIVE_MOTOR_CONFIG;
 
         // BR Steer Motor Configuration
