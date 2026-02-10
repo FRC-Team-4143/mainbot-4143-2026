@@ -163,7 +163,6 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
                 if (CONSTANTS.TURRET_ENABLED) {
                     turret_.setTargetPosition(launch_heading_);
                 } else {
-                    SwerveSubsystem.getInstance().setWantedState(SwerveStates.FIELD_CENTRIC_ROTATION_LOCK);
                     SwerveSubsystem.getInstance()
                             .setDesiredRotationLockCOR(
                                     Rotation2d.fromRadians(launch_heading_),
