@@ -7,7 +7,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
 public class HubMonitor {
 
-    String gameData;
+    String game_data_;
     ActiveAlliance first_active_alliance_;
 
     public enum ActiveAlliance {
@@ -17,21 +17,41 @@ public class HubMonitor {
         BOTH_ACTIVE;
     }
 
+    private int AUTO_LENGTH = 20;
+    private int TELEOP_LENGTH = (60 * 2) + 20;
+    private int SHIFT_LENGTH = 25;
+    private int TRANSITION_LENGTH = 10;
+    private int END_GAME_LENGTH = 30;
+
+    private int AUTO = AUTO_LENGTH - AUTO_LENGTH; // Timer reads 20 - 0 (Entire AUTO period is active)
+    private int TRANSITION = TELEOP_LENGTH - TRANSITION_LENGTH; // Timer ends at 2:10
+    private int SHIFT_1 = TRANSITION - SHIFT_LENGTH; // Timer ends at 1:45
+    private int SHIFT_2 = SHIFT_1 - SHIFT_LENGTH; // Timer ends at 1:20
+    private int SHIFT_3 = SHIFT_2 - SHIFT_LENGTH; // Timer ends at 0:55
+    private int SHIFT_4 = SHIFT_3 - SHIFT_LENGTH; // Timer ends at 0:30
+    private int END_GAME = SHIFT_4 - END_GAME_LENGTH; // Timer ends at 0:00
+    // AUTO happens to fall in the end game time period (20 - 0)
+
    /** Updates the first_active_alliance_ variable with the first alliance that has an active hub. */
-    public void updateActiveAlliance() {
+    public void seedActiveAlliance() {
         first_active_alliance_ = firstActiveAlliance();
     }
-    public void manualUpdateActiveAlliance(ActiveAlliance alliance) {
+
+    /**
+     * Manual update for the first_active_alliance_ tracker
+     * @param alliance 
+     */
+    public void seedActiveAlliance(ActiveAlliance alliance) {
         first_active_alliance_ = alliance;
     }
 
    /**
     * Determines the first alliance that has an active hub based on the game data provided by the DriverStation.
-    * @return
+    * @return ActiveAlliance containing the alliance provided by Game Data
     */
-    public ActiveAlliance firstActiveAlliance() {
+    private ActiveAlliance firstActiveAlliance() {
 
-        gameData = DriverStation.getGameSpecificMessage();
+        game_data_ = DriverStation.getGameSpecificMessage();
 
         if (gameData.length() > 0) {
             switch (gameData.charAt(0)) {
@@ -49,62 +69,36 @@ public class HubMonitor {
 
     /**
      * 
-     * @param matchTime
-     * @return
+     * @param match_time match time to check hub status
+     * @return true/false representing your alliances hub active status
      */
-    public boolean getActive(double matchTime) {
+    public boolean getActive(double match_time) {
         Optional<Alliance> alliance = DriverStation.getAlliance();
         if (alliance.isPresent()) {
             if (alliance.get() == Alliance.Blue) {
-                return (getActiveAlliance(matchTime) == ActiveAlliance.BLUE_ACTIVE)
-                        || (getActiveAlliance(matchTime) == ActiveAlliance.BOTH_ACTIVE);
+                return (getActiveAlliance(match_time) == ActiveAlliance.BLUE_ACTIVE)
+                        || (getActiveAlliance(match_time) == ActiveAlliance.BOTH_ACTIVE);
             } else {
-                return (getActiveAlliance(matchTime) == ActiveAlliance.RED_ACTIVE)
-                        || (getActiveAlliance(matchTime) == ActiveAlliance.BOTH_ACTIVE);
+                return (getActiveAlliance(match_time) == ActiveAlliance.RED_ACTIVE)
+                        || (getActiveAlliance(match_time) == ActiveAlliance.BOTH_ACTIVE);
             }
         } else {
             return false;
         }
     }
 
-    /*
-     * MatchTime: in seconds
-     * FAA: First Active Alliance
-     * SAA: Second Active Alliance
-     * Auto: 160-140 or 20-10 in match time, Both
-     * Transition Shift: 140-130, Both
-     * Shift 1: 130-105, FAA
-     * Shift 2: 105-80, SAA
-     * Shift 3: 80-55, FAA
-     * Shift 4: 55-30, SAA
-     * Endgame: 30-0, Both
+    /**
+     * Determine ActiveAlliance for a given time in the match
+     * @param match_time 
+     * @return ActiveAlliance at provided match time
      */
-
-    // returns what team has an active hub
-    // parameter: matchTime in seconds remaining
-    public ActiveAlliance getActiveAlliance(double matchTime) {
-        if (matchTime > 140) {
-            return ActiveAlliance.BOTH_ACTIVE;
-        } else if (matchTime > 130) {
-            return ActiveAlliance.BOTH_ACTIVE;
-        } else if (matchTime > 105) {
-            return first_active_alliance_;
-        } else if (matchTime > 80) {
-            if (first_active_alliance_ == ActiveAlliance.RED_ACTIVE) {
-                return ActiveAlliance.BLUE_ACTIVE;
-            }
-            return ActiveAlliance.RED_ACTIVE;
-        } else if (matchTime > 55) {
-            return first_active_alliance_;
-        } else if (matchTime > 30) {
-            if (first_active_alliance_ == ActiveAlliance.RED_ACTIVE) {
-                return ActiveAlliance.BLUE_ACTIVE;
-            }
-            return ActiveAlliance.RED_ACTIVE;
-        } else if (matchTime > 0) {
-            return ActiveAlliance.BOTH_ACTIVE;
-        } else {
-            return ActiveAlliance.INVALID;
-        }
+    private ActiveAlliance getActiveAlliance(double match_time) {
+        if(match_time > TRANSITION) return ActiveAlliance.BOTH_ACTIVE;
+        if(match_time > SHIFT_1) return (first_active_alliance_ == ActiveAlliance.RED_ACTIVE) ? ActiveAlliance.RED_ACTIVE : ActiveAlliance.BLUE_ACTIVE
+        if(match_time > SHIFT_2) return (first_active_alliance_ == ActiveAlliance.RED_ACTIVE) ? ActiveAlliance.BLUE_ACTIVE : ActiveAlliance.RED_ACTIVE
+        if(match_time > SHIFT_3) return (first_active_alliance_ == ActiveAlliance.RED_ACTIVE) ? ActiveAlliance.RED_ACTIVE : ActiveAlliance.BLUE_ACTIVE
+        if(match_time > SHIFT_4) return (first_active_alliance_ == ActiveAlliance.RED_ACTIVE) ? ActiveAlliance.BLUE_ACTIVE : ActiveAlliance.RED_ACTIVE
+        if(match > END_GAME || match > AUTO) return ActiveAlliance.BOTH_ACTIVE;
+        return ActiveAlliance.INVAILD;
     }
 }
