@@ -28,7 +28,7 @@ public abstract class OI {
         driver_controller_.rightStick().onTrue(SwerveSubsystem.getInstance().toggleFieldCentric());
 
         driver_controller_.a().whileTrue(Commands.startEnd(() -> {ShooterSubsystem.getInstance().setWantedState(ShooterStates.SHOOT);
-                                                        SwerveSubsystem.getInstance().setWantedState(SwerveStates.ROTATION_LOCK);},
+                                                        SwerveSubsystem.getInstance().setWantedState(SwerveStates.FIELD_CENTRIC_ROTATION_LOCK);},
                                                         () -> {ShooterSubsystem.getInstance().setWantedState(ShooterStates.TRACKING);
                                                         SwerveSubsystem.getInstance().setWantedState(SwerveStates.FIELD_CENTRIC);}));
         driver_controller_.b().whileTrue(Commands.startEnd(() -> IntakeSubsystem.getInstance().setWantedState(IntakeStates.ROLLING),
