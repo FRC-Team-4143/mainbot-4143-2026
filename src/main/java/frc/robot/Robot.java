@@ -6,6 +6,7 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.subsystems.hopper.HopperConstants.HopperStates;
@@ -15,6 +16,7 @@ import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.swerve.SwerveConstants;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 import frc.robot.subsystems.swerve.SwerveConstants.SwerveStates;
+import frc.robot.lib2026.HubMonitor;
 
 import java.util.Optional;
 
@@ -41,6 +43,9 @@ public class Robot extends TimedRobot {
 
         // run the main robot loop for each subsystem
         robot_container_.doControlLoop();
+
+        // Update the hub active status
+        HubMonitor.isHubActive(DriverStation.getMatchTime());
     }
 
     @Override
@@ -58,6 +63,7 @@ public class Robot extends TimedRobot {
                                 alliance_ == Alliance.Blue
                                         ? SwerveConstants.OperatorPerspective.BLUE_ALLIANCE
                                         : SwerveConstants.OperatorPerspective.RED_ALLIANCE);
+                HubMonitor.seedActiveAlliance(HubMonitor.ActiveAlliance.INVALID);
             }
         }
     }
@@ -79,7 +85,10 @@ public class Robot extends TimedRobot {
     }
 
     @Override
-    public void teleopPeriodic() {}
+    public void teleopPeriodic() {
+        // Attempt to update the first active alliance until it return valid
+        if(!HubMonitor.isFirstActiveAllianceValid()) HubMonitor.seedActiveAlliance();
+    }
 
     @Override
     public void testInit() {
@@ -93,16 +102,4 @@ public class Robot extends TimedRobot {
 
     @Override
     public void testExit() {}
-
-    @Override
-    public void simulationInit() {
-        // Configure the simulated robot state
-        SimulatedRobotState.configure();
-    }
-
-    @Override
-    public void simulationPeriodic() {
-        // Update the physics simulation - this is CRITICAL for proper simulation data
-        SimulatedRobotState.update();
-    }
 }
