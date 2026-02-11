@@ -15,7 +15,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GameStatesSubsystem extends MwSubsystem<GameStates, GameStatesConstants> {
+    private static GameStatesSubsystem instance_ = null;
 
+    public static GameStatesSubsystem getInstance() {
+        if (instance_ == null) {
+            instance_ = new GameStatesSubsystem();
+        }
+        return instance_;
+    }
     // Variables, temporary
     Boolean goal_active_ = false;
     Boolean operator_presses_climb_button_ = false;
@@ -23,7 +30,7 @@ public class GameStatesSubsystem extends MwSubsystem<GameStates, GameStatesConst
     boolean pass_overide_ = false;
     Boolean auto_climb_ready_ = false;
 
-    public GameStatesSubsystem() {
+    private GameStatesSubsystem() {
         super(GameStates.HOLD, new GameStatesConstants());
     }
 

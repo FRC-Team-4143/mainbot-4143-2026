@@ -13,6 +13,9 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
+import frc.robot.Robot;
+import frc.robot.subsystems.gamestates.GameStatesSubsystem;
+import frc.robot.subsystems.gamestates.GameStatesConstants.GameStates;
 import frc.robot.subsystems.localization.LocalizationSubsystem;
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterStates;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
@@ -255,11 +258,17 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
      * @return true if the flywheel speed is within tolerance, false otherwise
      */
     private boolean isFlywheelAtSpeed() {
+        double flywheelTolerance;
+        if(GameStatesSubsystem.getInstance().getSystemState() == GameStates.PASS){
+            flywheelTolerance = CONSTANTS.FLYWHEEL_PASS_SPEED_TOLERANCE;
+        } else {
+            flywheelTolerance = CONSTANTS.FLYWHEEL_SPEED_TOLERANCE;
+        }
         boolean status =
                 MathUtil.isNear(
                         flywheel_omega_,
                         flywheel_.getCurrentVelocity(),
-                        CONSTANTS.FLYWHEEL_SPEED_TOLERANCE);
+                        flywheelTolerance);
         DogLog.log(getSubsystemKey() + "ShooterIsReady/Flywheel", status);
         return status;
     }
@@ -270,11 +279,17 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
      * @return true if the hood is within tolerance, false otherwise
      */
     private boolean isHoodAtPosition() {
+        double hoodTolerance;
+        if(GameStatesSubsystem.getInstance().getSystemState() == GameStates.PASS){
+            hoodTolerance = CONSTANTS.HOOD_PASS_POSITION_TOLERANCE;
+        } else {
+            hoodTolerance = CONSTANTS.HOOD_POSITION_TOLERANCE;
+        }
         boolean status =
                 MathUtil.isNear(
                         launch_exit_angle_,
                         hood_.getCurrentPosition(),
-                        CONSTANTS.HOOD_POSITION_TOLERANCE);
+                        hoodTolerance);
         DogLog.log(getSubsystemKey() + "ShooterIsReady/Hood", status);
         return status;
     }
@@ -286,14 +301,25 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
      */
     private boolean isTurretAtPosition() {
         boolean status;
+        double turretTolerance;
+        if(GameStatesSubsystem.getInstance().getSystemState() == GameStates.PASS){
+            turretTolerance = CONSTANTS.TURRET_PASS_ANGLE_TOLERANCE;
+        } else {
+            turretTolerance = CONSTANTS.TURRET_ANGLE_TOLERANCE;
+        }
         if (CONSTANTS.TURRET_ENABLED) {
             status =
                     MathUtil.isNear(
                             launch_heading_,
                             turret_.getCurrentPosition(),
-                            CONSTANTS.TURRET_ANGLE_TOLERANCE);
+                            turretTolerance);
         } else {
-            status = SwerveSubsystem.getInstance().isAtDesiredRotation();
+            if(GameStatesSubsystem.getInstance().getSystemState() == GameStates.PASS){
+                status = SwerveSubsystem.getInstance().isAtDesiredRotation(Units.degreesToRadians(CONSTANTS.ROTATION_PASS_ANGLE_TOLERANCE));
+            }
+            else{
+                status = SwerveSubsystem.getInstance().isAtDesiredRotation(Units.degreesToRadians(CONSTANTS.ROTATION_ANGLE_TOLERANCE));
+            }
         }
         DogLog.log(getSubsystemKey() + "ShooterIsReady/Turret", status);
         return status;
