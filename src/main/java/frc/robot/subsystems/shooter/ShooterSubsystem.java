@@ -11,10 +11,10 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import frc.robot.subsystems.localization.LocalizationSubsystem;
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterStates;
-import frc.robot.subsystems.swerve.SwerveConstants.SwerveStates;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 import java.util.Arrays;
 import java.util.List;
@@ -36,9 +36,10 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
 
     private double flywheel_eff_factor_ = CONSTANTS.FLYWHEEL_EFF_FACTOR;
     private double flywheel_omega_ = 0;
-    TrajectorySol solution;
-    double launch_heading_;
-    double launch_exit_angle_;
+    double launch_heading_ = 0;
+    double launch_exit_angle_ = CONSTANTS.HOOD_MAX_ANGLE;
+    Translation3d target_ = new Translation3d(0.0, 0.0, 0.0);
+    TrajectorySol solution_;
 
     public ShooterSubsystem() {
         super(ShooterStates.IDLE, new ShooterConstants());
@@ -46,14 +47,18 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
                 new RollerMech(
                         getSubsystemKey(),
                         "Indexer",
-                        List.of(CONSTANTS.INDEX_MOTOR_CONFIG),
+                        List.of(
+                                CONSTANTS.INDEXER_LEADER_MOTOR_CONFIG,
+                                CONSTANTS.INDEXER_FOLLOWER_MOTOR_CONFIG),
                         CONSTANTS.INDEXER_GEAR_RATIO);
         flywheel_ =
                 new FlywheelMech(
                         getSubsystemKey(),
                         List.of(
                                 CONSTANTS.SHOOTER_LEADER_MOTOR_CONFIG,
-                                CONSTANTS.SHOOTER_FOLLOWER_MOTOR_CONFIG),
+                                CONSTANTS.SHOOTER_FOLLOWER_MOTOR_1_CONFIG,
+                                CONSTANTS.SHOOTER_FOLLOWER_MOTOR_2_CONFIG,
+                                CONSTANTS.SHOOTER_FOLLOWER_MOTOR_3_CONFIG),
                         CONSTANTS.FLYWHEEL_GEAR_RATIO,
                         CONSTANTS.FLYWHEEL_INERTIA,
                         CONSTANTS.FLYWHEEL_WHEEL_RADIUS_METERS);
@@ -94,8 +99,8 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
         }
 
         // Current 4143 robot does not have a turret (wrapping logic is not need for the drivetrain)
-        if (CONSTANTS.TURRET_ENABLED && (solution != null && solution.valid)) {
-            launch_heading_ = solution.heading_angle - robotPose.getRotation().getRadians();
+        if (CONSTANTS.TURRET_ENABLED && (solution_ != null && solution_.valid)) {
+            launch_heading_ = solution_.heading_angle - robotPose.getRotation().getRadians();
             if (launch_heading_ > CONSTANTS.MAX_TURRET_WRAP) {
                 launch_heading_ -= 2 * Math.PI;
                 if (system_state_ == ShooterStates.SHOOT) {
@@ -107,23 +112,23 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
                     system_state_ = ShooterStates.AIMING;
                 }
             }
-        } else if (solution != null) {
-            launch_heading_ = solution.heading_angle;
+        } else if (solution_ != null) {
+            launch_heading_ = solution_.heading_angle;
         }
     }
 
     @Override
     public void updateLogic(double timestamp) {
         Pose2d robotPose = LocalizationSubsystem.getInstance().getFieldPose();
-        solution = CONSTANTS.SOLVER.getSolution(robotPose.transformBy(CONSTANTS.SHOOTER_CENTER));
-        if (solution.valid) {
+        solution_ = CONSTANTS.SOLVER.getSolution(robotPose.transformBy(CONSTANTS.SHOOTER_CENTER));
+        if (solution_.valid) {
             flywheel_omega_ =
-                    solution.velocity
+                    solution_.velocity
                             / CONSTANTS.FLYWHEEL_WHEEL_RADIUS_METERS
                             * flywheel_eff_factor_;
         }
         if (CONSTANTS.TURRET_ENABLED) {
-            launch_heading_ = solution.heading_angle - robotPose.getRotation().getRadians();
+            launch_heading_ = solution_.heading_angle - robotPose.getRotation().getRadians();
             if (launch_heading_ > CONSTANTS.MAX_TURRET_WRAP) {
                 launch_heading_ -= 2 * Math.PI;
                 if (system_state_ == ShooterStates.SHOOT) {
@@ -136,11 +141,11 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
                 }
             }
         } else {
-            launch_heading_ = solution.heading_angle;
+            launch_heading_ = solution_.heading_angle;
         }
         launch_exit_angle_ =
                 MathUtil.clamp(
-                        solution.exit_angle, CONSTANTS.HOOD_MIN_ANGLE, CONSTANTS.HOOD_MAX_ANGLE);
+                        solution_.exit_angle, CONSTANTS.HOOD_MIN_ANGLE, CONSTANTS.HOOD_MAX_ANGLE);
 
         switch (system_state_) {
             case TRACKING:
@@ -185,7 +190,6 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
                                     new Translation2d(
                                             CONSTANTS.SHOOTER_CENTER.getX(),
                                             CONSTANTS.SHOOTER_CENTER.getY()));
-                    SwerveSubsystem.getInstance().setWantedState(SwerveStates.ROTATION_LOCK);
                 }
                 break;
             default:
@@ -199,15 +203,21 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
                 // code does NOTHING to allow for testing
                 break;
         }
-        // Log Data
-        DogLog.log(getSubsystemKey() + "TrajectorySolver/Valid", solution.valid);
+        // TrajectorySolver Logging
+        DogLog.log(getSubsystemKey() + "TrajectorySolver/Valid", solution_.valid);
         DogLog.log(
                 getSubsystemKey() + "TrajectorySolver/LaunchAngle",
-                Units.radiansToDegrees(solution.exit_angle));
+                Units.radiansToDegrees(solution_.exit_angle));
         DogLog.log(
                 getSubsystemKey() + "TrajectorySolver/LaunchHeading",
-                Rotation2d.fromRadians(solution.heading_angle));
-        DogLog.log(getSubsystemKey() + "TrajectorySolver/LaunchVelocity", solution.velocity);
+                Rotation2d.fromRadians(solution_.heading_angle));
+        DogLog.log(getSubsystemKey() + "TrajectorySolver/LaunchVelocity", solution_.velocity);
+        DogLog.log(getSubsystemKey() + "TrajectorySolver/Target", target_);
+
+        // Setpoint Logging
+        DogLog.log(getSubsystemKey() + "Setpoint/FlywheelOmega", flywheel_omega_);
+        DogLog.log(getSubsystemKey() + "Setpoint/HoodAngle", launch_exit_angle_);
+        DogLog.log(getSubsystemKey() + "Setpoint/HeadingAngle", launch_heading_);
     }
 
     @Override
@@ -233,12 +243,17 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
      */
     public boolean shooterIsReady() {
         // If there is no valid solution, the shooter cannot be ready
-        if (solution == null || !solution.valid) {
+        if (solution_ == null || !solution_.valid) {
             return false;
         }
         return isFlywheelAtSpeed() && isHoodAtPosition() && isTurretAtPosition();
     }
 
+    /**
+     * Check if the flywheel is at the target speed within a certain tolerance
+     *
+     * @return true if the flywheel speed is within tolerance, false otherwise
+     */
     private boolean isFlywheelAtSpeed() {
         boolean status =
                 MathUtil.isNear(
@@ -249,6 +264,11 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
         return status;
     }
 
+    /**
+     * Check if the hood is at the target position within a certain tolerance
+     *
+     * @return true if the hood is within tolerance, false otherwise
+     */
     private boolean isHoodAtPosition() {
         boolean status =
                 MathUtil.isNear(
@@ -259,6 +279,11 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
         return status;
     }
 
+    /**
+     * Check if the turret is at the target position within a certain tolerance
+     *
+     * @return true if the turret is within tolerance, false otherwise
+     */
     private boolean isTurretAtPosition() {
         boolean status;
         if (CONSTANTS.TURRET_ENABLED) {
@@ -280,10 +305,10 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
      * @return the launch angle in radians, or the max hood angle if no valid solution
      */
     public double getLaunchAngle() {
-        if (solution == null || !solution.valid) {
+        if (solution_ == null || !solution_.valid) {
             return CONSTANTS.HOOD_MAX_ANGLE;
         } else {
-            return solution.exit_angle;
+            return launch_exit_angle_;
         }
     }
 
@@ -293,10 +318,10 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
      * @return the launch velocity in meters per second, or 0.0 if no valid solution
      */
     public double getLaunchVelocity() {
-        if (solution == null || !solution.valid) {
+        if (solution_ == null || !solution_.valid) {
             return 0.0;
         } else {
-            return solution.velocity;
+            return solution_.velocity;
         }
     }
 
@@ -307,5 +332,30 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
      */
     public void applyLoadFromBall(double load_torque) {
         flywheel_.applyLoadTorque(load_torque);
+    }
+
+    /**
+     * Sets the target for the shooter to calculate a solution for. The target is a 3D translation
+     * where x and y are the horizontal coordinates of the target relative to the field, and z is
+     * the height of the target relative to the floor. This method will update the TrajectorySolver
+     * with the new target.
+     *
+     * @param target the target translation in meters, where x and y are the horizontal coordinates
+     *     of the target relative to the field, and z is the height of the target relative to the
+     *     floor
+     */
+    public void setTarget(Translation3d target) {
+        target_ = target;
+        CONSTANTS.SOLVER.setTarget(target_);
+    }
+
+    /**
+     * Sets whether to use the high arc or low arc solution from the TrajectorySolver. This will
+     * update the TrajectorySolver with the new arc preference.
+     *
+     * @param highArc true to use the high arc solution, false to use the low arc solution
+     */
+    public void setHighArc(boolean highArc) {
+        CONSTANTS.SOLVER.setHighArc(highArc);
     }
 }

@@ -9,11 +9,13 @@ import com.marswars.auto.AutoManager;
 import com.marswars.geometry.AllianceFlipUtil;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.autos.Left_Start_Neutral_Outpost_Climb;
 import frc.robot.lib2026.FieldConstants;
 import frc.robot.lib2026.FieldRegions;
+import frc.robot.lib2026.FieldTargets;
 import frc.robot.subsystems.hopper.HopperConstants.HopperStates;
 import frc.robot.subsystems.hopper.HopperSubsystem;
 import frc.robot.subsystems.localization.LocalizationSubsystem;
@@ -21,6 +23,7 @@ import frc.robot.subsystems.shooter.ShooterConstants.ShooterStates;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.swerve.SwerveConstants;
 import frc.robot.subsystems.swerve.SwerveConstants.SwerveStates;
+import frc.robot.lib2026.HubMonitor;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 import java.util.Optional;
 
@@ -43,6 +46,9 @@ public class Robot extends TimedRobot {
                 .registerAutos(
                         // Add your auto routines here as you create them
                         new Left_Start_Neutral_Outpost_Climb());
+
+        // Set the default target for the shooter to be the hub
+        ShooterSubsystem.getInstance().setTarget(FieldTargets.Shooter.HUB);
     }
 
     @Override
@@ -54,6 +60,9 @@ public class Robot extends TimedRobot {
         CommandScheduler.getInstance().run();
         // run the main robot loop for each subsystem
         robot_container_.doControlLoop();
+
+        // Update the hub active status
+        HubMonitor.isHubActive(DriverStation.getMatchTime());
     }
 
     @Override
@@ -70,6 +79,7 @@ public class Robot extends TimedRobot {
                                     : SwerveConstants.OperatorPerspective.RED_ALLIANCE);
             FieldRegions.flipRegions();
             LocalizationSubsystem.getInstance().setTagFocus(alliance_);
+            HubMonitor.seedActiveAlliance(HubMonitor.ActiveAlliance.INVALID);
         }
     }
 
@@ -93,7 +103,10 @@ public class Robot extends TimedRobot {
     }
 
     @Override
-    public void teleopPeriodic() {}
+    public void teleopPeriodic() {
+        // Attempt to update the first active alliance until it return valid
+        if(!HubMonitor.isFirstActiveAllianceValid()) HubMonitor.seedActiveAlliance();
+    }
 
     @Override
     public void testInit() {
