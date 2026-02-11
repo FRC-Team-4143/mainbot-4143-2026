@@ -402,6 +402,9 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
         if (system_state_ == SwerveStates.CHOREO_PATH
                 || system_state_ == SwerveStates.CHOREO_PATH_ROTATION_LOCK) {
             choreo_timer_.reset();
+            choreo_x_controller_.reset();
+            choreo_y_controller_.reset();
+            choreo_theta_controller_.reset();
         }
 
         // Log the trajectory poses for debugging
