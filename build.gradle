@@ -16,6 +16,7 @@ def ROBOT_MAIN_CLASS = "frc.robot.Main"
 spotless {
     java {
         target 'src/**/*.java'
+        targetExclude 'src/main/java/frc/robot/autos/ChoreoTraj.java', 'src/main/java/frc/robot/autos/ChoreoVars.java'
         googleJavaFormat('1.23.0').aosp().reflowLongStrings()
         removeUnusedImports()
         trimTrailingWhitespace()
@@ -93,7 +94,7 @@ repositories {
         }
     }
     // flatDir{
-    //     dirs 'C:/Users/FIRSTMentor/Documents/MW-Lib/build/libs'
+    //     dirs '/prj/frc/MW-Lib/build/libs'
     // }
 }
 
@@ -120,7 +121,7 @@ dependencies {
 
     testImplementation 'org.junit.jupiter:junit-jupiter:5.10.1'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-    implementation 'com.github.frc-team-4143:mw-lib-java:26.4.0'
+    implementation 'com.github.frc-team-4143:mw-lib-java:26.6.1'
     //implementation name: 'MW-Lib', version: '', ext: 'jar'
 }
 

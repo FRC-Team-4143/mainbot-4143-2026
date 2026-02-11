@@ -1,8 +1,6 @@
 package frc.robot.subsystems.swerve;
 
-import static edu.wpi.first.units.Units.Kilograms;
-import static edu.wpi.first.units.Units.Meters;
-
+import com.ctre.phoenix6.swerve.utility.PhoenixPIDController;
 import com.marswars.subsystem.MwConstants;
 import com.marswars.swerve_lib.SwerveDriveConfig;
 import com.marswars.swerve_lib.module.ModuleType;
@@ -11,7 +9,6 @@ import com.marswars.util.FxMotorConfig;
 import com.marswars.util.PhoenixUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 
 public class SwerveConstants extends MwConstants {
@@ -24,8 +21,10 @@ public class SwerveConstants extends MwConstants {
         FIELD_CENTRIC,
         ROBOT_CENTRIC,
         CHOREO_PATH,
-        ROTATION_LOCK,
+        CHOREO_PATH_ROTATION_LOCK,
+        FIELD_CENTRIC_ROTATION_LOCK,
         TRACTOR_BEAM,
+        CHASSIS_SPEED_ROTATION_LOCK,
         IDLE
     }
 
@@ -82,19 +81,17 @@ public class SwerveConstants extends MwConstants {
     public final double CONTROLLER_DEADBAND = 0.05;
     public final double MAX_TRANSLATION_RATE = getDoubleConstant("com", "max_translation_rate");
     public final double MAX_ANGULAR_RATE = getDoubleConstant("com", "max_angular_rate");
+    public final PhoenixPIDController HEADING_CONTROLLER = new PhoenixPIDController(7.3, 0.0, 0.07);
 
     // =============================================================================
     // CHOREO PATH FOLLOWING CONSTANTS
     // =============================================================================
 
-    public final boolean FLIP_TRAJECTORY_ON_RED = true;
+    public boolean FLIP_TRAJECTORY_ON_RED = false;
     public final double CHOREO_TRANSLATION_ERROR_MARGIN = Units.inchesToMeters(1.0);
-    public final double CHOREO_X_CONTROLLER_KP = 0.0;
-    public final double CHOREO_X_CONTROLLER_KI = 0.0;
-    public final double CHOREO_X_CONTROLLER_KD = 0.0;
-    public final double CHOREO_Y_CONTROLLER_KP = 0.0;
-    public final double CHOREO_Y_CONTROLLER_KI = 0.0;
-    public final double CHOREO_Y_CONTROLLER_KD = 0.0;
+    public final double CHOREO_TRANSLATION_CONTROLLER_KP = 0.0;
+    public final double CHOREO_TRANSLATION_CONTROLLER_KI = 0.0;
+    public final double CHOREO_TRANSLATION_CONTROLLER_KD = 0.0;
     public final double CHOREO_THETA_CONTROLLER_KP = 0.0;
     public final double CHOREO_THETA_CONTROLLER_KI = 0.0;
     public final double CHOREO_THETA_CONTROLLER_KD = 0.0;
@@ -132,7 +129,6 @@ public class SwerveConstants extends MwConstants {
     // CONSTRUCTOR - SWERVE CONFIGURATION INITIALIZATION
     // =============================================================================
 
-    @SuppressWarnings("unchecked")
     public SwerveConstants() {
 
         // Load base motor configurations from config files
@@ -157,6 +153,8 @@ public class SwerveConstants extends MwConstants {
         FL_DRIVE_MOTOR_CONFIG.can_id = getIntConstant("fl", "drive_id");
         FL_DRIVE_MOTOR_CONFIG.config.MotorOutput.Inverted =
                 PhoenixUtil.toInvertedValue(getBoolConstant("fl", "invert_drive"));
+        FL_DRIVE_MOTOR_CONFIG.config.Feedback.SensorToMechanismRatio =
+                FL_MODULE_CONFIG.module_type.driveRatio;
         FL_MODULE_CONFIG.drive_motor_config = FL_DRIVE_MOTOR_CONFIG;
 
         // FL Steer Motor Configuration
@@ -182,6 +180,8 @@ public class SwerveConstants extends MwConstants {
         FR_DRIVE_MOTOR_CONFIG.can_id = getIntConstant("fr", "drive_id");
         FR_DRIVE_MOTOR_CONFIG.config.MotorOutput.Inverted =
                 PhoenixUtil.toInvertedValue(getBoolConstant("fr", "invert_drive"));
+        FR_DRIVE_MOTOR_CONFIG.config.Feedback.SensorToMechanismRatio =
+                FR_MODULE_CONFIG.module_type.driveRatio;
         FR_MODULE_CONFIG.drive_motor_config = FR_DRIVE_MOTOR_CONFIG;
 
         // FR Steer Motor Configuration
@@ -207,6 +207,8 @@ public class SwerveConstants extends MwConstants {
         BL_DRIVE_MOTOR_CONFIG.can_id = getIntConstant("bl", "drive_id");
         BL_DRIVE_MOTOR_CONFIG.config.MotorOutput.Inverted =
                 PhoenixUtil.toInvertedValue(getBoolConstant("bl", "invert_drive"));
+        BL_DRIVE_MOTOR_CONFIG.config.Feedback.SensorToMechanismRatio =
+                BL_MODULE_CONFIG.module_type.driveRatio;
         BL_MODULE_CONFIG.drive_motor_config = BL_DRIVE_MOTOR_CONFIG;
 
         // BL Steer Motor Configuration
@@ -232,6 +234,8 @@ public class SwerveConstants extends MwConstants {
         BR_DRIVE_MOTOR_CONFIG.can_id = getIntConstant("br", "drive_id");
         BR_DRIVE_MOTOR_CONFIG.config.MotorOutput.Inverted =
                 PhoenixUtil.toInvertedValue(getBoolConstant("br", "invert_drive"));
+        BR_DRIVE_MOTOR_CONFIG.config.Feedback.SensorToMechanismRatio =
+                BR_MODULE_CONFIG.module_type.driveRatio;
         BR_MODULE_CONFIG.drive_motor_config = BR_DRIVE_MOTOR_CONFIG;
 
         // BR Steer Motor Configuration
