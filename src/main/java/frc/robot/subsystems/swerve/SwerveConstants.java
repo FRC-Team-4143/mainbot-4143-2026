@@ -25,6 +25,10 @@ public class SwerveConstants extends MwConstants {
         FIELD_CENTRIC_ROTATION_LOCK,
         TRACTOR_BEAM,
         CHASSIS_SPEED_ROTATION_LOCK,
+        CRAWL,
+        CRAWL_ROTATION_LOCK,
+        CRAWL_FIELD_CENTRIC,
+        CRAWL_FIELD_CENTRIC_ROTATION_LOCK,
         IDLE
     }
 
@@ -80,6 +84,7 @@ public class SwerveConstants extends MwConstants {
 
     public final double CONTROLLER_DEADBAND = 0.05;
     public final double MAX_TRANSLATION_RATE = getDoubleConstant("com", "max_translation_rate");
+    public final double MAX_CRAWL_RATE = MAX_TRANSLATION_RATE / 4.0;
     public final double MAX_ANGULAR_RATE = getDoubleConstant("com", "max_angular_rate");
     public final PhoenixPIDController HEADING_CONTROLLER = new PhoenixPIDController(7.3, 0.0, 0.07);
 
