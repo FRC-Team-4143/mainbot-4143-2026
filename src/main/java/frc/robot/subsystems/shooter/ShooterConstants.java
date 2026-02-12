@@ -59,8 +59,6 @@ public class ShooterConstants extends MwConstants {
                     * FLYWHEEL_MASS_KG
                     * Math.pow(FLYWHEEL_WHEEL_RADIUS_METERS, 2.0); // kg m^2, approximate
     public final double FLYWHEEL_EFF_FACTOR = 1.0;
-    public final double FLYWHEEL_SPEED_TOLERANCE = 50.0;
-    public final double FLYWHEEL_PASS_SPEED_TOLERANCE = 100.0;
     public final Slot1Configs FLYWHEEL_VELOCITY_GAINS =
             new Slot1Configs().withKP(0.5).withKV(0.117);
 
@@ -83,13 +81,6 @@ public class ShooterConstants extends MwConstants {
     public final double HOOD_MIN_ANGLE = Units.degreesToRadians(45);
     public final double HOOD_MAX_ANGLE = Units.degreesToRadians(83.673);
     public final double HOOD_HOME_POSITION = Units.degreesToRadians(83.673);
-
-    // Tolerances are expressed in hood position units (radians) for comparing against
-    // the mech's current position/readback.
-    public final double HOOD_POSITION_TOLERANCE =
-            Units.degreesToRadians(0.5); // 0.5 degrees tolerance
-    public final double HOOD_PASS_POSITION_TOLERANCE =
-            Units.degreesToRadians(1); // 1 degrees tolerance
     public final Slot0Configs HOOD_POSITION_GAINS = new Slot0Configs().withKP(30).withKD(0.15);
 
     // =============================================================================
@@ -98,10 +89,6 @@ public class ShooterConstants extends MwConstants {
 
     public final double TURRET_GEAR_RATIO = 1.0;
     public final double TURRET_MOI = 0.001;
-    public final double TURRET_ANGLE_TOLERANCE = 1.0;
-    public final double TURRET_PASS_ANGLE_TOLERANCE = 2.0;
-    public final double ROTATION_ANGLE_TOLERANCE = 1.0;
-    public final double ROTATION_PASS_ANGLE_TOLERANCE = 2.0;
     public final Slot0Configs TURRET_POSITION_GAINS = new Slot0Configs().withKP(10);
 
     // =============================================================================

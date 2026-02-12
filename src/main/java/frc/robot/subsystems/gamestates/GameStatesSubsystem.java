@@ -4,7 +4,6 @@ import com.marswars.subsystem.MwSubsystem;
 import com.marswars.subsystem.SubsystemIoBase;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.RobotState;
-import frc.robot.Robot;
 import frc.robot.lib2026.FieldRegions;
 import frc.robot.lib2026.FieldTargets;
 import frc.robot.subsystems.gamestates.GameStatesConstants.GameStates;
@@ -23,6 +22,7 @@ public class GameStatesSubsystem extends MwSubsystem<GameStates, GameStatesConst
         }
         return instance_;
     }
+
     // Variables, temporary
     Boolean goal_active_ = false;
     Boolean operator_presses_climb_button_ = false;
@@ -72,12 +72,12 @@ public class GameStatesSubsystem extends MwSubsystem<GameStates, GameStatesConst
                 // pickup active to allow ball intake unless full
                 // climber inactive
                 break;
-            //case AUTO_CLIMB:
-                // shooter inactive
-                // hopper holding balls only
-                // pickup innactve
-                // climber actively climbing
-                //break;
+            // case AUTO_CLIMB:
+            // shooter inactive
+            // hopper holding balls only
+            // pickup innactve
+            // climber actively climbing
+            // break;
             case TELEOP_CLIMB:
                 // shooter inactive
                 // hopper holding balls only
@@ -98,7 +98,7 @@ public class GameStatesSubsystem extends MwSubsystem<GameStates, GameStatesConst
 
     public void handleStateTransition(GameStates wanted) {
 
-        if(RobotState.isAutonomous()){
+        if (RobotState.isAutonomous()) {
             system_state_ = GameStates.AUTO;
             return;
         }
@@ -112,10 +112,22 @@ public class GameStatesSubsystem extends MwSubsystem<GameStates, GameStatesConst
         // HOLD transitions
         if (system_state_ == GameStates.HOLD && inAllianceZone(robotpose) && goal_active_) {
             system_state_ = GameStates.SCORE;
+            // Set strict tolerances for scoring
+            ShooterSubsystem.getInstance()
+                    .setShootingTolerances(
+                            FieldTargets.Shooter.FLYWHEEL_SPEED_TOLERANCE,
+                            FieldTargets.Shooter.HOOD_POSITION_TOLERANCE,
+                            FieldTargets.Shooter.TURRET_ANGLE_TOLERANCE);
         } else if (system_state_ == GameStates.HOLD && (isPassZone(robotpose) || pass_overide_)) {
             system_state_ = GameStates.PASS;
-        // } else if (system_state_ == GameStates.HOLD && auto_climb_ready_) {
-        //     system_state_ = GameStates.AUTO_CLIMB;
+            // Set lenient tolerances for passing
+            ShooterSubsystem.getInstance()
+                    .setShootingTolerances(
+                            FieldTargets.Shooter.FLYWHEEL_PASS_SPEED_TOLERANCE,
+                            FieldTargets.Shooter.HOOD_PASS_POSITION_TOLERANCE,
+                            FieldTargets.Shooter.TURRET_PASS_ANGLE_TOLERANCE);
+            // } else if (system_state_ == GameStates.HOLD && auto_climb_ready_) {
+            //     system_state_ = GameStates.AUTO_CLIMB;
         } else if (system_state_ == GameStates.HOLD && operator_presses_climb_button_) {
             system_state_ = GameStates.TELEOP_CLIMB;
         } else {
@@ -123,8 +135,14 @@ public class GameStatesSubsystem extends MwSubsystem<GameStates, GameStatesConst
         // SCORE transistions
         if (system_state_ == GameStates.SCORE && (isPassZone(robotpose) || !goal_active_)) {
             system_state_ = GameStates.HOLD;
-        // } else if (system_state_ == GameStates.SCORE && auto_climb_ready_) {
-        //     system_state_ = GameStates.AUTO_CLIMB;
+            // Return to strict tolerances
+            ShooterSubsystem.getInstance()
+                    .setShootingTolerances(
+                            FieldTargets.Shooter.FLYWHEEL_SPEED_TOLERANCE,
+                            FieldTargets.Shooter.HOOD_POSITION_TOLERANCE,
+                            FieldTargets.Shooter.TURRET_ANGLE_TOLERANCE);
+            // } else if (system_state_ == GameStates.SCORE && auto_climb_ready_) {
+            //     system_state_ = GameStates.AUTO_CLIMB;
         } else if (system_state_ == GameStates.SCORE && operator_presses_climb_button_) {
             system_state_ = GameStates.TELEOP_CLIMB;
         } else {
@@ -132,6 +150,12 @@ public class GameStatesSubsystem extends MwSubsystem<GameStates, GameStatesConst
         // PASS transistions
         if (system_state_ == GameStates.PASS && (inHoldZone(robotpose) || !pass_overide_)) {
             system_state_ = GameStates.HOLD;
+            // Return to strict tolerances when leaving PASS state
+            ShooterSubsystem.getInstance()
+                    .setShootingTolerances(
+                            FieldTargets.Shooter.FLYWHEEL_SPEED_TOLERANCE,
+                            FieldTargets.Shooter.HOOD_POSITION_TOLERANCE,
+                            FieldTargets.Shooter.TURRET_ANGLE_TOLERANCE);
         } else {
         } // empty to not interfere with rest of state machine
         // AUTO_CLIMB transitions
