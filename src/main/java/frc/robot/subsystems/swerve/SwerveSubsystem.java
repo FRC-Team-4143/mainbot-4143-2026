@@ -2,6 +2,7 @@ package frc.robot.subsystems.swerve;
 
 import choreo.trajectory.SwerveSample;
 import choreo.trajectory.Trajectory;
+import com.marswars.auto.ChoreoEventTracker;
 import com.marswars.subsystem.MwSubsystem;
 import com.marswars.subsystem.SubsystemIoBase;
 import com.marswars.swerve_lib.ChassisRequest;
@@ -26,6 +27,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.OI;
 import frc.robot.subsystems.localization.LocalizationSubsystem;
 import frc.robot.subsystems.swerve.SwerveConstants.OperatorPerspective;
@@ -49,6 +51,7 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
     Trajectory<SwerveSample> desired_choreo_traj_;
     private final Timer choreo_timer_ = new Timer();
     private Optional<SwerveSample> choreo_sample_to_apply_;
+    private final ChoreoEventTracker choreo_event_tracker_;
     private final PIDController choreo_x_controller_ =
             new PIDController(
                     CONSTANTS.CHOREO_TRANSLATION_CONTROLLER_KP,
@@ -98,6 +101,12 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
         super(SwerveStates.IDLE, new SwerveConstants());
 
         swerve_mech_ = new SwerveMech(getSubsystemKey(), CONSTANTS.SWERVE_DRIVE_CONFIG);
+
+        // Initialize event tracker with pose supplier
+        choreo_event_tracker_ =
+                new ChoreoEventTracker(
+                        getSubsystemKey() + "Choreo/Events/",
+                        () -> LocalizationSubsystem.getInstance().getFieldPose());
 
         // Initialize drive mode requests
         field_centric_request_ =
@@ -220,6 +229,14 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
      */
     @Override
     protected void handleStateTransition(SwerveStates wanted_state) {
+        // Stop event tracker if leaving choreo states
+        if ((system_state_ == SwerveStates.CHOREO_PATH
+                        || system_state_ == SwerveStates.CHOREO_PATH_ROTATION_LOCK)
+                && wanted_state != SwerveStates.CHOREO_PATH
+                && wanted_state != SwerveStates.CHOREO_PATH_ROTATION_LOCK) {
+            choreo_event_tracker_.stop();
+        }
+
         system_state_ =
                 switch (wanted_state) {
                     case FIELD_CENTRIC -> SwerveStates.FIELD_CENTRIC;
@@ -234,6 +251,7 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
                             choreo_y_controller_.reset();
                             choreo_theta_controller_.reset();
                             choreo_timer_.restart();
+                            choreo_event_tracker_.start();
                             choreo_sample_to_apply_ =
                                     desired_choreo_traj_.sampleAt(
                                             choreo_timer_.get(), CONSTANTS.FLIP_TRAJECTORY_ON_RED);
@@ -255,6 +273,7 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
                             choreo_y_controller_.reset();
                             choreo_theta_controller_.reset();
                             choreo_timer_.restart();
+                            choreo_event_tracker_.start();
                             choreo_sample_to_apply_ =
                                     desired_choreo_traj_.sampleAt(
                                             choreo_timer_.get(), CONSTANTS.FLIP_TRAJECTORY_ON_RED);
@@ -324,6 +343,9 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
      * trajectory sample and PID controller outputs.
      */
     private void choreoPathState() {
+        // Update event tracker with current time
+        choreo_event_tracker_.update(choreo_timer_.get());
+
         if (choreo_sample_to_apply_.isPresent()) {
             SwerveSample sample = choreo_sample_to_apply_.get();
             DogLog.log(getSubsystemKey() + "Choreo/TimerValue", choreo_timer_.get());
@@ -355,6 +377,9 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
      * trajectory sample, but overriding the rotation to a fixed desired rotation.
      */
     private void choreoPathRotationLockState() {
+        // Update event tracker with current time
+        choreo_event_tracker_.update(choreo_timer_.get());
+
         if (choreo_sample_to_apply_.isPresent()) {
             SwerveSample sample = choreo_sample_to_apply_.get();
             DogLog.log(getSubsystemKey() + "Choreo/TimerValue", choreo_timer_.get());
@@ -398,10 +423,14 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
     public void setDesiredChoreoTrajectory(Trajectory<SwerveSample> trajectory) {
         desired_choreo_traj_ = trajectory;
 
+        // Load events from the trajectory (passes trajectory so poses can be extracted)
+        choreo_event_tracker_.setEvents(trajectory, CONSTANTS.FLIP_TRAJECTORY_ON_RED);
+
         // Reset the timer if we are already in a choreo path state to restart the new trajectory
         if (system_state_ == SwerveStates.CHOREO_PATH
                 || system_state_ == SwerveStates.CHOREO_PATH_ROTATION_LOCK) {
             choreo_timer_.reset();
+            choreo_event_tracker_.start();
             choreo_x_controller_.reset();
             choreo_y_controller_.reset();
             choreo_theta_controller_.reset();
@@ -727,6 +756,47 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
     }
 
     // ------------------------------------------------
+    // Choreo Event Methods
+    // ------------------------------------------------
+
+    /**
+     * Gets a trigger for the specified Choreo event. The trigger will be true from when the event
+     * timestamp is passed until trajectory ends. Use .onTrue() for one-time actions or .whileTrue()
+     * for continuous actions.
+     *
+     * @param event_name The name of the event defined in Choreo
+     * @return A Trigger that reads from the event HashMap
+     */
+    public Trigger getChoreoEventTimeTrigger(String event_name) {
+        return choreo_event_tracker_.getTimeTrigger(event_name);
+    }
+
+    /**
+     * Gets a trigger for the specified Choreo event that checks if the robot is at the event's
+     * pose. This is a pose-only check (does not require time condition). The trigger will be true
+     * when the robot is within tolerances of the event's pose.
+     *
+     * @param event_name The name of the event defined in Choreo
+     * @param translation_tol The translation distance tolerance in meters
+     * @param rotation_tol The rotation tolerance in radians
+     * @return A Trigger that checks pose only
+     */
+    public Trigger getChoreoEventPoseTrigger(
+            String event_name, double translation_tol, double rotation_tol) {
+        return choreo_event_tracker_.getPoseTrigger(event_name, translation_tol, rotation_tol);
+    }
+
+    /**
+     * Checks if a specific Choreo event has been passed during trajectory following.
+     *
+     * @param event_name The name of the event to check
+     * @return true if the event has been passed, false otherwise
+     */
+    public boolean hasChoreoEventBeenPassed(String event_name) {
+        return choreo_event_tracker_.hasEventBeenPassed(event_name);
+    }
+
+    // ------------------------------------------------
     // Chassis Property Methods
     // ------------------------------------------------
 
@@ -735,9 +805,9 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
         return Commands.runOnce(() -> swerve_mech_.setModuleOffsets());
     }
 
-    /** Zeros the gyro to the operator forward direction */
-    public Command zeroGyro() {
-        return Commands.runOnce(() -> swerve_mech_.setGyro(operator_forward_direction_));
+    /** Zeros the gyro yaw to the operator forward direction */
+    public Command zeroGyroYaw() {
+        return Commands.runOnce(() -> swerve_mech_.setGyroYaw(operator_forward_direction_));
     }
 
     /** Returns the module states (turn angles and drive velocities) for all of the modules. */
@@ -756,8 +826,13 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
     }
 
     /** Returns the raw gyro rotation */
-    public Rotation2d getGyroRotation() {
-        return swerve_mech_.getRawGyroRotation();
+    public Rotation2d getGyroYaw() {
+        return swerve_mech_.getGyroYaw();
+    }
+
+    /** Returns the raw gyro yaw rate */
+    public double getGyroYawRate() {
+        return swerve_mech_.getGyroYawRate();
     }
 
     /**

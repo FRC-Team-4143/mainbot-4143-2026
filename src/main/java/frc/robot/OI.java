@@ -6,10 +6,12 @@ package frc.robot;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.subsystems.intake.IntakeConstants.IntakeStates;
 import frc.robot.subsystems.intake.IntakeSubsystem;
+import frc.robot.subsystems.localization.LocalizationSubsystem;
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterStates;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.swerve.SwerveConstants.SwerveStates;
@@ -25,7 +27,15 @@ public abstract class OI {
     public static void configureBindings() {
         DriverStation.silenceJoystickConnectionWarning(true);
 
-        driver_controller_.rightStick().onTrue(SwerveSubsystem.getInstance().toggleFieldCentric());
+        driver_controller_
+                .rightStick()
+                .onTrue(SwerveSubsystem.getInstance().toggleFieldCentric().ignoringDisable(true));
+        SmartDashboard.putData(
+                "Zero Gyro Yaw", SwerveSubsystem.getInstance().zeroGyroYaw().ignoringDisable(true));
+        SmartDashboard.putData(
+                "Set Start Pose",
+                Commands.runOnce(LocalizationSubsystem.getInstance()::resetPoseEstimatorAuto)
+                        .ignoringDisable(true));
 
         driver_controller_
                 .a()

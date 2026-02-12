@@ -3,8 +3,6 @@ package frc.robot.subsystems.simulation;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.Radians;
 
-import com.marswars.auto.AutoManager;
-import com.marswars.geometry.AllianceFlipUtil;
 import com.marswars.proxy_server.ProxyServerThread;
 import com.marswars.subsystem.MwSubsystem;
 import com.marswars.subsystem.SubsystemIoBase;
@@ -14,21 +12,17 @@ import dev.doglog.DogLog;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import frc.robot.lib2026.FuelSim;
 import frc.robot.subsystems.intake.IntakeConstants.IntakeStates;
 import frc.robot.subsystems.intake.IntakeSubsystem;
-import frc.robot.subsystems.localization.LocalizationConstants.LocalizationStates;
 import frc.robot.subsystems.localization.LocalizationSubsystem;
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterStates;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.simulation.SimulationConstants.SimulationStates;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 import java.util.Random;
 
 public class SimulationSubsystem extends MwSubsystem<SimulationStates, SimulationConstants> {
@@ -57,7 +51,7 @@ public class SimulationSubsystem extends MwSubsystem<SimulationStates, Simulatio
             vision_sim_.addCamera("Front-Camera", CONSTANTS.FRONT_CAMERA_TRANSFORM);
             vision_sim_.addCamera("Left-Camera", CONSTANTS.LEFT_CAMERA_TRANSFORM);
             vision_sim_.addCamera("Right-Camera", CONSTANTS.RIGHT_CAMERA_TRANSFORM);
-            LocalizationSubsystem.getInstance().setWantedState(LocalizationStates.VISION_SIM);
+            LocalizationSubsystem.getInstance().enableSwerveMeasurementNoise();
         }
 
         // Setup Fuel Simulation
@@ -93,10 +87,6 @@ public class SimulationSubsystem extends MwSubsystem<SimulationStates, Simulatio
         resetForAuto();
     }
 
-    // @Override
-    // public void handleStateTransition(SimulationStates wanted) {
-    // }
-
     @Override
     public void updateLogic(double timestamp) {
         // Vision Simulation
@@ -105,17 +95,8 @@ public class SimulationSubsystem extends MwSubsystem<SimulationStates, Simulatio
             ProxyServerThread.getInstance().updateVisionSimulation(robot_pose);
         }
 
-        if (ShooterSubsystem.getInstance().getSystemState() == ShooterStates.SHOOT
-                && hopper_fuel_count_ > 0
-                && CONSTANTS.SIM_FUEL_ENABLED) {
-            // Rate limit shooting to 15 balls per second
-            if (timestamp - last_shot_timestamp_ >= CONSTANTS.SECONDS_PER_SHOT) {
-                launchFuel();
-                last_shot_timestamp_ = timestamp;
-            }
-        }
-
         // FuelSim
+        launchFuel(timestamp);
         FuelSim.getInstance().updateSim();
         DogLog.log(getSubsystemKey() + "FuelSim/Fuel", FuelSim.getInstance().getLoggableFuel());
         DogLog.log(getSubsystemKey() + "FuelSim/HopperCount", hopper_fuel_count_);
@@ -133,35 +114,39 @@ public class SimulationSubsystem extends MwSubsystem<SimulationStates, Simulatio
     }
 
     /** Launches a fuel from the shooter in the simulation. */
-    public void launchFuel() {
-        FuelSim.getInstance()
-                .launchFuel(
-                        MetersPerSecond.of(ShooterSubsystem.getInstance().getLaunchVelocity()),
-                        Radians.of(ShooterSubsystem.getInstance().getLaunchAngle()),
-                        Radians.of(
-                                LocalizationSubsystem.getInstance()
-                                        .getFieldPose()
-                                        .getRotation()
-                                        .getRadians()),
-                        CONSTANTS.SHOOTER_LAUNCH_OFFSET);
-        ShooterSubsystem.getInstance()
-                .applyLoadFromBall(
-                        CONSTANTS.FUEL_MASS_KG
-                                * ShooterSubsystem.getInstance().getLaunchVelocity()
-                                * CONSTANTS.FLYWHEEL_RADIUS_M
-                                / CONSTANTS.CONTACT_TIME_SEC);
-        hopper_fuel_count_--;
+    @SuppressWarnings("unused")
+    public void launchFuel(double timestamp) {
+        if (ShooterSubsystem.getInstance().getSystemState() == ShooterStates.SHOOT
+                && hopper_fuel_count_ > 0
+                && CONSTANTS.SIM_FUEL_ENABLED) {
+            if (timestamp - last_shot_timestamp_ >= CONSTANTS.SECONDS_PER_SHOT) {
+                FuelSim.getInstance()
+                        .launchFuel(
+                                MetersPerSecond.of(
+                                        ShooterSubsystem.getInstance().getLaunchVelocity()),
+                                Radians.of(ShooterSubsystem.getInstance().getLaunchAngle()),
+                                Radians.of(
+                                        LocalizationSubsystem.getInstance()
+                                                .getFieldPose()
+                                                .getRotation()
+                                                .getRadians()),
+                                CONSTANTS.SHOOTER_LAUNCH_OFFSET);
+                ShooterSubsystem.getInstance()
+                        .applyLoadFromBall(
+                                CONSTANTS.FUEL_MASS_KG
+                                        * ShooterSubsystem.getInstance().getLaunchVelocity()
+                                        * CONSTANTS.FLYWHEEL_RADIUS_M
+                                        / CONSTANTS.CONTACT_TIME_SEC);
+                hopper_fuel_count_--;
+                last_shot_timestamp_ = timestamp;
+            }
+        }
     }
 
     /** Resets the simulation for autonomous mode. */
     public void resetForAuto() {
         // Move robot to starting pose
-        Pose2d start_pose = AutoManager.getInstance().getSelectedAuto().getStartPose();
-        Optional<Alliance> alliance = DriverStation.getAlliance();
-        if (alliance.isPresent() && alliance.get() == Alliance.Red) {
-            start_pose = AllianceFlipUtil.apply(start_pose);
-        }
-        LocalizationSubsystem.getInstance().resetPoseEstimator(start_pose);
+        LocalizationSubsystem.getInstance().resetPoseEstimatorAuto();
 
         // Reset fuel simulation
         hopper_fuel_count_ = 0;

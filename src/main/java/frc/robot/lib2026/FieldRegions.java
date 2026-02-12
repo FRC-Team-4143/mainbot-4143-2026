@@ -162,22 +162,25 @@ public class FieldRegions {
     public static ArrayList<PolygonRegion> HOLD_REGIONS =
             new ArrayList<>(List.of(HOLD_ZONE, OPP_HOLD_ZONE, OPP_ALLIANCE_HOLD_ZONE));
 
-    public static void flipRegions(boolean flip) {
-        if (flip) {
-            DEPOT_REGION = AllianceFlipUtil.apply(DEPOT_REGION);
-            ALLIANCE_ZONE = AllianceFlipUtil.apply(ALLIANCE_ZONE);
-            OPP_ALLIANCE_HOLD_ZONE = AllianceFlipUtil.apply(OPP_ALLIANCE_HOLD_ZONE);
-            OPP_ALLIANCE_ZONE = AllianceFlipUtil.apply(OPP_ALLIANCE_ZONE);
-            OPP_DEPOT_REGION = AllianceFlipUtil.apply(OPP_DEPOT_REGION);
-            OPP_HOLD_ZONE = AllianceFlipUtil.apply(OPP_HOLD_ZONE);
-            OPP_HUB_REGION = AllianceFlipUtil.apply(OPP_HUB_REGION);
-            OPP_TOWER_REGION = AllianceFlipUtil.apply(OPP_TOWER_REGION);
-            TOWER_REGION = AllianceFlipUtil.apply(TOWER_REGION);
-            HUB_REGION = AllianceFlipUtil.apply(HUB_REGION);
-            HOLD_ZONE = AllianceFlipUtil.apply(HOLD_ZONE);
-            NEUTRAL_ZONE = AllianceFlipUtil.apply(NEUTRAL_ZONE);
-            RIGHT_PASS_REGION = AllianceFlipUtil.apply(RIGHT_PASS_REGION);
-            LEFT_PASS_REGION = AllianceFlipUtil.apply(LEFT_PASS_REGION);
-        }
+    /**
+     * Flips the field regions based of FIELD_SYMMETRY type.
+     *
+     * @apiNote This does not keep track of Red/Blue
+     */
+    public static void flipRegions() {
+        DEPOT_REGION = AllianceFlipUtil.apply(DEPOT_REGION);
+        ALLIANCE_ZONE = AllianceFlipUtil.apply(ALLIANCE_ZONE);
+        OPP_ALLIANCE_HOLD_ZONE = AllianceFlipUtil.apply(OPP_ALLIANCE_HOLD_ZONE);
+        OPP_ALLIANCE_ZONE = AllianceFlipUtil.apply(OPP_ALLIANCE_ZONE);
+        OPP_DEPOT_REGION = AllianceFlipUtil.apply(OPP_DEPOT_REGION);
+        OPP_HOLD_ZONE = AllianceFlipUtil.apply(OPP_HOLD_ZONE);
+        OPP_HUB_REGION = AllianceFlipUtil.apply(OPP_HUB_REGION);
+        OPP_TOWER_REGION = AllianceFlipUtil.apply(OPP_TOWER_REGION);
+        TOWER_REGION = AllianceFlipUtil.apply(TOWER_REGION);
+        HUB_REGION = AllianceFlipUtil.apply(HUB_REGION);
+        HOLD_ZONE = AllianceFlipUtil.apply(HOLD_ZONE);
+        NEUTRAL_ZONE = AllianceFlipUtil.apply(NEUTRAL_ZONE);
+        RIGHT_PASS_REGION = AllianceFlipUtil.apply(RIGHT_PASS_REGION);
+        LEFT_PASS_REGION = AllianceFlipUtil.apply(LEFT_PASS_REGION);
     }
 }

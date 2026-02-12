@@ -18,6 +18,7 @@ import frc.robot.lib2026.FieldTargets;
 import frc.robot.lib2026.HubMonitor;
 import frc.robot.subsystems.hopper.HopperConstants.HopperStates;
 import frc.robot.subsystems.hopper.HopperSubsystem;
+import frc.robot.subsystems.localization.LocalizationSubsystem;
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterStates;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.swerve.SwerveConstants;
@@ -75,7 +76,8 @@ public class Robot extends TimedRobot {
                             alliance_ == Alliance.Blue
                                     ? SwerveConstants.OperatorPerspective.BLUE_ALLIANCE
                                     : SwerveConstants.OperatorPerspective.RED_ALLIANCE);
-            FieldRegions.flipRegions(true);
+            FieldRegions.flipRegions();
+            LocalizationSubsystem.getInstance().setTagFocus(alliance_);
             HubMonitor.seedActiveAlliance(HubMonitor.ActiveAlliance.INVALID);
         }
     }
