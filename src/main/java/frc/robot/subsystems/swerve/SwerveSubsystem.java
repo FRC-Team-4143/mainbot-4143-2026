@@ -230,6 +230,9 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
                         // switching between the two choreo states
                         if (system_state_ != SwerveStates.CHOREO_PATH
                                 && system_state_ != SwerveStates.CHOREO_PATH_ROTATION_LOCK) {
+                            choreo_x_controller_.reset();
+                            choreo_y_controller_.reset();
+                            choreo_theta_controller_.reset();
                             choreo_timer_.restart();
                             choreo_sample_to_apply_ =
                                     desired_choreo_traj_.sampleAt(
@@ -248,6 +251,9 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
                         // switching between the two choreo states
                         if (system_state_ != SwerveStates.CHOREO_PATH_ROTATION_LOCK
                                 && system_state_ != SwerveStates.CHOREO_PATH) {
+                            choreo_x_controller_.reset();
+                            choreo_y_controller_.reset();
+                            choreo_theta_controller_.reset();
                             choreo_timer_.restart();
                             choreo_sample_to_apply_ =
                                     desired_choreo_traj_.sampleAt(
@@ -396,6 +402,9 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
         if (system_state_ == SwerveStates.CHOREO_PATH
                 || system_state_ == SwerveStates.CHOREO_PATH_ROTATION_LOCK) {
             choreo_timer_.reset();
+            choreo_x_controller_.reset();
+            choreo_y_controller_.reset();
+            choreo_theta_controller_.reset();
         }
 
         // Log the trajectory poses for debugging

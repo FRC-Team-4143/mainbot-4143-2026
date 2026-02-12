@@ -37,6 +37,11 @@ public class GameStatesSubsystem extends MwSubsystem<GameStates, GameStatesConst
     // state machine transtions (incomplete)
     public void updateLogic(double timestamp) {
 
+        // GSM does nothing in auto mode
+        if (RobotState.isAutonomous()) {
+            return;
+        }
+
         // After high arc editing capabilities are added to MWLib, adjust the method in shooter
         // subsystem then add here.
 
@@ -72,12 +77,6 @@ public class GameStatesSubsystem extends MwSubsystem<GameStates, GameStatesConst
                 // pickup active to allow ball intake unless full
                 // climber inactive
                 break;
-            // case AUTO_CLIMB:
-            // shooter inactive
-            // hopper holding balls only
-            // pickup innactve
-            // climber actively climbing
-            // break;
             case TELEOP_CLIMB:
                 // shooter inactive
                 // hopper holding balls only
@@ -103,6 +102,11 @@ public class GameStatesSubsystem extends MwSubsystem<GameStates, GameStatesConst
             return;
         }
 
+        // Transition out of AUTO when teleop starts
+        if (system_state_ == GameStates.AUTO) {
+            system_state_ = GameStates.HOLD;
+        }
+
         Pose2d robotpose = LocalizationSubsystem.getInstance().getFieldPose();
         // transtions out of TELEOP_CLIMB, no transtions
         if (system_state_ == GameStates.TELEOP_CLIMB) {
@@ -120,14 +124,6 @@ public class GameStatesSubsystem extends MwSubsystem<GameStates, GameStatesConst
                             FieldTargets.Shooter.TURRET_ANGLE_TOLERANCE);
         } else if (system_state_ == GameStates.HOLD && (isPassZone(robotpose) || pass_overide_)) {
             system_state_ = GameStates.PASS;
-            // Set lenient tolerances for passing
-            ShooterSubsystem.getInstance()
-                    .setShootingTolerances(
-                            FieldTargets.Shooter.FLYWHEEL_PASS_SPEED_TOLERANCE,
-                            FieldTargets.Shooter.HOOD_PASS_POSITION_TOLERANCE,
-                            FieldTargets.Shooter.TURRET_PASS_ANGLE_TOLERANCE);
-            // } else if (system_state_ == GameStates.HOLD && auto_climb_ready_) {
-            //     system_state_ = GameStates.AUTO_CLIMB;
         } else if (system_state_ == GameStates.HOLD && operator_presses_climb_button_) {
             system_state_ = GameStates.TELEOP_CLIMB;
         } else {
@@ -135,14 +131,6 @@ public class GameStatesSubsystem extends MwSubsystem<GameStates, GameStatesConst
         // SCORE transistions
         if (system_state_ == GameStates.SCORE && (isPassZone(robotpose) || !goal_active_)) {
             system_state_ = GameStates.HOLD;
-            // Return to strict tolerances
-            ShooterSubsystem.getInstance()
-                    .setShootingTolerances(
-                            FieldTargets.Shooter.FLYWHEEL_SPEED_TOLERANCE,
-                            FieldTargets.Shooter.HOOD_POSITION_TOLERANCE,
-                            FieldTargets.Shooter.TURRET_ANGLE_TOLERANCE);
-            // } else if (system_state_ == GameStates.SCORE && auto_climb_ready_) {
-            //     system_state_ = GameStates.AUTO_CLIMB;
         } else if (system_state_ == GameStates.SCORE && operator_presses_climb_button_) {
             system_state_ = GameStates.TELEOP_CLIMB;
         } else {
@@ -158,11 +146,6 @@ public class GameStatesSubsystem extends MwSubsystem<GameStates, GameStatesConst
                             FieldTargets.Shooter.TURRET_ANGLE_TOLERANCE);
         } else {
         } // empty to not interfere with rest of state machine
-        // AUTO_CLIMB transitions
-        // if (system_state_ == GameStates.AUTO_CLIMB && RobotState.isTeleop()) {
-        //     system_state_ = GameStates.DOWN_CLIMB;
-        // } else {
-        // } // empty to not interfere with rest of state machine
         // DOWN_CLIMB transistions
         if (system_state_ == GameStates.DOWN_CLIMB && isDownClimbFinished()) {
             system_state_ = GameStates.HOLD;

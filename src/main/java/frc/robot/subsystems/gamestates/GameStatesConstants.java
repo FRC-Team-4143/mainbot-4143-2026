@@ -12,7 +12,6 @@ public class GameStatesConstants extends MwConstants {
         HOLD,
         SCORE,
         PASS,
-        // AUTO_CLIMB,
         TELEOP_CLIMB,
         DOWN_CLIMB,
         AUTO
