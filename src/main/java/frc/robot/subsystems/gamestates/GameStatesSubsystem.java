@@ -14,6 +14,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GameStatesSubsystem extends MwSubsystem<GameStates, GameStatesConstants> {
+    private static GameStatesSubsystem instance_ = null;
+
+    public static GameStatesSubsystem getInstance() {
+        if (instance_ == null) {
+            instance_ = new GameStatesSubsystem();
+        }
+        return instance_;
+    }
 
     // Variables, temporary
     Boolean goal_active_ = false;
@@ -22,7 +30,7 @@ public class GameStatesSubsystem extends MwSubsystem<GameStates, GameStatesConst
     boolean pass_overide_ = false;
     Boolean auto_climb_ready_ = false;
 
-    public GameStatesSubsystem() {
+    private GameStatesSubsystem() {
         super(GameStates.HOLD, new GameStatesConstants());
     }
 
@@ -89,7 +97,7 @@ public class GameStatesSubsystem extends MwSubsystem<GameStates, GameStatesConst
 
     public void handleStateTransition(GameStates wanted) {
 
-        if(RobotState.isAutonomous()){
+        if (RobotState.isAutonomous()) {
             system_state_ = GameStates.AUTO;
             return;
         }
@@ -108,6 +116,12 @@ public class GameStatesSubsystem extends MwSubsystem<GameStates, GameStatesConst
         // HOLD transitions
         if (system_state_ == GameStates.HOLD && inAllianceZone(robotpose) && goal_active_) {
             system_state_ = GameStates.SCORE;
+            // Set strict tolerances for scoring
+            ShooterSubsystem.getInstance()
+                    .setShootingTolerances(
+                            FieldTargets.Shooter.FLYWHEEL_SPEED_TOLERANCE,
+                            FieldTargets.Shooter.HOOD_POSITION_TOLERANCE,
+                            FieldTargets.Shooter.TURRET_ANGLE_TOLERANCE);
         } else if (system_state_ == GameStates.HOLD && (isPassZone(robotpose) || pass_overide_)) {
             system_state_ = GameStates.PASS;
         } else if (system_state_ == GameStates.HOLD && operator_presses_climb_button_) {
@@ -124,6 +138,12 @@ public class GameStatesSubsystem extends MwSubsystem<GameStates, GameStatesConst
         // PASS transistions
         if (system_state_ == GameStates.PASS && (inHoldZone(robotpose) || !pass_overide_)) {
             system_state_ = GameStates.HOLD;
+            // Return to strict tolerances when leaving PASS state
+            ShooterSubsystem.getInstance()
+                    .setShootingTolerances(
+                            FieldTargets.Shooter.FLYWHEEL_SPEED_TOLERANCE,
+                            FieldTargets.Shooter.HOOD_POSITION_TOLERANCE,
+                            FieldTargets.Shooter.TURRET_ANGLE_TOLERANCE);
         } else {
         } // empty to not interfere with rest of state machine
         // DOWN_CLIMB transistions

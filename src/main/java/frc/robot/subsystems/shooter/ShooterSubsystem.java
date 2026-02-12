@@ -13,6 +13,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
+import frc.robot.lib2026.FieldTargets;
 import frc.robot.subsystems.localization.LocalizationSubsystem;
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterStates;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
@@ -40,6 +41,12 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
     double launch_exit_angle_ = CONSTANTS.HOOD_MAX_ANGLE;
     Translation3d target_ = new Translation3d(0.0, 0.0, 0.0);
     TrajectorySol solution_;
+
+    // Adjustable shooting tolerances - initialized to strict defaults
+    private double flywheel_speed_tolerance_ = FieldTargets.Shooter.FLYWHEEL_SPEED_TOLERANCE;
+    private double hood_position_tolerance_ = FieldTargets.Shooter.HOOD_POSITION_TOLERANCE;
+    private double turret_angle_tolerance_ = FieldTargets.Shooter.TURRET_ANGLE_TOLERANCE;
+    private double rotation_angle_tolerance_ = FieldTargets.Shooter.ROTATION_ANGLE_TOLERANCE;
 
     public ShooterSubsystem() {
         super(ShooterStates.IDLE, new ShooterConstants());
@@ -257,9 +264,7 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
     private boolean isFlywheelAtSpeed() {
         boolean status =
                 MathUtil.isNear(
-                        flywheel_omega_,
-                        flywheel_.getCurrentVelocity(),
-                        CONSTANTS.FLYWHEEL_SPEED_TOLERANCE);
+                        flywheel_omega_, flywheel_.getCurrentVelocity(), flywheel_speed_tolerance_);
         DogLog.log(getSubsystemKey() + "ShooterIsReady/Flywheel", status);
         return status;
     }
@@ -272,9 +277,7 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
     private boolean isHoodAtPosition() {
         boolean status =
                 MathUtil.isNear(
-                        launch_exit_angle_,
-                        hood_.getCurrentPosition(),
-                        CONSTANTS.HOOD_POSITION_TOLERANCE);
+                        launch_exit_angle_, hood_.getCurrentPosition(), hood_position_tolerance_);
         DogLog.log(getSubsystemKey() + "ShooterIsReady/Hood", status);
         return status;
     }
@@ -289,11 +292,11 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
         if (CONSTANTS.TURRET_ENABLED) {
             status =
                     MathUtil.isNear(
-                            launch_heading_,
-                            turret_.getCurrentPosition(),
-                            CONSTANTS.TURRET_ANGLE_TOLERANCE);
+                            launch_heading_, turret_.getCurrentPosition(), turret_angle_tolerance_);
         } else {
-            status = SwerveSubsystem.getInstance().isAtDesiredRotation();
+            status =
+                    SwerveSubsystem.getInstance()
+                            .isAtDesiredRotation(Units.degreesToRadians(rotation_angle_tolerance_));
         }
         DogLog.log(getSubsystemKey() + "ShooterIsReady/Turret", status);
         return status;
@@ -357,5 +360,30 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
      */
     public void setHighArc(boolean highArc) {
         CONSTANTS.SOLVER.setHighArc(highArc);
+    }
+
+    /**
+     * Sets the shooting tolerances for determining when the shooter is ready. This allows external
+     * control of tolerance levels without the subsystem needing to know about game states or other
+     * subsystem behavior. Tolerances are used to determine when the shooter mechanisms are close
+     * enough to their target values to be considered "ready to shoot".
+     *
+     * @param flywheelSpeedTolerance the tolerance for the flywheel speed in rad/s
+     * @param hoodPositionTolerance the tolerance for the hood position in radians
+     * @param turretAngleTolerance the tolerance for the turret angle in radians (or rotation
+     *     tolerance in degrees if no turret)
+     */
+    public void setShootingTolerances(
+            double flywheelSpeedTolerance,
+            double hoodPositionTolerance,
+            double turretAngleTolerance) {
+        this.flywheel_speed_tolerance_ = flywheelSpeedTolerance;
+        this.hood_position_tolerance_ = hoodPositionTolerance;
+        if (CONSTANTS.TURRET_ENABLED) {
+            this.turret_angle_tolerance_ = turretAngleTolerance;
+        } else {
+            // When no turret, turretAngleTolerance is used as rotation tolerance in degrees
+            this.rotation_angle_tolerance_ = turretAngleTolerance;
+        }
     }
 }
