@@ -82,7 +82,7 @@ public class SimulationSubsystem extends MwSubsystem<SimulationStates, Simulatio
                         () ->
                                 hopper_fuel_count_ < CONSTANTS.HOPPER_CAPACITY
                                         && IntakeSubsystem.getInstance().getSystemState()
-                                                == IntakeStates.ROLLING,
+                                                == IntakeStates.INTAKE,
                         () -> hopper_fuel_count_++);
 
         // Start Fuel Simulation

@@ -50,10 +50,10 @@ public abstract class OI {
                         Commands.startEnd(
                                 () ->
                                         IntakeSubsystem.getInstance()
-                                                .setWantedState(IntakeStates.ROLLING),
+                                                .setWantedState(IntakeStates.INTAKE),
                                 () ->
                                         IntakeSubsystem.getInstance()
-                                                .setWantedState(IntakeStates.CLOSED)));
+                                                .setWantedState(IntakeStates.STORE)));
     }
 
     /**
