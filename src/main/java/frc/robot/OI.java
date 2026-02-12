@@ -109,10 +109,8 @@ public abstract class OI {
                                             .setWantedState(IntakeStates.MANUAL);
                                 },
                                 () -> {
-                                    IntakeSubsystem.getInstance()
-                                            .setWantedState(IntakeStates.IDLE);
+                                    IntakeSubsystem.getInstance().setWantedState(IntakeStates.IDLE);
                                 }));
-
     }
 
     /**

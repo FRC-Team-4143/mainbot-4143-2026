@@ -3,7 +3,6 @@ package frc.robot.subsystems.intake;
 import com.marswars.mechanisms.RollerMech;
 import com.marswars.subsystem.MwSubsystem;
 import com.marswars.subsystem.SubsystemIoBase;
-
 import dev.doglog.DogLog;
 import frc.robot.subsystems.intake.IntakeConstants.IntakeStates;
 import java.util.Arrays;
@@ -41,8 +40,14 @@ public class IntakeSubsystem extends MwSubsystem<IntakeStates, IntakeConstants> 
                         List.of(CONSTANTS.PIVOT_MOTOR_CONFIG),
                         CONSTANTS.PIVOT_GEAR_RATIO);
 
-        DogLog.tunable(getSubsystemKey() + "Manual/Pivot Position", manaul_pivot_position_, (val) -> manaul_pivot_position_ = val);
-        DogLog.tunable(getSubsystemKey() + "Manual/Roller Percent", manual_roller_percent_, (val) -> manual_roller_percent_ = val);
+        DogLog.tunable(
+                getSubsystemKey() + "Manual/Pivot Position",
+                manaul_pivot_position_,
+                (val) -> manaul_pivot_position_ = val);
+        DogLog.tunable(
+                getSubsystemKey() + "Manual/Roller Percent",
+                manual_roller_percent_,
+                (val) -> manual_roller_percent_ = val);
     }
 
     @Override
@@ -76,7 +81,6 @@ public class IntakeSubsystem extends MwSubsystem<IntakeStates, IntakeConstants> 
                 roller_.setTargetDutyCycle(0.0);
                 pivot_.setTargetDutyCycle(0.0);
                 break;
-
         }
     }
 
