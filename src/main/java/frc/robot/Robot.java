@@ -110,8 +110,8 @@ public class Robot extends TimedRobot {
     @Override
     public void testInit() {
         CommandScheduler.getInstance().cancelAll();
-        ShooterSubsystem.getInstance().setWantedState(ShooterStates.PROFILE);
-        HopperSubsystem.getInstance().setWantedState(HopperStates.PROFILE);
+        ShooterSubsystem.getInstance().setWantedState(ShooterStates.TUNING);
+        HopperSubsystem.getInstance().setWantedState(HopperStates.TUNING);
     }
 
     @Override

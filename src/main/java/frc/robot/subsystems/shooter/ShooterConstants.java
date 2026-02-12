@@ -26,7 +26,8 @@ public class ShooterConstants extends MwConstants {
         SHOOT,
         IDLE,
         TRACKING,
-        PROFILE
+        TUNING,
+        MANUAL
     }
 
     // =============================================================================
