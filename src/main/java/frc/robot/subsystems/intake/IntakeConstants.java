@@ -18,7 +18,10 @@ public class IntakeConstants extends MwConstants {
         STORE,
         DEPLOY,
         INTAKE,
-        OUTTAKE;
+        OUTTAKE,
+        IDLE,
+        TUNING,
+        MANUAL;
     }
 
     // =============================================================================

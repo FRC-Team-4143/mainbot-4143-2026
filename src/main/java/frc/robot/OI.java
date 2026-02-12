@@ -12,6 +12,8 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.subsystems.hopper.HopperConstants.HopperStates;
 import frc.robot.subsystems.hopper.HopperSubsystem;
+import frc.robot.subsystems.intake.IntakeConstants.IntakeStates;
+import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.localization.LocalizationSubsystem;
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterStates;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
@@ -96,6 +98,21 @@ public abstract class OI {
                                             .setWantedState(ShooterStates.IDLE);
                                     HopperSubsystem.getInstance().setWantedState(HopperStates.IDLE);
                                 }));
+
+        // Set Intake to MANUAL control
+        driver_controller_
+                .y()
+                .onTrue(
+                        Commands.startEnd(
+                                () -> {
+                                    IntakeSubsystem.getInstance()
+                                            .setWantedState(IntakeStates.MANUAL);
+                                },
+                                () -> {
+                                    IntakeSubsystem.getInstance()
+                                            .setWantedState(IntakeStates.IDLE);
+                                }));
+
     }
 
     /**

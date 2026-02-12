@@ -3,6 +3,8 @@ package frc.robot.subsystems.intake;
 import com.marswars.mechanisms.RollerMech;
 import com.marswars.subsystem.MwSubsystem;
 import com.marswars.subsystem.SubsystemIoBase;
+
+import dev.doglog.DogLog;
 import frc.robot.subsystems.intake.IntakeConstants.IntakeStates;
 import java.util.Arrays;
 import java.util.List;
@@ -20,6 +22,9 @@ public class IntakeSubsystem extends MwSubsystem<IntakeStates, IntakeConstants> 
     private RollerMech roller_;
     private RollerMech pivot_;
 
+    private double manaul_pivot_position_ = 0;
+    private double manual_roller_percent_ = 0;
+
     public IntakeSubsystem() {
         super(IntakeStates.STORE, new IntakeConstants());
         roller_ =
@@ -35,6 +40,9 @@ public class IntakeSubsystem extends MwSubsystem<IntakeStates, IntakeConstants> 
                         "Pivot",
                         List.of(CONSTANTS.PIVOT_MOTOR_CONFIG),
                         CONSTANTS.PIVOT_GEAR_RATIO);
+
+        DogLog.tunable(getSubsystemKey() + "Manual/Pivot Position", manaul_pivot_position_, (val) -> manaul_pivot_position_ = val);
+        DogLog.tunable(getSubsystemKey() + "Manual/Roller Percent", manual_roller_percent_, (val) -> manual_roller_percent_ = val);
     }
 
     @Override
@@ -56,6 +64,19 @@ public class IntakeSubsystem extends MwSubsystem<IntakeStates, IntakeConstants> 
                 roller_.setTargetDutyCycle(-0.5);
                 pivot_.setTargetPosition(0.5);
                 break;
+            case MANUAL:
+                roller_.setTargetDutyCycle(manual_roller_percent_);
+                pivot_.setTargetPosition(manaul_pivot_position_);
+                break;
+            case TUNING:
+                // No default behavior for tuning mode
+                break;
+            default:
+            case IDLE:
+                roller_.setTargetDutyCycle(0.0);
+                pivot_.setTargetDutyCycle(0.0);
+                break;
+
         }
     }
 
@@ -77,7 +98,7 @@ public class IntakeSubsystem extends MwSubsystem<IntakeStates, IntakeConstants> 
 
     @Override
     public void reset() {
-        system_state_ = IntakeStates.STORE;
+        system_state_ = IntakeStates.IDLE;
     }
 
     @Override
