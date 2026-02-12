@@ -9,13 +9,13 @@ import com.marswars.auto.AutoManager;
 import com.marswars.geometry.AllianceFlipUtil;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.autos.Left_Start_Neutral_Outpost_Climb;
 import frc.robot.lib2026.FieldConstants;
 import frc.robot.lib2026.FieldRegions;
 import frc.robot.lib2026.FieldTargets;
+import frc.robot.lib2026.HubMonitor;
 import frc.robot.subsystems.hopper.HopperConstants.HopperStates;
 import frc.robot.subsystems.hopper.HopperSubsystem;
 import frc.robot.subsystems.localization.LocalizationSubsystem;
@@ -23,7 +23,6 @@ import frc.robot.subsystems.shooter.ShooterConstants.ShooterStates;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.swerve.SwerveConstants;
 import frc.robot.subsystems.swerve.SwerveConstants.SwerveStates;
-import frc.robot.lib2026.HubMonitor;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 import java.util.Optional;
 
@@ -105,7 +104,7 @@ public class Robot extends TimedRobot {
     @Override
     public void teleopPeriodic() {
         // Attempt to update the first active alliance until it return valid
-        if(!HubMonitor.isFirstActiveAllianceValid()) HubMonitor.seedActiveAlliance();
+        if (!HubMonitor.isFirstActiveAllianceValid()) HubMonitor.seedActiveAlliance();
     }
 
     @Override

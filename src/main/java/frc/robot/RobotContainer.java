@@ -6,7 +6,12 @@ package frc.robot;
 
 import com.marswars.subsystem.SubsystemManager;
 import edu.wpi.first.wpilibj.RobotBase;
+import frc.robot.subsystems.climber.ClimberSubsystem;
+import frc.robot.subsystems.gamestates.GameStatesSubsystem;
+import frc.robot.subsystems.hopper.HopperSubsystem;
+import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.localization.LocalizationSubsystem;
+import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.simulation.SimulationSubsystem;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 

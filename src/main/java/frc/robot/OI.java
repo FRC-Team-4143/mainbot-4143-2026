@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.subsystems.intake.IntakeConstants.IntakeStates;
 import frc.robot.subsystems.intake.IntakeSubsystem;
+import frc.robot.subsystems.localization.LocalizationSubsystem;
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterStates;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.swerve.SwerveConstants.SwerveStates;
@@ -44,7 +45,8 @@ public abstract class OI {
                                     ShooterSubsystem.getInstance()
                                             .setWantedState(ShooterStates.SHOOT);
                                     SwerveSubsystem.getInstance()
-                                            .setWantedState(SwerveStates.ROTATION_LOCK);
+                                            .setWantedState(
+                                                    SwerveStates.FIELD_CENTRIC_ROTATION_LOCK);
                                 },
                                 () -> {
                                     ShooterSubsystem.getInstance()
