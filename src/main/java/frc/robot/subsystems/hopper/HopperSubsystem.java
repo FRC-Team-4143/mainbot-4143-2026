@@ -120,7 +120,7 @@ public class HopperSubsystem extends MwSubsystem<HopperStates, HopperConstants> 
 
     @Override
     public List<SubsystemIoBase> getIos() {
-        return Arrays.asList(feeder_, hopper_);
+        return Arrays.asList(hopper_);
     }
 
     @Override
