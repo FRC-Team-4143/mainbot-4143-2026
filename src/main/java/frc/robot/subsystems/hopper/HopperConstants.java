@@ -26,7 +26,8 @@ public class HopperConstants extends MwConstants {
 
     // Motor CAN IDs
     public final int HOPPER_MOTOR_ID = 20;
-    public final int FEED_MOTOR_ID = 21;
+    //public final int FEED_MOTOR_ID = 21;
+
 
     // =============================================================================
     // MECHANICAL CONSTANTS - HOPPER
@@ -58,7 +59,7 @@ public class HopperConstants extends MwConstants {
     // =============================================================================
 
     public final FxMotorConfig HOPPER_MOTOR_CONFIG = new FxMotorConfig();
-    public final FxMotorConfig FEED_MOTOR_CONFIG = new FxMotorConfig();
+    // public final FxMotorConfig FEED_MOTOR_CONFIG = new FxMotorConfig();
 
     // =============================================================================
     // CONSTRUCTOR - MOTOR CONFIGURATION INITIALIZATION
@@ -68,13 +69,13 @@ public class HopperConstants extends MwConstants {
         // Configure Hopper Motor
         HOPPER_MOTOR_CONFIG.can_id = HOPPER_MOTOR_ID;
         HOPPER_MOTOR_CONFIG.motor_type = FxMotorType.FALCON500;
-        HOPPER_MOTOR_CONFIG.canbus_name = "CANivore";
+        HOPPER_MOTOR_CONFIG.canbus_name = "rio";
         HOPPER_MOTOR_CONFIG.config = new TalonFXConfiguration();
 
         // Configure Feed Motor
-        FEED_MOTOR_CONFIG.can_id = FEED_MOTOR_ID;
-        FEED_MOTOR_CONFIG.motor_type = FxMotorType.X60;
-        FEED_MOTOR_CONFIG.canbus_name = "rio";
-        FEED_MOTOR_CONFIG.config = new TalonFXConfiguration();
+        // FEED_MOTOR_CONFIG.can_id = FEED_MOTOR_ID;
+        // FEED_MOTOR_CONFIG.motor_type = FxMotorType.X60;
+        // FEED_MOTOR_CONFIG.canbus_name = "rio";
+        // FEED_MOTOR_CONFIG.config = new TalonFXConfiguration();
     }
 }

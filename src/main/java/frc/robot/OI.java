@@ -39,7 +39,8 @@ public abstract class OI {
                 Commands.runOnce(LocalizationSubsystem.getInstance()::resetPoseEstimatorAuto)
                         .onlyIf(RobotBase::isSimulation)
                         .ignoringDisable(true));
-
+        SmartDashboard.putData(
+                "Zero Wheel Offsets", SwerveSubsystem.getInstance().setModuleOffsets().ignoringDisable(true));
         // =============================================================================
         // DRIVER CONTROLLER BINDINGS
         // =============================================================================

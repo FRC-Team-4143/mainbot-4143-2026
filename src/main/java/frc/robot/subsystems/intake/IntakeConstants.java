@@ -70,7 +70,7 @@ public class IntakeConstants extends MwConstants {
         // Configure Pivot Motor
         PIVOT_MOTOR_CONFIG.can_id = PIVOT_MOTOR_ID;
         PIVOT_MOTOR_CONFIG.motor_type = FxMotorType.X44;
-        PIVOT_MOTOR_CONFIG.canbus_name = "rio";
+        PIVOT_MOTOR_CONFIG.canbus_name = "CANivore";
         PIVOT_MOTOR_CONFIG.config = new TalonFXConfiguration();
         PIVOT_MOTOR_CONFIG.config.Slot0 = Slot0Configs.from(PIVOT_POSITION_SLOT_CONFIG);
         PIVOT_MOTOR_CONFIG.config.MotorOutput.Inverted =

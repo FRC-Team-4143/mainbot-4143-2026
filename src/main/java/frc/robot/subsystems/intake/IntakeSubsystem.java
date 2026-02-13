@@ -97,6 +97,8 @@ public class IntakeSubsystem extends MwSubsystem<IntakeStates, IntakeConstants> 
             system_state_ = IntakeStates.INTAKE;
         } else if ((system_state_ == IntakeStates.INTAKE) && (wantedState == IntakeStates.DEPLOY)) {
             system_state_ = IntakeStates.DEPLOY;
+        } else if ((system_state_ == IntakeStates.IDLE) && (wantedState == IntakeStates.TUNING)){
+            system_state_ = IntakeStates.TUNING;
         }
     }
 

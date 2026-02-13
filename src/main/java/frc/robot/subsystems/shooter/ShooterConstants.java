@@ -75,7 +75,7 @@ public class ShooterConstants extends MwConstants {
     // MECHANICAL CONSTANTS - HOOD
     // =============================================================================
 
-    public final boolean HOOD_INVERTED = true;
+    public final boolean HOOD_INVERTED = false;
     public final double HOOD_GEAR_RATIO =
             (5.0 * (372.0 / 40.0)); // motor rotations / output mechanism rotations
     // Min/max physical hood angles (radians). Configure to match the mechanical limits
