@@ -26,8 +26,7 @@ public class HopperConstants extends MwConstants {
 
     // Motor CAN IDs
     public final int HOPPER_MOTOR_ID = 20;
-    //public final int FEED_MOTOR_ID = 21;
-
+    // public final int FEED_MOTOR_ID = 21;
 
     // =============================================================================
     // MECHANICAL CONSTANTS - HOPPER
@@ -59,6 +58,7 @@ public class HopperConstants extends MwConstants {
     // =============================================================================
 
     public final FxMotorConfig HOPPER_MOTOR_CONFIG = new FxMotorConfig();
+
     // public final FxMotorConfig FEED_MOTOR_CONFIG = new FxMotorConfig();
 
     // =============================================================================
