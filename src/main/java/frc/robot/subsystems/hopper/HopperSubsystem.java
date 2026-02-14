@@ -28,17 +28,9 @@ public class HopperSubsystem extends MwSubsystem<HopperStates, HopperConstants> 
 
     // Manual control variables
     private double manual_hopper_percent_ = 0.0;
-    private double manual_feeder_percent_ = 0.0;
 
     public HopperSubsystem() {
         super(HopperStates.IDLE, new HopperConstants());
-        // feeder_ =
-        //         new RollerMech(
-        //                 getSubsystemKey(),
-        //                 "Feeder",
-        //                 List.of(CONSTANTS.FEED_MOTOR_CONFIG),
-        //                 CONSTANTS.FEED_GEAR_RATIO);
-
         hopper_ =
                 new RollerMech(
                         getSubsystemKey(),
@@ -50,10 +42,6 @@ public class HopperSubsystem extends MwSubsystem<HopperStates, HopperConstants> 
                 getSubsystemKey() + "Manual/Hopper Percent",
                 manual_hopper_percent_,
                 (val) -> manual_hopper_percent_ = val);
-        DogLog.tunable(
-                getSubsystemKey() + "Manual/Feeder Percent",
-                manual_feeder_percent_,
-                (val) -> manual_feeder_percent_ = val);
     }
 
     @Override
@@ -101,26 +89,21 @@ public class HopperSubsystem extends MwSubsystem<HopperStates, HopperConstants> 
         switch (system_state_) {
             case SHOOTING:
                 hopper_.setTargetDutyCycle(CONSTANTS.HOPPER_DUTY_CYCLE);
-                // feeder_.setTargetDutyCycle(CONSTANTS.FEED_DUTY_CYCLE);
                 break;
             case UNJAM_REVERSE:
                 hopper_.setTargetDutyCycle(-CONSTANTS.HOPPER_DUTY_CYCLE);
-                // feeder_.setTargetDutyCycle(-CONSTANTS.FEED_DUTY_CYCLE);
                 break;
             case UNJAM_FORWARD:
                 hopper_.setTargetDutyCycle(CONSTANTS.HOPPER_DUTY_CYCLE);
-                // feeder_.setTargetDutyCycle(CONSTANTS.FEED_DUTY_CYCLE);
                 break;
             case MANUAL:
                 hopper_.setTargetDutyCycle(manual_hopper_percent_);
-                // feeder_.setTargetDutyCycle(manual_feeder_percent_);
                 break;
             case TUNING:
                 break;
             default:
             case IDLE:
                 hopper_.setTargetDutyCycle(0.0);
-                // feeder_.setTargetDutyCycle(0.0);
                 break;
         }
     }

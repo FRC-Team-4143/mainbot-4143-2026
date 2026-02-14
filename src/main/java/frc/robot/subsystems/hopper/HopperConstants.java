@@ -75,11 +75,5 @@ public class HopperConstants extends MwConstants {
         HOPPER_MOTOR_CONFIG.canbus_name = "rio";
         HOPPER_MOTOR_CONFIG.config = new TalonFXConfiguration();
         HOPPER_MOTOR_CONFIG.config.Slot1 = HOPPER_VELOCITY_GAINS;
-
-        // Configure Feed Motor
-        // FEED_MOTOR_CONFIG.can_id = FEED_MOTOR_ID;
-        // FEED_MOTOR_CONFIG.motor_type = FxMotorType.X60;
-        // FEED_MOTOR_CONFIG.canbus_name = "rio";
-        // FEED_MOTOR_CONFIG.config = new TalonFXConfiguration();
     }
 }

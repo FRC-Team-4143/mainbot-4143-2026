@@ -104,32 +104,6 @@ public class IntakeSubsystem extends MwSubsystem<IntakeStates, IntakeConstants> 
 
     @Override
     protected void handleStateTransition(IntakeStates wantedState) {
-        // Handle MANUAL state transitions
-        /*
-        if (wantedState == IntakeStates.MANUAL) {
-            system_state_ = IntakeStates.MANUAL;
-        } else if (system_state_ == IntakeStates.MANUAL && wantedState != IntakeStates.MANUAL) {
-            system_state_ = wantedState;
-        } else if ((system_state_ == IntakeStates.STORE) && (wantedState == IntakeStates.INTAKE)) {
-            system_state_ = IntakeStates.DEPLOYING;
-        } else if ((system_state_ == IntakeStates.INTAKE) && (wantedState == IntakeStates.STORE)) {
-            system_state_ = IntakeStates.STORE;
-        } else if ((system_state_ == IntakeStates.STORE) && (wantedState == IntakeStates.DEPLOYED)) {
-            system_state_ = IntakeStates.DEPLOYING;
-        } else if ((system_state_ == IntakeStates.DEPLOYED) && (wantedState == IntakeStates.STORE)) {
-            system_state_ = IntakeStates.STORE;
-        } else if ((system_state_ == IntakeStates.DEPLOYED) && (wantedState == IntakeStates.INTAKE)) {
-            system_state_ = IntakeStates.INTAKE;
-        } else if ((system_state_ == IntakeStates.INTAKE) && (wantedState == IntakeStates.DEPLOYED)) {
-            system_state_ = IntakeStates.DEPLOYED;
-        } else if ((system_state_ == IntakeStates.IDLE) && (wantedState == IntakeStates.TUNING)) {
-            system_state_ = IntakeStates.TUNING;
-        } else if ((system_state_ == IntakeStates.INTAKE) && (wantedState == IntakeStates.OUTTAKE)) {
-            system_state_ = IntakeStates.OUTTAKE;
-        } else if ((system_state_ == IntakeStates.OUTTAKE) && (wantedState == IntakeStates.INTAKE)) {
-            system_state_ = IntakeStates.INTAKE;
-        }
-        */
         if (system_state_ == IntakeStates.STORE && wantedState == IntakeStates.INTAKE) {
             system_state_ = IntakeStates.DEPLOYING;
         }
