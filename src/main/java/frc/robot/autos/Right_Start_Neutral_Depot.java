@@ -1,7 +1,6 @@
 package frc.robot.autos;
 
 import com.marswars.auto.Auto;
-
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.subsystems.swerve.SwerveConstants.SwerveStates;
@@ -19,27 +18,27 @@ public class Right_Start_Neutral_Depot extends Auto {
         // Add commands here to execute during the auto
         // (Implementation of commands would go here)
         addCommands(
-
                 SwerveSubsystem.getInstance()
                         .setDesiredChoreoTrajectoryCommand(
-                                getTrajectory(ChoreoTraj.RightStartNeutralDepot1
-                                        .name())),
-
+                                getTrajectory(ChoreoTraj.RightStartNeutralDepot1.name())),
                 Commands.startEnd(
-                        () -> SwerveSubsystem.getInstance()
-                                .setWantedState(SwerveStates.CHOREO_PATH),
-                        () -> SwerveSubsystem.getInstance()
-                                .setWantedState(SwerveStates.FIELD_CENTRIC))
+                                () ->
+                                        SwerveSubsystem.getInstance()
+                                                .setWantedState(SwerveStates.CHOREO_PATH),
+                                () ->
+                                        SwerveSubsystem.getInstance()
+                                                .setWantedState(SwerveStates.FIELD_CENTRIC))
                         .until(SwerveSubsystem.getInstance()::isAtChoreoSetpoint),
                 SwerveSubsystem.getInstance()
                         .setDesiredChoreoTrajectoryCommand(
-                                getTrajectory(ChoreoTraj.RightStartNeutralDepot2
-                                        .name())),
+                                getTrajectory(ChoreoTraj.RightStartNeutralDepot2.name())),
                 Commands.startEnd(
-                        () -> SwerveSubsystem.getInstance()
-                                .setWantedState(SwerveStates.CHOREO_PATH),
-                        () -> SwerveSubsystem.getInstance()
-                                .setWantedState(SwerveStates.FIELD_CENTRIC))
+                                () ->
+                                        SwerveSubsystem.getInstance()
+                                                .setWantedState(SwerveStates.CHOREO_PATH),
+                                () ->
+                                        SwerveSubsystem.getInstance()
+                                                .setWantedState(SwerveStates.FIELD_CENTRIC))
                         .until(SwerveSubsystem.getInstance()::isAtChoreoSetpoint),
                 new WaitCommand(3),
                 // Move to the climb position
@@ -47,10 +46,12 @@ public class Right_Start_Neutral_Depot extends Auto {
                         .setDesiredChoreoTrajectoryCommand(
                                 getTrajectory(ChoreoTraj.DepotClimb.name())),
                 Commands.startEnd(
-                        () -> SwerveSubsystem.getInstance()
-                                .setWantedState(SwerveStates.CHOREO_PATH),
-                        () -> SwerveSubsystem.getInstance()
-                                .setWantedState(SwerveStates.FIELD_CENTRIC))
+                                () ->
+                                        SwerveSubsystem.getInstance()
+                                                .setWantedState(SwerveStates.CHOREO_PATH),
+                                () ->
+                                        SwerveSubsystem.getInstance()
+                                                .setWantedState(SwerveStates.FIELD_CENTRIC))
                         .until(SwerveSubsystem.getInstance()::isAtChoreoSetpoint));
     }
 }
