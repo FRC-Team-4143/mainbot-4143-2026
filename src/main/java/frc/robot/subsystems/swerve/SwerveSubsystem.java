@@ -674,7 +674,7 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
 
         // Calculate the x and y magnitudes based on the POV angle
         double x_magnitude = pov.get().getCos();
-        double y_magnitude = pov.get().getSin();
+        double y_magnitude = -pov.get().getSin(); // Negate because WPILib Y+ is left
         double angular_magnitude =
                 -MathUtil.applyDeadband(
                         OI.getDriverJoystickRightX(), CONSTANTS.CONTROLLER_DEADBAND);
