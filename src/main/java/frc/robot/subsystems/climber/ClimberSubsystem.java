@@ -1,11 +1,11 @@
-package frc.robot.subsystems.Climber;
+package frc.robot.subsystems.climber;
 
 import com.marswars.mechanisms.ArmMech;
 import com.marswars.mechanisms.RollerMech;
 import com.marswars.subsystem.MwSubsystem;
 import com.marswars.subsystem.SubsystemIoBase;
 import edu.wpi.first.math.MathUtil;
-import frc.robot.subsystems.Climber.ClimberConstants.ClimberStates;
+import frc.robot.subsystems.climber.ClimberConstants.ClimberStates;
 import java.util.Arrays;
 import java.util.List;
 
@@ -18,8 +18,6 @@ public class ClimberSubsystem extends MwSubsystem<ClimberStates, ClimberConstant
         }
         return instance_;
     }
-
-    private boolean climber_deploy = false;
 
     private RollerMech Extender_;
     private ArmMech Arm_;

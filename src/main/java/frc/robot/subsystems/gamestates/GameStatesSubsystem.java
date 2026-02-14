@@ -5,8 +5,7 @@ import com.marswars.subsystem.SubsystemIoBase;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.RobotState;
 import frc.robot.lib2026.FieldRegions;
-import frc.robot.subsystems.climber.ClimberConstants.ClimberStates;
-import frc.robot.subsystems.climber.ClimberSubsystem;
+import frc.robot.lib2026.FieldTargets;
 import frc.robot.subsystems.gamestates.GameStatesConstants.GameStates;
 import frc.robot.subsystems.hopper.HopperConstants.HopperStates;
 import frc.robot.subsystems.hopper.HopperSubsystem;
@@ -35,12 +34,34 @@ public class GameStatesSubsystem extends MwSubsystem<GameStates, GameStatesConst
     boolean pass_overide_ = false;
     Boolean auto_climb_ready_ = false;
 
-    public GameStatesSubsystem() {
+    private GameStatesSubsystem() {
         super(GameStates.HOLD, new GameStatesConstants());
     }
 
     // state machine transtions (incomplete)
     public void updateLogic(double timestamp) {
+
+        // GSM does nothing in auto mode
+        if (RobotState.isAutonomous()) {
+            return;
+        }
+
+        // After high arc editing capabilities are added to MWLib, adjust the method in shooter
+        // subsystem then add here.
+
+        if (FieldRegions.LEFT_PASS_REGION.contains(
+                LocalizationSubsystem.getInstance().getFieldPose())) {
+            ShooterSubsystem.getInstance().setTarget(FieldTargets.Shooter.LEFT_PASS);
+        } else if (FieldRegions.RIGHT_PASS_REGION.contains(
+                LocalizationSubsystem.getInstance().getFieldPose())) {
+            ShooterSubsystem.getInstance().setTarget(FieldTargets.Shooter.RIGHT_PASS);
+        } else if (FieldRegions.ALLIANCE_ZONE.contains(
+                LocalizationSubsystem.getInstance().getFieldPose())) {
+            ShooterSubsystem.getInstance().setTarget(FieldTargets.Shooter.HUB);
+        } else if (FieldRegions.HOLD_REGIONS.contains(
+                LocalizationSubsystem.getInstance().getFieldPose())) {
+            ShooterSubsystem.getInstance().setWantedState(ShooterStates.AIMING);
+        }
         switch (system_state_) {
             case HOLD:
                 ShooterSubsystem.getInstance().setWantedState(ShooterStates.IDLE);
@@ -60,12 +81,6 @@ public class GameStatesSubsystem extends MwSubsystem<GameStates, GameStatesConst
                 HopperSubsystem.getInstance().setWantedState(HopperStates.SHOOTING);
                 ClimberSubsystem.getInstance().setWantedState(ClimberStates.STOWED);
                 break;
-            case AUTO_CLIMB:
-                ShooterSubsystem.getInstance().setWantedState(ShooterStates.IDLE);
-                HopperSubsystem.getInstance().setWantedState(HopperStates.IDLE);
-                IntakeSubsystem.getInstance().setWantedState(IntakeStates.CLOSED);
-                ClimberSubsystem.getInstance().setWantedState(ClimberStates.L1_CLIMB);
-                break;
             case TELEOP_CLIMB:
                 ShooterSubsystem.getInstance().setWantedState(ShooterStates.IDLE);
                 HopperSubsystem.getInstance().setWantedState(HopperStates.IDLE);
@@ -78,11 +93,25 @@ public class GameStatesSubsystem extends MwSubsystem<GameStates, GameStatesConst
                 IntakeSubsystem.getInstance().setWantedState(IntakeStates.CLOSED);
                 ClimberSubsystem.getInstance().setWantedState(ClimberStates.L1_DOWN);
                 break;
+            case AUTO:
+                // GSM does nothing in auto mode
+                break;
         }
     }
 
     @Override
     public void handleStateTransition(GameStates wanted) {
+
+        if (RobotState.isAutonomous()) {
+            system_state_ = GameStates.AUTO;
+            return;
+        }
+
+        // Transition out of AUTO when teleop starts
+        if (system_state_ == GameStates.AUTO) {
+            system_state_ = GameStates.HOLD;
+        }
+
         Pose2d robotpose = LocalizationSubsystem.getInstance().getFieldPose();
         // transtions out of TELEOP_CLIMB, no transtions
         if (system_state_ == GameStates.TELEOP_CLIMB) {
@@ -99,8 +128,14 @@ public class GameStatesSubsystem extends MwSubsystem<GameStates, GameStatesConst
                 && !inHoldZone(robotpose)) {
             system_state_ = GameStates.PASS;
             System.out.println("hold to pass");
-        } else if (system_state_ == GameStates.HOLD && auto_climb_ready_) {
-            system_state_ = GameStates.AUTO_CLIMB;
+            // Set strict tolerances for scoring
+            ShooterSubsystem.getInstance()
+                    .setShootingTolerances(
+                            FieldTargets.Shooter.FLYWHEEL_SPEED_TOLERANCE,
+                            FieldTargets.Shooter.HOOD_POSITION_TOLERANCE,
+                            FieldTargets.Shooter.TURRET_ANGLE_TOLERANCE);
+        } else if (system_state_ == GameStates.HOLD && (isPassZone(robotpose) || pass_overide_)) {
+            system_state_ = GameStates.PASS;
         } else if (system_state_ == GameStates.HOLD && operator_presses_climb_button_) {
             system_state_ = GameStates.TELEOP_CLIMB;
         } else {
@@ -108,9 +143,6 @@ public class GameStatesSubsystem extends MwSubsystem<GameStates, GameStatesConst
         // SCORE transistions
         if (system_state_ == GameStates.SCORE && (isPassZone(robotpose) || !goal_active_)) {
             system_state_ = GameStates.HOLD;
-            System.out.println("score to hold");
-        } else if (system_state_ == GameStates.SCORE && auto_climb_ready_) {
-            system_state_ = GameStates.AUTO_CLIMB;
         } else if (system_state_ == GameStates.SCORE && operator_presses_climb_button_) {
             system_state_ = GameStates.TELEOP_CLIMB;
         } else {
@@ -119,21 +151,12 @@ public class GameStatesSubsystem extends MwSubsystem<GameStates, GameStatesConst
         if (system_state_ == GameStates.PASS
                 && (inHoldZone(robotpose) || inAllianceZone(robotpose) || pass_overide_)) {
             system_state_ = GameStates.HOLD;
-            System.out.println("pass to hold");
-            // if (system_state_ == GameStates.PASS && inHoldZone(robotpose)) {
-            //    system_state_ = GameStates.HOLD;
-            //    System.out.println("pass to hold, inHoldZone");
-            // } else if (system_state_ == GameStates.PASS && inAllianceZone(robotpose)) {
-            //    system_state_ = GameStates.HOLD;
-            //    System.out.println("pass to hold, inAllianceZone");
-            // } else if (system_state_ == GameStates.PASS && pass_overide_) {
-            //    system_state_ = GameStates.HOLD;
-            //    System.out.println("pass to hold, pass_overide_");
-        } else {
-        } // empty to not interfere with rest of state machine
-        // AUTO_CLIMB transitions
-        if (system_state_ == GameStates.AUTO_CLIMB && RobotState.isTeleop()) {
-            system_state_ = GameStates.DOWN_CLIMB;
+            // Return to strict tolerances when leaving PASS state
+            ShooterSubsystem.getInstance()
+                    .setShootingTolerances(
+                            FieldTargets.Shooter.FLYWHEEL_SPEED_TOLERANCE,
+                            FieldTargets.Shooter.HOOD_POSITION_TOLERANCE,
+                            FieldTargets.Shooter.TURRET_ANGLE_TOLERANCE);
         } else {
         } // empty to not interfere with rest of state machine
         // DOWN_CLIMB transistions

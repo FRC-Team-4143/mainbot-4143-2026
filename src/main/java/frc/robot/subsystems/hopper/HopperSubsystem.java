@@ -26,6 +26,10 @@ public class HopperSubsystem extends MwSubsystem<HopperStates, HopperConstants> 
     private Debouncer debouncer_ =
             new Debouncer(CONSTANTS.DEBOUNCE_TIME, Debouncer.DebounceType.kBoth);
 
+    // Manual control variables
+    private double manual_hopper_percent_ = 0.0;
+    private double manual_feeder_percent_ = 0.0;
+
     public HopperSubsystem() {
         super(HopperStates.IDLE, new HopperConstants());
         feeder_ =
@@ -41,6 +45,15 @@ public class HopperSubsystem extends MwSubsystem<HopperStates, HopperConstants> 
                         "Hopper",
                         List.of(CONSTANTS.HOPPER_MOTOR_CONFIG),
                         CONSTANTS.HOPPER_GEAR_RATIO);
+
+        DogLog.tunable(
+                getSubsystemKey() + "Manual/Hopper Percent",
+                manual_hopper_percent_,
+                (val) -> manual_hopper_percent_ = val);
+        DogLog.tunable(
+                getSubsystemKey() + "Manual/Feeder Percent",
+                manual_feeder_percent_,
+                (val) -> manual_feeder_percent_ = val);
     }
 
     @Override
@@ -80,10 +93,6 @@ public class HopperSubsystem extends MwSubsystem<HopperStates, HopperConstants> 
     @Override
     public void updateLogic(double timestamp) {
         switch (system_state_) {
-            case IDLE:
-                hopper_.setTargetDutyCycle(0.0);
-                feeder_.setTargetDutyCycle(0.0);
-                break;
             case SHOOTING:
                 hopper_.setTargetDutyCycle(CONSTANTS.HOPPER_DUTY_CYCLE);
                 feeder_.setTargetDutyCycle(CONSTANTS.FEED_DUTY_CYCLE);
@@ -96,7 +105,16 @@ public class HopperSubsystem extends MwSubsystem<HopperStates, HopperConstants> 
                 hopper_.setTargetDutyCycle(CONSTANTS.HOPPER_DUTY_CYCLE);
                 feeder_.setTargetDutyCycle(CONSTANTS.FEED_DUTY_CYCLE);
                 break;
-            case PROFILE:
+            case MANUAL:
+                hopper_.setTargetDutyCycle(manual_hopper_percent_);
+                feeder_.setTargetDutyCycle(manual_feeder_percent_);
+                break;
+            case TUNING:
+                break;
+            default:
+            case IDLE:
+                hopper_.setTargetDutyCycle(0.0);
+                feeder_.setTargetDutyCycle(0.0);
                 break;
         }
     }
@@ -107,20 +125,19 @@ public class HopperSubsystem extends MwSubsystem<HopperStates, HopperConstants> 
      * @return
      */
     public boolean isJammed() {
-
         boolean jamCondition =
                 Math.abs(hopper_.getLeaderCurrent()) > CONSTANTS.HOPPER_DANGER_CURRENT;
         return debouncer_.calculate(jamCondition);
     }
 
-    /** appies turqu to simulate a jam */
+    /** Applies load torque to simulate a jam */
     public void fakeJam() {
         hopper_.applyLoadTorque(50000);
     }
 
     @Override
     public List<SubsystemIoBase> getIos() {
-        return Arrays.asList(feeder_, hopper_);
+        return Arrays.asList(hopper_);
     }
 
     @Override

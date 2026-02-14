@@ -1,9 +1,8 @@
 package frc.robot.subsystems.simulation;
 
-import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.Radians;
 
-import com.marswars.auto.AutoManager;
-import com.marswars.geometry.AllianceFlipUtil;
 import com.marswars.proxy_server.ProxyServerThread;
 import com.marswars.subsystem.MwSubsystem;
 import com.marswars.subsystem.SubsystemIoBase;
@@ -13,21 +12,18 @@ import dev.doglog.DogLog;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
-import frc.robot.subsystems.localization.LocalizationConstants.LocalizationStates;
+import frc.robot.lib2026.FuelSim;
+import frc.robot.subsystems.intake.IntakeConstants.IntakeStates;
+import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.localization.LocalizationSubsystem;
+import frc.robot.subsystems.shooter.ShooterConstants.ShooterStates;
+import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.simulation.SimulationConstants.SimulationStates;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 import java.util.Random;
-import org.ironmaple.simulation.IntakeSimulation;
-import org.ironmaple.simulation.SimulatedArena;
-import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
-import org.ironmaple.simulation.seasonspecific.rebuilt2026.Arena2026Rebuilt;
 
 public class SimulationSubsystem extends MwSubsystem<SimulationStates, SimulationConstants> {
     private static SimulationSubsystem instance_ = null;
@@ -40,9 +36,9 @@ public class SimulationSubsystem extends MwSubsystem<SimulationStates, Simulatio
     }
 
     private MwVisionSim vision_sim_;
-    private SwerveDriveSimulation swerve_drive_sim_;
-    private IntakeSimulation intake_sim_;
+    private int hopper_fuel_count_ = 0;
     private final Random noise_generator_ = new Random();
+    private double last_shot_timestamp_ = 0.0;
 
     public SimulationSubsystem() {
         super(SimulationStates.ACTIVE, new SimulationConstants());
@@ -52,60 +48,58 @@ public class SimulationSubsystem extends MwSubsystem<SimulationStates, Simulatio
                     ProxyServerThread.getInstance()
                             .initializeVisionSimulation(
                                     LocalizationSubsystem.getInstance().getAprilTagLayout());
-            vision_sim_.addDefaultCameras();
-            LocalizationSubsystem.getInstance().setWantedState(LocalizationStates.VISION_SIM);
+            vision_sim_.addCamera("Front-Camera", CONSTANTS.FRONT_CAMERA_TRANSFORM);
+            vision_sim_.addCamera("Left-Camera", CONSTANTS.LEFT_CAMERA_TRANSFORM);
+            vision_sim_.addCamera("Right-Camera", CONSTANTS.RIGHT_CAMERA_TRANSFORM);
+            LocalizationSubsystem.getInstance().enableSwerveMeasurementNoise();
         }
 
-        // Initialize the swerve drive simulation
-        SimulatedArena.overrideInstance(new Arena2026Rebuilt(false));
-        swerve_drive_sim_ =
-                new SwerveDriveSimulation(
-                        CONSTANTS.SWERVE_DRIVE_SIM_CONFIG,
-                        LocalizationSubsystem.getInstance().getFieldPose());
-        intake_sim_ =
-                IntakeSimulation.OverTheBumperIntake(
-                        "Fuel",
-                        swerve_drive_sim_,
-                        Meters.of(CONSTANTS.INTAKE_WIDTH),
-                        Meters.of(CONSTANTS.INTAKE_LENGTH),
-                        CONSTANTS.INTAKE_SIDE,
-                        CONSTANTS.HOPPER_CAPACITY);
-        SimulatedArena.getInstance().addDriveTrainSimulation(swerve_drive_sim_);
+        // Setup Fuel Simulation
+        FuelSim.getInstance()
+                .registerRobot(
+                        CONSTANTS.BASE_WIDTH,
+                        CONSTANTS.BASE_LENGTH,
+                        CONSTANTS.BUMPER_HEIGHT,
+                        (CONSTANTS.SIM_VISION_ENABLED)
+                                ? LocalizationSubsystem.getInstance()::getSmoothPose
+                                : LocalizationSubsystem.getInstance()::getFieldPose,
+                        LocalizationSubsystem.getInstance()::getChassisSpeedsFieldRelative);
+        FuelSim.getInstance().enableAirResistance();
+
+        // Setup Intake Similation
+        FuelSim.getInstance()
+                .registerIntake(
+                        -CONSTANTS.BASE_LENGTH / 2.0 - CONSTANTS.INTAKE_MAX_EXTENSION,
+                        -CONSTANTS.BASE_LENGTH / 2.0,
+                        -CONSTANTS.BASE_WIDTH / 2.0,
+                        CONSTANTS.BASE_WIDTH / 2.0,
+                        () ->
+                                hopper_fuel_count_ < CONSTANTS.HOPPER_CAPACITY
+                                        && IntakeSubsystem.getInstance().getSystemState()
+                                                == IntakeStates.INTAKE,
+                        () -> hopper_fuel_count_++);
+
+        // Start Fuel Simulation
+        if (CONSTANTS.SIM_FUEL_ENABLED) FuelSim.getInstance().start();
 
         // Setup autonomous reset
         RobotModeTriggers.autonomous().onTrue(Commands.runOnce(this::resetForAuto));
+        resetForAuto();
     }
-
-    // @Override
-    // public void handleStateTransition(SimulationStates wanted) {
-    // }
 
     @Override
     public void updateLogic(double timestamp) {
-        // Always update the vision simulation if active
-        if (vision_sim_ != null) {
+        // Vision Simulation
+        if (CONSTANTS.SIM_VISION_ENABLED) {
             Pose2d robot_pose = LocalizationSubsystem.getInstance().getSmoothPose();
             ProxyServerThread.getInstance().updateVisionSimulation(robot_pose);
-            swerve_drive_sim_.setSimulationWorldPose(robot_pose);
-        } else {
-            swerve_drive_sim_.setSimulationWorldPose(
-                    LocalizationSubsystem.getInstance().getFieldPose());
         }
 
-        // Update intake simulation
-        intake_sim_.startIntake();
-
-        // Always update the swerve drive simulation
-        SimulatedArena.getInstance().simulationPeriodic();
-
-        // Log MapleSim related object
-        DogLog.log(
-                getSubsystemKey() + "MapleSim/RobotPose",
-                swerve_drive_sim_.getSimulatedDriveTrainPose());
-        DogLog.log(
-                getSubsystemKey() + "MapleSim/Fuel",
-                SimulatedArena.getInstance().getGamePiecesArrayByType("Fuel"));
-        DogLog.log(getSubsystemKey() + "MapleSim/Hopper Count", intake_sim_.getGamePiecesAmount());
+        // FuelSim
+        launchFuel(timestamp);
+        FuelSim.getInstance().updateSim();
+        DogLog.log(getSubsystemKey() + "FuelSim/Fuel", FuelSim.getInstance().getLoggableFuel());
+        DogLog.log(getSubsystemKey() + "FuelSim/HopperCount", hopper_fuel_count_);
     }
 
     @Override
@@ -119,18 +113,45 @@ public class SimulationSubsystem extends MwSubsystem<SimulationStates, Simulatio
         system_state_ = SimulationStates.ACTIVE;
     }
 
+    /** Launches a fuel from the shooter in the simulation. */
+    @SuppressWarnings("unused")
+    public void launchFuel(double timestamp) {
+        if (ShooterSubsystem.getInstance().getSystemState() == ShooterStates.SHOOT
+                && hopper_fuel_count_ > 0
+                && CONSTANTS.SIM_FUEL_ENABLED) {
+            if (timestamp - last_shot_timestamp_ >= CONSTANTS.SECONDS_PER_SHOT) {
+                FuelSim.getInstance()
+                        .launchFuel(
+                                MetersPerSecond.of(
+                                        ShooterSubsystem.getInstance().getLaunchVelocity()),
+                                Radians.of(ShooterSubsystem.getInstance().getLaunchAngle()),
+                                Radians.of(
+                                        LocalizationSubsystem.getInstance()
+                                                .getFieldPose()
+                                                .getRotation()
+                                                .getRadians()),
+                                CONSTANTS.SHOOTER_LAUNCH_OFFSET);
+                ShooterSubsystem.getInstance()
+                        .applyLoadFromBall(
+                                CONSTANTS.FUEL_MASS_KG
+                                        * ShooterSubsystem.getInstance().getLaunchVelocity()
+                                        * CONSTANTS.FLYWHEEL_RADIUS_M
+                                        / CONSTANTS.CONTACT_TIME_SEC);
+                hopper_fuel_count_--;
+                last_shot_timestamp_ = timestamp;
+            }
+        }
+    }
+
     /** Resets the simulation for autonomous mode. */
     public void resetForAuto() {
-        SimulatedArena.getInstance().clearGamePieces();
-        SimulatedArena.getInstance().resetFieldForAuto();
-        intake_sim_.setGamePiecesCount(0);
+        // Move robot to starting pose
+        LocalizationSubsystem.getInstance().resetPoseEstimatorAuto();
 
-        Pose2d start_pose = AutoManager.getInstance().getSelectedAuto().getStartPose();
-        Optional<Alliance> alliance = DriverStation.getAlliance();
-        if (alliance.isPresent() && alliance.get() == Alliance.Red) {
-            start_pose = AllianceFlipUtil.apply(start_pose);
-        }
-        LocalizationSubsystem.getInstance().resetPoseEstimator(start_pose);
+        // Reset fuel simulation
+        hopper_fuel_count_ = 0;
+        FuelSim.getInstance().clearFuel();
+        FuelSim.getInstance().spawnStartingFuel();
     }
 
     /**

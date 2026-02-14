@@ -16,7 +16,8 @@ public class HopperConstants extends MwConstants {
         SHOOTING,
         UNJAM_REVERSE,
         UNJAM_FORWARD,
-        PROFILE
+        TUNING,
+        MANUAL
     }
 
     // =============================================================================

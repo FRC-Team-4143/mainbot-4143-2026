@@ -13,8 +13,12 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.autos.Left_Start_Neutral_Outpost_Climb;
 import frc.robot.lib2026.FieldConstants;
+import frc.robot.lib2026.FieldRegions;
+import frc.robot.lib2026.FieldTargets;
+import frc.robot.lib2026.HubMonitor;
 import frc.robot.subsystems.hopper.HopperConstants.HopperStates;
 import frc.robot.subsystems.hopper.HopperSubsystem;
+import frc.robot.subsystems.localization.LocalizationSubsystem;
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterStates;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.swerve.SwerveConstants;
@@ -41,6 +45,9 @@ public class Robot extends TimedRobot {
                 .registerAutos(
                         // Add your auto routines here as you create them
                         new Left_Start_Neutral_Outpost_Climb());
+
+        // Set the default target for the shooter to be the hub
+        ShooterSubsystem.getInstance().setTarget(FieldTargets.Shooter.HUB);
     }
 
     @Override
@@ -53,15 +60,8 @@ public class Robot extends TimedRobot {
         // run the main robot loop for each subsystem
         robot_container_.doControlLoop();
 
-        // Only allow changing alliance perspective when not connected to FMS (at home practice
-        // field)
-        if (!DriverStation.isFMSAttached() && hasAllianceChanged()) {
-            SwerveSubsystem.getInstance()
-                    .setOperatorForwardDirection(
-                            alliance_ == Alliance.Blue
-                                    ? SwerveConstants.OperatorPerspective.BLUE_ALLIANCE
-                                    : SwerveConstants.OperatorPerspective.RED_ALLIANCE);
-        }
+        // Update the hub active status
+        HubMonitor.isHubActive(DriverStation.getMatchTime());
     }
 
     @Override
@@ -76,6 +76,9 @@ public class Robot extends TimedRobot {
                             alliance_ == Alliance.Blue
                                     ? SwerveConstants.OperatorPerspective.BLUE_ALLIANCE
                                     : SwerveConstants.OperatorPerspective.RED_ALLIANCE);
+            FieldRegions.flipRegions();
+            LocalizationSubsystem.getInstance().setTagFocus(alliance_);
+            HubMonitor.seedActiveAlliance(HubMonitor.ActiveAlliance.INVALID);
         }
     }
 
@@ -95,17 +98,20 @@ public class Robot extends TimedRobot {
     public void teleopInit() {
         CommandScheduler.getInstance().cancelAll();
         SwerveSubsystem.getInstance().setWantedState(SwerveStates.FIELD_CENTRIC);
-        ShooterSubsystem.getInstance().setWantedState(ShooterStates.AIMING);
+        ShooterSubsystem.getInstance().setWantedState(ShooterStates.TRACKING);
     }
 
     @Override
-    public void teleopPeriodic() {}
+    public void teleopPeriodic() {
+        // Attempt to update the first active alliance until it return valid
+        if (!HubMonitor.isFirstActiveAllianceValid()) HubMonitor.seedActiveAlliance();
+    }
 
     @Override
     public void testInit() {
         CommandScheduler.getInstance().cancelAll();
-        ShooterSubsystem.getInstance().setWantedState(ShooterStates.PROFILE);
-        HopperSubsystem.getInstance().setWantedState(HopperStates.PROFILE);
+        ShooterSubsystem.getInstance().setWantedState(ShooterStates.TUNING);
+        HopperSubsystem.getInstance().setWantedState(HopperStates.TUNING);
     }
 
     @Override
