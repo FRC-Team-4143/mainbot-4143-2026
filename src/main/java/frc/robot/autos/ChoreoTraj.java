@@ -31,6 +31,20 @@ public record ChoreoTraj(
 	    new Pose2d(0.533, 5.964, Rotation2d.fromRadians(0)),
 	    new Pose2d(1.079, 4.814, Rotation2d.fromRadians(0))
 	);
+	public static final ChoreoTraj DoubleNeutralLeft = new ChoreoTraj(
+	    "DoubleNeutralLeft",
+	    OptionalInt.empty(),
+	    8.52781,
+	    new Pose2d(3.661, 5.725, Rotation2d.fromRadians(2.123)),
+	    new Pose2d(1.057, 2.78, Rotation2d.fromRadians(0))
+	);
+	public static final ChoreoTraj DoubleNeutralRight = new ChoreoTraj(
+	    "DoubleNeutralRight",
+	    OptionalInt.empty(),
+	    9.47873,
+	    new Pose2d(3.529, 2.123, Rotation2d.fromRadians(-2.444)),
+	    new Pose2d(1.057, 4.752, Rotation2d.fromRadians(0))
+	);
 	public static final ChoreoTraj LeftStartNeutralOutpost1 = new ChoreoTraj(
 	    "LeftStartNeutralOutpost1",
 	    OptionalInt.empty(),
@@ -80,20 +94,6 @@ public record ChoreoTraj(
 	    new Pose2d(5.213, 5.591, Rotation2d.fromRadians(-0.798)),
 	    new Pose2d(0.533, 5.964, Rotation2d.fromRadians(-0.443))
 	);
-	public static final ChoreoTraj DoubleNeutralLeft = new ChoreoTraj(
-	    "DoubleNeutralLeft",
-	    OptionalInt.empty(),
-	    8.52781,
-	    new Pose2d(3.661, 5.725, Rotation2d.fromRadians(2.123)),
-	    new Pose2d(1.057, 2.78, Rotation2d.fromRadians(0))
-	);
-	public static final ChoreoTraj DoubleNeutralRight = new ChoreoTraj(
-	    "DoubleNeutralRight",
-	    OptionalInt.empty(),
-	    9.47873,
-	    new Pose2d(3.529, 2.123, Rotation2d.fromRadians(-2.444)),
-	    new Pose2d(1.057, 4.752, Rotation2d.fromRadians(0))
-	);
 
     /**
      * A map between trajectory names and their corresponding data.
@@ -101,15 +101,15 @@ public record ChoreoTraj(
      */
     public static final Map<String, ChoreoTraj> ALL_TRAJECTORIES = Map.ofEntries(
     	Map.entry("DepotClimb", DepotClimb),
+		Map.entry("DoubleNeutralLeft", DoubleNeutralLeft),
+		Map.entry("DoubleNeutralRight", DoubleNeutralRight),
 		Map.entry("LeftStartNeutralOutpost1", LeftStartNeutralOutpost1),
 		Map.entry("LeftStartNeutralOutpost2", LeftStartNeutralOutpost2),
 		Map.entry("OutpostClimb", OutpostClimb),
 		Map.entry("RightStartNeutralClimb1", RightStartNeutralClimb1),
 		Map.entry("RightStartNeutralClimb2", RightStartNeutralClimb2),
 		Map.entry("RightStartNeutralDepot1", RightStartNeutralDepot1),
-		Map.entry("RightStartNeutralDepot2", RightStartNeutralDepot2),
-		Map.entry("DoubleNeutralLeft", DoubleNeutralLeft),
-		Map.entry("DoubleNeutralRight", DoubleNeutralRight)
+		Map.entry("RightStartNeutralDepot2", RightStartNeutralDepot2)
     );
 
     /**
