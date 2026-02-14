@@ -6,7 +6,13 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.RobotState;
 import frc.robot.lib2026.FieldRegions;
 import frc.robot.lib2026.FieldTargets;
+import frc.robot.subsystems.climber.ClimberConstants.ClimberStates;
+import frc.robot.subsystems.climber.ClimberSubsystem;
 import frc.robot.subsystems.gamestates.GameStatesConstants.GameStates;
+import frc.robot.subsystems.hopper.HopperConstants.HopperStates;
+import frc.robot.subsystems.hopper.HopperSubsystem;
+import frc.robot.subsystems.intake.IntakeConstants.IntakeStates;
+import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.localization.LocalizationSubsystem;
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterStates;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
@@ -60,34 +66,34 @@ public class GameStatesSubsystem extends MwSubsystem<GameStates, GameStatesConst
         }
         switch (system_state_) {
             case HOLD:
-                // shooter innactive
-                // hopper holding and accepting balls unless full
-                // pickup active to allow ball intake unless full
-                // climber inactive
+                ShooterSubsystem.getInstance().setWantedState(ShooterStates.IDLE);
+                IntakeSubsystem.getInstance().setWantedState(IntakeStates.INTAKE);
+                HopperSubsystem.getInstance().setWantedState(HopperStates.SHOOTING);
+                ClimberSubsystem.getInstance().setWantedState(ClimberStates.STOWED);
                 break;
             case SCORE:
-                // shooter active
-                // hopper holding and accepting balls unless full
-                // pickup active to allow ball intake unless full
-                // climber inactive
+                ShooterSubsystem.getInstance().setWantedState(ShooterStates.AIMING);
+                IntakeSubsystem.getInstance().setWantedState(IntakeStates.INTAKE);
+                HopperSubsystem.getInstance().setWantedState(HopperStates.SHOOTING);
+                ClimberSubsystem.getInstance().setWantedState(ClimberStates.STOWED);
                 break;
             case PASS:
-                // shooter active
-                // hopper holding and accepting balls unless full
-                // pickup active to allow ball intake unless full
-                // climber inactive
+                ShooterSubsystem.getInstance().setWantedState(ShooterStates.AIMING);
+                IntakeSubsystem.getInstance().setWantedState(IntakeStates.INTAKE);
+                HopperSubsystem.getInstance().setWantedState(HopperStates.SHOOTING);
+                ClimberSubsystem.getInstance().setWantedState(ClimberStates.STOWED);
                 break;
             case TELEOP_CLIMB:
-                // shooter inactive
-                // hopper holding balls only
-                // pickup innactve
-                // climber actively climbing up
+                ShooterSubsystem.getInstance().setWantedState(ShooterStates.IDLE);
+                HopperSubsystem.getInstance().setWantedState(HopperStates.IDLE);
+                IntakeSubsystem.getInstance().setWantedState(IntakeStates.STORE);
+                ClimberSubsystem.getInstance().setWantedState(ClimberStates.L3_CLIMB);
                 break;
             case DOWN_CLIMB:
-                // shooter inactive
-                // hopper holding balls only
-                // pickup innactve
-                // climber actively climbing down
+                ShooterSubsystem.getInstance().setWantedState(ShooterStates.IDLE);
+                HopperSubsystem.getInstance().setWantedState(HopperStates.IDLE);
+                IntakeSubsystem.getInstance().setWantedState(IntakeStates.STORE);
+                ClimberSubsystem.getInstance().setWantedState(ClimberStates.L1_DOWN);
                 break;
             case AUTO:
                 // GSM does nothing in auto mode
@@ -95,6 +101,7 @@ public class GameStatesSubsystem extends MwSubsystem<GameStates, GameStatesConst
         }
     }
 
+    @Override
     public void handleStateTransition(GameStates wanted) {
 
         if (RobotState.isAutonomous()) {
@@ -116,6 +123,11 @@ public class GameStatesSubsystem extends MwSubsystem<GameStates, GameStatesConst
         // HOLD transitions
         if (system_state_ == GameStates.HOLD && inAllianceZone(robotpose) && goal_active_) {
             system_state_ = GameStates.SCORE;
+        } else if (system_state_ == GameStates.HOLD
+                && isPassZone(robotpose)
+                && !pass_overide_
+                && !inHoldZone(robotpose)) {
+            system_state_ = GameStates.PASS;
             // Set strict tolerances for scoring
             ShooterSubsystem.getInstance()
                     .setShootingTolerances(
@@ -136,7 +148,8 @@ public class GameStatesSubsystem extends MwSubsystem<GameStates, GameStatesConst
         } else {
         } // empty to not interfere with rest of state machine
         // PASS transistions
-        if (system_state_ == GameStates.PASS && (inHoldZone(robotpose) || !pass_overide_)) {
+        if (system_state_ == GameStates.PASS
+                && (inHoldZone(robotpose) || inAllianceZone(robotpose) || pass_overide_)) {
             system_state_ = GameStates.HOLD;
             // Return to strict tolerances when leaving PASS state
             ShooterSubsystem.getInstance()
@@ -185,5 +198,19 @@ public class GameStatesSubsystem extends MwSubsystem<GameStates, GameStatesConst
 
     private boolean isDownClimbFinished() {
         return false;
+    }
+
+    // for testing only
+
+    // set goal to active
+    public void GoalActive() {
+        goal_active_ = true;
+        return;
+    }
+
+    // sets goal to inactive
+    public void GoalInactive() {
+        goal_active_ = false;
+        return;
     }
 }
