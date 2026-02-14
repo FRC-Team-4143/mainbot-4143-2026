@@ -60,7 +60,7 @@ public abstract class OI {
         // Set Shooter to MANUAL control
         driver_controller_
                 .a()
-                .onTrue(
+                .whileTrue(
                         Commands.startEnd(
                                 () -> {
                                     ShooterSubsystem.getInstance()
@@ -74,7 +74,7 @@ public abstract class OI {
         // Set Hopper to MANUAL control
         driver_controller_
                 .b()
-                .onTrue(
+                .whileTrue(
                         Commands.startEnd(
                                 () -> {
                                     HopperSubsystem.getInstance()
@@ -87,7 +87,7 @@ public abstract class OI {
         // Set Shooter and Hopper to MANUAL control
         driver_controller_
                 .x()
-                .onTrue(
+                .whileTrue(
                         Commands.startEnd(
                                 () -> {
                                     ShooterSubsystem.getInstance()
@@ -104,7 +104,7 @@ public abstract class OI {
         // Set Intake to MANUAL control
         driver_controller_
                 .y()
-                .onTrue(
+                .whileTrue(
                         Commands.startEnd(
                                 () -> {
                                     IntakeSubsystem.getInstance()

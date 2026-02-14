@@ -42,7 +42,7 @@ public class ShooterConstants extends MwConstants {
     public final int INDEXER_LEADER_ID = 14;
     public final int INDEXER_FOLLOWER_ID = 15;
     public final int HOOD_ID = 16;
-    public final int TURRET_ID = 19; // bookmark
+    public final int TURRET_ID = 19;
 
     // =============================================================================
     // MECHANICAL CONSTANTS - FLYWHEEL

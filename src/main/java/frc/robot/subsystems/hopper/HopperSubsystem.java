@@ -91,6 +91,9 @@ public class HopperSubsystem extends MwSubsystem<HopperStates, HopperConstants> 
         if (system_state_ == HopperStates.IDLE && wanted == HopperStates.TUNING) {
             system_state_ = HopperStates.TUNING;
         }
+        if (system_state_ == HopperStates.MANUAL && wanted != HopperStates.MANUAL) {
+            system_state_ = wanted;
+        }
     }
 
     @Override

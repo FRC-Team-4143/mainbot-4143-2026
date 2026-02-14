@@ -84,8 +84,14 @@ public class IntakeSubsystem extends MwSubsystem<IntakeStates, IntakeConstants> 
         }
     }
 
+    @Override
     protected void handleStateTransition(IntakeStates wantedState) {
-        if ((system_state_ == IntakeStates.STORE) && (wantedState == IntakeStates.INTAKE)) {
+        // Handle MANUAL state transitions
+        if (wantedState == IntakeStates.MANUAL) {
+            system_state_ = IntakeStates.MANUAL;
+        } else if (system_state_ == IntakeStates.MANUAL && wantedState != IntakeStates.MANUAL) {
+            system_state_ = wantedState;
+        } else if ((system_state_ == IntakeStates.STORE) && (wantedState == IntakeStates.INTAKE)) {
             system_state_ = IntakeStates.DEPLOY;
         } else if ((system_state_ == IntakeStates.INTAKE) && (wantedState == IntakeStates.STORE)) {
             system_state_ = IntakeStates.DEPLOY;

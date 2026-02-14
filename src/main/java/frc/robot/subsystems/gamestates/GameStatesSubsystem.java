@@ -95,6 +95,7 @@ public class GameStatesSubsystem extends MwSubsystem<GameStates, GameStatesConst
         }
     }
 
+    @Override
     public void handleStateTransition(GameStates wanted) {
 
         if (RobotState.isAutonomous()) {
