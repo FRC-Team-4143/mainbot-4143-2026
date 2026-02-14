@@ -6,6 +6,9 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.marswars.subsystem.MwConstants;
 import com.marswars.util.FxMotorConfig;
 import com.marswars.util.FxMotorConfig.FxMotorType;
+
+import edu.wpi.first.math.util.Units;
+
 import com.marswars.util.PhoenixUtil;
 
 public class IntakeConstants extends MwConstants {
@@ -16,7 +19,8 @@ public class IntakeConstants extends MwConstants {
 
     public enum IntakeStates {
         STORE,
-        DEPLOY,
+        DEPLOYING,
+        DEPLOYED,
         INTAKE,
         OUTTAKE,
         IDLE,
@@ -44,8 +48,17 @@ public class IntakeConstants extends MwConstants {
     // =============================================================================
 
     public final boolean PIVOT_MOTOR_INVERTED = false;
-    public final double PIVOT_GEAR_RATIO = (20.0 / 12.0) * (56.0 / 24.0) * (32.0 / 14.0);
+    public final double PIVOT_GEAR_RATIO = (40.0 / 12.0) * (56.0 / 24.0) * (32.0 / 14.0);
     public final SlotConfigs PIVOT_POSITION_SLOT_CONFIG = new SlotConfigs();
+    public final double PIVOT_LENGTH = Units.inchesToMeters(11.5);
+    public final double PIVOT_MASS = Units.lbsToKilograms(8.38);
+    public final double PIVOT_MIN = Units.degreesToRadians(41);
+    public final double PIVOT_MAX = Units.degreesToRadians(86);
+    public final double PIVOT_HOME_POSITION = Units.degreesToRadians(43);
+    public final double PIVOT_STATOR_CURRENT_LIMIT = 20;
+    public final double PIVOT_DEPLOY_POSITION = Units.degreesToRadians(43);
+    public final double PIVOT_STORE_POSITION = Units.degreesToRadians(80);
+    public final double PIVOT_TOLERANCE = Units.degreesToRadians(5);
 
     // =============================================================================
     // MOTOR CONFIGURATION OBJECTS
@@ -75,5 +88,7 @@ public class IntakeConstants extends MwConstants {
         PIVOT_MOTOR_CONFIG.config.Slot0 = Slot0Configs.from(PIVOT_POSITION_SLOT_CONFIG);
         PIVOT_MOTOR_CONFIG.config.MotorOutput.Inverted =
                 PhoenixUtil.toInvertedValue(PIVOT_MOTOR_INVERTED);
+        PIVOT_MOTOR_CONFIG.config.CurrentLimits.StatorCurrentLimit = PIVOT_STATOR_CURRENT_LIMIT;
+        PIVOT_MOTOR_CONFIG.config.CurrentLimits.StatorCurrentLimitEnable = true;
     }
 }

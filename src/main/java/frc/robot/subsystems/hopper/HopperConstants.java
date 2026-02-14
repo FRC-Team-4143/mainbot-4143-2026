@@ -1,5 +1,7 @@
 package frc.robot.subsystems.hopper;
 
+import com.ctre.phoenix6.configs.Slot0Configs;
+import com.ctre.phoenix6.configs.Slot1Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.marswars.subsystem.MwConstants;
 import com.marswars.util.FxMotorConfig;
@@ -36,6 +38,7 @@ public class HopperConstants extends MwConstants {
     public final double HOPPER_GEAR_RATIO = 1.0;
     public final double HOPPER_DANGER_CURRENT = 20;
     public final double HOPPER_DUTY_CYCLE = 0.5;
+    public final Slot1Configs HOPPER_VELOCITY_GAINS = new Slot1Configs().withKV(.122).withKP(0.5);
 
     // =============================================================================
     // MECHANICAL CONSTANTS - FEED
@@ -71,6 +74,7 @@ public class HopperConstants extends MwConstants {
         HOPPER_MOTOR_CONFIG.motor_type = FxMotorType.FALCON500;
         HOPPER_MOTOR_CONFIG.canbus_name = "rio";
         HOPPER_MOTOR_CONFIG.config = new TalonFXConfiguration();
+        HOPPER_MOTOR_CONFIG.config.Slot1 = HOPPER_VELOCITY_GAINS;
 
         // Configure Feed Motor
         // FEED_MOTOR_CONFIG.can_id = FEED_MOTOR_ID;

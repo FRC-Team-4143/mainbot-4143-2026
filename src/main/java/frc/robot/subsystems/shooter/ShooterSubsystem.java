@@ -13,6 +13,8 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.lib2026.FieldTargets;
 import frc.robot.subsystems.localization.LocalizationSubsystem;
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterStates;
@@ -102,6 +104,11 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
                 getSubsystemKey() + "Manual/Indexer Percent",
                 manual_indexer_percent_,
                 (val) -> manual_indexer_percent_ = val);
+
+        SmartDashboard.putData(
+                "Home Hood",
+                Commands.runOnce(() -> hood_.setCurrentPosition(CONSTANTS.HOOD_HOME_POSITION))
+                        .ignoringDisable(true));
     }
 
     @Override
