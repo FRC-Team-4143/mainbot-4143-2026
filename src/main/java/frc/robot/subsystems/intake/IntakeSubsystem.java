@@ -80,11 +80,11 @@ public class IntakeSubsystem extends MwSubsystem<IntakeStates, IntakeConstants> 
                 pivot_.setTargetDutyCycle(0.0);
                 break;
             case INTAKE:
-                roller_.setTargetDutyCycle(0.5);
+                roller_.setTargetDutyCycle(CONSTANTS.INTAKE_DUTY_CYCLE);
                 pivot_.setTargetDutyCycle(0.0);
                 break;
             case OUTTAKE:
-                roller_.setTargetDutyCycle(-0.5);
+                roller_.setTargetDutyCycle(-CONSTANTS.INTAKE_DUTY_CYCLE);
                 pivot_.setTargetDutyCycle(0.0);
                 break;
             case MANUAL:

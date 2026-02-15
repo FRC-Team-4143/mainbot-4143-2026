@@ -53,7 +53,7 @@ public class HopperSubsystem extends MwSubsystem<HopperStates, HopperConstants> 
             hopper_timer_.reset();
             hopper_timer_.start();
         }
-        if (hopper_timer_.hasElapsed(CONSTANTS.UNJAMM_TIMER)
+        else if (hopper_timer_.hasElapsed(CONSTANTS.UNJAMM_TIMER)
                 && ((system_state_ == HopperStates.UNJAM_REVERSE)
                         || (system_state_ == HopperStates.UNJAM_FORWARD))) {
             system_state_ =
@@ -62,27 +62,14 @@ public class HopperSubsystem extends MwSubsystem<HopperStates, HopperConstants> 
                             : HopperStates.UNJAM_REVERSE;
             hopper_timer_.reset();
         }
-        if ((system_state_ == HopperStates.UNJAM_REVERSE) && (!jammed)) {
+        else if ((system_state_ == HopperStates.UNJAM_REVERSE) && (!jammed)) {
             system_state_ = HopperStates.SHOOTING;
             hopper_timer_.stop();
         }
-        if ((system_state_ == HopperStates.UNJAM_FORWARD) && (!jammed)) {
+        else if ((system_state_ == HopperStates.UNJAM_FORWARD) && (!jammed)) {
             system_state_ = HopperStates.SHOOTING;
             hopper_timer_.stop();
-        }
-        if ((system_state_ == HopperStates.IDLE) && (wanted == HopperStates.SHOOTING)) {
-            system_state_ = HopperStates.SHOOTING;
-        }
-        if ((system_state_ == HopperStates.SHOOTING) && (wanted == HopperStates.IDLE)) {
-            system_state_ = HopperStates.IDLE;
-        }
-        if (system_state_ == HopperStates.IDLE && wanted == HopperStates.TUNING) {
-            system_state_ = HopperStates.TUNING;
-        }
-        if (wanted == HopperStates.MANUAL) {
-            system_state_ = HopperStates.MANUAL;
-        }
-        if (system_state_ == HopperStates.MANUAL && wanted != HopperStates.MANUAL) {
+        } else {
             system_state_ = wanted;
         }
     }
@@ -91,16 +78,13 @@ public class HopperSubsystem extends MwSubsystem<HopperStates, HopperConstants> 
     public void updateLogic(double timestamp) {
         switch (system_state_) {
             case SHOOTING:
-                hopper_.setTargetDutyCycle(CONSTANTS.HOPPER_DUTY_CYCLE);
+                hopper_.setTargetVelocity(CONSTANTS.HOPPER_VELOCITY_TARGET);
                 break;
             case UNJAM_REVERSE:
-                hopper_.setTargetDutyCycle(-CONSTANTS.HOPPER_DUTY_CYCLE);
+                hopper_.setTargetVelocity(-CONSTANTS.HOPPER_VELOCITY_TARGET);
                 break;
             case UNJAM_FORWARD:
-                hopper_.setTargetDutyCycle(CONSTANTS.HOPPER_DUTY_CYCLE);
-                break;
-            case MANUAL:
-                hopper_.setTargetDutyCycle(manual_hopper_percent_);
+                hopper_.setTargetVelocity(CONSTANTS.HOPPER_VELOCITY_TARGET);
                 break;
             case TUNING:
                 break;

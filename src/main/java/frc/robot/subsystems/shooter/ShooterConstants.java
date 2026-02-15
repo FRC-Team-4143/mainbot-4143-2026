@@ -97,6 +97,8 @@ public class ShooterConstants extends MwConstants {
     // CONTROL AND OPERATIONAL CONSTANTS
     // =============================================================================
     public final double INDEXER_DUTY_CYCLE = 0.3; // 30% power for indexing
+    public final double SHOOTER_IDLE_SPEED = 300.0;
+    public final double HOOD_IDLE_POSITION = Units.degreesToRadians(80);
     public final double LAUNCH_HEIGHT = Units.inchesToMeters(getDoubleConstant("translation", "z"));
     public final LaunchTrajectory SOLVER =
             new LaunchTrajectory(new Translation3d(), LAUNCH_HEIGHT, true);

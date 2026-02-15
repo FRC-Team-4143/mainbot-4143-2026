@@ -94,16 +94,6 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
                 getSubsystemKey() + "Flywheel/EffFactor",
                 CONSTANTS.FLYWHEEL_EFF_FACTOR,
                 (val) -> flywheel_eff_factor_ = val);
-        DogLog.tunable(
-                getSubsystemKey() + "Manual/Flywheel Omega",
-                flywheel_omega_,
-                (val) -> flywheel_omega_ = val);
-        DogLog.tunable(
-                getSubsystemKey() + "Manual/Hood Angle", hood_angle_, (val) -> hood_angle_ = val);
-        DogLog.tunable(
-                getSubsystemKey() + "Manual/Indexer Percent",
-                manual_indexer_percent_,
-                (val) -> manual_indexer_percent_ = val);
 
         SmartDashboard.putData(
                 "Home Hood",
@@ -222,9 +212,9 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
                 break;
             default:
             case IDLE:
-                flywheel_.setTargetDutyCycle(0);
+                flywheel_.setTargetVelocity(CONSTANTS.SHOOTER_IDLE_SPEED);
                 indexer_.setTargetDutyCycle(0);
-                hood_.setTargetDutyCycle(0);
+                hood_.setTargetDutyCycle(CONSTANTS.HOOD_IDLE_POSITION);
                 if (CONSTANTS.TURRET_ENABLED) turret_.setTargetDutyCycle(0);
                 break;
         }
