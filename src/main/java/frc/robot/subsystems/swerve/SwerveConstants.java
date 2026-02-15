@@ -48,8 +48,8 @@ public class SwerveConstants extends MwConstants {
     // =============================================================================
 
     public final int PIGEON2_ID = 0;
-    public final String PIGEON2_CANBUS_NAME = "rio";
-    public final String MODULE_CANBUS_NAME = "rio";
+    public final String PIGEON2_CANBUS_NAME = "CANivore";
+    public final String MODULE_CANBUS_NAME = "CANivore";
 
     // =============================================================================
     // PHYSICAL ROBOT CONSTANTS
@@ -84,7 +84,7 @@ public class SwerveConstants extends MwConstants {
 
     public final double CONTROLLER_DEADBAND = 0.05;
     public final double MAX_TRANSLATION_RATE = getDoubleConstant("com", "max_translation_rate");
-    public final double MAX_CRAWL_RATE = MAX_TRANSLATION_RATE / 4.0;
+    public final double MAX_CRAWL_RATE = 0.5; // Meters per second, max speed during crawl mode
     public final double MAX_ANGULAR_RATE = getDoubleConstant("com", "max_angular_rate");
     public final PhoenixPIDController HEADING_CONTROLLER = new PhoenixPIDController(7.3, 0.0, 0.07);
 

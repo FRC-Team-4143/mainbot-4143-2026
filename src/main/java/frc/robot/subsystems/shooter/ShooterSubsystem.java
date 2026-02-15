@@ -13,6 +13,8 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.lib2026.FieldTargets;
 import frc.robot.subsystems.localization.LocalizationSubsystem;
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterStates;
@@ -92,16 +94,11 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
                 getSubsystemKey() + "Flywheel/EffFactor",
                 CONSTANTS.FLYWHEEL_EFF_FACTOR,
                 (val) -> flywheel_eff_factor_ = val);
-        DogLog.tunable(
-                getSubsystemKey() + "Manual/Flywheel Omega",
-                flywheel_omega_,
-                (val) -> flywheel_omega_ = val);
-        DogLog.tunable(
-                getSubsystemKey() + "Manual/Hood Angle", hood_angle_, (val) -> hood_angle_ = val);
-        DogLog.tunable(
-                getSubsystemKey() + "Manual/Indexer Percent",
-                manual_indexer_percent_,
-                (val) -> manual_indexer_percent_ = val);
+
+        SmartDashboard.putData(
+                "Home Hood",
+                Commands.runOnce(() -> hood_.setCurrentPosition(CONSTANTS.HOOD_HOME_POSITION))
+                        .ignoringDisable(true));
     }
 
     @Override
@@ -215,9 +212,9 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
                 break;
             default:
             case IDLE:
-                flywheel_.setTargetDutyCycle(0);
+                flywheel_.setTargetVelocity(CONSTANTS.SHOOTER_IDLE_SPEED);
                 indexer_.setTargetDutyCycle(0);
-                hood_.setTargetDutyCycle(0);
+                hood_.setTargetDutyCycle(CONSTANTS.HOOD_IDLE_POSITION);
                 if (CONSTANTS.TURRET_ENABLED) turret_.setTargetDutyCycle(0);
                 break;
         }

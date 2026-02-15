@@ -20,7 +20,7 @@ public class HopperSubsystem extends MwSubsystem<HopperStates, HopperConstants> 
         return instance_;
     }
 
-    private RollerMech feeder_;
+    // private RollerMech feeder_;
     private RollerMech hopper_;
     private final Timer hopper_timer_ = new Timer();
     private Debouncer debouncer_ =
@@ -28,17 +28,9 @@ public class HopperSubsystem extends MwSubsystem<HopperStates, HopperConstants> 
 
     // Manual control variables
     private double manual_hopper_percent_ = 0.0;
-    private double manual_feeder_percent_ = 0.0;
 
     public HopperSubsystem() {
         super(HopperStates.IDLE, new HopperConstants());
-        feeder_ =
-                new RollerMech(
-                        getSubsystemKey(),
-                        "Feeder",
-                        List.of(CONSTANTS.FEED_MOTOR_CONFIG),
-                        CONSTANTS.FEED_GEAR_RATIO);
-
         hopper_ =
                 new RollerMech(
                         getSubsystemKey(),
@@ -50,10 +42,6 @@ public class HopperSubsystem extends MwSubsystem<HopperStates, HopperConstants> 
                 getSubsystemKey() + "Manual/Hopper Percent",
                 manual_hopper_percent_,
                 (val) -> manual_hopper_percent_ = val);
-        DogLog.tunable(
-                getSubsystemKey() + "Manual/Feeder Percent",
-                manual_feeder_percent_,
-                (val) -> manual_feeder_percent_ = val);
     }
 
     @Override
@@ -65,7 +53,7 @@ public class HopperSubsystem extends MwSubsystem<HopperStates, HopperConstants> 
             hopper_timer_.reset();
             hopper_timer_.start();
         }
-        if (hopper_timer_.hasElapsed(CONSTANTS.UNJAMM_TIMER)
+        else if (hopper_timer_.hasElapsed(CONSTANTS.UNJAMM_TIMER)
                 && ((system_state_ == HopperStates.UNJAM_REVERSE)
                         || (system_state_ == HopperStates.UNJAM_FORWARD))) {
             system_state_ =
@@ -74,19 +62,15 @@ public class HopperSubsystem extends MwSubsystem<HopperStates, HopperConstants> 
                             : HopperStates.UNJAM_REVERSE;
             hopper_timer_.reset();
         }
-        if ((system_state_ == HopperStates.UNJAM_REVERSE) && (!jammed)) {
+        else if ((system_state_ == HopperStates.UNJAM_REVERSE) && (!jammed)) {
             system_state_ = HopperStates.SHOOTING;
             hopper_timer_.stop();
         }
-        if ((system_state_ == HopperStates.UNJAM_FORWARD) && (!jammed)) {
+        else if ((system_state_ == HopperStates.UNJAM_FORWARD) && (!jammed)) {
             system_state_ = HopperStates.SHOOTING;
             hopper_timer_.stop();
-        }
-        if ((system_state_ == HopperStates.IDLE) && (wanted == HopperStates.SHOOTING)) {
-            system_state_ = HopperStates.SHOOTING;
-        }
-        if ((system_state_ == HopperStates.SHOOTING) && (wanted == HopperStates.IDLE)) {
-            system_state_ = HopperStates.IDLE;
+        } else {
+            system_state_ = wanted;
         }
     }
 
@@ -94,27 +78,19 @@ public class HopperSubsystem extends MwSubsystem<HopperStates, HopperConstants> 
     public void updateLogic(double timestamp) {
         switch (system_state_) {
             case SHOOTING:
-                hopper_.setTargetDutyCycle(CONSTANTS.HOPPER_DUTY_CYCLE);
-                feeder_.setTargetDutyCycle(CONSTANTS.FEED_DUTY_CYCLE);
+                hopper_.setTargetVelocity(CONSTANTS.HOPPER_VELOCITY_TARGET);
                 break;
             case UNJAM_REVERSE:
-                hopper_.setTargetDutyCycle(-CONSTANTS.HOPPER_DUTY_CYCLE);
-                feeder_.setTargetDutyCycle(-CONSTANTS.FEED_DUTY_CYCLE);
+                hopper_.setTargetVelocity(-CONSTANTS.HOPPER_VELOCITY_TARGET);
                 break;
             case UNJAM_FORWARD:
-                hopper_.setTargetDutyCycle(CONSTANTS.HOPPER_DUTY_CYCLE);
-                feeder_.setTargetDutyCycle(CONSTANTS.FEED_DUTY_CYCLE);
-                break;
-            case MANUAL:
-                hopper_.setTargetDutyCycle(manual_hopper_percent_);
-                feeder_.setTargetDutyCycle(manual_feeder_percent_);
+                hopper_.setTargetVelocity(CONSTANTS.HOPPER_VELOCITY_TARGET);
                 break;
             case TUNING:
                 break;
             default:
             case IDLE:
                 hopper_.setTargetDutyCycle(0.0);
-                feeder_.setTargetDutyCycle(0.0);
                 break;
         }
     }

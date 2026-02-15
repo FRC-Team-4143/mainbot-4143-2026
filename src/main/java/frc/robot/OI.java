@@ -39,7 +39,9 @@ public abstract class OI {
                 Commands.runOnce(LocalizationSubsystem.getInstance()::resetPoseEstimatorAuto)
                         .onlyIf(RobotBase::isSimulation)
                         .ignoringDisable(true));
-
+        SmartDashboard.putData(
+                "Zero Wheel Offsets",
+                SwerveSubsystem.getInstance().setModuleOffsets().ignoringDisable(true));
         // =============================================================================
         // DRIVER CONTROLLER BINDINGS
         // =============================================================================
@@ -55,43 +57,16 @@ public abstract class OI {
         // TESTING BINDINGS (THESE SHOULD BE REMOVED BEFORE COMPETITION)
         // =============================================================================
 
-        // Set Shooter to MANUAL control
-        driver_controller_
-                .a()
-                .onTrue(
-                        Commands.startEnd(
-                                () -> {
-                                    ShooterSubsystem.getInstance()
-                                            .setWantedState(ShooterStates.MANUAL);
-                                },
-                                () -> {
-                                    ShooterSubsystem.getInstance()
-                                            .setWantedState(ShooterStates.IDLE);
-                                }));
-
-        // Set Hopper to MANUAL control
-        driver_controller_
-                .b()
-                .onTrue(
-                        Commands.startEnd(
-                                () -> {
-                                    HopperSubsystem.getInstance()
-                                            .setWantedState(HopperStates.MANUAL);
-                                },
-                                () -> {
-                                    HopperSubsystem.getInstance().setWantedState(HopperStates.IDLE);
-                                }));
-
         // Set Shooter and Hopper to MANUAL control
         driver_controller_
-                .x()
-                .onTrue(
+                .rightTrigger()
+                .whileTrue(
                         Commands.startEnd(
                                 () -> {
                                     ShooterSubsystem.getInstance()
-                                            .setWantedState(ShooterStates.MANUAL);
+                                            .setWantedState(ShooterStates.SHOOT);
                                     HopperSubsystem.getInstance()
-                                            .setWantedState(HopperStates.MANUAL);
+                                            .setWantedState(HopperStates.SHOOTING);
                                 },
                                 () -> {
                                     ShooterSubsystem.getInstance()
@@ -101,15 +76,19 @@ public abstract class OI {
 
         // Set Intake to MANUAL control
         driver_controller_
-                .y()
-                .onTrue(
+                .rightBumper()
+                .whileTrue(
                         Commands.startEnd(
                                 () -> {
                                     IntakeSubsystem.getInstance()
-                                            .setWantedState(IntakeStates.MANUAL);
+                                            .setWantedState(IntakeStates.INTAKE);
+                                    HopperSubsystem.getInstance()
+                                            .setWantedState(HopperStates.SHOOTING);
                                 },
                                 () -> {
-                                    IntakeSubsystem.getInstance().setWantedState(IntakeStates.IDLE);
+                                    IntakeSubsystem.getInstance().setWantedState(IntakeStates.STORE);
+                                    HopperSubsystem.getInstance()
+                                            .setWantedState(HopperStates.IDLE);
                                 }));
     }
 
