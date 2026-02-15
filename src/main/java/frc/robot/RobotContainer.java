@@ -9,7 +9,6 @@ import edu.wpi.first.wpilibj.RobotBase;
 import frc.robot.subsystems.hopper.HopperSubsystem;
 import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.localization.LocalizationSubsystem;
-import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.simulation.SimulationSubsystem;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 
@@ -28,7 +27,7 @@ public class RobotContainer extends SubsystemManager {
         // !!!!!! ALL SUBSYSTEMS MUST BE REGISTERED HERE TO RUN !!!!!!!
         registerSubsystem(SwerveSubsystem.getInstance());
         registerSubsystem(LocalizationSubsystem.getInstance());
-        registerSubsystem(ShooterSubsystem.getInstance());
+        // registerSubsystem(ShooterSubsystem.getInstance());
         registerSubsystem(HopperSubsystem.getInstance());
         registerSubsystem(IntakeSubsystem.getInstance());
         // // registerSubsystem(ClimberSubsystem.getInstance());

@@ -66,12 +66,16 @@ public class SimulationSubsystem extends MwSubsystem<SimulationStates, Simulatio
                         LocalizationSubsystem.getInstance()::getChassisSpeedsFieldRelative);
         FuelSim.getInstance().enableAirResistance();
 
-        // Setup Intake Similation
+        // Setup Intake Simulation - Out the Front of the Robot
         FuelSim.getInstance()
                 .registerIntake(
-                        -CONSTANTS.BASE_LENGTH / 2.0 - CONSTANTS.INTAKE_MAX_EXTENSION,
-                        -CONSTANTS.BASE_LENGTH / 2.0,
+                        // Front Frame
+                        CONSTANTS.BASE_LENGTH / 2.0,
+                        // Intake Extension Range
+                        CONSTANTS.BASE_LENGTH / 2.0 + CONSTANTS.INTAKE_MAX_EXTENSION,
+                        // Left Frame
                         -CONSTANTS.BASE_WIDTH / 2.0,
+                        // Right Frame
                         CONSTANTS.BASE_WIDTH / 2.0,
                         () ->
                                 hopper_fuel_count_ < CONSTANTS.HOPPER_CAPACITY
