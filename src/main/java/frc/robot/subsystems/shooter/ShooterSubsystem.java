@@ -145,7 +145,7 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
         // testing with manual setpoints
         if (solution_.valid && system_state_ != ShooterStates.MANUAL) {
             flywheel_omega_ =
-                    -solution_.velocity
+                    solution_.velocity
                             / CONSTANTS.FLYWHEEL_WHEEL_RADIUS_METERS
                             * flywheel_eff_factor_;
 

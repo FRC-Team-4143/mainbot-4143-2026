@@ -55,10 +55,11 @@ public class IntakeConstants extends MwConstants {
     public final double PIVOT_MIN = Units.degreesToRadians(41);
     public final double PIVOT_MAX = Units.degreesToRadians(86);
     public final double PIVOT_HOME_POSITION = Units.degreesToRadians(43);
-    public final double PIVOT_STATOR_CURRENT_LIMIT = 20;
+    public final double PIVOT_STATOR_CURRENT_LIMIT = 60;
     public final double PIVOT_DEPLOY_POSITION = Units.degreesToRadians(43);
     public final double PIVOT_STORE_POSITION = Units.degreesToRadians(80);
     public final double PIVOT_TOLERANCE = Units.degreesToRadians(5);
+    public final Slot0Configs PIVOT_POSITION_GAINS = new Slot0Configs().withKG(0.12).withKP(250.0);
 
     // =============================================================================
     // MOTOR CONFIGURATION OBJECTS
@@ -90,5 +91,6 @@ public class IntakeConstants extends MwConstants {
                 PhoenixUtil.toInvertedValue(PIVOT_MOTOR_INVERTED);
         PIVOT_MOTOR_CONFIG.config.CurrentLimits.StatorCurrentLimit = PIVOT_STATOR_CURRENT_LIMIT;
         PIVOT_MOTOR_CONFIG.config.CurrentLimits.StatorCurrentLimitEnable = true;
+        PIVOT_MOTOR_CONFIG.config.Slot0 = PIVOT_POSITION_GAINS;
     }
 }
