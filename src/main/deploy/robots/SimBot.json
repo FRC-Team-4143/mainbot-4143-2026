@@ -138,9 +138,9 @@
   },
   "shooter": {
     "translation": {
-      "x": 0.0,
-      "y": 0.0,
-      "z": 24.18
+      "x": -6.41,
+      "y": -3.0,
+      "z": 23.0
     },
     "turret_enabled": false
   }

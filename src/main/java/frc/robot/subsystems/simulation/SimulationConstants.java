@@ -68,7 +68,7 @@ public class SimulationConstants extends MwConstants {
     // =============================================================================
     // INTAKE SIMULATION
     // =============================================================================
-    public final boolean SIM_FUEL_ENABLED = false;
+    public final boolean SIM_FUEL_ENABLED = true;
     public final double BASE_LENGTH =
             Units.inchesToMeters(LOADER.getDoubleValue("swerve", "com", "base_length"));
     public final double BASE_WIDTH =
@@ -77,7 +77,7 @@ public class SimulationConstants extends MwConstants {
             Units.inchesToMeters(LOADER.getDoubleValue("swerve", "com", "bumper_height"));
     public final double INTAKE_MAX_EXTENSION =
             Units.inchesToMeters(LOADER.getDoubleValue("intake", "max_extension"));
-    public final int HOPPER_CAPACITY = 75; // number of game pieces
+    public final int HOPPER_CAPACITY = 100; // number of game pieces
 
     // =============================================================================
     // CONSTRUCTOR

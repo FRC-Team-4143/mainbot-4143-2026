@@ -106,8 +106,8 @@ public class ShooterConstants extends MwConstants {
     public final Transform2d SHOOTER_CENTER =
             new Transform2d(
                     new Translation2d(
-                            getDoubleConstant("translation", "x"),
-                            getDoubleConstant("translation", "y")),
+                            Units.inchesToMeters(getDoubleConstant("translation", "x")),
+                            Units.inchesToMeters(getDoubleConstant("translation", "y"))),
                     new Rotation2d());
 
     // =============================================================================

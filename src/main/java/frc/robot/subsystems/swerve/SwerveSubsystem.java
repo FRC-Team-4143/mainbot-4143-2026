@@ -107,7 +107,7 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
                 new ChoreoEventTracker(
                         getSubsystemKey() + "Choreo/Events/",
                         () -> LocalizationSubsystem.getInstance().getFieldPose());
-
+        choreo_theta_controller_.enableContinuousInput(-Math.PI/2.0, Math.PI/2.0);
         // Initialize drive mode requests
         field_centric_request_ =
                 new ChassisRequest.FieldCentric()

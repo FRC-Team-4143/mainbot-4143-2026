@@ -1,5 +1,6 @@
 package frc.robot.subsystems.shooter;
 
+import com.marswars.geometry.AllianceFlipUtil;
 import com.marswars.geometry.LaunchTrajectory.TrajectorySol;
 import com.marswars.mechanisms.FlywheelMech;
 import com.marswars.mechanisms.RollerMech;
@@ -13,6 +14,8 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.lib2026.FieldTargets;
@@ -21,6 +24,7 @@ import frc.robot.subsystems.shooter.ShooterConstants.ShooterStates;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstants> {
     private static ShooterSubsystem instance_ = null;
@@ -144,7 +148,7 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
                 turret_heading_ = solution_.heading_angle - robot_pose.getRotation().getRadians();
                 handleTurretWrap();
             } else {
-                turret_heading_ = solution_.heading_angle;
+                turret_heading_ = Math.PI + solution_.heading_angle;
             }
 
             // Clamp hood angle to mechanical limits
@@ -375,6 +379,10 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
      *     floor
      */
     public void setTarget(Translation3d target) {
+        Optional <Alliance> alliance = DriverStation.getAlliance();
+        if(alliance.isPresent() && alliance.get() == Alliance.Red){
+            target = AllianceFlipUtil.apply(target);
+        }
         target_ = target;
         CONSTANTS.SOLVER.setTarget(target_);
     }
