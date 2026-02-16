@@ -107,7 +107,7 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
                 new ChoreoEventTracker(
                         getSubsystemKey() + "Choreo/Events/",
                         () -> LocalizationSubsystem.getInstance().getFieldPose());
-
+        choreo_theta_controller_.enableContinuousInput(-Math.PI / 2.0, Math.PI / 2.0);
         // Initialize drive mode requests
         field_centric_request_ =
                 new ChassisRequest.FieldCentric()
@@ -745,7 +745,7 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
      * @return true if the robot is at the desired rotation within the tolerance, false otherwise
      */
     public boolean isAtDesiredRotation(double tolerance) {
-        return field_centric_rotation_lock_request_.HeadingController.getPositionError()
+        return Math.abs(field_centric_rotation_lock_request_.HeadingController.getPositionError())
                 < tolerance;
     }
 

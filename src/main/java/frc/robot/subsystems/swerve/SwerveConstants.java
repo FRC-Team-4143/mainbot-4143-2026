@@ -97,9 +97,9 @@ public class SwerveConstants extends MwConstants {
     public final double CHOREO_TRANSLATION_CONTROLLER_KP = 1.0;
     public final double CHOREO_TRANSLATION_CONTROLLER_KI = 0.0;
     public final double CHOREO_TRANSLATION_CONTROLLER_KD = 0.0;
-    public final double CHOREO_THETA_CONTROLLER_KP = 0.0;
+    public final double CHOREO_THETA_CONTROLLER_KP = 7.3;
     public final double CHOREO_THETA_CONTROLLER_KI = 0.0;
-    public final double CHOREO_THETA_CONTROLLER_KD = 0.0;
+    public final double CHOREO_THETA_CONTROLLER_KD = 0.07;
 
     // =============================================================================
     // TRACTOR BEAM CONSTANTS

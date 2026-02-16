@@ -6,10 +6,8 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.marswars.subsystem.MwConstants;
 import com.marswars.util.FxMotorConfig;
 import com.marswars.util.FxMotorConfig.FxMotorType;
-
-import edu.wpi.first.math.util.Units;
-
 import com.marswars.util.PhoenixUtil;
+import edu.wpi.first.math.util.Units;
 
 public class IntakeConstants extends MwConstants {
 
