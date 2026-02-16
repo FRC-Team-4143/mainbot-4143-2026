@@ -18,9 +18,8 @@ import frc.robot.subsystems.localization.LocalizationConstants.LocalizationState
 import frc.robot.subsystems.localization.LocalizationSubsystem;
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterStates;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
-import frc.robot.subsystems.swerve.SwerveSubsystem;
 import frc.robot.subsystems.swerve.SwerveConstants.SwerveStates;
-
+import frc.robot.subsystems.swerve.SwerveSubsystem;
 import java.util.Optional;
 
 public abstract class OI {
@@ -70,15 +69,20 @@ public abstract class OI {
                                             .setWantedState(ShooterStates.SHOOT);
                                     HopperSubsystem.getInstance()
                                             .setWantedState(HopperStates.SHOOTING);
-                                    SwerveSubsystem.getInstance().setWantedState(SwerveStates.FIELD_CENTRIC_ROTATION_LOCK);
-                                    LocalizationSubsystem.getInstance().setWantedState(LocalizationStates.SHOOTING_FOCUS);
+                                    SwerveSubsystem.getInstance()
+                                            .setWantedState(
+                                                    SwerveStates.FIELD_CENTRIC_ROTATION_LOCK);
+                                    LocalizationSubsystem.getInstance()
+                                            .setWantedState(LocalizationStates.SHOOTING_FOCUS);
                                 },
                                 () -> {
                                     ShooterSubsystem.getInstance()
                                             .setWantedState(ShooterStates.TRACKING);
                                     HopperSubsystem.getInstance().setWantedState(HopperStates.IDLE);
-                                    SwerveSubsystem.getInstance().setWantedState(SwerveStates.FIELD_CENTRIC);
-                                    LocalizationSubsystem.getInstance().setWantedState(LocalizationStates.FULL);
+                                    SwerveSubsystem.getInstance()
+                                            .setWantedState(SwerveStates.FIELD_CENTRIC);
+                                    LocalizationSubsystem.getInstance()
+                                            .setWantedState(LocalizationStates.FULL);
                                 }));
 
         // Set Intake to MANUAL control
@@ -93,9 +97,9 @@ public abstract class OI {
                                             .setWantedState(HopperStates.SHOOTING);
                                 },
                                 () -> {
-                                    IntakeSubsystem.getInstance().setWantedState(IntakeStates.STORE);
-                                    HopperSubsystem.getInstance()
-                                            .setWantedState(HopperStates.IDLE);
+                                    IntakeSubsystem.getInstance()
+                                            .setWantedState(IntakeStates.STORE);
+                                    HopperSubsystem.getInstance().setWantedState(HopperStates.IDLE);
                                 }));
     }
 

@@ -52,8 +52,7 @@ public class HopperSubsystem extends MwSubsystem<HopperStates, HopperConstants> 
             system_state_ = HopperStates.UNJAM_REVERSE;
             hopper_timer_.reset();
             hopper_timer_.start();
-        }
-        else if (hopper_timer_.hasElapsed(CONSTANTS.UNJAMM_TIMER)
+        } else if (hopper_timer_.hasElapsed(CONSTANTS.UNJAMM_TIMER)
                 && ((system_state_ == HopperStates.UNJAM_REVERSE)
                         || (system_state_ == HopperStates.UNJAM_FORWARD))) {
             system_state_ =
@@ -61,12 +60,10 @@ public class HopperSubsystem extends MwSubsystem<HopperStates, HopperConstants> 
                             ? HopperStates.UNJAM_FORWARD
                             : HopperStates.UNJAM_REVERSE;
             hopper_timer_.reset();
-        }
-        else if ((system_state_ == HopperStates.UNJAM_REVERSE) && (!jammed)) {
+        } else if ((system_state_ == HopperStates.UNJAM_REVERSE) && (!jammed)) {
             system_state_ = HopperStates.SHOOTING;
             hopper_timer_.stop();
-        }
-        else if ((system_state_ == HopperStates.UNJAM_FORWARD) && (!jammed)) {
+        } else if ((system_state_ == HopperStates.UNJAM_FORWARD) && (!jammed)) {
             system_state_ = HopperStates.SHOOTING;
             hopper_timer_.stop();
         } else {

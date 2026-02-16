@@ -106,14 +106,15 @@ public class IntakeSubsystem extends MwSubsystem<IntakeStates, IntakeConstants> 
     protected void handleStateTransition(IntakeStates wantedState) {
         if (system_state_ == IntakeStates.STORE && wantedState == IntakeStates.INTAKE) {
             system_state_ = IntakeStates.DEPLOYING;
-        }
-        else if (system_state_ == IntakeStates.STORE && wantedState == IntakeStates.OUTTAKE) {
+        } else if (system_state_ == IntakeStates.STORE && wantedState == IntakeStates.OUTTAKE) {
             system_state_ = IntakeStates.DEPLOYING;
-        }
-        else if (system_state_ == IntakeStates.DEPLOYING && MathUtil.isNear(CONSTANTS.PIVOT_DEPLOY_POSITION, pivot_.getCurrentPosition(), CONSTANTS.PIVOT_TOLERANCE)) {
+        } else if (system_state_ == IntakeStates.DEPLOYING
+                && MathUtil.isNear(
+                        CONSTANTS.PIVOT_DEPLOY_POSITION,
+                        pivot_.getCurrentPosition(),
+                        CONSTANTS.PIVOT_TOLERANCE)) {
             system_state_ = IntakeStates.DEPLOYED;
-        }
-        else{
+        } else {
             system_state_ = wantedState;
         }
     }

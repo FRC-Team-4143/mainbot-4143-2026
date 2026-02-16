@@ -2,7 +2,6 @@ package frc.robot.subsystems.simulation;
 
 import com.marswars.subsystem.MwConstants;
 import com.marswars.util.ConstantsLoader;
-
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
@@ -32,7 +31,8 @@ public class SimulationConstants extends MwConstants {
                     -0.330,
                     0.288,
                     0.540,
-                    new Rotation3d(0.0, Units.degreesToRadians(-10.0), Units.degreesToRadians(180.0)));
+                    new Rotation3d(
+                            0.0, Units.degreesToRadians(-10.0), Units.degreesToRadians(180.0)));
     public final Transform3d RIGHT_CAMERA_TRANSFORM =
             new Transform3d(
                     -0.031,
@@ -57,7 +57,8 @@ public class SimulationConstants extends MwConstants {
                     Units.inchesToMeters(LOADER.getDoubleValue("shooter", "translation", "y")),
                     Units.inchesToMeters(LOADER.getDoubleValue("shooter", "translation", "z")));
     public final Rotation2d SHOOTER_LAUNCH_ROTATION =
-            new Rotation2d(Units.degreesToRadians(LOADER.getDoubleValue("shooter", "rotation", "z")));
+            new Rotation2d(
+                    Units.degreesToRadians(LOADER.getDoubleValue("shooter", "rotation", "z")));
     public final double SECONDS_PER_SHOT = 1.0 / 15.0; // balls per second
 
     // Flywheel load calculation:

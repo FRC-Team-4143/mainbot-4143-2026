@@ -161,7 +161,7 @@ public class FieldRegions {
 
     public static PolygonRegion OUTPOST_REGION =
             new PolygonRegion(
-                new Translation2d[] {
+                    new Translation2d[] {
                         new Translation2d(-0.5, 0),
                         new Translation2d(-0.5, 1.265936),
                         new Translation2d(0.508, 1.265936),

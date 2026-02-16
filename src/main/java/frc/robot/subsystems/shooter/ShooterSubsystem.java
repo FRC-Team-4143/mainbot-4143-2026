@@ -1,6 +1,7 @@
 package frc.robot.subsystems.shooter;
 
 import com.marswars.geometry.AllianceFlipUtil;
+import com.marswars.geometry.LaunchTrajectory;
 import com.marswars.geometry.LaunchTrajectory.TrajectorySol;
 import com.marswars.mechanisms.FlywheelMech;
 import com.marswars.mechanisms.RollerMech;
@@ -36,13 +37,20 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
         return instance_;
     }
 
+    // Mechanisms
     private RollerMech indexer_;
     private FlywheelMech flywheel_;
     private RollerMech hood_;
     private TurretMech turret_;
 
+    // Shooter parameters calculated from TrajectorySolver
+    private final LaunchTrajectory SOLVER =
+            new LaunchTrajectory(
+                    getSubsystemKey() + "TrajectorySolver/",
+                    new Translation3d(),
+                    CONSTANTS.LAUNCH_HEIGHT,
+                    true);
     private double flywheel_omega_ = 0.0;
-    private double flywheel_eff_factor_ = CONSTANTS.FLYWHEEL_EFF_FACTOR;
     private double turret_heading_ = 0.0;
     private double hood_angle_ = CONSTANTS.HOOD_MAX_ANGLE;
     private double manual_indexer_percent_ = 0.0;
@@ -94,11 +102,7 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
                             CONSTANTS.TURRET_MOI);
         }
 
-        DogLog.tunable(
-                getSubsystemKey() + "Flywheel/EffFactor",
-                CONSTANTS.FLYWHEEL_EFF_FACTOR,
-                (val) -> flywheel_eff_factor_ = val);
-
+        populateInitialVelocityMap();
         SmartDashboard.putData(
                 "Home Hood",
                 Commands.runOnce(() -> hood_.setCurrentPosition(CONSTANTS.HOOD_HOME_POSITION))
@@ -108,11 +112,13 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
     @Override
     public void handleStateTransition(ShooterStates wanted) {
         Pose2d robotPose = LocalizationSubsystem.getInstance().getFieldPose();
-        if (wanted == ShooterStates.SHOOT && system_state_ != ShooterStates.AIMING && system_state_ != ShooterStates.SHOOT) {
+        if (wanted == ShooterStates.SHOOT
+                && system_state_ != ShooterStates.AIMING
+                && system_state_ != ShooterStates.SHOOT) {
             system_state_ = ShooterStates.AIMING;
         } else if (system_state_ == ShooterStates.AIMING && isShooterReady()) {
             system_state_ = ShooterStates.SHOOT;
-        }else if (system_state_ == ShooterStates.AIMING && !isShooterReady()){
+        } else if (system_state_ == ShooterStates.AIMING && !isShooterReady()) {
             // Nap time : Blocks deafult transition from occuring
         } else {
             system_state_ = wanted;
@@ -133,16 +139,13 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
         Pose2d robot_pose = LocalizationSubsystem.getInstance().getFieldPose();
 
         // Calculate the trajectory solution for the current target and robot pose
-        solution_ = CONSTANTS.SOLVER.getSolution(robot_pose.transformBy(CONSTANTS.SHOOTER_CENTER));
+        solution_ = SOLVER.getSolution(robot_pose.transformBy(CONSTANTS.SHOOTER_CENTER));
 
         // Update shooter parameters based on the solution
         // Skip the shooter parameters update if solution invalid on in manual mode to allow for
         // testing with manual setpoints
         if (solution_.valid && system_state_ != ShooterStates.MANUAL) {
-            flywheel_omega_ =
-                    solution_.velocity
-                            / CONSTANTS.FLYWHEEL_WHEEL_RADIUS_METERS
-                            * flywheel_eff_factor_;
+            flywheel_omega_ = solution_.velocity / CONSTANTS.FLYWHEEL_WHEEL_RADIUS_METERS;
 
             // Calculate launch heading and handle turret wrapping
             if (CONSTANTS.TURRET_ENABLED) {
@@ -234,6 +237,9 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
                 Rotation2d.fromRadians(solution_.heading_angle));
         DogLog.log(getSubsystemKey() + "TrajectorySolver/LaunchVelocity", solution_.velocity);
         DogLog.log(getSubsystemKey() + "TrajectorySolver/Target", target_);
+        DogLog.log(
+                getSubsystemKey() + "TrajectorySolver/Distance",
+                target_.toTranslation2d().getDistance(robot_pose.getTranslation()));
 
         // Setpoint Logging
         DogLog.log(getSubsystemKey() + "Setpoint/FlywheelOmega", flywheel_omega_);
@@ -329,7 +335,14 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
                     MathUtil.isNear(
                             turret_heading_, turret_.getCurrentPosition(), turret_angle_tolerance_);
         } else {
-            status = MathUtil.isNear(turret_heading_, LocalizationSubsystem.getInstance().getFieldPose().getRotation().getRadians(), rotation_angle_tolerance_);
+            status =
+                    MathUtil.isNear(
+                            turret_heading_,
+                            LocalizationSubsystem.getInstance()
+                                    .getFieldPose()
+                                    .getRotation()
+                                    .getRadians(),
+                            rotation_angle_tolerance_);
         }
         return status;
     }
@@ -380,12 +393,12 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
      *     floor
      */
     public void setTarget(Translation3d target) {
-        Optional <Alliance> alliance = DriverStation.getAlliance();
-        if(alliance.isPresent() && alliance.get() == Alliance.Red){
+        Optional<Alliance> alliance = DriverStation.getAlliance();
+        if (alliance.isPresent() && alliance.get() == Alliance.Red) {
             target = AllianceFlipUtil.apply(target);
         }
         target_ = target;
-        CONSTANTS.SOLVER.setTarget(target_);
+        SOLVER.setTarget(target_);
     }
 
     /**
@@ -395,7 +408,37 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
      * @param highArc true to use the high arc solution, false to use the low arc solution
      */
     public void setHighArc(boolean highArc) {
-        CONSTANTS.SOLVER.setHighArc(highArc);
+        SOLVER.setHighArc(highArc);
+    }
+
+    /**
+     * Populates the initial velocity map for the TrajectorySolver with empirical data points. This
+     * method can be modified to add or adjust velocity points as needed for tuning the shooter
+     * performance.
+     */
+    private void populateInitialVelocityMap() {
+        // Solver Map Population
+        SOLVER.addVelocityPoint(0.0, 5.283);
+        SOLVER.addVelocityPoint(0.5, 5.382);
+        SOLVER.addVelocityPoint(1.0, 6.635);
+        SOLVER.addVelocityPoint(1.5, 5.977);
+        SOLVER.addVelocityPoint(2.0, 6.367);
+        SOLVER.addVelocityPoint(2.5, 6.764);
+        SOLVER.addVelocityPoint(3.0, 7.160);
+        SOLVER.addVelocityPoint(3.5, 7.544);
+        SOLVER.addVelocityPoint(4.0, 7.928);
+        SOLVER.addVelocityPoint(4.5, 8.288);
+        SOLVER.addVelocityPoint(5.0, 8.648);
+        SOLVER.addVelocityPoint(5.5, 8.996);
+        SOLVER.addVelocityPoint(6.0, 10.332);
+        SOLVER.addVelocityPoint(6.5, 10.656);
+        SOLVER.addVelocityPoint(7.0, 10.980);
+        SOLVER.addVelocityPoint(7.5, 11.292);
+        SOLVER.addVelocityPoint(8.0, 11.592);
+        SOLVER.addVelocityPoint(8.5, 11.892);
+        SOLVER.addVelocityPoint(9.0, 12.180);
+        SOLVER.addVelocityPoint(9.5, 12.456);
+        SOLVER.addVelocityPoint(10.0, 12.744);
     }
 
     /**

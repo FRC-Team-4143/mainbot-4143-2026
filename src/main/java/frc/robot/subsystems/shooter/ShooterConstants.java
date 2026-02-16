@@ -4,7 +4,6 @@ import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.Slot1Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-import com.marswars.geometry.LaunchTrajectory;
 import com.marswars.subsystem.MwConstants;
 import com.marswars.util.FxMotorConfig;
 import com.marswars.util.FxMotorConfig.FxMotorType;
@@ -12,7 +11,6 @@ import com.marswars.util.PhoenixUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 
 public class ShooterConstants extends MwConstants {
@@ -100,17 +98,15 @@ public class ShooterConstants extends MwConstants {
     public final double SHOOTER_IDLE_SPEED = 300.0;
     public final double HOOD_IDLE_POSITION = Units.degreesToRadians(80);
     public final double LAUNCH_HEIGHT = Units.inchesToMeters(getDoubleConstant("translation", "z"));
-    public final LaunchTrajectory SOLVER =
-            new LaunchTrajectory(new Translation3d(), LAUNCH_HEIGHT, true);
     public final double MAX_TURRET_WRAP = Units.degreesToRadians(190);
     public final Transform2d SHOOTER_CENTER =
             new Transform2d(
                     new Translation2d(
                             Units.inchesToMeters(getDoubleConstant("translation", "x")),
                             Units.inchesToMeters(getDoubleConstant("translation", "y"))),
-                            Rotation2d.kZero);
-    public final Rotation2d SHOOTER_ROTATION = new Rotation2d(Units.degreesToRadians(getDoubleConstant("rotation", "z")));
-
+                    Rotation2d.kZero);
+    public final Rotation2d SHOOTER_ROTATION =
+            new Rotation2d(Units.degreesToRadians(getDoubleConstant("rotation", "z")));
 
     // =============================================================================
     // MOTOR CONFIGURATION OBJECTS
@@ -197,28 +193,5 @@ public class ShooterConstants extends MwConstants {
         TURRET_MOTOR_CONFIGS.canbus_name = "rio";
         TURRET_MOTOR_CONFIGS.config = new TalonFXConfiguration();
         TURRET_MOTOR_CONFIGS.config.Slot0 = TURRET_POSITION_GAINS;
-
-        // Solver Map Population
-        SOLVER.addVelocityPoint(0.0, 5.283);
-        SOLVER.addVelocityPoint(0.5, 5.382);
-        SOLVER.addVelocityPoint(1.0, 6.635);
-        SOLVER.addVelocityPoint(1.5, 5.977);
-        SOLVER.addVelocityPoint(2.0, 6.367);
-        SOLVER.addVelocityPoint(2.5, 6.764);
-        SOLVER.addVelocityPoint(3.0, 7.160);
-        SOLVER.addVelocityPoint(3.5, 7.544);
-        SOLVER.addVelocityPoint(4.0, 7.928);
-        SOLVER.addVelocityPoint(4.5, 8.288);
-        SOLVER.addVelocityPoint(5.0, 8.648);
-        SOLVER.addVelocityPoint(5.5, 8.996);
-        SOLVER.addVelocityPoint(6.0, 10.332);
-        SOLVER.addVelocityPoint(6.5, 10.656);
-        SOLVER.addVelocityPoint(7.0, 10.980);
-        SOLVER.addVelocityPoint(7.5, 11.292);
-        SOLVER.addVelocityPoint(8.0, 11.592);
-        SOLVER.addVelocityPoint(8.5, 11.892);
-        SOLVER.addVelocityPoint(9.0, 12.180);
-        SOLVER.addVelocityPoint(9.5, 12.456);
-        SOLVER.addVelocityPoint(10.0, 12.744);
     }
 }
