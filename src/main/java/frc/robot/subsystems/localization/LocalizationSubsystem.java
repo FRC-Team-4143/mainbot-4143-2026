@@ -79,7 +79,7 @@ public class LocalizationSubsystem extends MwSubsystem<LocalizationStates, Local
                         module_positions,
                         Pose2d.kZero,
                         CONSTANTS.DEFAULT_ODOM_COVARIANCE,
-                        CONSTANTS.DEFAULT_VISION_COVARIANCE);
+                        CONSTANTS.DEFAULT_VISION_STD_DEV);
 
         // Put the field visualizer on SmartDashboard once during initialization
         SmartDashboard.putData("Field", field_visualizer_);
@@ -113,8 +113,8 @@ public class LocalizationSubsystem extends MwSubsystem<LocalizationStates, Local
                         field_pose_estimator_,
                         vision_measurements,
                         shooting_focus_tags_,
-                        CONSTANTS.SHOOTING_FOCUSED_COVARIANCE,
-                        CONSTANTS.SHOOTING_NOT_FOCUSED_COVARIANCE);
+                        CONSTANTS.SHOOTING_FOCUSED_STD_DEV,
+                        CONSTANTS.SHOOTING_NOT_FOCUSED_STD_DEV);
                 break;
             case CLIMBING_FOCUS: // This state uses the same swerve measurements but different
                 // vision covariances based on climbing-focused tags
@@ -124,8 +124,8 @@ public class LocalizationSubsystem extends MwSubsystem<LocalizationStates, Local
                         field_pose_estimator_,
                         vision_measurements,
                         climbing_focus_tags_,
-                        CONSTANTS.CLIMBING_FOCUSED_COVARIANCE,
-                        CONSTANTS.CLIMBING_NOT_FOCUSED_COVARIANCE);
+                        CONSTANTS.CLIMBING_FOCUSED_STD_DEV,
+                        CONSTANTS.CLIMBING_NOT_FOCUSED_STD_DEV);
                 break;
             case FULL: // This state uses full odometry + vision data
             default:
@@ -168,8 +168,8 @@ public class LocalizationSubsystem extends MwSubsystem<LocalizationStates, Local
                 pose_estimator,
                 vision_measurements,
                 Set.of(), // Empty filter set
-                CONSTANTS.DEFAULT_VISION_COVARIANCE,
-                CONSTANTS.DEFAULT_VISION_COVARIANCE);
+                CONSTANTS.DEFAULT_VISION_STD_DEV,
+                CONSTANTS.DEFAULT_VISION_STD_DEV);
     }
 
     /**

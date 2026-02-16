@@ -60,7 +60,7 @@ public class ShooterConstants extends MwConstants {
             0.5
                     * FLYWHEEL_MASS_KG
                     * Math.pow(FLYWHEEL_WHEEL_RADIUS_METERS, 2.0); // kg m^2, approximate
-    public final double FLYWHEEL_EFF_FACTOR = 1.0;
+    public final double FLYWHEEL_EFF_FACTOR = 2.2;
     public final Slot1Configs FLYWHEEL_VELOCITY_GAINS =
             new Slot1Configs().withKP(0.1).withKV(0.118).withKI(6);
 
@@ -81,7 +81,7 @@ public class ShooterConstants extends MwConstants {
             9.0 * (372.0 / 40.0); // motor rotations / output mechanism rotations
     // Min/max physical hood angles (radians). Configure to match the mechanical limits
     public final double HOOD_MIN_ANGLE = Units.degreesToRadians(30);
-    public final double HOOD_MAX_ANGLE = Units.degreesToRadians(83.673);
+    public final double HOOD_MAX_ANGLE = Units.degreesToRadians(79);
     public final double HOOD_HOME_POSITION = Units.degreesToRadians(81.170);
     public final Slot0Configs HOOD_POSITION_GAINS = new Slot0Configs().withKP(100).withKD(0.15);
 
@@ -108,7 +108,9 @@ public class ShooterConstants extends MwConstants {
                     new Translation2d(
                             Units.inchesToMeters(getDoubleConstant("translation", "x")),
                             Units.inchesToMeters(getDoubleConstant("translation", "y"))),
-                    new Rotation2d());
+                            Rotation2d.kZero);
+    public final Rotation2d SHOOTER_ROTATION = new Rotation2d(Units.degreesToRadians(getDoubleConstant("rotation", "z")));
+
 
     // =============================================================================
     // MOTOR CONFIGURATION OBJECTS
@@ -197,18 +199,18 @@ public class ShooterConstants extends MwConstants {
         TURRET_MOTOR_CONFIGS.config.Slot0 = TURRET_POSITION_GAINS;
 
         // Solver Map Population
-        SOLVER.addVelocityPoint(0.0, 6.283);
-        SOLVER.addVelocityPoint(0.5, 6.382);
+        SOLVER.addVelocityPoint(0.0, 5.283);
+        SOLVER.addVelocityPoint(0.5, 5.382);
         SOLVER.addVelocityPoint(1.0, 6.635);
-        SOLVER.addVelocityPoint(1.5, 6.977);
-        SOLVER.addVelocityPoint(2.0, 7.367);
-        SOLVER.addVelocityPoint(2.5, 7.764);
-        SOLVER.addVelocityPoint(3.0, 8.160);
-        SOLVER.addVelocityPoint(3.5, 8.544);
-        SOLVER.addVelocityPoint(4.0, 8.928);
-        SOLVER.addVelocityPoint(4.5, 9.288);
-        SOLVER.addVelocityPoint(5.0, 9.648);
-        SOLVER.addVelocityPoint(5.5, 9.996);
+        SOLVER.addVelocityPoint(1.5, 5.977);
+        SOLVER.addVelocityPoint(2.0, 6.367);
+        SOLVER.addVelocityPoint(2.5, 6.764);
+        SOLVER.addVelocityPoint(3.0, 7.160);
+        SOLVER.addVelocityPoint(3.5, 7.544);
+        SOLVER.addVelocityPoint(4.0, 7.928);
+        SOLVER.addVelocityPoint(4.5, 8.288);
+        SOLVER.addVelocityPoint(5.0, 8.648);
+        SOLVER.addVelocityPoint(5.5, 8.996);
         SOLVER.addVelocityPoint(6.0, 10.332);
         SOLVER.addVelocityPoint(6.5, 10.656);
         SOLVER.addVelocityPoint(7.0, 10.980);

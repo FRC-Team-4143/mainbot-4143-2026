@@ -12,8 +12,10 @@ import dev.doglog.DogLog;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
+import frc.robot.lib2026.FieldRegions;
 import frc.robot.lib2026.FuelSim;
 import frc.robot.subsystems.intake.IntakeConstants.IntakeStates;
 import frc.robot.subsystems.intake.IntakeSubsystem;
@@ -37,6 +39,7 @@ public class SimulationSubsystem extends MwSubsystem<SimulationStates, Simulatio
 
     private MwVisionSim vision_sim_;
     private int hopper_fuel_count_ = 0;
+    private boolean outpost_full = false;
     private final Random noise_generator_ = new Random();
     private double last_shot_timestamp_ = 0.0;
 
@@ -48,7 +51,7 @@ public class SimulationSubsystem extends MwSubsystem<SimulationStates, Simulatio
                     ProxyServerThread.getInstance()
                             .initializeVisionSimulation(
                                     LocalizationSubsystem.getInstance().getAprilTagLayout());
-            vision_sim_.addCamera("Front-Camera", CONSTANTS.FRONT_CAMERA_TRANSFORM);
+            vision_sim_.addCamera("Back-Camera", CONSTANTS.BACK_CAMERA_TRANSFORM);
             vision_sim_.addCamera("Left-Camera", CONSTANTS.LEFT_CAMERA_TRANSFORM);
             vision_sim_.addCamera("Right-Camera", CONSTANTS.RIGHT_CAMERA_TRANSFORM);
             LocalizationSubsystem.getInstance().enableSwerveMeasurementNoise();
@@ -95,8 +98,16 @@ public class SimulationSubsystem extends MwSubsystem<SimulationStates, Simulatio
     public void updateLogic(double timestamp) {
         // Vision Simulation
         if (CONSTANTS.SIM_VISION_ENABLED) {
-            Pose2d robot_pose = LocalizationSubsystem.getInstance().getSmoothPose();
+                Pose2d robot_pose = LocalizationSubsystem.getInstance().getSmoothPose();
             ProxyServerThread.getInstance().updateVisionSimulation(robot_pose);
+        }
+
+        // Get Fuel from the Outpost
+        if(DriverStation.isAutonomousEnabled() &&
+            FieldRegions.OUTPOST_REGION.contains(LocalizationSubsystem.getInstance().getFieldPose()) &&
+            outpost_full) {
+            hopper_fuel_count_ = Math.min(hopper_fuel_count_ + 24, CONSTANTS.HOPPER_CAPACITY); // Simulate picking up a full load of fuel from the outpost
+            outpost_full = false; // Simulate the outpost being emptied after one pickup
         }
 
         // FuelSim
@@ -132,7 +143,7 @@ public class SimulationSubsystem extends MwSubsystem<SimulationStates, Simulatio
                                 Radians.of(
                                         LocalizationSubsystem.getInstance()
                                                 .getFieldPose()
-                                                .getRotation()
+                                                .getRotation().rotateBy(CONSTANTS.SHOOTER_LAUNCH_ROTATION)
                                                 .getRadians()),
                                 CONSTANTS.SHOOTER_LAUNCH_OFFSET);
                 ShooterSubsystem.getInstance()

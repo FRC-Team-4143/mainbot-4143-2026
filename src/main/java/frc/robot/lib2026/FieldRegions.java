@@ -159,6 +159,17 @@ public class FieldRegions {
                     },
                     "OPP_ALLIANCE_HOLD_ZONE");
 
+    public static PolygonRegion OUTPOST_REGION =
+            new PolygonRegion(
+                new Translation2d[] {
+                        new Translation2d(-0.5, 0),
+                        new Translation2d(-0.5, 1.265936),
+                        new Translation2d(0.508, 1.265936),
+                        new Translation2d(0.508, 0),
+                        new Translation2d(-0.5, 0),
+                    },
+                    "OUTPOST_REGION");
+
     public static ArrayList<PolygonRegion> HOLD_REGIONS =
             new ArrayList<>(List.of(HOLD_ZONE, OPP_HOLD_ZONE, OPP_ALLIANCE_HOLD_ZONE));
 
@@ -169,6 +180,7 @@ public class FieldRegions {
      */
     public static void flipRegions() {
         DEPOT_REGION = AllianceFlipUtil.apply(DEPOT_REGION);
+        OUTPOST_REGION = AllianceFlipUtil.apply(OUTPOST_REGION);
         ALLIANCE_ZONE = AllianceFlipUtil.apply(ALLIANCE_ZONE);
         OPP_ALLIANCE_HOLD_ZONE = AllianceFlipUtil.apply(OPP_ALLIANCE_HOLD_ZONE);
         OPP_ALLIANCE_ZONE = AllianceFlipUtil.apply(OPP_ALLIANCE_ZONE);
