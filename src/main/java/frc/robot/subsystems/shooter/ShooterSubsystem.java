@@ -53,7 +53,6 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
     private double flywheel_omega_ = 0.0;
     private double turret_heading_ = 0.0;
     private double hood_angle_ = CONSTANTS.HOOD_MAX_ANGLE;
-    private double manual_indexer_percent_ = 0.0;
     private Translation3d target_ = new Translation3d(0.0, 0.0, 0.0);
     private TrajectorySol solution_;
 
@@ -210,10 +209,7 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
                 }
                 break;
             case MANUAL:
-                flywheel_.setTargetVelocity(flywheel_omega_);
-                indexer_.setTargetDutyCycle(manual_indexer_percent_);
-                hood_.setTargetPosition(hood_angle_);
-                if (CONSTANTS.TURRET_ENABLED) turret_.setTargetPosition(0);
+                // TODO: Add fixed velocity/hood angle for manual alignment against the hub
                 break;
             case TUNING:
                 // code does NOTHING to allow for testing
