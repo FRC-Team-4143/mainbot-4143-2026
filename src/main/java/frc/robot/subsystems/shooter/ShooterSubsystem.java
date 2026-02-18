@@ -51,6 +51,7 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
                     CONSTANTS.LAUNCH_HEIGHT,
                     true);
     private double flywheel_omega_ = 0.0;
+    private double flywheel_eff_factor_ = CONSTANTS.FLYWHEEL_EFF_FACTOR;
     private double turret_heading_ = 0.0;
     private double hood_angle_ = CONSTANTS.HOOD_MAX_ANGLE;
     private Translation3d target_ = new Translation3d(0.0, 0.0, 0.0);
@@ -106,6 +107,8 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
                 "Home Hood",
                 Commands.runOnce(() -> hood_.setCurrentPosition(CONSTANTS.HOOD_HOME_POSITION))
                         .ignoringDisable(true));
+
+        DogLog.tunable(getSubsystemKey() + "flywheel_eff", flywheel_eff_factor_, (value) -> {flywheel_eff_factor_ = value;});
     }
 
     @Override
@@ -144,7 +147,7 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
         // Skip the shooter parameters update if solution invalid on in manual mode to allow for
         // testing with manual setpoints
         if (solution_.valid && system_state_ != ShooterStates.MANUAL) {
-            flywheel_omega_ = solution_.velocity / CONSTANTS.FLYWHEEL_WHEEL_RADIUS_METERS;
+            flywheel_omega_ = solution_.velocity / CONSTANTS.FLYWHEEL_WHEEL_RADIUS_METERS * flywheel_eff_factor_;
 
             // Calculate launch heading and handle turret wrapping
             if (CONSTANTS.TURRET_ENABLED) {
@@ -209,7 +212,9 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
                 }
                 break;
             case MANUAL:
-                // TODO: Add fixed velocity/hood angle for manual alignment against the hub
+                flywheel_.setTargetVelocity(CONSTANTS.FLYWHEEL_MANUAL_Velocity);
+                indexer_.setTargetDutyCycle(CONSTANTS.INDEXER_DUTY_CYCLE);
+                hood_.setCurrentPosition(CONSTANTS.HOOD_MANUAL_ANGLE);
                 break;
             case TUNING:
                 // code does NOTHING to allow for testing
@@ -415,25 +420,15 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
     private void populateInitialVelocityMap() {
         // Solver Map Population
         SOLVER.addVelocityPoint(0.0, 5.283);
-        SOLVER.addVelocityPoint(0.5, 5.382);
         SOLVER.addVelocityPoint(1.0, 6.635);
-        SOLVER.addVelocityPoint(1.5, 5.977);
-        SOLVER.addVelocityPoint(2.0, 6.367);
-        SOLVER.addVelocityPoint(2.5, 6.764);
-        SOLVER.addVelocityPoint(3.0, 7.160);
-        SOLVER.addVelocityPoint(3.5, 7.544);
+        SOLVER.addVelocityPoint(2.0, 6.167);
+        SOLVER.addVelocityPoint(3.0, 6.50);
         SOLVER.addVelocityPoint(4.0, 7.928);
-        SOLVER.addVelocityPoint(4.5, 8.288);
         SOLVER.addVelocityPoint(5.0, 8.648);
-        SOLVER.addVelocityPoint(5.5, 8.996);
         SOLVER.addVelocityPoint(6.0, 10.332);
-        SOLVER.addVelocityPoint(6.5, 10.656);
         SOLVER.addVelocityPoint(7.0, 10.980);
-        SOLVER.addVelocityPoint(7.5, 11.292);
         SOLVER.addVelocityPoint(8.0, 11.592);
-        SOLVER.addVelocityPoint(8.5, 11.892);
         SOLVER.addVelocityPoint(9.0, 12.180);
-        SOLVER.addVelocityPoint(9.5, 12.456);
         SOLVER.addVelocityPoint(10.0, 12.744);
     }
 
