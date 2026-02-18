@@ -1,8 +1,7 @@
 package frc.robot.subsystems.shooter;
 
 import com.marswars.geometry.AllianceFlipUtil;
-import com.marswars.geometry.LaunchTrajectory;
-import com.marswars.geometry.LaunchTrajectory.TrajectorySol;
+import com.marswars.geometry.LaunchCalculator;
 import com.marswars.mechanisms.FlywheelMech;
 import com.marswars.mechanisms.RollerMech;
 import com.marswars.mechanisms.TurretMech;
@@ -14,7 +13,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
-import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -44,19 +43,12 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
     private RollerMech hood_;
     private TurretMech turret_;
 
-    // Shooter parameters calculated from TrajectorySolver
-    private final LaunchTrajectory SOLVER =
-            new LaunchTrajectory(
-                    getSubsystemKey() + "TrajectorySolver/",
-                    new Translation3d(),
-                    CONSTANTS.LAUNCH_HEIGHT,
-                    true);
+    // Shooter parameters calculated from LaunchCalculator
     private double flywheel_omega_ = 0.0;
-    private InterpolatingDoubleTreeMap flywheel_eff_map_;
     private double turret_heading_ = 0.0;
     private double hood_angle_ = CONSTANTS.HOOD_MAX_ANGLE;
-    private Translation3d target_ = new Translation3d(0.0, 0.0, 0.0);
-    private TrajectorySol solution_;
+    private Translation2d target_ = new Translation2d(0.0, 0.0);
+    private LaunchCalculator.LaunchParameters launch_params_ = null;
 
     // Adjustable shooting tolerances - initialized to strict defaults
     private double flywheel_speed_tolerance_ = FieldTargets.Shooter.FLYWHEEL_SPEED_TOLERANCE;
@@ -103,8 +95,6 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
                             CONSTANTS.TURRET_MOI);
         }
 
-        populateInitialVelocityMap();
-        populateEfficiencyMap();
         SmartDashboard.putData(
                 "Home Hood",
                 Commands.runOnce(() -> hood_.setCurrentPosition(CONSTANTS.HOOD_HOME_POSITION))
@@ -127,42 +117,47 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
         }
 
         // Update launch heading for turret (wrapping logic is not needed for drivetrain rotation)
-        if (CONSTANTS.TURRET_ENABLED && (solution_ != null && solution_.valid)) {
-            turret_heading_ = solution_.heading_angle - robotPose.getRotation().getRadians();
+        if (CONSTANTS.TURRET_ENABLED && (launch_params_ != null && launch_params_.is_valid)) {
+            turret_heading_ =
+                    launch_params_.heading_angle.getRadians()
+                            - robotPose.getRotation().getRadians();
             handleTurretWrap();
-        } else if (solution_ != null && solution_.valid) {
-            turret_heading_ = solution_.heading_angle;
+        } else if (launch_params_ != null && launch_params_.is_valid) {
+            turret_heading_ = launch_params_.heading_angle.getRadians();
         }
     }
 
     @Override
     public void updateLogic(double timestamp) {
-        // Get the current robot pose
+        // Get the current robot pose and velocity
         Pose2d robot_pose = LocalizationSubsystem.getInstance().getFieldPose();
+        ChassisSpeeds robot_velocity =
+                LocalizationSubsystem.getInstance().getChassisSpeedsFieldRelative();
 
-        // Calculate the trajectory solution for the current target and robot pose
-        solution_ = SOLVER.getSolution(robot_pose.transformBy(CONSTANTS.SHOOTER_CENTER));
+        // Calculate launch parameters using the LaunchCalculator
+        launch_params_ =
+                CONSTANTS.LAUNCH_CALCULATOR.calculateLaunchParameters(
+                        robot_pose, robot_velocity, target_);
 
-        // Update shooter parameters based on the solution
-        // Skip the shooter parameters update if solution invalid on in manual mode to allow for
+        // Update shooter parameters based on the launch calculator
+        // Skip the shooter parameters update if invalid or in manual mode to allow for
         // testing with manual setpoints
-        if (solution_.valid && system_state_ != ShooterStates.MANUAL) {
-            double eff_factor = getEfficiencyFactor(solution_.velocity);
-            flywheel_omega_ =
-                    solution_.velocity / CONSTANTS.FLYWHEEL_WHEEL_RADIUS_METERS * eff_factor;
+        if (launch_params_.is_valid && system_state_ != ShooterStates.MANUAL) {
+            flywheel_omega_ = launch_params_.flywheel_speed;
 
             // Calculate launch heading and handle turret wrapping
             if (CONSTANTS.TURRET_ENABLED) {
-                turret_heading_ = solution_.heading_angle - robot_pose.getRotation().getRadians();
+                turret_heading_ =
+                        launch_params_.heading_angle.minus(robot_pose.getRotation()).getRadians();
                 handleTurretWrap();
             } else {
-                turret_heading_ = solution_.heading_angle + CONSTANTS.SHOOTER_ROTATION.getRadians();
+                turret_heading_ = launch_params_.heading_angle.getRadians();
             }
 
             // Clamp hood angle to mechanical limits
             hood_angle_ =
                     MathUtil.clamp(
-                            solution_.exit_angle,
+                            launch_params_.hood_angle,
                             CONSTANTS.HOOD_MIN_ANGLE,
                             CONSTANTS.HOOD_MAX_ANGLE);
         }
@@ -230,19 +225,23 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
                 break;
         }
 
-        // TrajectorySolver Logging
-        DogLog.log(getSubsystemKey() + "TrajectorySolver/Valid", solution_.valid);
+        // LaunchCalculator Logging
+        DogLog.log(getSubsystemKey() + "LaunchCalculator/Valid", launch_params_.is_valid);
         DogLog.log(
-                getSubsystemKey() + "TrajectorySolver/LaunchAngle",
-                Units.radiansToDegrees(solution_.exit_angle));
+                getSubsystemKey() + "LaunchCalculator/HoodAngle",
+                Units.radiansToDegrees(launch_params_.hood_angle));
         DogLog.log(
-                getSubsystemKey() + "TrajectorySolver/LaunchHeading",
-                Rotation2d.fromRadians(solution_.heading_angle));
-        DogLog.log(getSubsystemKey() + "TrajectorySolver/LaunchVelocity", solution_.velocity);
-        DogLog.log(getSubsystemKey() + "TrajectorySolver/Target", target_);
+                getSubsystemKey() + "LaunchCalculator/HeadingAngle", launch_params_.heading_angle);
         DogLog.log(
-                getSubsystemKey() + "TrajectorySolver/Distance",
-                target_.toTranslation2d().getDistance(robot_pose.getTranslation()));
+                getSubsystemKey() + "LaunchCalculator/FlywheelSpeed",
+                launch_params_.flywheel_speed);
+        DogLog.log(getSubsystemKey() + "LaunchCalculator/Target", target_);
+        DogLog.log(getSubsystemKey() + "LaunchCalculator/Distance", launch_params_.distance);
+        DogLog.log(
+                getSubsystemKey() + "LaunchCalculator/DistanceNoLookahead",
+                launch_params_.distance_no_lookahead);
+        DogLog.log(
+                getSubsystemKey() + "LaunchCalculator/TimeOfFlight", launch_params_.time_of_flight);
 
         // Setpoint Logging
         DogLog.log(getSubsystemKey() + "Setpoint/FlywheelOmega", flywheel_omega_);
@@ -297,7 +296,7 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
      */
     public boolean isShooterReady() {
         // If there is no valid solution, the shooter cannot be ready
-        if (solution_ == null || !solution_.valid) {
+        if (launch_params_ == null || !launch_params_.is_valid) {
             return false;
         }
         return isFlywheelAtSpeed() && isHoodAtPosition() && isTurretAtPosition();
@@ -356,7 +355,7 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
      * @return the launch angle in radians, or the max hood angle if no valid solution
      */
     public double getLaunchAngle() {
-        if (solution_ == null || !solution_.valid) {
+        if (launch_params_ == null || !launch_params_.is_valid) {
             return CONSTANTS.HOOD_MAX_ANGLE;
         } else {
             return hood_angle_;
@@ -369,10 +368,10 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
      * @return the launch velocity in meters per second, or 0.0 if no valid solution
      */
     public double getLaunchVelocity() {
-        if (solution_ == null || !solution_.valid) {
+        if (launch_params_ == null || !launch_params_.is_valid) {
             return 0.0;
         } else {
-            return solution_.velocity;
+            return launch_params_.flywheel_speed * CONSTANTS.FLYWHEEL_WHEEL_RADIUS_METERS;
         }
     }
 
@@ -387,104 +386,44 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
 
     /**
      * Sets the target for the shooter to calculate a solution for. The target is a 3D translation
-     * where x and y are the horizontal coordinates of the target relative to the field, and z is
-     * the height of the target relative to the floor. This method will update the TrajectorySolver
-     * with the new target.
+     * where x and y are the horizontal coordinates of the target relative to the field. The z
+     * coordinate is ignored as the LaunchCalculator uses 2D targets.
      *
      * @param target the target translation in meters, where x and y are the horizontal coordinates
-     *     of the target relative to the field, and z is the height of the target relative to the
-     *     floor
+     *     of the target relative to the field
      */
     public void setTarget(Translation3d target) {
+        Translation2d target2d = target.toTranslation2d();
+        Optional<Alliance> alliance = DriverStation.getAlliance();
+        if (alliance.isPresent() && alliance.get() == Alliance.Red) {
+            target2d = AllianceFlipUtil.apply(target2d);
+        }
+        target_ = target2d;
+    }
+
+    /**
+     * Sets the target for the shooter to calculate a solution for. The target is a 2D translation
+     * where x and y are the horizontal coordinates of the target relative to the field.
+     *
+     * @param target the target translation in meters, where x and y are the horizontal coordinates
+     *     of the target relative to the field
+     */
+    public void setTarget(Translation2d target) {
         Optional<Alliance> alliance = DriverStation.getAlliance();
         if (alliance.isPresent() && alliance.get() == Alliance.Red) {
             target = AllianceFlipUtil.apply(target);
         }
         target_ = target;
-        SOLVER.setTarget(target_);
     }
 
     /**
-     * Sets whether to use the high arc or low arc solution from the TrajectorySolver. This will
-     * update the TrajectorySolver with the new arc preference.
+     * Sets whether to use the high arc or low arc solution. Note: LaunchCalculator uses map-based
+     * shooting, so this method is kept for compatibility but has no effect.
      *
      * @param highArc true to use the high arc solution, false to use the low arc solution
      */
     public void setHighArc(boolean highArc) {
-        SOLVER.setHighArc(highArc);
-    }
-
-    /**
-     * Populates the initial velocity map for the TrajectorySolver with empirical data points. This
-     * method can be modified to add or adjust velocity points as needed for tuning the shooter
-     * performance.
-     */
-    private void populateInitialVelocityMap() {
-        // Solver Map Population
-        SOLVER.addVelocityPoint(0.0, 5.2);
-        SOLVER.addVelocityPoint(1.0, 6.6);
-        SOLVER.addVelocityPoint(2.0, 6.4);
-        SOLVER.addVelocityPoint(3.0, 6.7);
-        SOLVER.addVelocityPoint(4.0, 7.9);
-        SOLVER.addVelocityPoint(5.0, 8.8);
-        SOLVER.addVelocityPoint(6.0, 10.3);
-        SOLVER.addVelocityPoint(7.0, 10.9);
-        SOLVER.addVelocityPoint(8.0, 11.5);
-        SOLVER.addVelocityPoint(9.0, 12.1);
-        SOLVER.addVelocityPoint(10.0, 12.7);
-    }
-
-    /**
-     * Populates the efficiency factor map based on solution velocity. This map allows for
-     * velocity-dependent compensation of the flywheel efficiency, accounting for variations in ball
-     * compression, spin, and other factors that change with launch velocity.
-     */
-    private void populateEfficiencyMap() {
-        flywheel_eff_map_ = new InterpolatingDoubleTreeMap();
-
-        // Initialize with the default efficiency factor for all velocities
-        // These can be tuned independently via DogLog tunables
-        addEfficiencyPoint(5.0, CONSTANTS.FLYWHEEL_EFF_FACTOR);
-        addEfficiencyPoint(7.0, CONSTANTS.FLYWHEEL_EFF_FACTOR);
-        addEfficiencyPoint(9.0, CONSTANTS.FLYWHEEL_EFF_FACTOR);
-        addEfficiencyPoint(11.0, CONSTANTS.FLYWHEEL_EFF_FACTOR);
-        addEfficiencyPoint(13.0, CONSTANTS.FLYWHEEL_EFF_FACTOR);
-    }
-
-    /**
-     * Adds an efficiency factor point to the interpolation map and creates a DogLog tunable for
-     * live tuning during testing.
-     *
-     * @param velocity the solution velocity in m/s
-     * @param efficiency the efficiency factor to apply at this velocity
-     */
-    private void addEfficiencyPoint(double velocity, double efficiency) {
-        DogLog.tunable(
-                getSubsystemKey() + "EfficiencyMap/" + velocity,
-                efficiency,
-                (value) -> updateEfficiencyPoint(velocity, value));
-        flywheel_eff_map_.put(velocity, efficiency);
-    }
-
-    /**
-     * Updates an efficiency factor point in the interpolation map (callback for DogLog tunables)
-     *
-     * @param velocity the solution velocity in m/s
-     * @param efficiency the new efficiency factor value
-     */
-    private synchronized void updateEfficiencyPoint(double velocity, double efficiency) {
-        flywheel_eff_map_.put(velocity, efficiency);
-    }
-
-    /**
-     * Gets the interpolated efficiency factor for a given solution velocity
-     *
-     * @param velocity the solution velocity in m/s
-     * @return the interpolated efficiency factor
-     */
-    private double getEfficiencyFactor(double velocity) {
-        Double efficiency = flywheel_eff_map_.get(velocity);
-        return efficiency != null ? efficiency : CONSTANTS.FLYWHEEL_EFF_FACTOR;
+        // LaunchCalculator doesn't use high/low arc - kept for compatibility
     }
 
     /**

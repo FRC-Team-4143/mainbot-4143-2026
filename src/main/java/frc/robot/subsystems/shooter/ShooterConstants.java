@@ -4,6 +4,7 @@ import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.Slot1Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.marswars.geometry.LaunchCalculator;
 import com.marswars.subsystem.MwConstants;
 import com.marswars.util.FxMotorConfig;
 import com.marswars.util.FxMotorConfig.FxMotorType;
@@ -106,9 +107,7 @@ public class ShooterConstants extends MwConstants {
                     new Translation2d(
                             Units.inchesToMeters(getDoubleConstant("translation", "x")),
                             Units.inchesToMeters(getDoubleConstant("translation", "y"))),
-                    Rotation2d.kZero);
-    public final Rotation2d SHOOTER_ROTATION =
-            new Rotation2d(Units.degreesToRadians(getDoubleConstant("rotation", "z")));
+                    Rotation2d.fromDegrees(getDoubleConstant("rotation", "z")));
 
     // =============================================================================
     // MOTOR CONFIGURATION OBJECTS
@@ -124,10 +123,60 @@ public class ShooterConstants extends MwConstants {
     public final boolean TURRET_ENABLED = getBoolConstant("turret_enabled");
 
     // =============================================================================
+    // LAUNCH CALCULATOR - Map-based shooting with motion compensation
+    // =============================================================================
+    public final LaunchCalculator LAUNCH_CALCULATOR;
+
+    // =============================================================================
     // CONSTRUCTOR - MOTOR CONFIGURATION INITIALIZATION
     // =============================================================================
 
     public ShooterConstants() {
+        // Initialize Launch Calculator with robot-to-shooter transform
+        LAUNCH_CALCULATOR = new LaunchCalculator("Shooter/LaunchCalculator/", SHOOTER_CENTER);
+
+        // Configure range limits
+        LAUNCH_CALCULATOR.setMinDistance(1.34); // Minimum shooting distance in meters
+        LAUNCH_CALCULATOR.setMaxDistance(5.68); // Maximum shooting distance in meters
+        LAUNCH_CALCULATOR.setPhaseDelay(0.03); // Processing and actuator delay in seconds
+
+        // Populate hood angle map (distance in meters -> angle in radians)
+        // Empirically determined values from testing
+        LAUNCH_CALCULATOR.addHoodAnglePoint(1.34, Units.degreesToRadians(19.0));
+        LAUNCH_CALCULATOR.addHoodAnglePoint(1.78, Units.degreesToRadians(19.0));
+        LAUNCH_CALCULATOR.addHoodAnglePoint(2.17, Units.degreesToRadians(24.0));
+        LAUNCH_CALCULATOR.addHoodAnglePoint(2.81, Units.degreesToRadians(27.0));
+        LAUNCH_CALCULATOR.addHoodAnglePoint(3.82, Units.degreesToRadians(29.0));
+        LAUNCH_CALCULATOR.addHoodAnglePoint(4.09, Units.degreesToRadians(30.0));
+        LAUNCH_CALCULATOR.addHoodAnglePoint(4.40, Units.degreesToRadians(31.0));
+        LAUNCH_CALCULATOR.addHoodAnglePoint(4.77, Units.degreesToRadians(32.0));
+        LAUNCH_CALCULATOR.addHoodAnglePoint(5.57, Units.degreesToRadians(32.0));
+        LAUNCH_CALCULATOR.addHoodAnglePoint(5.60, Units.degreesToRadians(35.0));
+
+        // Populate flywheel speed map (distance in meters -> speed in rad/s)
+        // Empirically determined values from testing
+        LAUNCH_CALCULATOR.addFlywheelSpeedPoint(1.34, 210.0);
+        LAUNCH_CALCULATOR.addFlywheelSpeedPoint(1.78, 220.0);
+        LAUNCH_CALCULATOR.addFlywheelSpeedPoint(2.17, 220.0);
+        LAUNCH_CALCULATOR.addFlywheelSpeedPoint(2.81, 230.0);
+        LAUNCH_CALCULATOR.addFlywheelSpeedPoint(3.82, 250.0);
+        LAUNCH_CALCULATOR.addFlywheelSpeedPoint(4.09, 255.0);
+        LAUNCH_CALCULATOR.addFlywheelSpeedPoint(4.40, 260.0);
+        LAUNCH_CALCULATOR.addFlywheelSpeedPoint(4.77, 265.0);
+        LAUNCH_CALCULATOR.addFlywheelSpeedPoint(5.57, 275.0);
+        LAUNCH_CALCULATOR.addFlywheelSpeedPoint(5.60, 290.0);
+
+        // Populate time of flight map (distance in meters -> time in seconds)
+        // Empirically determined values from testing
+        LAUNCH_CALCULATOR.addTimeOfFlightPoint(1.38, 0.90);
+        LAUNCH_CALCULATOR.addTimeOfFlightPoint(1.88, 1.09);
+        LAUNCH_CALCULATOR.addTimeOfFlightPoint(3.15, 1.11);
+        LAUNCH_CALCULATOR.addTimeOfFlightPoint(4.55, 1.12);
+        LAUNCH_CALCULATOR.addTimeOfFlightPoint(5.68, 1.16);
+
+        // =============================================================================
+        // MOTOR CONFIGURATION INITIALIZATION
+        // =============================================================================
         // Configure Indexer Leader Motor
         INDEXER_LEADER_MOTOR_CONFIG.can_id = INDEXER_LEADER_ID;
         INDEXER_LEADER_MOTOR_CONFIG.motor_type = FxMotorType.X44;
