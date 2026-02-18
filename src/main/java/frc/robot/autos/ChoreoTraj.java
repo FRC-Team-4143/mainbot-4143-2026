@@ -41,8 +41,8 @@ public record ChoreoTraj(
 	public static final ChoreoTraj DoubleNeutralRight = new ChoreoTraj(
 	    "DoubleNeutralRight",
 	    OptionalInt.empty(),
-	    9.47873,
-	    new Pose2d(3.529, 2.123, Rotation2d.fromRadians(-2.444)),
+	    9.47504,
+	    new Pose2d(3.529, 2.123, Rotation2d.fromRadians(0.709)),
 	    new Pose2d(1.057, 4.752, Rotation2d.fromRadians(0))
 	);
 	public static final ChoreoTraj LeftStartNeutralOutpost1 = new ChoreoTraj(
@@ -69,16 +69,16 @@ public record ChoreoTraj(
 	public static final ChoreoTraj RightStartNeutralClimb1 = new ChoreoTraj(
 	    "RightStartNeutralClimb1",
 	    OptionalInt.empty(),
-	    2.6991,
+	    2.73228,
 	    new Pose2d(3.69, 2.924, Rotation2d.fromRadians(0)),
-	    new Pose2d(5.62, 5.828, Rotation2d.fromRadians(0))
+	    new Pose2d(5.62, 5.828, Rotation2d.fromRadians(3.12))
 	);
 	public static final ChoreoTraj RightStartNeutralClimb2 = new ChoreoTraj(
 	    "RightStartNeutralClimb2",
 	    OptionalInt.empty(),
-	    1.22109,
-	    new Pose2d(5.62, 5.828, Rotation2d.fromRadians(0)),
-	    new Pose2d(1.079, 4.814, Rotation2d.fromRadians(0))
+	    4.80543,
+	    new Pose2d(5.62, 5.828, Rotation2d.fromRadians(3.12)),
+	    new Pose2d(1.092, 4.755, Rotation2d.fromRadians(0))
 	);
 	public static final ChoreoTraj RightStartNeutralDepot1 = new ChoreoTraj(
 	    "RightStartNeutralDepot1",
