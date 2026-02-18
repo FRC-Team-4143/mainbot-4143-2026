@@ -57,6 +57,9 @@ public class LocalizationConstants extends MwConstants {
     // second)
     public final double YAW_RATE_DISCARD = Units.degreesToRadians(720.0);
 
+    // Minimum number of visible tags required to perform a vision update
+    public final int MIN_TAG_COUNT_FOR_VISION_UPDATE = 2;
+
     // =============================================================================
     // CONSTRUCTOR
     // =============================================================================
