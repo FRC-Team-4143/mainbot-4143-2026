@@ -14,6 +14,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -51,7 +52,7 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
                     CONSTANTS.LAUNCH_HEIGHT,
                     true);
     private double flywheel_omega_ = 0.0;
-    private double flywheel_eff_factor_ = CONSTANTS.FLYWHEEL_EFF_FACTOR;
+    private InterpolatingDoubleTreeMap flywheel_eff_map_;
     private double turret_heading_ = 0.0;
     private double hood_angle_ = CONSTANTS.HOOD_MAX_ANGLE;
     private Translation3d target_ = new Translation3d(0.0, 0.0, 0.0);
@@ -103,12 +104,11 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
         }
 
         populateInitialVelocityMap();
+        populateEfficiencyMap();
         SmartDashboard.putData(
                 "Home Hood",
                 Commands.runOnce(() -> hood_.setCurrentPosition(CONSTANTS.HOOD_HOME_POSITION))
                         .ignoringDisable(true));
-
-        DogLog.tunable(getSubsystemKey() + "flywheel_eff", flywheel_eff_factor_, (value) -> {flywheel_eff_factor_ = value;});
     }
 
     @Override
@@ -121,7 +121,7 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
         } else if (system_state_ == ShooterStates.AIMING && isShooterReady()) {
             system_state_ = ShooterStates.SHOOT;
         } else if (system_state_ == ShooterStates.AIMING && !isShooterReady()) {
-            // Nap time : Blocks deafult transition from occuring
+            // Nap time : Blocks default transition from occurring
         } else {
             system_state_ = wanted;
         }
@@ -147,7 +147,9 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
         // Skip the shooter parameters update if solution invalid on in manual mode to allow for
         // testing with manual setpoints
         if (solution_.valid && system_state_ != ShooterStates.MANUAL) {
-            flywheel_omega_ = solution_.velocity / CONSTANTS.FLYWHEEL_WHEEL_RADIUS_METERS * flywheel_eff_factor_;
+            double eff_factor = getEfficiencyFactor(solution_.velocity);
+            flywheel_omega_ =
+                    solution_.velocity / CONSTANTS.FLYWHEEL_WHEEL_RADIUS_METERS * eff_factor;
 
             // Calculate launch heading and handle turret wrapping
             if (CONSTANTS.TURRET_ENABLED) {
@@ -430,6 +432,59 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
         SOLVER.addVelocityPoint(8.0, 11.5);
         SOLVER.addVelocityPoint(9.0, 12.1);
         SOLVER.addVelocityPoint(10.0, 12.7);
+    }
+
+    /**
+     * Populates the efficiency factor map based on solution velocity. This map allows for
+     * velocity-dependent compensation of the flywheel efficiency, accounting for variations in ball
+     * compression, spin, and other factors that change with launch velocity.
+     */
+    private void populateEfficiencyMap() {
+        flywheel_eff_map_ = new InterpolatingDoubleTreeMap();
+
+        // Initialize with the default efficiency factor for all velocities
+        // These can be tuned independently via DogLog tunables
+        addEfficiencyPoint(5.0, CONSTANTS.FLYWHEEL_EFF_FACTOR);
+        addEfficiencyPoint(7.0, CONSTANTS.FLYWHEEL_EFF_FACTOR);
+        addEfficiencyPoint(9.0, CONSTANTS.FLYWHEEL_EFF_FACTOR);
+        addEfficiencyPoint(11.0, CONSTANTS.FLYWHEEL_EFF_FACTOR);
+        addEfficiencyPoint(13.0, CONSTANTS.FLYWHEEL_EFF_FACTOR);
+    }
+
+    /**
+     * Adds an efficiency factor point to the interpolation map and creates a DogLog tunable for
+     * live tuning during testing.
+     *
+     * @param velocity the solution velocity in m/s
+     * @param efficiency the efficiency factor to apply at this velocity
+     */
+    private void addEfficiencyPoint(double velocity, double efficiency) {
+        DogLog.tunable(
+                getSubsystemKey() + "EfficiencyMap/" + velocity,
+                efficiency,
+                (value) -> updateEfficiencyPoint(velocity, value));
+        flywheel_eff_map_.put(velocity, efficiency);
+    }
+
+    /**
+     * Updates an efficiency factor point in the interpolation map (callback for DogLog tunables)
+     *
+     * @param velocity the solution velocity in m/s
+     * @param efficiency the new efficiency factor value
+     */
+    private synchronized void updateEfficiencyPoint(double velocity, double efficiency) {
+        flywheel_eff_map_.put(velocity, efficiency);
+    }
+
+    /**
+     * Gets the interpolated efficiency factor for a given solution velocity
+     *
+     * @param velocity the solution velocity in m/s
+     * @return the interpolated efficiency factor
+     */
+    private double getEfficiencyFactor(double velocity) {
+        Double efficiency = flywheel_eff_map_.get(velocity);
+        return efficiency != null ? efficiency : CONSTANTS.FLYWHEEL_EFF_FACTOR;
     }
 
     /**

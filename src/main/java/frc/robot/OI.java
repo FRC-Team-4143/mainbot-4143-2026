@@ -93,13 +93,14 @@ public abstract class OI {
                                 () -> {
                                     IntakeSubsystem.getInstance()
                                             .setWantedState(IntakeStates.INTAKE);
-                                //     HopperSubsystem.getInstance()
-                                //             .setWantedState(HopperStates.SHOOTING);
+                                    //     HopperSubsystem.getInstance()
+                                    //             .setWantedState(HopperStates.SHOOTING);
                                 },
                                 () -> {
                                     IntakeSubsystem.getInstance()
                                             .setWantedState(IntakeStates.STORE);
-                                //     HopperSubsystem.getInstance().setWantedState(HopperStates.IDLE);
+                                    //
+                                    // HopperSubsystem.getInstance().setWantedState(HopperStates.IDLE);
                                 }));
     }
 
