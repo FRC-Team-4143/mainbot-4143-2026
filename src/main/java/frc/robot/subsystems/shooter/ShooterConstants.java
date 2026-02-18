@@ -62,7 +62,7 @@ public class ShooterConstants extends MwConstants {
     public final double FLYWHEEL_EFF_FACTOR = 2.2;
     public final Slot1Configs FLYWHEEL_VELOCITY_GAINS =
             new Slot1Configs().withKP(0.1).withKV(0.118).withKI(6);
-    public final double FLYWHEEL_MANUAL_Velocity = 0.0;
+    public final double FLYWHEEL_MANUAL_VELOCITY = 0.0;
 
     // =============================================================================
     // MECHANICAL CONSTANTS - INDEXER
@@ -100,7 +100,6 @@ public class ShooterConstants extends MwConstants {
     public final double INDEXER_DUTY_CYCLE = 0.3; // 30% power for indexing
     public final double SHOOTER_IDLE_SPEED = 300.0;
     public final double HOOD_IDLE_POSITION = Units.degreesToRadians(80);
-    public final double LAUNCH_HEIGHT = Units.inchesToMeters(getDoubleConstant("translation", "z"));
     public final double MAX_TURRET_WRAP = Units.degreesToRadians(190);
     public final Transform2d SHOOTER_CENTER =
             new Transform2d(

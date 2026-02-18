@@ -30,13 +30,6 @@ import java.util.Optional;
 public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstants> {
     private static ShooterSubsystem instance_ = null;
 
-    public static ShooterSubsystem getInstance() {
-        if (instance_ == null) {
-            instance_ = new ShooterSubsystem();
-        }
-        return instance_;
-    }
-
     // Mechanisms
     private RollerMech indexer_;
     private FlywheelMech flywheel_;
@@ -56,6 +49,15 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
     private double turret_angle_tolerance_ = FieldTargets.Shooter.TURRET_ANGLE_TOLERANCE;
     private double rotation_angle_tolerance_ = FieldTargets.Shooter.ROTATION_ANGLE_TOLERANCE;
 
+    // getInstance
+    public static ShooterSubsystem getInstance() {
+        if (instance_ == null) {
+            instance_ = new ShooterSubsystem();
+        }
+        return instance_;
+    }
+
+    // Constructor
     public ShooterSubsystem() {
         super(ShooterStates.IDLE, new ShooterConstants());
         indexer_ =
@@ -69,6 +71,7 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
         flywheel_ =
                 new FlywheelMech(
                         getSubsystemKey(),
+                        "Flywheel",
                         List.of(
                                 CONSTANTS.SHOOTER_LEADER_MOTOR_CONFIG,
                                 CONSTANTS.SHOOTER_FOLLOWER_MOTOR_1_CONFIG,
@@ -101,6 +104,24 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
                         .ignoringDisable(true));
     }
 
+    // reset
+    @Override
+    public void reset() {
+        system_state_ = ShooterStates.IDLE;
+    }
+
+    // getIos
+    @Override
+    public List<SubsystemIoBase> getIos() {
+        // Current 4143 robot does not have a turret
+        if (CONSTANTS.TURRET_ENABLED) {
+            return Arrays.asList(indexer_, flywheel_, hood_, turret_);
+        } else {
+            return Arrays.asList(indexer_, flywheel_, hood_);
+        }
+    }
+
+    // handleStateTransition
     @Override
     public void handleStateTransition(ShooterStates wanted) {
         Pose2d robotPose = LocalizationSubsystem.getInstance().getFieldPose();
@@ -209,7 +230,7 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
                 }
                 break;
             case MANUAL:
-                flywheel_.setTargetVelocity(CONSTANTS.FLYWHEEL_MANUAL_Velocity);
+                flywheel_.setTargetVelocity(CONSTANTS.FLYWHEEL_MANUAL_VELOCITY);
                 indexer_.setTargetDutyCycle(CONSTANTS.INDEXER_DUTY_CYCLE);
                 hood_.setCurrentPosition(CONSTANTS.HOOD_MANUAL_ANGLE);
                 break;
@@ -254,39 +275,9 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
         DogLog.log(getSubsystemKey() + "ShooterIsReady/Turret", isTurretAtPosition());
     }
 
-    @Override
-    public List<SubsystemIoBase> getIos() {
-        // Current 4143 robot does not have a turret
-        if (CONSTANTS.TURRET_ENABLED) {
-            return Arrays.asList(indexer_, flywheel_, hood_, turret_);
-        } else {
-            return Arrays.asList(indexer_, flywheel_, hood_);
-        }
-    }
-
-    @Override
-    public void reset() {
-        system_state_ = ShooterStates.IDLE;
-    }
-
-    /**
-     * Handles turret wrap-around logic. If the turret angle exceeds the maximum wrap angle, it will
-     * wrap around to the other side. If currently shooting, this will transition back to AIMING
-     * state to allow the turret to reposition.
-     */
-    private void handleTurretWrap() {
-        if (turret_heading_ > CONSTANTS.MAX_TURRET_WRAP) {
-            turret_heading_ -= 2 * Math.PI;
-            if (system_state_ == ShooterStates.SHOOT) {
-                setWantedState(ShooterStates.AIMING);
-            }
-        } else if (turret_heading_ < -CONSTANTS.MAX_TURRET_WRAP) {
-            turret_heading_ += 2 * Math.PI;
-            if (system_state_ == ShooterStates.SHOOT) {
-                setWantedState(ShooterStates.AIMING);
-            }
-        }
-    }
+    // =============================================================================
+    // PUBLIC HELPER METHODS
+    // =============================================================================
 
     /**
      * Check if the shooter is ready to shoot
@@ -300,53 +291,6 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
             return false;
         }
         return isFlywheelAtSpeed() && isHoodAtPosition() && isTurretAtPosition();
-    }
-
-    /**
-     * Check if the flywheel is at the target speed within a certain tolerance
-     *
-     * @return true if the flywheel speed is within tolerance, false otherwise
-     */
-    private boolean isFlywheelAtSpeed() {
-        boolean status =
-                MathUtil.isNear(
-                        flywheel_omega_, flywheel_.getCurrentVelocity(), flywheel_speed_tolerance_);
-        return status;
-    }
-
-    /**
-     * Check if the hood is at the target position within a certain tolerance
-     *
-     * @return true if the hood is within tolerance, false otherwise
-     */
-    private boolean isHoodAtPosition() {
-        boolean status =
-                MathUtil.isNear(hood_angle_, hood_.getCurrentPosition(), hood_position_tolerance_);
-        return status;
-    }
-
-    /**
-     * Check if the turret is at the target position within a certain tolerance
-     *
-     * @return true if the turret is within tolerance, false otherwise
-     */
-    private boolean isTurretAtPosition() {
-        boolean status;
-        if (CONSTANTS.TURRET_ENABLED) {
-            status =
-                    MathUtil.isNear(
-                            turret_heading_, turret_.getCurrentPosition(), turret_angle_tolerance_);
-        } else {
-            status =
-                    MathUtil.isNear(
-                            turret_heading_,
-                            LocalizationSubsystem.getInstance()
-                                    .getFieldPose()
-                                    .getRotation()
-                                    .getRadians(),
-                            rotation_angle_tolerance_);
-        }
-        return status;
     }
 
     /**
@@ -449,5 +393,75 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
             // When no turret, turretAngleTolerance is used as rotation tolerance in degrees
             this.rotation_angle_tolerance_ = turretAngleTolerance;
         }
+    }
+
+    // =============================================================================
+    // PRIVATE HELPER METHODS
+    // =============================================================================
+
+    /**
+     * Handles turret wrap-around logic. If the turret angle exceeds the maximum wrap angle, it will
+     * wrap around to the other side. If currently shooting, this will transition back to AIMING
+     * state to allow the turret to reposition.
+     */
+    private void handleTurretWrap() {
+        if (turret_heading_ > CONSTANTS.MAX_TURRET_WRAP) {
+            turret_heading_ -= 2 * Math.PI;
+            if (system_state_ == ShooterStates.SHOOT) {
+                setWantedState(ShooterStates.AIMING);
+            }
+        } else if (turret_heading_ < -CONSTANTS.MAX_TURRET_WRAP) {
+            turret_heading_ += 2 * Math.PI;
+            if (system_state_ == ShooterStates.SHOOT) {
+                setWantedState(ShooterStates.AIMING);
+            }
+        }
+    }
+
+    /**
+     * Check if the flywheel is at the target speed within a certain tolerance
+     *
+     * @return true if the flywheel speed is within tolerance, false otherwise
+     */
+    private boolean isFlywheelAtSpeed() {
+        boolean status =
+                MathUtil.isNear(
+                        flywheel_omega_, flywheel_.getCurrentVelocity(), flywheel_speed_tolerance_);
+        return status;
+    }
+
+    /**
+     * Check if the hood is at the target position within a certain tolerance
+     *
+     * @return true if the hood is within tolerance, false otherwise
+     */
+    private boolean isHoodAtPosition() {
+        boolean status =
+                MathUtil.isNear(hood_angle_, hood_.getCurrentPosition(), hood_position_tolerance_);
+        return status;
+    }
+
+    /**
+     * Check if the turret is at the target position within a certain tolerance
+     *
+     * @return true if the turret is within tolerance, false otherwise
+     */
+    private boolean isTurretAtPosition() {
+        boolean status;
+        if (CONSTANTS.TURRET_ENABLED) {
+            status =
+                    MathUtil.isNear(
+                            turret_heading_, turret_.getCurrentPosition(), turret_angle_tolerance_);
+        } else {
+            status =
+                    MathUtil.isNear(
+                            turret_heading_,
+                            LocalizationSubsystem.getInstance()
+                                    .getFieldPose()
+                                    .getRotation()
+                                    .getRadians(),
+                            rotation_angle_tolerance_);
+        }
+        return status;
     }
 }

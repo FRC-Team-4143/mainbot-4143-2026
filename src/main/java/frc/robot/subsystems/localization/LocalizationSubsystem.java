@@ -36,14 +36,6 @@ import java.util.Set;
 public class LocalizationSubsystem extends MwSubsystem<LocalizationStates, LocalizationConstants> {
     private static LocalizationSubsystem instance_ = null;
 
-    // Singleton Accessor
-    public static LocalizationSubsystem getInstance() {
-        if (instance_ == null) {
-            instance_ = new LocalizationSubsystem();
-        }
-        return instance_;
-    }
-
     private SwerveDrivePoseEstimator smooth_pose_estimator_;
     private SwerveDrivePoseEstimator field_pose_estimator_;
     private Field2d field_visualizer_ = new Field2d();
@@ -55,6 +47,16 @@ public class LocalizationSubsystem extends MwSubsystem<LocalizationStates, Local
     private ArrayList<Pose2d> estimated_vision_poses_ = new ArrayList<Pose2d>();
     private boolean swerve_noise_enabled_ = false;
 
+    // getInstance
+    // Singleton Accessor
+    public static LocalizationSubsystem getInstance() {
+        if (instance_ == null) {
+            instance_ = new LocalizationSubsystem();
+        }
+        return instance_;
+    }
+
+    // Constructor
     public LocalizationSubsystem() {
         // (Default State, Constants Class)
         super(LocalizationStates.FULL, new LocalizationConstants());
@@ -85,16 +87,19 @@ public class LocalizationSubsystem extends MwSubsystem<LocalizationStates, Local
         SmartDashboard.putData("Field", field_visualizer_);
     }
 
-    @Override
-    public List<SubsystemIoBase> getIos() {
-        return Arrays.asList();
-    }
-
+    // reset
     @Override
     public void reset() {
         system_state_ = LocalizationStates.FULL;
     }
 
+    // getIos
+    @Override
+    public List<SubsystemIoBase> getIos() {
+        return Arrays.asList();
+    }
+
+    // updateLogic
     @Override
     public void updateLogic(double timestamp) {
         // Get latest swerve measurements from odometry thread
@@ -153,6 +158,93 @@ public class LocalizationSubsystem extends MwSubsystem<LocalizationStates, Local
         detected_tag_poses_.clear();
         estimated_vision_poses_.clear();
     }
+
+    // =============================================================================
+    // PUBLIC HELPER METHODS
+    // =============================================================================
+
+    /**
+     * @return The smoothed pose estimate of the robot.
+     */
+    public Pose2d getSmoothPose() {
+        return smooth_pose_estimator_.getEstimatedPosition();
+    }
+
+    /**
+     * @return The field-relative pose estimate of the robot.
+     */
+    public Pose2d getFieldPose() {
+        return field_pose_estimator_.getEstimatedPosition();
+    }
+
+    /**
+     * Resets both pose estimators to a new pose.
+     *
+     * @param new_pose The new pose to reset to
+     */
+    public void resetPoseEstimator(Pose2d new_pose) {
+        smooth_pose_estimator_.resetPose(new_pose);
+        field_pose_estimator_.resetPose(new_pose);
+    }
+
+    /**
+     * Resets the pose estimator to the starting pose for autonomous mode, considering alliance
+     * color.
+     */
+    public void resetPoseEstimatorAuto() {
+        // Move robot to starting pose
+        Pose2d start_pose = AutoManager.getInstance().getSelectedAuto().getStartPose();
+        Optional<Alliance> alliance = DriverStation.getAlliance();
+        if (alliance.isPresent() && alliance.get() == Alliance.Red) {
+            start_pose = AllianceFlipUtil.apply(start_pose);
+        }
+        resetPoseEstimator(start_pose);
+    }
+
+    /**
+     * @return The AprilTag field layout
+     */
+    public AprilTagFieldLayout getAprilTagLayout() {
+        return CONSTANTS.APRIL_TAG_LAYOUT;
+    }
+
+    /**
+     * @return The chassis speeds in field-relative vectors
+     */
+    public ChassisSpeeds getChassisSpeedsFieldRelative() {
+        return ChassisSpeeds.fromRobotRelativeSpeeds(
+                SwerveSubsystem.getInstance().getChassisSpeeds(), getFieldPose().getRotation());
+    }
+
+    /**
+     * Enables noise on swerve measurements for testing purposes. This will add random noise to all
+     * swerve measurements before they are applied to the pose estimators, simulating real-world
+     * sensor imperfections and allowing testing of the localization system's robustness to noisy
+     * data.
+     */
+    public void enableSwerveMeasurementNoise() {
+        swerve_noise_enabled_ = true;
+    }
+
+    /**
+     * Sets the tag focus for vision measurements based on the alliance color. This updates the sets
+     * of tag IDs
+     *
+     * @param alliance The alliance color (Red or Blue)
+     */
+    public void setTagFocus(Alliance alliance) {
+        if (alliance == Alliance.Blue) {
+            shooting_focus_tags_ = CONSTANTS.SHOOTING_FOCUS_TAG_IDS_BLUE;
+            climbing_focus_tags_ = CONSTANTS.CLIMBING_FOCUS_TAG_IDS_BLUE;
+        } else {
+            shooting_focus_tags_ = CONSTANTS.SHOOTING_FOCUS_TAG_IDS_RED;
+            climbing_focus_tags_ = CONSTANTS.CLIMBING_FOCUS_TAG_IDS_RED;
+        }
+    }
+
+    // =============================================================================
+    // PRIVATE HELPER METHODS
+    // =============================================================================
 
     /**
      * Applies vision measurements from the proxy server to the field pose estimator. Uses default
@@ -255,85 +347,6 @@ public class LocalizationSubsystem extends MwSubsystem<LocalizationStates, Local
             // Update the given Pose Estimator
             pose_estimator.updateWithTime(
                     measurement.timestamp, measurement.gyro_yaw, measurement.module_positions);
-        }
-    }
-
-    /**
-     * @return The smoothed pose estimate of the robot.
-     */
-    public Pose2d getSmoothPose() {
-        return smooth_pose_estimator_.getEstimatedPosition();
-    }
-
-    /**
-     * @return The field-relative pose estimate of the robot.
-     */
-    public Pose2d getFieldPose() {
-        return field_pose_estimator_.getEstimatedPosition();
-    }
-
-    /**
-     * Resets both pose estimators to a new pose.
-     *
-     * @param new_pose The new pose to reset to
-     */
-    public void resetPoseEstimator(Pose2d new_pose) {
-        smooth_pose_estimator_.resetPose(new_pose);
-        field_pose_estimator_.resetPose(new_pose);
-    }
-
-    /**
-     * Resets the pose estimator to the starting pose for autonomous mode, considering alliance
-     * color.
-     */
-    public void resetPoseEstimatorAuto() {
-        // Move robot to starting pose
-        Pose2d start_pose = AutoManager.getInstance().getSelectedAuto().getStartPose();
-        Optional<Alliance> alliance = DriverStation.getAlliance();
-        if (alliance.isPresent() && alliance.get() == Alliance.Red) {
-            start_pose = AllianceFlipUtil.apply(start_pose);
-        }
-        resetPoseEstimator(start_pose);
-    }
-
-    /**
-     * @return The AprilTag field layout
-     */
-    public AprilTagFieldLayout getAprilTagLayout() {
-        return CONSTANTS.APRIL_TAG_LAYOUT;
-    }
-
-    /**
-     * @return The chassis speeds in field-relative vectors
-     */
-    public ChassisSpeeds getChassisSpeedsFieldRelative() {
-        return ChassisSpeeds.fromRobotRelativeSpeeds(
-                SwerveSubsystem.getInstance().getChassisSpeeds(), getFieldPose().getRotation());
-    }
-
-    /**
-     * Enables noise on swerve measurements for testing purposes. This will add random noise to all
-     * swerve measurements before they are applied to the pose estimators, simulating real-world
-     * sensor imperfections and allowing testing of the localization system's robustness to noisy
-     * data.
-     */
-    public void enableSwerveMeasurementNoise() {
-        swerve_noise_enabled_ = true;
-    }
-
-    /**
-     * Sets the tag focus for vision measurements based on the alliance color. This updates the sets
-     * of tag IDs
-     *
-     * @param alliance The alliance color (Red or Blue)
-     */
-    public void setTagFocus(Alliance alliance) {
-        if (alliance == Alliance.Blue) {
-            shooting_focus_tags_ = CONSTANTS.SHOOTING_FOCUS_TAG_IDS_BLUE;
-            climbing_focus_tags_ = CONSTANTS.CLIMBING_FOCUS_TAG_IDS_BLUE;
-        } else {
-            shooting_focus_tags_ = CONSTANTS.SHOOTING_FOCUS_TAG_IDS_RED;
-            climbing_focus_tags_ = CONSTANTS.CLIMBING_FOCUS_TAG_IDS_RED;
         }
     }
     ;

@@ -40,13 +40,6 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
 
     private static SwerveSubsystem instance_ = null;
 
-    public static SwerveSubsystem getInstance() {
-        if (instance_ == null) {
-            instance_ = new SwerveSubsystem();
-        }
-        return instance_;
-    }
-
     // State Specific Members
     Trajectory<SwerveSample> desired_choreo_traj_;
     private final Timer choreo_timer_ = new Timer();
@@ -92,11 +85,20 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
     private ChassisRequest.RobotCentricFacingAngle robot_centric_rotation_lock_request_;
     private ChassisRequest.ApplyFieldSpeeds field_speeds_request_;
 
+    // getInstance
+    public static SwerveSubsystem getInstance() {
+        if (instance_ == null) {
+            instance_ = new SwerveSubsystem();
+        }
+        return instance_;
+    }
+
     /**
      * Creates a new Swerve subsystem with the specified gyro and module IOs.
      *
      * @param io The swerve I/O container to use
      */
+    // Constructor
     public SwerveSubsystem() {
         super(SwerveStates.IDLE, new SwerveConstants());
 
@@ -162,81 +164,16 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
                 field_centric_rotation_lock_request_.HeadingController);
     }
 
+    // reset
+    @Override
+    public void reset() {}
+
+    // getIos
     public List<SubsystemIoBase> getIos() {
         return Arrays.asList(swerve_mech_);
     }
 
-    @Override
-    public void reset() {}
-
-    @Override
-    public void updateLogic(double timestamp) {
-        // Update the request to apply based on the system state
-        switch (system_state_) {
-            case FIELD_CENTRIC:
-                swerve_mech_.setChassisRequest(
-                        field_centric_request_.withTwist(calculateSpeedsBasedOnJoystickInputs()));
-                break;
-            case ROBOT_CENTRIC:
-                swerve_mech_.setChassisRequest(
-                        robot_centric_request_.withTwist(calculateSpeedsBasedOnJoystickInputs()));
-                break;
-            case TRACTOR_BEAM:
-                tractorBeamState();
-                break;
-            case CHASSIS_SPEED_ROTATION_LOCK:
-                swerve_mech_.setChassisRequest(
-                        robot_centric_rotation_lock_request_
-                                .withTargetHeading(desired_rotation_lock_rot_)
-                                .withSpeeds(desired_chassis_speeds_)
-                                .withCenterOfRotation(desired_rotation_lock_cor_));
-                DogLog.log(
-                        getSubsystemKey() + "RotationLock/ChassisSpeed", desired_chassis_speeds_);
-                DogLog.log(getSubsystemKey() + "RotationLock/Rotation", desired_rotation_lock_rot_);
-                DogLog.log(getSubsystemKey() + "RotationLock/COR", desired_rotation_lock_cor_);
-                break;
-            case FIELD_CENTRIC_ROTATION_LOCK:
-                swerve_mech_.setChassisRequest(
-                        field_centric_rotation_lock_request_
-                                .withTargetHeading(desired_rotation_lock_rot_)
-                                .withTwist(calculateSpeedsBasedOnJoystickInputs())
-                                .withCenterOfRotation(desired_rotation_lock_cor_));
-                DogLog.log(getSubsystemKey() + "RotationLock/Rotation", desired_rotation_lock_rot_);
-                DogLog.log(getSubsystemKey() + "RotationLock/COR", desired_rotation_lock_cor_);
-                break;
-            case CHOREO_PATH:
-                choreoPathState();
-                break;
-            case CHOREO_PATH_ROTATION_LOCK:
-                choreoPathRotationLockState();
-                break;
-            case CRAWL:
-                handleCrawlState(false);
-                break;
-            case CRAWL_ROTATION_LOCK:
-                handleCrawlState(true);
-                break;
-            case CRAWL_FIELD_CENTRIC:
-                handleFieldCentricCrawlState(false);
-                break;
-            case CRAWL_FIELD_CENTRIC_ROTATION_LOCK:
-                handleFieldCentricCrawlState(true);
-                break;
-            case IDLE:
-            default:
-                swerve_mech_.setChassisRequest(new ChassisRequest.Idle());
-                break;
-        }
-
-        // Set state static request parameters
-        swerve_mech_.setChassisRequestParameters(
-                LocalizationSubsystem.getInstance().getFieldPose(), operator_forward_direction_);
-    }
-
-    // ------------------------------------------------
-    // Subsystem State Update Methods
-    // ------------------------------------------------
-
+    // handleStateTransition
     /**
      * Gets the current system state of the Swerve subsystem.
      *
@@ -328,6 +265,75 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
                     default -> SwerveStates.IDLE;
                 };
     }
+
+    // updateLogic
+    @Override
+    public void updateLogic(double timestamp) {
+        // Update the request to apply based on the system state
+        switch (system_state_) {
+            case FIELD_CENTRIC:
+                swerve_mech_.setChassisRequest(
+                        field_centric_request_.withTwist(calculateSpeedsBasedOnJoystickInputs()));
+                break;
+            case ROBOT_CENTRIC:
+                swerve_mech_.setChassisRequest(
+                        robot_centric_request_.withTwist(calculateSpeedsBasedOnJoystickInputs()));
+                break;
+            case TRACTOR_BEAM:
+                tractorBeamState();
+                break;
+            case CHASSIS_SPEED_ROTATION_LOCK:
+                swerve_mech_.setChassisRequest(
+                        robot_centric_rotation_lock_request_
+                                .withTargetHeading(desired_rotation_lock_rot_)
+                                .withSpeeds(desired_chassis_speeds_)
+                                .withCenterOfRotation(desired_rotation_lock_cor_));
+                DogLog.log(
+                        getSubsystemKey() + "RotationLock/ChassisSpeed", desired_chassis_speeds_);
+                DogLog.log(getSubsystemKey() + "RotationLock/Rotation", desired_rotation_lock_rot_);
+                DogLog.log(getSubsystemKey() + "RotationLock/COR", desired_rotation_lock_cor_);
+                break;
+            case FIELD_CENTRIC_ROTATION_LOCK:
+                swerve_mech_.setChassisRequest(
+                        field_centric_rotation_lock_request_
+                                .withTargetHeading(desired_rotation_lock_rot_)
+                                .withTwist(calculateSpeedsBasedOnJoystickInputs())
+                                .withCenterOfRotation(desired_rotation_lock_cor_));
+                DogLog.log(getSubsystemKey() + "RotationLock/Rotation", desired_rotation_lock_rot_);
+                DogLog.log(getSubsystemKey() + "RotationLock/COR", desired_rotation_lock_cor_);
+                break;
+            case CHOREO_PATH:
+                choreoPathState();
+                break;
+            case CHOREO_PATH_ROTATION_LOCK:
+                choreoPathRotationLockState();
+                break;
+            case CRAWL:
+                handleCrawlState(false);
+                break;
+            case CRAWL_ROTATION_LOCK:
+                handleCrawlState(true);
+                break;
+            case CRAWL_FIELD_CENTRIC:
+                handleFieldCentricCrawlState(false);
+                break;
+            case CRAWL_FIELD_CENTRIC_ROTATION_LOCK:
+                handleFieldCentricCrawlState(true);
+                break;
+            case IDLE:
+            default:
+                swerve_mech_.setChassisRequest(new ChassisRequest.Idle());
+                break;
+        }
+
+        // Set state static request parameters
+        swerve_mech_.setChassisRequestParameters(
+                LocalizationSubsystem.getInstance().getFieldPose(), operator_forward_direction_);
+    }
+
+    // =============================================================================
+    // PUBLIC HELPER METHODS
+    // =============================================================================
 
     /**
      * Handles the TRACTOR_BEAM state by calculating the necessary chassis speeds to move towards
