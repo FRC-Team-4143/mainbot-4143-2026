@@ -419,17 +419,17 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
      */
     private void populateInitialVelocityMap() {
         // Solver Map Population
-        SOLVER.addVelocityPoint(0.0, 5.283);
-        SOLVER.addVelocityPoint(1.0, 6.635);
-        SOLVER.addVelocityPoint(2.0, 6.167);
-        SOLVER.addVelocityPoint(3.0, 6.50);
-        SOLVER.addVelocityPoint(4.0, 7.928);
-        SOLVER.addVelocityPoint(5.0, 8.648);
-        SOLVER.addVelocityPoint(6.0, 10.332);
-        SOLVER.addVelocityPoint(7.0, 10.980);
-        SOLVER.addVelocityPoint(8.0, 11.592);
-        SOLVER.addVelocityPoint(9.0, 12.180);
-        SOLVER.addVelocityPoint(10.0, 12.744);
+        SOLVER.addVelocityPoint(0.0, 5.2);
+        SOLVER.addVelocityPoint(1.0, 6.6);
+        SOLVER.addVelocityPoint(2.0, 6.4);
+        SOLVER.addVelocityPoint(3.0, 6.7);
+        SOLVER.addVelocityPoint(4.0, 7.9);
+        SOLVER.addVelocityPoint(5.0, 8.8);
+        SOLVER.addVelocityPoint(6.0, 10.3);
+        SOLVER.addVelocityPoint(7.0, 10.9);
+        SOLVER.addVelocityPoint(8.0, 11.5);
+        SOLVER.addVelocityPoint(9.0, 12.1);
+        SOLVER.addVelocityPoint(10.0, 12.7);
     }
 
     /**
