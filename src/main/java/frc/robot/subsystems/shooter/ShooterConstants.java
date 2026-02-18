@@ -186,6 +186,8 @@ public class ShooterConstants extends MwConstants {
         HOOD_MOTOR_CONFIGS.config = new TalonFXConfiguration();
         HOOD_MOTOR_CONFIGS.config.MotorOutput.Inverted = PhoenixUtil.toInvertedValue(HOOD_INVERTED);
         HOOD_MOTOR_CONFIGS.config.Slot0 = HOOD_POSITION_GAINS;
+        HOOD_MOTOR_CONFIGS.config.CurrentLimits.SupplyCurrentLimit = 10;
+        HOOD_MOTOR_CONFIGS.config.CurrentLimits.SupplyCurrentLimitEnable = true;
 
         // Configure Turret Motor
         TURRET_MOTOR_CONFIGS.can_id = TURRET_ID;

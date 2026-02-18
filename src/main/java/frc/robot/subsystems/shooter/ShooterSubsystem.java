@@ -218,7 +218,7 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
             case IDLE:
                 flywheel_.setTargetVelocity(CONSTANTS.SHOOTER_IDLE_SPEED);
                 indexer_.setTargetDutyCycle(0);
-                hood_.setTargetDutyCycle(CONSTANTS.HOOD_IDLE_POSITION);
+                hood_.setTargetPosition(CONSTANTS.HOOD_IDLE_POSITION);
                 if (CONSTANTS.TURRET_ENABLED) turret_.setTargetDutyCycle(0);
                 break;
         }

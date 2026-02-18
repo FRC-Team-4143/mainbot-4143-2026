@@ -51,12 +51,12 @@ public class IntakeConstants extends MwConstants {
     public final SlotConfigs PIVOT_POSITION_SLOT_CONFIG = new SlotConfigs();
     public final double PIVOT_LENGTH = Units.inchesToMeters(11.5);
     public final double PIVOT_MASS = Units.lbsToKilograms(8.38);
-    public final double PIVOT_MIN = Units.degreesToRadians(41);
-    public final double PIVOT_MAX = Units.degreesToRadians(86);
-    public final double PIVOT_HOME_POSITION = Units.degreesToRadians(43);
+    public final double PIVOT_MIN = Units.degreesToRadians(11);
+    public final double PIVOT_MAX = Units.degreesToRadians(98);
+    public final double PIVOT_HOME_POSITION = Units.degreesToRadians(11);
     public final double PIVOT_STATOR_CURRENT_LIMIT = 60;
-    public final double PIVOT_DEPLOY_POSITION = Units.degreesToRadians(43);
-    public final double PIVOT_STORE_POSITION = Units.degreesToRadians(80);
+    public final double PIVOT_DEPLOY_POSITION = Units.degreesToRadians(11);
+    public final double PIVOT_STORE_POSITION = Units.degreesToRadians(95);
     public final double PIVOT_TOLERANCE = Units.degreesToRadians(5);
     public final Slot0Configs PIVOT_POSITION_GAINS = new Slot0Configs().withKG(0.12).withKP(250.0);
 
