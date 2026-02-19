@@ -4,12 +4,12 @@ import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.Seconds;
+import static edu.wpi.first.units.Units.Volts;
 
 import com.marswars.geometry.AllianceFlipUtil;
 import com.marswars.geometry.LaunchCalculator;
 import com.marswars.mechanisms.FlywheelMech;
 import com.marswars.mechanisms.RollerMech;
-import com.marswars.mechanisms.TurretMech;
 import com.marswars.subsystem.MwSubsystem;
 import com.marswars.subsystem.SubsystemIoBase;
 import dev.doglog.DogLog;
@@ -39,20 +39,23 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
     private RollerMech indexer_;
     private FlywheelMech flywheel_;
     private RollerMech hood_;
-    private TurretMech turret_;
 
     // Shooter parameters calculated from LaunchCalculator
     private double flywheel_omega_ = CONSTANTS.FLYWHEEL_MANUAL_VELOCITY;
-    private double turret_heading_ = 0.0;
     private double hood_angle_ = CONSTANTS.HOOD_MAX_ANGLE;
+    private double heading_angle_ = 0.0;
+    private double hood_feedforward_ = 0.0;
+    private double heading_feedforward_ = 0.0;
     private Translation2d target_ = new Translation2d(0.0, 0.0);
     private LaunchCalculator.LaunchParameters launch_params_ = null;
 
     // Adjustable shooting tolerances - initialized to strict defaults
-    private double flywheel_speed_tolerance_ = FieldTargets.Shooter.FLYWHEEL_SPEED_TOLERANCE;
-    private double hood_position_tolerance_ = FieldTargets.Shooter.HOOD_POSITION_TOLERANCE;
-    private double turret_angle_tolerance_ = FieldTargets.Shooter.TURRET_ANGLE_TOLERANCE;
-    private double rotation_angle_tolerance_ = FieldTargets.Shooter.ROTATION_ANGLE_TOLERANCE;
+    private double flywheel_vel_tol_ = FieldTargets.Shooter.FLYWHEEL_SPEED_TOLERANCE;
+    private double hood_pos_tol_ = FieldTargets.Shooter.HOOD_POSITION_TOLERANCE;
+    private double rot_pos_tol_ = FieldTargets.Shooter.ROTATION_ANGLE_TOLERANCE;
+
+    // Hood feedforward gain - made tunable for easy adjustment
+    private double hood_kv_ = CONSTANTS.HOOD_KV;
 
     // getInstance
     public static ShooterSubsystem getInstance() {
@@ -93,15 +96,9 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
                         CONSTANTS.HOOD_GEAR_RATIO);
         hood_.setCurrentPosition(CONSTANTS.HOOD_HOME_POSITION);
 
-        // Current 4143 robot does not have a turret
-        if (CONSTANTS.TURRET_ENABLED) {
-            turret_ =
-                    new TurretMech(
-                            getSubsystemKey(),
-                            List.of(CONSTANTS.TURRET_MOTOR_CONFIGS),
-                            CONSTANTS.TURRET_GEAR_RATIO,
-                            CONSTANTS.TURRET_MOI);
-        }
+        // Setup tunable for hood feedforward gain
+        DogLog.tunable(
+                getSubsystemKey() + "Hood/kV", CONSTANTS.HOOD_KV, (newKv) -> hood_kv_ = newKv);
 
         SmartDashboard.putData(
                 "Home Hood",
@@ -118,18 +115,12 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
     // getIos
     @Override
     public List<SubsystemIoBase> getIos() {
-        // Current 4143 robot does not have a turret
-        if (CONSTANTS.TURRET_ENABLED) {
-            return Arrays.asList(indexer_, flywheel_, hood_, turret_);
-        } else {
-            return Arrays.asList(indexer_, flywheel_, hood_);
-        }
+        return Arrays.asList(indexer_, flywheel_, hood_);
     }
 
     // handleStateTransition
     @Override
     public void handleStateTransition(ShooterStates wanted) {
-        Pose2d robotPose = LocalizationSubsystem.getInstance().getFieldPose();
         if (wanted == ShooterStates.SHOOT
                 && system_state_ != ShooterStates.AIMING
                 && system_state_ != ShooterStates.SHOOT) {
@@ -140,16 +131,6 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
             // Nap time : Blocks default transition from occurring
         } else {
             system_state_ = wanted;
-        }
-
-        // Update launch heading for turret (wrapping logic is not needed for drivetrain rotation)
-        if (CONSTANTS.TURRET_ENABLED && (launch_params_ != null && launch_params_.is_valid)) {
-            turret_heading_ =
-                    launch_params_.heading_angle.getRadians()
-                            - robotPose.getRotation().getRadians();
-            handleTurretWrap();
-        } else if (launch_params_ != null && launch_params_.is_valid) {
-            turret_heading_ = launch_params_.heading_angle.getRadians();
         }
     }
 
@@ -171,14 +152,8 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
         if (launch_params_.is_valid && system_state_ != ShooterStates.MANUAL) {
             flywheel_omega_ = launch_params_.flywheel_speed;
 
-            // Calculate launch heading and handle turret wrapping
-            if (CONSTANTS.TURRET_ENABLED) {
-                turret_heading_ =
-                        launch_params_.heading_angle.minus(robot_pose.getRotation()).getRadians();
-                handleTurretWrap();
-            } else {
-                turret_heading_ = launch_params_.heading_angle.getRadians();
-            }
+            // Store heading angle for robot rotation
+            heading_angle_ = launch_params_.heading_angle.getRadians();
 
             // Clamp hood angle to mechanical limits
             hood_angle_ =
@@ -186,6 +161,12 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
                             launch_params_.hood_angle,
                             CONSTANTS.HOOD_MIN_ANGLE,
                             CONSTANTS.HOOD_MAX_ANGLE);
+
+            // Calculate hood feedforward once for use in all states
+            hood_feedforward_ = launch_params_.hood_velocity * hood_kv_;
+
+            // Store heading feedforward velocity (rad/s) for use in all states
+            heading_feedforward_ = launch_params_.heading_velocity;
         }
 
         // Execute state-specific behavior
@@ -193,46 +174,36 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
             case TRACKING:
                 flywheel_.setTargetVelocity(flywheel_omega_);
                 indexer_.setTargetDutyCycle(0);
-                hood_.setTargetPosition(hood_angle_);
-                if (CONSTANTS.TURRET_ENABLED) {
-                    turret_.setTargetPosition(turret_heading_);
-                }
+                hood_.setTargetPositionWithFF(hood_angle_, hood_feedforward_);
                 break;
             case AIMING:
                 flywheel_.setTargetVelocity(flywheel_omega_);
                 indexer_.setTargetDutyCycle(0);
-                hood_.setTargetPosition(hood_angle_);
-                if (CONSTANTS.TURRET_ENABLED) {
-                    turret_.setTargetPosition(turret_heading_);
-                } else {
-                    SwerveSubsystem.getInstance()
-                            .setDesiredRotationLockCOR(
-                                    Rotation2d.fromRadians(turret_heading_),
-                                    new Translation2d(
-                                            CONSTANTS.SHOOTER_CENTER.getX(),
-                                            CONSTANTS.SHOOTER_CENTER.getY()));
-                }
+                hood_.setTargetPositionWithFF(hood_angle_, hood_feedforward_);
+                SwerveSubsystem.getInstance()
+                        .setDesiredRotationLockCORWithFF(
+                                Rotation2d.fromRadians(heading_angle_),
+                                new Translation2d(
+                                        CONSTANTS.SHOOTER_CENTER.getX(),
+                                        CONSTANTS.SHOOTER_CENTER.getY()),
+                                heading_feedforward_);
                 break;
             case DUMP:
                 flywheel_.setTargetVelocity(flywheel_omega_);
                 indexer_.setTargetDutyCycle(-CONSTANTS.INDEXER_DUTY_CYCLE);
                 hood_.setTargetPosition(CONSTANTS.HOOD_MAX_ANGLE);
-                if (CONSTANTS.TURRET_ENABLED) turret_.setTargetDutyCycle(0);
                 break;
             case SHOOT:
                 flywheel_.setTargetVelocity(flywheel_omega_);
                 indexer_.setTargetDutyCycle(CONSTANTS.INDEXER_DUTY_CYCLE);
-                hood_.setTargetPosition(hood_angle_);
-                if (CONSTANTS.TURRET_ENABLED) {
-                    turret_.setTargetPosition(turret_heading_);
-                } else {
-                    SwerveSubsystem.getInstance()
-                            .setDesiredRotationLockCOR(
-                                    Rotation2d.fromRadians(turret_heading_),
-                                    new Translation2d(
-                                            CONSTANTS.SHOOTER_CENTER.getX(),
-                                            CONSTANTS.SHOOTER_CENTER.getY()));
-                }
+                hood_.setTargetPositionWithFF(hood_angle_, hood_feedforward_);
+                SwerveSubsystem.getInstance()
+                        .setDesiredRotationLockCORWithFF(
+                                Rotation2d.fromRadians(heading_angle_),
+                                new Translation2d(
+                                        CONSTANTS.SHOOTER_CENTER.getX(),
+                                        CONSTANTS.SHOOTER_CENTER.getY()),
+                                heading_feedforward_);
                 break;
             case MANUAL:
                 flywheel_.setTargetVelocity(CONSTANTS.FLYWHEEL_MANUAL_VELOCITY);
@@ -247,7 +218,6 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
                 flywheel_.setTargetVelocity(CONSTANTS.SHOOTER_IDLE_SPEED);
                 indexer_.setTargetDutyCycle(0);
                 hood_.setTargetPosition(CONSTANTS.HOOD_IDLE_POSITION);
-                if (CONSTANTS.TURRET_ENABLED) turret_.setTargetDutyCycle(0);
                 break;
         }
 
@@ -258,9 +228,17 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
                 Units.radiansToDegrees(launch_params_.hood_angle),
                 Radians);
         DogLog.log(
+                getSubsystemKey() + "LaunchCalculator/HoodVelocity",
+                launch_params_.hood_velocity,
+                RadiansPerSecond);
+        DogLog.log(
                 getSubsystemKey() + "LaunchCalculator/HeadingAngle",
                 launch_params_.heading_angle.getRadians(),
                 Radians);
+        DogLog.log(
+                getSubsystemKey() + "LaunchCalculator/HeadingVelocity",
+                launch_params_.heading_velocity,
+                RadiansPerSecond);
         DogLog.log(
                 getSubsystemKey() + "LaunchCalculator/FlywheelSpeed",
                 launch_params_.flywheel_speed,
@@ -280,12 +258,22 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
         // Setpoint Logging
         DogLog.log(getSubsystemKey() + "Setpoint/FlywheelOmega", flywheel_omega_, RadiansPerSecond);
         DogLog.log(getSubsystemKey() + "Setpoint/HoodAngle", hood_angle_, Radians);
-        DogLog.log(getSubsystemKey() + "Setpoint/HeadingAngle", turret_heading_, Radians);
+        DogLog.log(getSubsystemKey() + "Setpoint/HeadingAngle", heading_angle_, Radians);
+
+        // Hood Feedforward Logging
+        DogLog.log(
+                getSubsystemKey() + "LaunchCalculator/HoodFeedforward", hood_feedforward_, Volts);
+
+        // Heading Feedforward Logging
+        DogLog.log(
+                getSubsystemKey() + "LaunchCalculator/HeadingFeedforward",
+                heading_feedforward_,
+                RadiansPerSecond);
 
         // System at Desired Setpoints
         DogLog.log(getSubsystemKey() + "ShooterIsReady/Hood", isHoodAtPosition());
         DogLog.log(getSubsystemKey() + "ShooterIsReady/Flywheel", isFlywheelAtSpeed());
-        DogLog.log(getSubsystemKey() + "ShooterIsReady/Turret", isTurretAtPosition());
+        DogLog.log(getSubsystemKey() + "ShooterIsReady/Rotation", isRotationAtPosition());
     }
 
     // =============================================================================
@@ -303,7 +291,7 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
         if (launch_params_ == null || !launch_params_.is_valid) {
             return false;
         }
-        return isFlywheelAtSpeed() && isHoodAtPosition() && isTurretAtPosition();
+        return isFlywheelAtSpeed() && isHoodAtPosition() && isRotationAtPosition();
     }
 
     /**
@@ -374,62 +362,25 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
     }
 
     /**
-     * Sets whether to use the high arc or low arc solution. Note: LaunchCalculator uses map-based
-     * shooting, so this method is kept for compatibility but has no effect.
-     *
-     * @param highArc true to use the high arc solution, false to use the low arc solution
-     */
-    public void setHighArc(boolean highArc) {
-        // LaunchCalculator doesn't use high/low arc - kept for compatibility
-    }
-
-    /**
      * Sets the shooting tolerances for determining when the shooter is ready. This allows external
      * control of tolerance levels without the subsystem needing to know about game states or other
      * subsystem behavior. Tolerances are used to determine when the shooter mechanisms are close
      * enough to their target values to be considered "ready to shoot".
      *
-     * @param flywheelSpeedTolerance the tolerance for the flywheel speed in rad/s
-     * @param hoodPositionTolerance the tolerance for the hood position in radians
-     * @param turretAngleTolerance the tolerance for the turret angle in radians (or rotation
-     *     tolerance in degrees if no turret)
+     * @param flywheel_vel_tol the tolerance for the flywheel speed in rad/s
+     * @param hood_pos_tol the tolerance for the hood position in radians
+     * @param rot_pos_tol the tolerance for the robot rotation angle in radians
      */
     public void setShootingTolerances(
-            double flywheelSpeedTolerance,
-            double hoodPositionTolerance,
-            double turretAngleTolerance) {
-        this.flywheel_speed_tolerance_ = flywheelSpeedTolerance;
-        this.hood_position_tolerance_ = hoodPositionTolerance;
-        if (CONSTANTS.TURRET_ENABLED) {
-            this.turret_angle_tolerance_ = turretAngleTolerance;
-        } else {
-            // When no turret, turretAngleTolerance is used as rotation tolerance in degrees
-            this.rotation_angle_tolerance_ = turretAngleTolerance;
-        }
+            double flywheel_vel_tol, double hood_pos_tol, double rot_pos_tol) {
+        flywheel_vel_tol_ = flywheel_vel_tol;
+        hood_pos_tol_ = hood_pos_tol;
+        rot_pos_tol_ = rot_pos_tol;
     }
 
     // =============================================================================
     // PRIVATE HELPER METHODS
     // =============================================================================
-
-    /**
-     * Handles turret wrap-around logic. If the turret angle exceeds the maximum wrap angle, it will
-     * wrap around to the other side. If currently shooting, this will transition back to AIMING
-     * state to allow the turret to reposition.
-     */
-    private void handleTurretWrap() {
-        if (turret_heading_ > CONSTANTS.MAX_TURRET_WRAP) {
-            turret_heading_ -= 2 * Math.PI;
-            if (system_state_ == ShooterStates.SHOOT) {
-                setWantedState(ShooterStates.AIMING);
-            }
-        } else if (turret_heading_ < -CONSTANTS.MAX_TURRET_WRAP) {
-            turret_heading_ += 2 * Math.PI;
-            if (system_state_ == ShooterStates.SHOOT) {
-                setWantedState(ShooterStates.AIMING);
-            }
-        }
-    }
 
     /**
      * Check if the flywheel is at the target speed within a certain tolerance
@@ -438,8 +389,7 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
      */
     private boolean isFlywheelAtSpeed() {
         boolean status =
-                MathUtil.isNear(
-                        flywheel_omega_, flywheel_.getCurrentVelocity(), flywheel_speed_tolerance_);
+                MathUtil.isNear(flywheel_omega_, flywheel_.getCurrentVelocity(), flywheel_vel_tol_);
         return status;
     }
 
@@ -449,32 +399,24 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
      * @return true if the hood is within tolerance, false otherwise
      */
     private boolean isHoodAtPosition() {
-        boolean status =
-                MathUtil.isNear(hood_angle_, hood_.getCurrentPosition(), hood_position_tolerance_);
+        boolean status = MathUtil.isNear(hood_angle_, hood_.getCurrentPosition(), hood_pos_tol_);
         return status;
     }
 
     /**
-     * Check if the turret is at the target position within a certain tolerance
+     * Check if the robot rotation is at the target heading within a certain tolerance
      *
-     * @return true if the turret is within tolerance, false otherwise
+     * @return true if the robot rotation is within tolerance, false otherwise
      */
-    private boolean isTurretAtPosition() {
-        boolean status;
-        if (CONSTANTS.TURRET_ENABLED) {
-            status =
-                    MathUtil.isNear(
-                            turret_heading_, turret_.getCurrentPosition(), turret_angle_tolerance_);
-        } else {
-            status =
-                    MathUtil.isNear(
-                            turret_heading_,
-                            LocalizationSubsystem.getInstance()
-                                    .getFieldPose()
-                                    .getRotation()
-                                    .getRadians(),
-                            rotation_angle_tolerance_);
-        }
+    private boolean isRotationAtPosition() {
+        boolean status =
+                MathUtil.isNear(
+                        heading_angle_,
+                        LocalizationSubsystem.getInstance()
+                                .getFieldPose()
+                                .getRotation()
+                                .getRadians(),
+                        rot_pos_tol_);
         return status;
     }
 }

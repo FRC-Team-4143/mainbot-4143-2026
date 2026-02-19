@@ -49,7 +49,6 @@ public class ShooterConstants extends MwConstants {
     public final int INDEXER_LEADER_ID = 14;
     public final int INDEXER_FOLLOWER_ID = 15;
     public final int HOOD_ID = 16;
-    public final int TURRET_ID = 19;
 
     // =============================================================================
     // MECHANICAL CONSTANTS - FLYWHEEL
@@ -92,14 +91,8 @@ public class ShooterConstants extends MwConstants {
     public final double HOOD_HOME_POSITION = Units.degreesToRadians(81.170);
     public final Slot0Configs HOOD_POSITION_GAINS = new Slot0Configs().withKP(100).withKD(0.15);
     public final double HOOD_MANUAL_ANGLE = Units.degreesToRadians(0);
-
-    // =============================================================================
-    // MECHANICAL CONSTANTS - TURRET (needs actual values)
-    // =============================================================================
-
-    public final double TURRET_GEAR_RATIO = 1.0;
-    public final double TURRET_MOI = 0.001;
-    public final Slot0Configs TURRET_POSITION_GAINS = new Slot0Configs().withKP(10);
+    // Hood feedforward gain for velocity (V/(rad/s)) - converts hood angular velocity to voltage
+    public final double HOOD_KV = 0.0;
 
     // =============================================================================
     // CONTROL AND OPERATIONAL CONSTANTS
@@ -107,7 +100,6 @@ public class ShooterConstants extends MwConstants {
     public final double INDEXER_DUTY_CYCLE = 0.3; // 30% power for indexing
     public final double SHOOTER_IDLE_SPEED = 300.0;
     public final double HOOD_IDLE_POSITION = Units.degreesToRadians(80);
-    public final double MAX_TURRET_WRAP = Units.degreesToRadians(190);
     public final Transform2d SHOOTER_CENTER =
             new Transform2d(
                     new Translation2d(
@@ -125,8 +117,6 @@ public class ShooterConstants extends MwConstants {
     public final FxMotorConfig INDEXER_LEADER_MOTOR_CONFIG = new FxMotorConfig();
     public final FxMotorConfig INDEXER_FOLLOWER_MOTOR_CONFIG = new FxMotorConfig();
     public final FxMotorConfig HOOD_MOTOR_CONFIGS = new FxMotorConfig();
-    public final FxMotorConfig TURRET_MOTOR_CONFIGS = new FxMotorConfig();
-    public final boolean TURRET_ENABLED = getBoolConstant("turret_enabled");
 
     // =============================================================================
     // LAUNCH CALCULATOR - Map-based shooting with motion compensation
@@ -242,12 +232,5 @@ public class ShooterConstants extends MwConstants {
         HOOD_MOTOR_CONFIGS.config.Slot0 = HOOD_POSITION_GAINS;
         HOOD_MOTOR_CONFIGS.config.CurrentLimits.SupplyCurrentLimit = 10;
         HOOD_MOTOR_CONFIGS.config.CurrentLimits.SupplyCurrentLimitEnable = true;
-
-        // Configure Turret Motor
-        TURRET_MOTOR_CONFIGS.can_id = TURRET_ID;
-        TURRET_MOTOR_CONFIGS.motor_type = FxMotorType.X44;
-        TURRET_MOTOR_CONFIGS.canbus_name = "rio";
-        TURRET_MOTOR_CONFIGS.config = new TalonFXConfiguration();
-        TURRET_MOTOR_CONFIGS.config.Slot0 = TURRET_POSITION_GAINS;
     }
 }

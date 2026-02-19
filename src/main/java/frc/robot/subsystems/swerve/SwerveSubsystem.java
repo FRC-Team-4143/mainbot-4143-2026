@@ -77,6 +77,7 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
                     CONSTANTS.TRACTOR_BEAM_CONTROLLER_KD);
     private Rotation2d desired_rotation_lock_rot_ = new Rotation2d();
     private Translation2d desired_rotation_lock_cor_ = new Translation2d();
+    private double desired_rotation_lock_feedforward_ = 0.0;
     private ChassisSpeeds desired_chassis_speeds_ = new ChassisSpeeds(0, 0, 0);
     private double tele_op_velocity_scalar_ = 1.0;
 
@@ -293,7 +294,8 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
                         robot_centric_rotation_lock_request_
                                 .withTargetHeading(desired_rotation_lock_rot_)
                                 .withSpeeds(desired_chassis_speeds_)
-                                .withCenterOfRotation(desired_rotation_lock_cor_));
+                                .withCenterOfRotation(desired_rotation_lock_cor_)
+                                .withHeadingFeedforward(desired_rotation_lock_feedforward_));
                 DogLog.log(
                         getSubsystemKey() + "RotationLock/ChassisSpeed", desired_chassis_speeds_);
                 DogLog.log(
@@ -307,7 +309,8 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
                         field_centric_rotation_lock_request_
                                 .withTargetHeading(desired_rotation_lock_rot_)
                                 .withTwist(calculateSpeedsBasedOnJoystickInputs())
-                                .withCenterOfRotation(desired_rotation_lock_cor_));
+                                .withCenterOfRotation(desired_rotation_lock_cor_)
+                                .withHeadingFeedforward(desired_rotation_lock_feedforward_));
                 DogLog.log(
                         getSubsystemKey() + "RotationLock/Rotation",
                         desired_rotation_lock_rot_.getRadians(),
@@ -489,7 +492,8 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
                     robot_centric_rotation_lock_request_
                             .withTargetHeading(desired_rotation_lock_rot_)
                             .withSpeeds(new ChassisSpeeds(crawl_twist.dx, crawl_twist.dy, 0.0))
-                            .withCenterOfRotation(desired_rotation_lock_cor_));
+                            .withCenterOfRotation(desired_rotation_lock_cor_)
+                            .withHeadingFeedforward(desired_rotation_lock_feedforward_));
             DogLog.log(
                     getSubsystemKey() + "RotationLock/Rotation",
                     desired_rotation_lock_rot_.getRadians(),
@@ -512,7 +516,8 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
                     field_centric_rotation_lock_request_
                             .withTargetHeading(desired_rotation_lock_rot_)
                             .withTwist(crawl_twist)
-                            .withCenterOfRotation(desired_rotation_lock_cor_));
+                            .withCenterOfRotation(desired_rotation_lock_cor_)
+                            .withHeadingFeedforward(desired_rotation_lock_feedforward_));
             DogLog.log(
                     getSubsystemKey() + "RotationLock/Rotation",
                     desired_rotation_lock_rot_.getRadians(),
@@ -623,6 +628,7 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
     public void setChassisSpeedRotationLock(ChassisSpeeds speeds, Rotation2d rotation) {
         desired_rotation_lock_rot_ = rotation;
         desired_chassis_speeds_ = speeds;
+        desired_rotation_lock_feedforward_ = 0.0;
     }
 
     /**
@@ -645,6 +651,22 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
     public void setDesiredRotationLockCOR(Rotation2d rotation, Translation2d center_point) {
         desired_rotation_lock_rot_ = rotation;
         desired_rotation_lock_cor_ = center_point;
+        desired_rotation_lock_feedforward_ = 0.0;
+    }
+
+    /**
+     * Updates the internal target for the robot to face with feedforward, turning around a desired
+     * center point in FIELD_CENTRIC_ROTATION_LOCK or CHOREO_PATH_ROTATION_LOCK
+     *
+     * @param rotation desired rotation to lock to
+     * @param center_point desired center point to rotate around
+     * @param feedforward feedforward rotational velocity in rad/s
+     */
+    public void setDesiredRotationLockCORWithFF(
+            Rotation2d rotation, Translation2d center_point, double feedforward) {
+        desired_rotation_lock_rot_ = rotation;
+        desired_rotation_lock_cor_ = center_point;
+        desired_rotation_lock_feedforward_ = feedforward;
     }
 
     /**
