@@ -129,9 +129,6 @@ public class GameStatesSubsystem extends MwSubsystem<GameStates, GameStatesConst
             return;
         }
 
-        // After high arc editing capabilities are added to MWLib, adjust the method in shooter
-        // subsystem then add here.
-
         if (FieldRegions.LEFT_PASS_REGION.contains(
                 LocalizationSubsystem.getInstance().getFieldPose())) {
             ShooterSubsystem.getInstance().setTarget(FieldTargets.Shooter.LEFT_PASS);

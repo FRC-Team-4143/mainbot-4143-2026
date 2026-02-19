@@ -16,13 +16,21 @@ public class IntakeConstants extends MwConstants {
     // =============================================================================
 
     public enum IntakeStates {
+        /** Intake stowed in robot */
         STORE,
+        /** Intake actively deploying to ground */
         DEPLOYING,
+        /** Intake deployed and ready */
         DEPLOYED,
+        /** Actively intaking game pieces */
         INTAKE,
+        /** Ejecting game pieces out of intake */
         OUTTAKE,
+        /** Idle state with intake mechanisms stopped */
         IDLE,
+        /** Manual tuning mode for testing and calibration */
         TUNING,
+        /** Manual control mode with fixed setpoints */
         MANUAL;
     }
 

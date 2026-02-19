@@ -21,12 +21,19 @@ public class ShooterConstants extends MwConstants {
     // =============================================================================
 
     public enum ShooterStates {
+        /** Aiming at target with shooter spinning and robot rotating, waiting to be ready */
         AIMING,
+        /** Dumping game pieces out backwards */
         DUMP,
+        /** Actively shooting game pieces into target */
         SHOOT,
+        /** Idle state with shooter mechanisms at rest */
         IDLE,
+        /** Tracking target with shooter spinning but not shooting */
         TRACKING,
+        /** Manual tuning mode for testing and calibration */
         TUNING,
+        /** Manual control mode with fixed setpoints */
         MANUAL
     }
 
