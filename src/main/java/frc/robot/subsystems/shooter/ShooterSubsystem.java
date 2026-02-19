@@ -37,7 +37,7 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
     private TurretMech turret_;
 
     // Shooter parameters calculated from LaunchCalculator
-    private double flywheel_omega_ = 0.0;
+    private double flywheel_omega_ = CONSTANTS.FLYWHEEL_MANUAL_VELOCITY;
     private double turret_heading_ = 0.0;
     private double hood_angle_ = CONSTANTS.HOOD_MAX_ANGLE;
     private Translation2d target_ = new Translation2d(0.0, 0.0);
