@@ -1,5 +1,11 @@
 package frc.robot.subsystems.swerve;
 
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.Radians;
+import static edu.wpi.first.units.Units.Seconds;
+
 import choreo.trajectory.SwerveSample;
 import choreo.trajectory.Trajectory;
 import com.marswars.auto.ChoreoEventTracker;
@@ -32,13 +38,6 @@ import frc.robot.OI;
 import frc.robot.subsystems.localization.LocalizationSubsystem;
 import frc.robot.subsystems.swerve.SwerveConstants.OperatorPerspective;
 import frc.robot.subsystems.swerve.SwerveConstants.SwerveStates;
-
-import static edu.wpi.first.units.Units.Degrees;
-import static edu.wpi.first.units.Units.Meters;
-import static edu.wpi.first.units.Units.MetersPerSecond;
-import static edu.wpi.first.units.Units.Radians;
-import static edu.wpi.first.units.Units.Seconds;
-
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -297,7 +296,10 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
                                 .withCenterOfRotation(desired_rotation_lock_cor_));
                 DogLog.log(
                         getSubsystemKey() + "RotationLock/ChassisSpeed", desired_chassis_speeds_);
-                DogLog.log(getSubsystemKey() + "RotationLock/Rotation", desired_rotation_lock_rot_.getRadians(), Radians);
+                DogLog.log(
+                        getSubsystemKey() + "RotationLock/Rotation",
+                        desired_rotation_lock_rot_.getRadians(),
+                        Radians);
                 DogLog.log(getSubsystemKey() + "RotationLock/COR", desired_rotation_lock_cor_);
                 break;
             case FIELD_CENTRIC_ROTATION_LOCK:
@@ -306,7 +308,10 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
                                 .withTargetHeading(desired_rotation_lock_rot_)
                                 .withTwist(calculateSpeedsBasedOnJoystickInputs())
                                 .withCenterOfRotation(desired_rotation_lock_cor_));
-                DogLog.log(getSubsystemKey() + "RotationLock/Rotation", desired_rotation_lock_rot_.getRadians(), Radians);
+                DogLog.log(
+                        getSubsystemKey() + "RotationLock/Rotation",
+                        desired_rotation_lock_rot_.getRadians(),
+                        Radians);
                 DogLog.log(getSubsystemKey() + "RotationLock/COR", desired_rotation_lock_cor_);
                 break;
             case CHOREO_PATH:
@@ -367,11 +372,17 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
         double x_component = velocity_output * direction_of_travel.getCos();
         double y_component = velocity_output * direction_of_travel.getSin();
 
-        DogLog.log(getSubsystemKey() + "TractorBeam/XVelocityComponent", x_component, MetersPerSecond);
-        DogLog.log(getSubsystemKey() + "TractorBeam/YVelocityComponent", y_component, MetersPerSecond);
-        DogLog.log(getSubsystemKey() + "TractorBeam/VelocityOutput", velocity_output, MetersPerSecond);
+        DogLog.log(
+                getSubsystemKey() + "TractorBeam/XVelocityComponent", x_component, MetersPerSecond);
+        DogLog.log(
+                getSubsystemKey() + "TractorBeam/YVelocityComponent", y_component, MetersPerSecond);
+        DogLog.log(
+                getSubsystemKey() + "TractorBeam/VelocityOutput", velocity_output, MetersPerSecond);
         DogLog.log(getSubsystemKey() + "TractorBeam/LinearDistance", linear_distance, Meters);
-        DogLog.log(getSubsystemKey() + "TractorBeam/DirectionOfTravel", direction_of_travel.getRadians(), Radians);
+        DogLog.log(
+                getSubsystemKey() + "TractorBeam/DirectionOfTravel",
+                direction_of_travel.getRadians(),
+                Radians);
         DogLog.log(getSubsystemKey() + "TractorBeam/DesiredPose", desired_tractor_beam_pose_);
 
         if (Double.isNaN(max_ang_vel_for_tractor_beam_)) {
@@ -400,7 +411,10 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
             SwerveSample sample = choreo_sample_to_apply_.get();
             DogLog.log(getSubsystemKey() + "Choreo/TimerValue", choreo_timer_.get(), Seconds);
             DogLog.log(getSubsystemKey() + "Choreo/TrajName", desired_choreo_traj_.name());
-            DogLog.log(getSubsystemKey() + "Choreo/TotalTime", desired_choreo_traj_.getTotalTime(), Seconds);
+            DogLog.log(
+                    getSubsystemKey() + "Choreo/TotalTime",
+                    desired_choreo_traj_.getTotalTime(),
+                    Seconds);
             DogLog.log(getSubsystemKey() + "Choreo/sample/DesiredPose", sample.getPose());
             DogLog.log(
                     getSubsystemKey() + "Choreo/sample/DesiredChassisSpeeds",
@@ -434,7 +448,10 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
             SwerveSample sample = choreo_sample_to_apply_.get();
             DogLog.log(getSubsystemKey() + "Choreo/TimerValue", choreo_timer_.get(), Seconds);
             DogLog.log(getSubsystemKey() + "Choreo/TrajName", desired_choreo_traj_.name());
-            DogLog.log(getSubsystemKey() + "Choreo/TotalTime", desired_choreo_traj_.getTotalTime(), Seconds);
+            DogLog.log(
+                    getSubsystemKey() + "Choreo/TotalTime",
+                    desired_choreo_traj_.getTotalTime(),
+                    Seconds);
             // Generate new pose with overridden rotation
             Pose2d overridden_pose =
                     new Pose2d(sample.getPose().getTranslation(), desired_rotation_lock_rot_);
@@ -473,7 +490,10 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
                             .withTargetHeading(desired_rotation_lock_rot_)
                             .withSpeeds(new ChassisSpeeds(crawl_twist.dx, crawl_twist.dy, 0.0))
                             .withCenterOfRotation(desired_rotation_lock_cor_));
-            DogLog.log(getSubsystemKey() + "RotationLock/Rotation", desired_rotation_lock_rot_.getRadians(), Radians);
+            DogLog.log(
+                    getSubsystemKey() + "RotationLock/Rotation",
+                    desired_rotation_lock_rot_.getRadians(),
+                    Radians);
             DogLog.log(getSubsystemKey() + "RotationLock/COR", desired_rotation_lock_cor_);
         } else {
             swerve_mech_.setChassisRequest(robot_centric_request_.withTwist(crawl_twist));
@@ -493,7 +513,10 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
                             .withTargetHeading(desired_rotation_lock_rot_)
                             .withTwist(crawl_twist)
                             .withCenterOfRotation(desired_rotation_lock_cor_));
-            DogLog.log(getSubsystemKey() + "RotationLock/Rotation", desired_rotation_lock_rot_.getRadians(), Radians);
+            DogLog.log(
+                    getSubsystemKey() + "RotationLock/Rotation",
+                    desired_rotation_lock_rot_.getRadians(),
+                    Radians);
             DogLog.log(getSubsystemKey() + "RotationLock/COR", desired_rotation_lock_cor_);
         } else {
             swerve_mech_.setChassisRequest(field_centric_request_.withTwist(crawl_twist));
@@ -712,7 +735,8 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
                 (reference.heading == OperatorPerspective.RED_ALLIANCE.heading);
         DogLog.log(
                 getSubsystemKey() + "OperatorForwardDirection",
-                operator_forward_direction_.getDegrees(), Degrees);
+                operator_forward_direction_.getDegrees(),
+                Degrees);
     }
 
     /**
