@@ -3,6 +3,8 @@ package frc.robot.autos;
 import com.marswars.auto.Auto;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.swerve.SwerveConstants.SwerveStates;
+import frc.robot.subsystems.climber.ClimberConstants.ClimberStates;
+import frc.robot.subsystems.climber.ClimberSubsystem;
 import frc.robot.subsystems.intake.IntakeConstants.IntakeStates;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterStates;
@@ -52,6 +54,16 @@ public class Double_Neutral_Right extends Auto {
                                             .setWantedState(SwerveStates.CHOREO_PATH);
                                         ShooterSubsystem.getInstance()
                                             .setWantedState(ShooterStates.TRACKING);
+                                }));
+                                SwerveSubsystem.getInstance()
+                .getChoreoEventTimeTrigger("Climb")
+                .onTrue(
+                        Commands.runOnce(
+                                () -> { 
+                                    // ShooterSubsystem.getInstance()
+                                    //         .setWantedState(ShooterStates.SHOOT);
+                                    ClimberSubsystem.getInstance()
+                                            .setWantedState(ClimberStates.L1_CLIMB);
                                 }));
         // Add commands here to execute during the auto
         addCommands(

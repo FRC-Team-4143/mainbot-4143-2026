@@ -34,16 +34,16 @@ public record ChoreoTraj(
 	public static final ChoreoTraj DoubleNeutralLeft = new ChoreoTraj(
 	    "DoubleNeutralLeft",
 	    OptionalInt.empty(),
-	    8.52781,
-	    new Pose2d(3.661, 5.725, Rotation2d.fromRadians(2.123)),
+	    8.65503,
+	    new Pose2d(3.661, 5.725, Rotation2d.fromRadians(-1.015)),
 	    new Pose2d(1.057, 2.78, Rotation2d.fromRadians(0))
 	);
 	public static final ChoreoTraj DoubleNeutralRight = new ChoreoTraj(
 	    "DoubleNeutralRight",
 	    OptionalInt.empty(),
-	    9.47504,
+	    10.03309,
 	    new Pose2d(3.529, 2.123, Rotation2d.fromRadians(0.709)),
-	    new Pose2d(1.057, 4.752, Rotation2d.fromRadians(0))
+	    new Pose2d(1.057, 4.752, Rotation2d.fromRadians(3.127))
 	);
 	public static final ChoreoTraj LeftStartNeutralOutpost1 = new ChoreoTraj(
 	    "LeftStartNeutralOutpost1",
@@ -55,16 +55,16 @@ public record ChoreoTraj(
 	public static final ChoreoTraj LeftStartNeutralOutpost2 = new ChoreoTraj(
 	    "LeftStartNeutralOutpost2",
 	    OptionalInt.empty(),
-	    4.89575,
+	    4.82827,
 	    new Pose2d(5.237, 2.503, Rotation2d.fromRadians(1.245)),
-	    new Pose2d(0.293, 0.733, Rotation2d.fromRadians(0))
+	    new Pose2d(0.383, 0.677, Rotation2d.fromRadians(3.142))
 	);
 	public static final ChoreoTraj OutpostClimb = new ChoreoTraj(
 	    "OutpostClimb",
 	    OptionalInt.empty(),
-	    2.2752,
-	    new Pose2d(0.384, 0.671, Rotation2d.fromRadians(0)),
-	    new Pose2d(0.995, 2.742, Rotation2d.fromRadians(0))
+	    2.2757,
+	    new Pose2d(0.384, 0.671, Rotation2d.fromRadians(-2.466)),
+	    new Pose2d(0.995, 2.742, Rotation2d.fromRadians(-2.803))
 	);
 	public static final ChoreoTraj RightStartNeutralClimb1 = new ChoreoTraj(
 	    "RightStartNeutralClimb1",
@@ -76,7 +76,7 @@ public record ChoreoTraj(
 	public static final ChoreoTraj RightStartNeutralClimb2 = new ChoreoTraj(
 	    "RightStartNeutralClimb2",
 	    OptionalInt.empty(),
-	    4.80543,
+	    3.37829,
 	    new Pose2d(5.62, 5.828, Rotation2d.fromRadians(3.12)),
 	    new Pose2d(1.092, 4.755, Rotation2d.fromRadians(0))
 	);
