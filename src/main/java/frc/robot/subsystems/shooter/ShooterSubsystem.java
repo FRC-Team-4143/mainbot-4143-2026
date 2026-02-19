@@ -23,6 +23,12 @@ import frc.robot.lib2026.FieldTargets;
 import frc.robot.subsystems.localization.LocalizationSubsystem;
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterStates;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
+
+import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.Radians;
+import static edu.wpi.first.units.Units.RadiansPerSecond;
+import static edu.wpi.first.units.Units.Seconds;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -250,24 +256,24 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
         DogLog.log(getSubsystemKey() + "LaunchCalculator/Valid", launch_params_.is_valid);
         DogLog.log(
                 getSubsystemKey() + "LaunchCalculator/HoodAngle",
-                Units.radiansToDegrees(launch_params_.hood_angle));
+                Units.radiansToDegrees(launch_params_.hood_angle), Radians);
         DogLog.log(
-                getSubsystemKey() + "LaunchCalculator/HeadingAngle", launch_params_.heading_angle);
+                getSubsystemKey() + "LaunchCalculator/HeadingAngle", launch_params_.heading_angle.getRadians(), Radians);
         DogLog.log(
                 getSubsystemKey() + "LaunchCalculator/FlywheelSpeed",
-                launch_params_.flywheel_speed);
+                launch_params_.flywheel_speed, RadiansPerSecond);
         DogLog.log(getSubsystemKey() + "LaunchCalculator/Target", target_);
-        DogLog.log(getSubsystemKey() + "LaunchCalculator/Distance", launch_params_.distance);
+        DogLog.log(getSubsystemKey() + "LaunchCalculator/Distance", launch_params_.distance, Meters);
         DogLog.log(
                 getSubsystemKey() + "LaunchCalculator/DistanceNoLookahead",
-                launch_params_.distance_no_lookahead);
+                launch_params_.distance_no_lookahead, Meters);
         DogLog.log(
-                getSubsystemKey() + "LaunchCalculator/TimeOfFlight", launch_params_.time_of_flight);
+                getSubsystemKey() + "LaunchCalculator/TimeOfFlight", launch_params_.time_of_flight, Seconds);
 
         // Setpoint Logging
-        DogLog.log(getSubsystemKey() + "Setpoint/FlywheelOmega", flywheel_omega_);
-        DogLog.log(getSubsystemKey() + "Setpoint/HoodAngle", hood_angle_);
-        DogLog.log(getSubsystemKey() + "Setpoint/HeadingAngle", turret_heading_);
+        DogLog.log(getSubsystemKey() + "Setpoint/FlywheelOmega", flywheel_omega_, RadiansPerSecond);
+        DogLog.log(getSubsystemKey() + "Setpoint/HoodAngle", hood_angle_, Radians);
+        DogLog.log(getSubsystemKey() + "Setpoint/HeadingAngle", turret_heading_, Radians);
 
         // System at Desired Setpoints
         DogLog.log(getSubsystemKey() + "ShooterIsReady/Hood", isHoodAtPosition());

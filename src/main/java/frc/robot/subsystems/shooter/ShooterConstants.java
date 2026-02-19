@@ -132,7 +132,7 @@ public class ShooterConstants extends MwConstants {
 
     public ShooterConstants() {
         // Initialize Launch Calculator with robot-to-shooter transform
-        LAUNCH_CALCULATOR = new LaunchCalculator("Shooter/LaunchCalculator/", SHOOTER_CENTER);
+        LAUNCH_CALCULATOR = new LaunchCalculator("Subsystem/Shooter/LaunchCalculator/", SHOOTER_CENTER);
 
         // Configure range limits
         LAUNCH_CALCULATOR.setMinDistance(1.34); // Minimum shooting distance in meters
