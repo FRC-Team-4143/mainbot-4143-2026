@@ -302,7 +302,7 @@ public class LocalizationSubsystem extends MwSubsystem<LocalizationStates, Local
                                     .getRotation()
                                     .minus(vision_data.pose.getRotation())
                                     .getRadians());
-            if (rotation_difference > CONSTANTS.MAX_ROTATION_DIFFERENCE) {
+            if (rotation_difference > CONSTANTS.MAX_ROTATION_DIFFERENCE && DriverStation.isEnabled()) {
                 continue;
             }
 

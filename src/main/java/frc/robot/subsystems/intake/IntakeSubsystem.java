@@ -4,7 +4,6 @@ import com.marswars.mechanisms.ArmMech;
 import com.marswars.mechanisms.RollerMech;
 import com.marswars.subsystem.MwSubsystem;
 import com.marswars.subsystem.SubsystemIoBase;
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.intake.IntakeConstants.IntakeStates;
@@ -73,11 +72,11 @@ public class IntakeSubsystem extends MwSubsystem<IntakeStates, IntakeConstants> 
         } else if (system_state_ == IntakeStates.STORE && wantedState == IntakeStates.OUTTAKE) {
             system_state_ = IntakeStates.DEPLOYING;
         } else if (system_state_ == IntakeStates.DEPLOYING
-                && MathUtil.isNear(
-                        CONSTANTS.PIVOT_DEPLOY_POSITION,
-                        pivot_.getCurrentPosition(),
-                        CONSTANTS.PIVOT_TOLERANCE)) {
+                && CONSTANTS.PIVOT_DEPLOY_POSITION + CONSTANTS.PIVOT_TOLERANCE
+                        > pivot_.getCurrentPosition()) {
             system_state_ = IntakeStates.DEPLOYED;
+        } else if (system_state_ == IntakeStates.DEPLOYING) {
+            // empty
         } else {
             system_state_ = wantedState;
         }
@@ -89,11 +88,15 @@ public class IntakeSubsystem extends MwSubsystem<IntakeStates, IntakeConstants> 
         switch (system_state_) {
             case STORE:
                 roller_.setTargetDutyCycle(0.0);
-                pivot_.setTargetPosition(CONSTANTS.PIVOT_STORE_POSITION);
+                // pivot_.setTargetPosition(CONSTANTS.PIVOT_STORE_POSITION);
+                if (CONSTANTS.PIVOT_STORE_POSITION < pivot_.getCurrentPosition())
+                    pivot_.setTargetDutyCycle(0.0);
+                else pivot_.setTargetDutyCycle(0.5);
                 break;
             case DEPLOYING:
                 roller_.setTargetDutyCycle(0.0);
-                pivot_.setTargetPosition(CONSTANTS.PIVOT_DEPLOY_POSITION);
+                // pivot_.setTargetPosition(CONSTANTS.PIVOT_DEPLOY_POSITION);
+                pivot_.setTargetDutyCycle(-0.15);
                 break;
             case DEPLOYED:
                 roller_.setTargetDutyCycle(0.0);

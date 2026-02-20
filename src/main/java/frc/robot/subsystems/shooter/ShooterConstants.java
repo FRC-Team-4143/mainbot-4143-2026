@@ -67,7 +67,7 @@ public class ShooterConstants extends MwConstants {
                     * Math.pow(FLYWHEEL_WHEEL_RADIUS_METERS, 2.0); // kg m^2, approximate
     public final double FLYWHEEL_EFF_FACTOR = 2.2;
     public final Slot1Configs FLYWHEEL_VELOCITY_GAINS =
-            new Slot1Configs().withKP(0.1).withKV(0.118).withKI(6);
+            new Slot1Configs().withKP(0.5).withKV(0.118).withKI(2);
     public final double FLYWHEEL_MANUAL_VELOCITY = 330.0;
 
     // =============================================================================
@@ -134,30 +134,32 @@ public class ShooterConstants extends MwConstants {
 
         // Configure range limits
         LAUNCH_CALCULATOR.setMinDistance(1.34); // Minimum shooting distance in meters
-        LAUNCH_CALCULATOR.setMaxDistance(5.68); // Maximum shooting distance in meters
+        LAUNCH_CALCULATOR.setMaxDistance(6.5); // Maximum shooting distance in meters
         LAUNCH_CALCULATOR.setPhaseDelay(0.03); // Processing and actuator delay in seconds
 
         // Populate hood angle map (distance in meters -> angle in radians)
         // Empirically determined values from testing
-        LAUNCH_CALCULATOR.addHoodAnglePoint(1.34, Units.degreesToRadians(70.0));
-        LAUNCH_CALCULATOR.addHoodAnglePoint(1.78, Units.degreesToRadians(70.0));
+        LAUNCH_CALCULATOR.addHoodAnglePoint(1.34, Units.degreesToRadians(74.48));
+        LAUNCH_CALCULATOR.addHoodAnglePoint(1.78, Units.degreesToRadians(74.48));
         LAUNCH_CALCULATOR.addHoodAnglePoint(2.17, Units.degreesToRadians(70.0));
-        LAUNCH_CALCULATOR.addHoodAnglePoint(2.81, Units.degreesToRadians(65.89));
-        LAUNCH_CALCULATOR.addHoodAnglePoint(3.82, Units.degreesToRadians(63.03));
-        LAUNCH_CALCULATOR.addHoodAnglePoint(4.40, Units.degreesToRadians(63.03));
+        LAUNCH_CALCULATOR.addHoodAnglePoint(2.81, Units.degreesToRadians(71.62));
+        LAUNCH_CALCULATOR.addHoodAnglePoint(3.82, Units.degreesToRadians(64.46));
+        LAUNCH_CALCULATOR.addHoodAnglePoint(4.40, Units.degreesToRadians(64.46));
         LAUNCH_CALCULATOR.addHoodAnglePoint(4.77, Units.degreesToRadians(63.03));
         LAUNCH_CALCULATOR.addHoodAnglePoint(5.60, Units.degreesToRadians(63.03));
+        LAUNCH_CALCULATOR.addHoodAnglePoint(6.50, Units.degreesToRadians(63.03));
 
         // Populate flywheel speed map (distance in meters -> speed in rad/s)
         // Empirically determined values from testing
         LAUNCH_CALCULATOR.addFlywheelSpeedPoint(1.34, 210.0);
         LAUNCH_CALCULATOR.addFlywheelSpeedPoint(1.78, 260.0);
-        LAUNCH_CALCULATOR.addFlywheelSpeedPoint(2.17, 275.0);
-        LAUNCH_CALCULATOR.addFlywheelSpeedPoint(2.81, 290.0);
+        LAUNCH_CALCULATOR.addFlywheelSpeedPoint(2.17, 270.0);
+        LAUNCH_CALCULATOR.addFlywheelSpeedPoint(2.81, 285.0);
         LAUNCH_CALCULATOR.addFlywheelSpeedPoint(3.82, 320.0);
-        LAUNCH_CALCULATOR.addFlywheelSpeedPoint(4.40, 345.0);
-        LAUNCH_CALCULATOR.addFlywheelSpeedPoint(4.77, 345.0);
-        LAUNCH_CALCULATOR.addFlywheelSpeedPoint(5.60, 345.0);
+        LAUNCH_CALCULATOR.addFlywheelSpeedPoint(4.40, 330.0);
+        LAUNCH_CALCULATOR.addFlywheelSpeedPoint(4.77, 360.0);
+        LAUNCH_CALCULATOR.addFlywheelSpeedPoint(5.60, 367.0);
+        LAUNCH_CALCULATOR.addFlywheelSpeedPoint(6.50, 420.0);
 
         // Populate time of flight map (distance in meters -> time in seconds)
         // Empirically determined values from testing
@@ -195,6 +197,11 @@ public class ShooterConstants extends MwConstants {
                 PhoenixUtil.toInvertedValue(FLYWHEEL_LEADER_INVERTED);
         SHOOTER_LEADER_MOTOR_CONFIG.config.Slot1 = FLYWHEEL_VELOCITY_GAINS;
         SHOOTER_LEADER_MOTOR_CONFIG.config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+        SHOOTER_LEADER_MOTOR_CONFIG.config.Voltage.PeakReverseVoltage = 0.0;
+        //SHOOTER_LEADER_MOTOR_CONFIG.config.CurrentLimits.StatorCurrentLimit = 120.0;
+        //SHOOTER_LEADER_MOTOR_CONFIG.config.CurrentLimits.StatorCurrentLimitEnable = true;
+        //SHOOTER_LEADER_MOTOR_CONFIG.config.CurrentLimits.SupplyCurrentLimit = 70.0;
+        //SHOOTER_LEADER_MOTOR_CONFIG.config.CurrentLimits.SupplyCurrentLimitEnable = true;
 
         // Configure Shooter Follower 1 Motor
         SHOOTER_FOLLOWER_MOTOR_1_CONFIG.can_id = SHOOTER_FOLLOWER_1_ID;
@@ -204,6 +211,11 @@ public class ShooterConstants extends MwConstants {
         SHOOTER_FOLLOWER_MOTOR_1_CONFIG.config.MotorOutput.Inverted =
                 PhoenixUtil.toInvertedValue(FLYWHEEL_FOLLOWER_1_INVERTED);
         SHOOTER_FOLLOWER_MOTOR_1_CONFIG.config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+        SHOOTER_FOLLOWER_MOTOR_1_CONFIG.config.Voltage.PeakReverseVoltage = 0.0;
+        //SHOOTER_FOLLOWER_MOTOR_1_CONFIG.config.CurrentLimits.StatorCurrentLimit = 120.0;
+        //SHOOTER_FOLLOWER_MOTOR_1_CONFIG.config.CurrentLimits.StatorCurrentLimitEnable = true;
+        //SHOOTER_FOLLOWER_MOTOR_1_CONFIG.config.CurrentLimits.SupplyCurrentLimit = 70.0;
+        //SHOOTER_FOLLOWER_MOTOR_1_CONFIG.config.CurrentLimits.SupplyCurrentLimitEnable = true;
 
         // Configure Shooter Follower 2 Motor
         SHOOTER_FOLLOWER_MOTOR_2_CONFIG.can_id = SHOOTER_FOLLOWER_2_ID;
@@ -213,6 +225,11 @@ public class ShooterConstants extends MwConstants {
         SHOOTER_FOLLOWER_MOTOR_2_CONFIG.config.MotorOutput.Inverted =
                 PhoenixUtil.toInvertedValue(FLYWHEEL_FOLLOWER_2_INVERTED);
         SHOOTER_FOLLOWER_MOTOR_2_CONFIG.config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+        SHOOTER_FOLLOWER_MOTOR_2_CONFIG.config.Voltage.PeakReverseVoltage = 0.0;
+        //SHOOTER_FOLLOWER_MOTOR_2_CONFIG.config.CurrentLimits.StatorCurrentLimit = 120.0;
+        //SHOOTER_FOLLOWER_MOTOR_2_CONFIG.config.CurrentLimits.StatorCurrentLimitEnable = true;
+        //SHOOTER_FOLLOWER_MOTOR_2_CONFIG.config.CurrentLimits.SupplyCurrentLimit = 70.0;
+        //SHOOTER_FOLLOWER_MOTOR_2_CONFIG.config.CurrentLimits.SupplyCurrentLimitEnable = true;
 
         // Configure Shooter Follower 3 Motor
         SHOOTER_FOLLOWER_MOTOR_3_CONFIG.can_id = SHOOTER_FOLLOWER_3_ID;
@@ -222,6 +239,11 @@ public class ShooterConstants extends MwConstants {
         SHOOTER_FOLLOWER_MOTOR_3_CONFIG.config.MotorOutput.Inverted =
                 PhoenixUtil.toInvertedValue(FLYWHEEL_FOLLOWER_3_INVERTED);
         SHOOTER_FOLLOWER_MOTOR_3_CONFIG.config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+        SHOOTER_FOLLOWER_MOTOR_3_CONFIG.config.Voltage.PeakReverseVoltage = 0.0;
+        //SHOOTER_FOLLOWER_MOTOR_3_CONFIG.config.CurrentLimits.StatorCurrentLimit = 120.0;
+        //SHOOTER_FOLLOWER_MOTOR_3_CONFIG.config.CurrentLimits.StatorCurrentLimitEnable = true;
+        //SHOOTER_FOLLOWER_MOTOR_3_CONFIG.config.CurrentLimits.SupplyCurrentLimit = 70.0;
+        //SHOOTER_FOLLOWER_MOTOR_3_CONFIG.config.CurrentLimits.SupplyCurrentLimitEnable = true;
 
         // Configure Hood Motor
         HOOD_MOTOR_CONFIGS.can_id = HOOD_ID;
