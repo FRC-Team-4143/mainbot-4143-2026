@@ -7,7 +7,7 @@
       "slip_current": 50,
       "speed_at_12v": 5.0,
       "couple_ratio": 3.5,
-      "wheel_radius_inches": 1.8,
+      "wheel_radius_inches": 1.978,
       "max_translation_rate": 5.0,
       "max_angular_rate": 10,
       "drive_motor": {
@@ -26,11 +26,11 @@
           "kd": 0.0
         },
         "slot1": {
-          "ks": 0.0,
-          "kv": 0.0,
-          "ka": 0.0,
-          "kg": 0.0,
-          "kp": 0.0,
+          "ks": 0.2,
+          "kv": 0.1,
+          "ka": 0.02,
+          "kg": 0.3,
+          "kp": 8.0,
           "ki": 0.0,
           "kd": 0.0
         },

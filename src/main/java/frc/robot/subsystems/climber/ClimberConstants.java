@@ -17,10 +17,15 @@ public class ClimberConstants extends MwConstants {
     // =============================================================================
 
     public enum ClimberStates {
+        /** Climber fully stowed in robot */
         STOWED,
+        /** Deploying climber mechanisms */
         DEPLOY,
+        /** Climbing to Level 1 */
         L1_CLIMB,
+        /** Moving down from Level 1 */
         L1_DOWN,
+        /** Climbing to Level 3 */
         L3_CLIMB
     }
 

@@ -22,13 +22,6 @@ import java.util.List;
 public class GameStatesSubsystem extends MwSubsystem<GameStates, GameStatesConstants> {
     private static GameStatesSubsystem instance_ = null;
 
-    public static GameStatesSubsystem getInstance() {
-        if (instance_ == null) {
-            instance_ = new GameStatesSubsystem();
-        }
-        return instance_;
-    }
-
     // Variables, temporary
     Boolean goal_active_ = false;
     Boolean operator_presses_climb_button_ = false;
@@ -36,71 +29,32 @@ public class GameStatesSubsystem extends MwSubsystem<GameStates, GameStatesConst
     boolean pass_overide_ = false;
     Boolean auto_climb_ready_ = false;
 
+    // getInstance
+    public static GameStatesSubsystem getInstance() {
+        if (instance_ == null) {
+            instance_ = new GameStatesSubsystem();
+        }
+        return instance_;
+    }
+
+    // Constructor
     private GameStatesSubsystem() {
         super(GameStates.HOLD, new GameStatesConstants());
     }
 
-    // state machine transtions (incomplete)
-    public void updateLogic(double timestamp) {
-
-        // GSM does nothing in auto mode
-        if (RobotState.isAutonomous()) {
-            return;
-        }
-
-        // After high arc editing capabilities are added to MWLib, adjust the method in shooter
-        // subsystem then add here.
-
-        if (FieldRegions.LEFT_PASS_REGION.contains(
-                LocalizationSubsystem.getInstance().getFieldPose())) {
-            ShooterSubsystem.getInstance().setTarget(FieldTargets.Shooter.LEFT_PASS);
-        } else if (FieldRegions.RIGHT_PASS_REGION.contains(
-                LocalizationSubsystem.getInstance().getFieldPose())) {
-            ShooterSubsystem.getInstance().setTarget(FieldTargets.Shooter.RIGHT_PASS);
-        } else if (FieldRegions.ALLIANCE_ZONE.contains(
-                LocalizationSubsystem.getInstance().getFieldPose())) {
-            ShooterSubsystem.getInstance().setTarget(FieldTargets.Shooter.HUB);
-        } else if (FieldRegions.HOLD_REGIONS.contains(
-                LocalizationSubsystem.getInstance().getFieldPose())) {
-            ShooterSubsystem.getInstance().setWantedState(ShooterStates.AIMING);
-        }
-        switch (system_state_) {
-            case HOLD:
-                ShooterSubsystem.getInstance().setWantedState(ShooterStates.IDLE);
-                IntakeSubsystem.getInstance().setWantedState(IntakeStates.INTAKE);
-                HopperSubsystem.getInstance().setWantedState(HopperStates.SHOOTING);
-                ClimberSubsystem.getInstance().setWantedState(ClimberStates.STOWED);
-                break;
-            case SCORE:
-                ShooterSubsystem.getInstance().setWantedState(ShooterStates.AIMING);
-                IntakeSubsystem.getInstance().setWantedState(IntakeStates.INTAKE);
-                HopperSubsystem.getInstance().setWantedState(HopperStates.SHOOTING);
-                ClimberSubsystem.getInstance().setWantedState(ClimberStates.STOWED);
-                break;
-            case PASS:
-                ShooterSubsystem.getInstance().setWantedState(ShooterStates.AIMING);
-                IntakeSubsystem.getInstance().setWantedState(IntakeStates.INTAKE);
-                HopperSubsystem.getInstance().setWantedState(HopperStates.SHOOTING);
-                ClimberSubsystem.getInstance().setWantedState(ClimberStates.STOWED);
-                break;
-            case TELEOP_CLIMB:
-                ShooterSubsystem.getInstance().setWantedState(ShooterStates.IDLE);
-                HopperSubsystem.getInstance().setWantedState(HopperStates.IDLE);
-                IntakeSubsystem.getInstance().setWantedState(IntakeStates.STORE);
-                ClimberSubsystem.getInstance().setWantedState(ClimberStates.L3_CLIMB);
-                break;
-            case DOWN_CLIMB:
-                ShooterSubsystem.getInstance().setWantedState(ShooterStates.IDLE);
-                HopperSubsystem.getInstance().setWantedState(HopperStates.IDLE);
-                IntakeSubsystem.getInstance().setWantedState(IntakeStates.STORE);
-                ClimberSubsystem.getInstance().setWantedState(ClimberStates.L1_DOWN);
-                break;
-            case AUTO:
-                // GSM does nothing in auto mode
-                break;
-        }
+    // reset
+    @Override
+    public void reset() {
+        system_state_ = GameStates.HOLD;
     }
 
+    // getIos
+    @Override
+    public List<SubsystemIoBase> getIos() {
+        return new ArrayList<SubsystemIoBase>();
+    }
+
+    // handleStateTransition
     @Override
     public void handleStateTransition(GameStates wanted) {
 
@@ -166,17 +120,69 @@ public class GameStatesSubsystem extends MwSubsystem<GameStates, GameStatesConst
         } // empty to not interfere with rest of state machine
     }
 
+    // updateLogic
     @Override
-    public List<SubsystemIoBase> getIos() {
-        return new ArrayList<SubsystemIoBase>();
+    public void updateLogic(double timestamp) {
+
+        // GSM does nothing in auto mode
+        if (RobotState.isAutonomous()) {
+            return;
+        }
+
+        if (FieldRegions.LEFT_PASS_REGION.contains(
+                LocalizationSubsystem.getInstance().getFieldPose())) {
+            ShooterSubsystem.getInstance().setTarget(FieldTargets.Shooter.LEFT_PASS);
+        } else if (FieldRegions.RIGHT_PASS_REGION.contains(
+                LocalizationSubsystem.getInstance().getFieldPose())) {
+            ShooterSubsystem.getInstance().setTarget(FieldTargets.Shooter.RIGHT_PASS);
+        } else if (FieldRegions.ALLIANCE_ZONE.contains(
+                LocalizationSubsystem.getInstance().getFieldPose())) {
+            ShooterSubsystem.getInstance().setTarget(FieldTargets.Shooter.HUB);
+        } else if (FieldRegions.HOLD_REGIONS.contains(
+                LocalizationSubsystem.getInstance().getFieldPose())) {
+            ShooterSubsystem.getInstance().setWantedState(ShooterStates.AIMING);
+        }
+        switch (system_state_) {
+            case HOLD:
+                ShooterSubsystem.getInstance().setWantedState(ShooterStates.IDLE);
+                IntakeSubsystem.getInstance().setWantedState(IntakeStates.INTAKE);
+                HopperSubsystem.getInstance().setWantedState(HopperStates.SHOOTING);
+                ClimberSubsystem.getInstance().setWantedState(ClimberStates.STOWED);
+                break;
+            case SCORE:
+                ShooterSubsystem.getInstance().setWantedState(ShooterStates.AIMING);
+                IntakeSubsystem.getInstance().setWantedState(IntakeStates.INTAKE);
+                HopperSubsystem.getInstance().setWantedState(HopperStates.SHOOTING);
+                ClimberSubsystem.getInstance().setWantedState(ClimberStates.STOWED);
+                break;
+            case PASS:
+                ShooterSubsystem.getInstance().setWantedState(ShooterStates.AIMING);
+                IntakeSubsystem.getInstance().setWantedState(IntakeStates.INTAKE);
+                HopperSubsystem.getInstance().setWantedState(HopperStates.SHOOTING);
+                ClimberSubsystem.getInstance().setWantedState(ClimberStates.STOWED);
+                break;
+            case TELEOP_CLIMB:
+                ShooterSubsystem.getInstance().setWantedState(ShooterStates.IDLE);
+                HopperSubsystem.getInstance().setWantedState(HopperStates.IDLE);
+                IntakeSubsystem.getInstance().setWantedState(IntakeStates.STORE);
+                ClimberSubsystem.getInstance().setWantedState(ClimberStates.L3_CLIMB);
+                break;
+            case DOWN_CLIMB:
+                ShooterSubsystem.getInstance().setWantedState(ShooterStates.IDLE);
+                HopperSubsystem.getInstance().setWantedState(HopperStates.IDLE);
+                IntakeSubsystem.getInstance().setWantedState(IntakeStates.STORE);
+                ClimberSubsystem.getInstance().setWantedState(ClimberStates.L1_DOWN);
+                break;
+            case AUTO:
+                // GSM does nothing in auto mode
+                break;
+        }
     }
 
-    @Override
-    public void reset() {
-        system_state_ = GameStates.HOLD;
-    }
+    // =============================================================================
+    // PRIVATE HELPER METHODS
+    // =============================================================================
 
-    // methods to determin wich state is in wich region
     private boolean inAllianceZone(Pose2d pose) {
         return FieldRegions.ALLIANCE_ZONE.contains(pose);
     }
@@ -193,8 +199,6 @@ public class GameStatesSubsystem extends MwSubsystem<GameStates, GameStatesConst
         }
         return in_zone;
     }
-
-    // condition much be in any hold zone
 
     private boolean isDownClimbFinished() {
         return false;

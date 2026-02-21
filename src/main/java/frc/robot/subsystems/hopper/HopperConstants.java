@@ -13,12 +13,16 @@ public class HopperConstants extends MwConstants {
     // =============================================================================
 
     public enum HopperStates {
+        /** Idle state with hopper stopped */
         IDLE,
+        /** Actively feeding game pieces to shooter */
         SHOOTING,
+        /** Unjamming by reversing hopper */
         UNJAM_REVERSE,
+        /** Unjamming by running hopper forward */
         UNJAM_FORWARD,
+        /** Manual tuning mode for testing and calibration */
         TUNING,
-        MANUAL
     }
 
     // =============================================================================
@@ -27,7 +31,6 @@ public class HopperConstants extends MwConstants {
 
     // Motor CAN IDs
     public final int HOPPER_MOTOR_ID = 20;
-    // public final int FEED_MOTOR_ID = 21;
 
     // =============================================================================
     // MECHANICAL CONSTANTS - HOPPER
@@ -36,17 +39,8 @@ public class HopperConstants extends MwConstants {
     public final boolean HOPPER_MOTOR_INVERTED = false;
     public final double HOPPER_GEAR_RATIO = 1.0;
     public final double HOPPER_DANGER_CURRENT = 20;
-    public final double HOPPER_VELOCITY_TARGET = 120;
+    public final double HOPPER_VELOCITY_TARGET = 200;
     public final Slot1Configs HOPPER_VELOCITY_GAINS = new Slot1Configs().withKV(.122).withKP(0.5);
-
-    // =============================================================================
-    // MECHANICAL CONSTANTS - FEED
-    // =============================================================================
-
-    public final boolean FEED_MOTOR_INVERTED = false;
-    public final double FEED_GEAR_RATIO = 1.0;
-    public final double FEED_DANGER_CURRENT = 0.0;
-    public final double FEED_DUTY_CYCLE = 0.5;
 
     // =============================================================================
     // CONTROL AND OPERATIONAL CONSTANTS
