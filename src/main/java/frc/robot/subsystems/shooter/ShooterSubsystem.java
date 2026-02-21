@@ -166,7 +166,7 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
             hood_feedforward_ = launch_params_.hood_velocity * hood_kv_;
 
             // Store heading feedforward velocity (rad/s) for use in all states
-            heading_feedforward_ = 0;//launch_params_.heading_velocity;
+            heading_feedforward_ = 0; // launch_params_.heading_velocity;
         }
 
         // Execute state-specific behavior

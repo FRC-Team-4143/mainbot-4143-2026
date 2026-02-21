@@ -203,10 +203,10 @@ public class ShooterConstants extends MwConstants {
         // Jerk: 80 rot/s³ (5x acceleration for smooth motion)
         SHOOTER_LEADER_MOTOR_CONFIG.config.MotionMagic.MotionMagicAcceleration = 16.0;
         SHOOTER_LEADER_MOTOR_CONFIG.config.MotionMagic.MotionMagicJerk = 80.0;
-        //SHOOTER_LEADER_MOTOR_CONFIG.config.CurrentLimits.StatorCurrentLimit = 120.0;
-        //SHOOTER_LEADER_MOTOR_CONFIG.config.CurrentLimits.StatorCurrentLimitEnable = true;
-        //SHOOTER_LEADER_MOTOR_CONFIG.config.CurrentLimits.SupplyCurrentLimit = 70.0;
-        //SHOOTER_LEADER_MOTOR_CONFIG.config.CurrentLimits.SupplyCurrentLimitEnable = true;
+        // SHOOTER_LEADER_MOTOR_CONFIG.config.CurrentLimits.StatorCurrentLimit = 120.0;
+        // SHOOTER_LEADER_MOTOR_CONFIG.config.CurrentLimits.StatorCurrentLimitEnable = true;
+        // SHOOTER_LEADER_MOTOR_CONFIG.config.CurrentLimits.SupplyCurrentLimit = 70.0;
+        // SHOOTER_LEADER_MOTOR_CONFIG.config.CurrentLimits.SupplyCurrentLimitEnable = true;
 
         // Configure Shooter Follower 1 Motor
         SHOOTER_FOLLOWER_MOTOR_1_CONFIG.can_id = SHOOTER_FOLLOWER_1_ID;
@@ -217,10 +217,10 @@ public class ShooterConstants extends MwConstants {
                 PhoenixUtil.toInvertedValue(FLYWHEEL_FOLLOWER_1_INVERTED);
         SHOOTER_FOLLOWER_MOTOR_1_CONFIG.config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
         SHOOTER_FOLLOWER_MOTOR_1_CONFIG.config.Voltage.PeakReverseVoltage = 0.0;
-        //SHOOTER_FOLLOWER_MOTOR_1_CONFIG.config.CurrentLimits.StatorCurrentLimit = 120.0;
-        //SHOOTER_FOLLOWER_MOTOR_1_CONFIG.config.CurrentLimits.StatorCurrentLimitEnable = true;
-        //SHOOTER_FOLLOWER_MOTOR_1_CONFIG.config.CurrentLimits.SupplyCurrentLimit = 70.0;
-        //SHOOTER_FOLLOWER_MOTOR_1_CONFIG.config.CurrentLimits.SupplyCurrentLimitEnable = true;
+        // SHOOTER_FOLLOWER_MOTOR_1_CONFIG.config.CurrentLimits.StatorCurrentLimit = 120.0;
+        // SHOOTER_FOLLOWER_MOTOR_1_CONFIG.config.CurrentLimits.StatorCurrentLimitEnable = true;
+        // SHOOTER_FOLLOWER_MOTOR_1_CONFIG.config.CurrentLimits.SupplyCurrentLimit = 70.0;
+        // SHOOTER_FOLLOWER_MOTOR_1_CONFIG.config.CurrentLimits.SupplyCurrentLimitEnable = true;
 
         // Configure Shooter Follower 2 Motor
         SHOOTER_FOLLOWER_MOTOR_2_CONFIG.can_id = SHOOTER_FOLLOWER_2_ID;
@@ -231,10 +231,10 @@ public class ShooterConstants extends MwConstants {
                 PhoenixUtil.toInvertedValue(FLYWHEEL_FOLLOWER_2_INVERTED);
         SHOOTER_FOLLOWER_MOTOR_2_CONFIG.config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
         SHOOTER_FOLLOWER_MOTOR_2_CONFIG.config.Voltage.PeakReverseVoltage = 0.0;
-        //SHOOTER_FOLLOWER_MOTOR_2_CONFIG.config.CurrentLimits.StatorCurrentLimit = 120.0;
-        //SHOOTER_FOLLOWER_MOTOR_2_CONFIG.config.CurrentLimits.StatorCurrentLimitEnable = true;
-        //SHOOTER_FOLLOWER_MOTOR_2_CONFIG.config.CurrentLimits.SupplyCurrentLimit = 70.0;
-        //SHOOTER_FOLLOWER_MOTOR_2_CONFIG.config.CurrentLimits.SupplyCurrentLimitEnable = true;
+        // SHOOTER_FOLLOWER_MOTOR_2_CONFIG.config.CurrentLimits.StatorCurrentLimit = 120.0;
+        // SHOOTER_FOLLOWER_MOTOR_2_CONFIG.config.CurrentLimits.StatorCurrentLimitEnable = true;
+        // SHOOTER_FOLLOWER_MOTOR_2_CONFIG.config.CurrentLimits.SupplyCurrentLimit = 70.0;
+        // SHOOTER_FOLLOWER_MOTOR_2_CONFIG.config.CurrentLimits.SupplyCurrentLimitEnable = true;
 
         // Configure Shooter Follower 3 Motor
         SHOOTER_FOLLOWER_MOTOR_3_CONFIG.can_id = SHOOTER_FOLLOWER_3_ID;
@@ -245,10 +245,10 @@ public class ShooterConstants extends MwConstants {
                 PhoenixUtil.toInvertedValue(FLYWHEEL_FOLLOWER_3_INVERTED);
         SHOOTER_FOLLOWER_MOTOR_3_CONFIG.config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
         SHOOTER_FOLLOWER_MOTOR_3_CONFIG.config.Voltage.PeakReverseVoltage = 0.0;
-        //SHOOTER_FOLLOWER_MOTOR_3_CONFIG.config.CurrentLimits.StatorCurrentLimit = 120.0;
-        //SHOOTER_FOLLOWER_MOTOR_3_CONFIG.config.CurrentLimits.StatorCurrentLimitEnable = true;
-        //SHOOTER_FOLLOWER_MOTOR_3_CONFIG.config.CurrentLimits.SupplyCurrentLimit = 70.0;
-        //SHOOTER_FOLLOWER_MOTOR_3_CONFIG.config.CurrentLimits.SupplyCurrentLimitEnable = true;
+        // SHOOTER_FOLLOWER_MOTOR_3_CONFIG.config.CurrentLimits.StatorCurrentLimit = 120.0;
+        // SHOOTER_FOLLOWER_MOTOR_3_CONFIG.config.CurrentLimits.StatorCurrentLimitEnable = true;
+        // SHOOTER_FOLLOWER_MOTOR_3_CONFIG.config.CurrentLimits.SupplyCurrentLimit = 70.0;
+        // SHOOTER_FOLLOWER_MOTOR_3_CONFIG.config.CurrentLimits.SupplyCurrentLimitEnable = true;
 
         // Configure Hood Motor
         HOOD_MOTOR_CONFIGS.can_id = HOOD_ID;
