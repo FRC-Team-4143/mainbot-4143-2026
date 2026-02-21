@@ -24,11 +24,11 @@ public class GameStatesSubsystem extends MwSubsystem<GameStates, GameStatesConst
     }
 
     // Variables, temporary
-    Boolean goal_active_ = false;
+    Boolean goal_active_ = true;
     Boolean operator_presses_climb_button_ = false;
     Boolean full_load_ = false;
     boolean pass_overide_ = false;
-    Boolean auto_climb_ready_ = false;
+    Boolean auto_climb_ready_ = true;
 
     public GameStatesSubsystem() {
         super(GameStates.HOLD, new GameStatesConstants());
@@ -101,9 +101,9 @@ public class GameStatesSubsystem extends MwSubsystem<GameStates, GameStatesConst
             return;
         }
         // HOLD transitions
-        if (system_state_ == GameStates.HOLD && inAllianceZone(robotpose) && goal_active_) {
+        if (system_state_ == GameStates.HOLD && inAllianceZone(robotpose) && goal_active_) {//validated
             system_state_ = GameStates.SCORE;
-        } else if (system_state_ == GameStates.HOLD && (isPassZone(robotpose) || pass_overide_)) {
+        } else if (system_state_ == GameStates.HOLD && (isPassZone(robotpose) || pass_overide_)) {//validated
             system_state_ = GameStates.PASS;
         } else if (system_state_ == GameStates.HOLD && auto_climb_ready_) {
             system_state_ = GameStates.AUTO_CLIMB;
@@ -118,10 +118,13 @@ public class GameStatesSubsystem extends MwSubsystem<GameStates, GameStatesConst
             system_state_ = GameStates.AUTO_CLIMB;
         } else if (system_state_ == GameStates.SCORE && operator_presses_climb_button_) {
             system_state_ = GameStates.TELEOP_CLIMB;
+        }else if (wanted == GameStates.SCORE && goal_active_){
+            system_state_ = GameStates.SCORE;
         } else {
         } // empty to not interfere with rest of state machine
         // PASS transistions
-        if (system_state_ == GameStates.PASS && (inHoldZone(robotpose) || !pass_overide_)) {
+        if (system_state_ == GameStates.PASS && (inHoldZone(robotpose) //|| !pass_overide_
+        )) {
             system_state_ = GameStates.HOLD;
         } else {
         } // empty to not interfere with rest of state machine
