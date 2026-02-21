@@ -1,6 +1,7 @@
 package frc.robot.subsystems.climber;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.marswars.sensors.tof.Tof.RangeMode;
 import com.marswars.subsystem.MwConstants;
 import com.marswars.util.FxMotorConfig;
 import com.marswars.util.FxMotorConfig.FxMotorType;
@@ -36,6 +37,14 @@ public class ClimberConstants extends MwConstants {
     // Motor CAN IDs
     public final int EXTENDERMOTER_ID = 21; // may change
     public final int ARM_MOTER_ID = 22; // may change
+
+    public final int LEFT_SENSOR_ID = 20; // placeholder
+    public final int RIGHT_SENSOR_ID = 20; // placeholder
+
+    public final RangeMode SENSOR_MODE = RangeMode.SHORT; // placeholder??
+    public final double SENSOR_RANGE_TOLERANCE = 20; // placeholder, milimeters
+
+    public final double SENSOR_RANGE_LIMIT = 50; // placeholder, idea?? stop robot from running into the pole?? keep?
 
     // =============================================================================
     // MECHANICAL CONSTANTS - EXTENDER

@@ -2,10 +2,12 @@ package frc.robot.subsystems.climber;
 
 import com.marswars.mechanisms.ArmMech;
 import com.marswars.mechanisms.RollerMech;
+import com.marswars.sensors.tof.PwfTof;
 import com.marswars.subsystem.MwSubsystem;
 import com.marswars.subsystem.SubsystemIoBase;
 import edu.wpi.first.math.MathUtil;
 import frc.robot.subsystems.climber.ClimberConstants.ClimberStates;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -14,6 +16,11 @@ public class ClimberSubsystem extends MwSubsystem<ClimberStates, ClimberConstant
 
     private RollerMech deploy_joint_;
     private ArmMech flip_joint_;
+    private PwfTof left_sensor_;
+    private PwfTof right_sensor_;
+
+    private double left_sensor_range_;
+    private double right_sensor_range_;
 
     // getInstance
     public static ClimberSubsystem getInstance() {
@@ -42,7 +49,42 @@ public class ClimberSubsystem extends MwSubsystem<ClimberStates, ClimberConstant
                         CONSTANTS.ARM_MASS,
                         CONSTANTS.ARM_MAX_ANGLE,
                         CONSTANTS.ARM_MIN_ANGLE);
+        left_sensor_ =
+                new PwfTof(
+                    getSubsystemKey(),
+                    CONSTANTS.LEFT_SENSOR_ID,
+                    CONSTANTS.SENSOR_MODE,
+                    0.002); // correct?
+        right_sensor_ =
+                new PwfTof(
+                    getSubsystemKey(),
+                    CONSTANTS.RIGHT_SENSOR_ID,
+                    CONSTANTS.SENSOR_MODE,
+                    0.002); // correct?
     }
+
+    /* sets the sensors ranges (how close the nearest object is)
+     */
+    public void setSensors() { // incomplete
+        left_sensor_range_ = left_sensor_.getRange();
+        right_sensor_range_ = right_sensor_.getRange();
+    }
+
+    /* return which climber sensor is out of place, 
+     * returns null otherwise
+    */
+    public PwfTof checkSensors() { // incomplete
+        setSensors();
+        if(CONSTANTS.SENSOR_RANGE_TOLERANCE < left_sensor_range_) {
+            return left_sensor_; // when returned, have the robot then move right a bit
+        }
+        else if(CONSTANTS.SENSOR_RANGE_TOLERANCE < right_sensor_range_) {
+            return right_sensor_; // when returned, have the robot then move left a bit
+        }
+        return null; // when returned, simply have the robot move forward
+        // would a new climber state work? called APPROCHING?
+    }
+
 
     // reset
     @Override
