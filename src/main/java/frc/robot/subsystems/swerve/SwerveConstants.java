@@ -29,7 +29,8 @@ public class SwerveConstants extends MwConstants {
         CRAWL_ROTATION_LOCK,
         CRAWL_FIELD_CENTRIC,
         CRAWL_FIELD_CENTRIC_ROTATION_LOCK,
-        IDLE
+        IDLE,
+        TESTING
     }
 
     public enum OperatorPerspective {

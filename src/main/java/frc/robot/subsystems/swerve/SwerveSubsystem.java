@@ -335,6 +335,9 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
             case CRAWL_FIELD_CENTRIC_ROTATION_LOCK:
                 handleFieldCentricCrawlState(true);
                 break;
+            case TESTING:
+            //empty to tune
+                break;
             case IDLE:
             default:
                 swerve_mech_.setChassisRequest(new ChassisRequest.Idle());
