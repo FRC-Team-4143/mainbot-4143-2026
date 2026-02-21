@@ -30,6 +30,13 @@ import java.util.Random;
 public class SimulationSubsystem extends MwSubsystem<SimulationStates, SimulationConstants> {
     private static SimulationSubsystem instance_ = null;
 
+    private MwVisionSim vision_sim_;
+    private int hopper_fuel_count_ = 0;
+    private boolean outpost_full = false;
+    private final Random noise_generator_ = new Random();
+    private double last_shot_timestamp_ = 0.0;
+
+    // getInstance
     public static SimulationSubsystem getInstance() {
         if (instance_ == null) {
             instance_ = new SimulationSubsystem();
@@ -37,12 +44,7 @@ public class SimulationSubsystem extends MwSubsystem<SimulationStates, Simulatio
         return instance_;
     }
 
-    private MwVisionSim vision_sim_;
-    private int hopper_fuel_count_ = 0;
-    private boolean outpost_full = false;
-    private final Random noise_generator_ = new Random();
-    private double last_shot_timestamp_ = 0.0;
-
+    // Constructor
     public SimulationSubsystem() {
         super(SimulationStates.ACTIVE, new SimulationConstants());
 
@@ -94,6 +96,20 @@ public class SimulationSubsystem extends MwSubsystem<SimulationStates, Simulatio
         resetForAuto();
     }
 
+    // reset
+    @Override
+    public void reset() {
+        system_state_ = SimulationStates.ACTIVE;
+    }
+
+    // getIos
+    @Override
+    public List<SubsystemIoBase> getIos() {
+        // This subsystem has no IOs
+        return Arrays.asList();
+    }
+
+    // updateLogic
     @Override
     public void updateLogic(double timestamp) {
         // Vision Simulation
@@ -122,16 +138,9 @@ public class SimulationSubsystem extends MwSubsystem<SimulationStates, Simulatio
         DogLog.log(getSubsystemKey() + "FuelSim/HopperCount", hopper_fuel_count_);
     }
 
-    @Override
-    public List<SubsystemIoBase> getIos() {
-        // This subsystem has no IOs
-        return Arrays.asList();
-    }
-
-    @Override
-    public void reset() {
-        system_state_ = SimulationStates.ACTIVE;
-    }
+    // =============================================================================
+    // PUBLIC HELPER METHODS
+    // =============================================================================
 
     /** Launches a fuel from the shooter in the simulation. */
     @SuppressWarnings("unused")
@@ -190,6 +199,10 @@ public class SimulationSubsystem extends MwSubsystem<SimulationStates, Simulatio
 
         return noisy_measurement;
     }
+
+    // =============================================================================
+    // PRIVATE HELPER METHODS
+    // =============================================================================
 
     /**
      * Adds Gaussian noise to gyro measurement for simulation.

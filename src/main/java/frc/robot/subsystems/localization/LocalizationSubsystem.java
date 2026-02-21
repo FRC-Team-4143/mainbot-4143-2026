@@ -36,14 +36,6 @@ import java.util.Set;
 public class LocalizationSubsystem extends MwSubsystem<LocalizationStates, LocalizationConstants> {
     private static LocalizationSubsystem instance_ = null;
 
-    // Singleton Accessor
-    public static LocalizationSubsystem getInstance() {
-        if (instance_ == null) {
-            instance_ = new LocalizationSubsystem();
-        }
-        return instance_;
-    }
-
     private SwerveDrivePoseEstimator smooth_pose_estimator_;
     private SwerveDrivePoseEstimator field_pose_estimator_;
     private Field2d field_visualizer_ = new Field2d();
@@ -55,6 +47,16 @@ public class LocalizationSubsystem extends MwSubsystem<LocalizationStates, Local
     private ArrayList<Pose2d> estimated_vision_poses_ = new ArrayList<Pose2d>();
     private boolean swerve_noise_enabled_ = false;
 
+    // getInstance
+    // Singleton Accessor
+    public static LocalizationSubsystem getInstance() {
+        if (instance_ == null) {
+            instance_ = new LocalizationSubsystem();
+        }
+        return instance_;
+    }
+
+    // Constructor
     public LocalizationSubsystem() {
         // (Default State, Constants Class)
         super(LocalizationStates.FULL, new LocalizationConstants());
@@ -85,16 +87,19 @@ public class LocalizationSubsystem extends MwSubsystem<LocalizationStates, Local
         SmartDashboard.putData("Field", field_visualizer_);
     }
 
-    @Override
-    public List<SubsystemIoBase> getIos() {
-        return Arrays.asList();
-    }
-
+    // reset
     @Override
     public void reset() {
         system_state_ = LocalizationStates.FULL;
     }
 
+    // getIos
+    @Override
+    public List<SubsystemIoBase> getIos() {
+        return Arrays.asList();
+    }
+
+    // updateLogic
     @Override
     public void updateLogic(double timestamp) {
         // Get latest swerve measurements from odometry thread
@@ -154,109 +159,9 @@ public class LocalizationSubsystem extends MwSubsystem<LocalizationStates, Local
         estimated_vision_poses_.clear();
     }
 
-    /**
-     * Applies vision measurements from the proxy server to the field pose estimator. Uses default
-     * covariance for all measurements.
-     *
-     * @param pose_estimator The pose estimator to update
-     * @param vision_measurements The list of vision measurements to apply
-     */
-    private void applyVisionMeasurements(
-            SwerveDrivePoseEstimator pose_estimator, List<TagSolutionData> vision_measurements) {
-        // Use filtered method with empty filter set - all measurements use default covariance
-        applyFilteredVisionMeasurements(
-                pose_estimator,
-                vision_measurements,
-                Set.of(), // Empty filter set
-                CONSTANTS.DEFAULT_VISION_STD_DEV,
-                CONSTANTS.DEFAULT_VISION_STD_DEV);
-    }
-
-    /**
-     * Applies vision measurements with different covariances based on detected tag IDs.
-     * Measurements containing any tag ID in the filtered set use the "included" covariance, while
-     * all others use the "excluded" covariance.
-     *
-     * @param pose_estimator The pose estimator to update
-     * @param vision_measurements The list of vision measurements to apply
-     * @param filtered_ids Set of tag IDs to filter for (empty set means all use excluded
-     *     covariance)
-     * @param included_covariance Covariance matrix for measurements containing filtered tags
-     * @param excluded_covariance Covariance matrix for measurements not containing filtered tags
-     */
-    private void applyFilteredVisionMeasurements(
-            SwerveDrivePoseEstimator pose_estimator,
-            List<TagSolutionData> vision_measurements,
-            Set<Integer> filtered_ids,
-            Matrix<N3, N1> included_covariance,
-            Matrix<N3, N1> excluded_covariance) {
-
-        if (SwerveSubsystem.getInstance().getGyroYawRate() > CONSTANTS.YAW_RATE_DISCARD) {
-            // If the robot is spinning too fast, discard all vision measurements to prevent
-            // localization errors from blurred vision data
-            return;
-        }
-
-        for (TagSolutionData vision_data : vision_measurements) {
-            // Skip measurement with no detected tags
-            if (vision_data.detectedIds.isEmpty()) {
-                continue;
-            }
-
-            // Skip measurement if rotation difference is too large
-            double rotation_difference =
-                    Math.abs(
-                            getFieldPose()
-                                    .getRotation()
-                                    .minus(vision_data.pose.getRotation())
-                                    .getRadians());
-            if (rotation_difference > CONSTANTS.MAX_ROTATION_DIFFERENCE) {
-                continue;
-            }
-
-            // Check if any detected tag ID is in the filtered set (O(1) lookup)
-            boolean contains_filtered_id = false;
-            for (int detected_id : vision_data.detectedIds) {
-                if (filtered_ids.contains(detected_id)) {
-                    contains_filtered_id = true;
-                    break;
-                }
-            }
-
-            // Apply the appropriate standard deviation matrix
-            Matrix<N3, N1> covariance =
-                    contains_filtered_id ? included_covariance : excluded_covariance;
-            pose_estimator.addVisionMeasurement(
-                    vision_data.pose, vision_data.timestamp.getSeconds(), covariance);
-
-            // Log detected tag poses and estimated vision poses
-            for (int tag_id : vision_data.detectedIds) {
-                Optional<Pose3d> tag_layout_pose = CONSTANTS.APRIL_TAG_LAYOUT.getTagPose(tag_id);
-                if (tag_layout_pose.isPresent()) detected_tag_poses_.add(tag_layout_pose.get());
-            }
-            estimated_vision_poses_.add(vision_data.pose);
-        }
-    }
-
-    /**
-     * Applies swerve measurements to the given pose estimator with optional noise.
-     *
-     * @param pose_estimator The pose estimator to update
-     * @param swerve_measurements The list of swerve measurements to apply
-     */
-    private void applySwerveMeasurements(
-            SwerveDrivePoseEstimator pose_estimator, List<SwerveMeasurement> swerve_measurements) {
-        for (SwerveMeasurement measurement : swerve_measurements) {
-            // Optionally add noise for simulation
-            if (swerve_noise_enabled_) {
-                measurement = SimulationSubsystem.getInstance().addNoise(measurement);
-            }
-
-            // Update the given Pose Estimator
-            pose_estimator.updateWithTime(
-                    measurement.timestamp, measurement.gyro_yaw, measurement.module_positions);
-        }
-    }
+    // =============================================================================
+    // PUBLIC HELPER METHODS
+    // =============================================================================
 
     /**
      * @return The smoothed pose estimate of the robot.
@@ -334,6 +239,115 @@ public class LocalizationSubsystem extends MwSubsystem<LocalizationStates, Local
         } else {
             shooting_focus_tags_ = CONSTANTS.SHOOTING_FOCUS_TAG_IDS_RED;
             climbing_focus_tags_ = CONSTANTS.CLIMBING_FOCUS_TAG_IDS_RED;
+        }
+    }
+
+    // =============================================================================
+    // PRIVATE HELPER METHODS
+    // =============================================================================
+
+    /**
+     * Applies vision measurements from the proxy server to the field pose estimator. Uses default
+     * covariance for all measurements.
+     *
+     * @param pose_estimator The pose estimator to update
+     * @param vision_measurements The list of vision measurements to apply
+     */
+    private void applyVisionMeasurements(
+            SwerveDrivePoseEstimator pose_estimator, List<TagSolutionData> vision_measurements) {
+        // Use filtered method with empty filter set - all measurements use default covariance
+        applyFilteredVisionMeasurements(
+                pose_estimator,
+                vision_measurements,
+                Set.of(), // Empty filter set
+                CONSTANTS.DEFAULT_VISION_STD_DEV,
+                CONSTANTS.DEFAULT_VISION_STD_DEV);
+    }
+
+    /**
+     * Applies vision measurements with different covariances based on detected tag IDs.
+     * Measurements containing any tag ID in the filtered set use the "included" covariance, while
+     * all others use the "excluded" covariance.
+     *
+     * @param pose_estimator The pose estimator to update
+     * @param vision_measurements The list of vision measurements to apply
+     * @param filtered_ids Set of tag IDs to filter for (empty set means all use excluded
+     *     covariance)
+     * @param included_covariance Covariance matrix for measurements containing filtered tags
+     * @param excluded_covariance Covariance matrix for measurements not containing filtered tags
+     */
+    private void applyFilteredVisionMeasurements(
+            SwerveDrivePoseEstimator pose_estimator,
+            List<TagSolutionData> vision_measurements,
+            Set<Integer> filtered_ids,
+            Matrix<N3, N1> included_covariance,
+            Matrix<N3, N1> excluded_covariance) {
+
+        if (SwerveSubsystem.getInstance().getGyroYawRate() > CONSTANTS.YAW_RATE_DISCARD) {
+            // If the robot is spinning too fast, discard all vision measurements to prevent
+            // localization errors from blurred vision data
+            return;
+        }
+
+        for (TagSolutionData vision_data : vision_measurements) {
+            // Skip measurement with no detected tags
+            if (vision_data.detectedIds.size() < CONSTANTS.MIN_TAG_COUNT_FOR_VISION_UPDATE) {
+                continue;
+            }
+
+            // Skip measurement if rotation difference is too large
+            double rotation_difference =
+                    Math.abs(
+                            getFieldPose()
+                                    .getRotation()
+                                    .minus(vision_data.pose.getRotation())
+                                    .getRadians());
+            if (rotation_difference > CONSTANTS.MAX_ROTATION_DIFFERENCE
+                    && DriverStation.isEnabled()) {
+                continue;
+            }
+
+            // Check if any detected tag ID is in the filtered set (O(1) lookup)
+            boolean contains_filtered_id = false;
+            for (int detected_id : vision_data.detectedIds) {
+                if (filtered_ids.contains(detected_id)) {
+                    contains_filtered_id = true;
+                    break;
+                }
+            }
+
+            // Apply the appropriate standard deviation matrix
+            Matrix<N3, N1> covariance =
+                    contains_filtered_id ? included_covariance : excluded_covariance;
+            pose_estimator.addVisionMeasurement(
+                    vision_data.pose, vision_data.timestamp.getSeconds(), covariance);
+
+            // Log detected tag poses and estimated vision poses
+            for (int tag_id : vision_data.detectedIds) {
+                Optional<Pose3d> tag_layout_pose = CONSTANTS.APRIL_TAG_LAYOUT.getTagPose(tag_id);
+                if (tag_layout_pose.isPresent()) detected_tag_poses_.add(tag_layout_pose.get());
+            }
+            estimated_vision_poses_.add(vision_data.pose);
+        }
+    }
+
+    /**
+     * Applies swerve measurements to the given pose estimator with optional noise.
+     *
+     * @param pose_estimator The pose estimator to update
+     * @param swerve_measurements The list of swerve measurements to apply
+     */
+    private void applySwerveMeasurements(
+            SwerveDrivePoseEstimator pose_estimator, List<SwerveMeasurement> swerve_measurements) {
+        for (SwerveMeasurement measurement : swerve_measurements) {
+            // Optionally add noise for simulation
+            if (swerve_noise_enabled_) {
+                measurement = SimulationSubsystem.getInstance().addNoise(measurement);
+            }
+
+            // Update the given Pose Estimator
+            pose_estimator.updateWithTime(
+                    measurement.timestamp, measurement.gyro_yaw, measurement.module_positions);
         }
     }
     ;

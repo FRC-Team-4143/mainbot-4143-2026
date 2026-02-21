@@ -16,13 +16,21 @@ public class IntakeConstants extends MwConstants {
     // =============================================================================
 
     public enum IntakeStates {
+        /** Intake stowed in robot */
         STORE,
+        /** Intake actively deploying to ground */
         DEPLOYING,
+        /** Intake deployed and ready */
         DEPLOYED,
+        /** Actively intaking game pieces */
         INTAKE,
+        /** Ejecting game pieces out of intake */
         OUTTAKE,
+        /** Idle state with intake mechanisms stopped */
         IDLE,
+        /** Manual tuning mode for testing and calibration */
         TUNING,
+        /** Manual control mode with fixed setpoints */
         MANUAL;
     }
 
@@ -40,8 +48,7 @@ public class IntakeConstants extends MwConstants {
 
     public final boolean ROLLER_MOTOR_INVERTED = false;
     public final double ROLLER_GEAR_RATIO = 1.0;
-    public final double INTAKE_DUTY_CYCLE = 0.75;
-
+    public final double INTAKE_DUTY_CYCLE = 1.0;
     // =============================================================================
     // MECHANICAL CONSTANTS - PIVOT
     // =============================================================================
@@ -51,12 +58,12 @@ public class IntakeConstants extends MwConstants {
     public final SlotConfigs PIVOT_POSITION_SLOT_CONFIG = new SlotConfigs();
     public final double PIVOT_LENGTH = Units.inchesToMeters(11.5);
     public final double PIVOT_MASS = Units.lbsToKilograms(8.38);
-    public final double PIVOT_MIN = Units.degreesToRadians(41);
-    public final double PIVOT_MAX = Units.degreesToRadians(86);
-    public final double PIVOT_HOME_POSITION = Units.degreesToRadians(43);
+    public final double PIVOT_MIN = Units.degreesToRadians(11);
+    public final double PIVOT_MAX = Units.degreesToRadians(98);
+    public final double PIVOT_HOME_POSITION = Units.degreesToRadians(11);
     public final double PIVOT_STATOR_CURRENT_LIMIT = 60;
-    public final double PIVOT_DEPLOY_POSITION = Units.degreesToRadians(43);
-    public final double PIVOT_STORE_POSITION = Units.degreesToRadians(80);
+    public final double PIVOT_DEPLOY_POSITION = Units.degreesToRadians(11);
+    public final double PIVOT_STORE_POSITION = Units.degreesToRadians(95);
     public final double PIVOT_TOLERANCE = Units.degreesToRadians(5);
     public final Slot0Configs PIVOT_POSITION_GAINS = new Slot0Configs().withKG(0.12).withKP(250.0);
 

@@ -13,6 +13,13 @@ import java.util.List;
 public class HopperSubsystem extends MwSubsystem<HopperStates, HopperConstants> {
     private static HopperSubsystem instance_ = null;
 
+    // private RollerMech feeder_;
+    private RollerMech hopper_;
+    private final Timer hopper_timer_ = new Timer();
+    private Debouncer debouncer_ =
+            new Debouncer(CONSTANTS.DEBOUNCE_TIME, Debouncer.DebounceType.kBoth);
+
+    // getInstance
     public static HopperSubsystem getInstance() {
         if (instance_ == null) {
             instance_ = new HopperSubsystem();
@@ -20,15 +27,7 @@ public class HopperSubsystem extends MwSubsystem<HopperStates, HopperConstants> 
         return instance_;
     }
 
-    // private RollerMech feeder_;
-    private RollerMech hopper_;
-    private final Timer hopper_timer_ = new Timer();
-    private Debouncer debouncer_ =
-            new Debouncer(CONSTANTS.DEBOUNCE_TIME, Debouncer.DebounceType.kBoth);
-
-    // Manual control variables
-    private double manual_hopper_percent_ = 0.0;
-
+    // Constructor
     public HopperSubsystem() {
         super(HopperStates.IDLE, new HopperConstants());
         hopper_ =
@@ -37,13 +36,21 @@ public class HopperSubsystem extends MwSubsystem<HopperStates, HopperConstants> 
                         "Hopper",
                         List.of(CONSTANTS.HOPPER_MOTOR_CONFIG),
                         CONSTANTS.HOPPER_GEAR_RATIO);
-
-        DogLog.tunable(
-                getSubsystemKey() + "Manual/Hopper Percent",
-                manual_hopper_percent_,
-                (val) -> manual_hopper_percent_ = val);
     }
 
+    // reset
+    @Override
+    public void reset() {
+        system_state_ = HopperStates.IDLE;
+    }
+
+    // getIos
+    @Override
+    public List<SubsystemIoBase> getIos() {
+        return Arrays.asList(hopper_);
+    }
+
+    // handleStateTransition
     @Override
     public void handleStateTransition(HopperStates wanted) {
         boolean jammed = isJammed();
@@ -71,6 +78,7 @@ public class HopperSubsystem extends MwSubsystem<HopperStates, HopperConstants> 
         }
     }
 
+    // updateLogic
     @Override
     public void updateLogic(double timestamp) {
         switch (system_state_) {
@@ -92,10 +100,12 @@ public class HopperSubsystem extends MwSubsystem<HopperStates, HopperConstants> 
         }
     }
 
+    // =============================================================================
+    // PUBLIC HELPER METHODS
+    // =============================================================================
+
     /**
-     * returns true if jammed, false otherwise
-     *
-     * @return
+     * @return true if jammed, false otherwise
      */
     public boolean isJammed() {
         boolean jamCondition =
@@ -106,15 +116,5 @@ public class HopperSubsystem extends MwSubsystem<HopperStates, HopperConstants> 
     /** Applies load torque to simulate a jam */
     public void fakeJam() {
         hopper_.applyLoadTorque(50000);
-    }
-
-    @Override
-    public List<SubsystemIoBase> getIos() {
-        return Arrays.asList(hopper_);
-    }
-
-    @Override
-    public void reset() {
-        system_state_ = HopperStates.IDLE;
     }
 }
