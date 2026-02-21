@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.lib2026.FieldTargets;
+import frc.robot.lib2026.FieldConstants.Hub;
 import frc.robot.subsystems.localization.LocalizationSubsystem;
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterStates;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
@@ -210,6 +211,7 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
                 }
                 break;
             case MANUAL:
+                ShooterSubsystem.getInstance().setTarget(FieldTargets.Shooter.HUB);
                 flywheel_.setTargetVelocity(flywheel_omega_);
                 indexer_.setTargetDutyCycle(manual_indexer_percent_);
                 hood_.setTargetPosition(hood_angle_);
