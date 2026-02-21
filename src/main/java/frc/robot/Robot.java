@@ -100,7 +100,6 @@ public class Robot extends TimedRobot {
     public void teleopInit() {
         CommandScheduler.getInstance().cancelAll();
         SwerveSubsystem.getInstance().setWantedState(SwerveStates.FIELD_CENTRIC);
-        ShooterSubsystem.getInstance().setWantedState(ShooterStates.TRACKING);
     }
 
     @Override
