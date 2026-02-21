@@ -117,7 +117,7 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
             system_state_ = ShooterStates.AIMING;
         } else if (system_state_ == ShooterStates.AIMING && isShooterReady()) {
             system_state_ = ShooterStates.SHOOT;
-        } else if (system_state_ == ShooterStates.AIMING && !isShooterReady()) {
+        } else if (system_state_ == ShooterStates.AIMING && !isShooterReady() && wanted == ShooterStates.SHOOT) {
             // Nap time : Blocks deafult transition from occuring
         } else {
             system_state_ = wanted;
@@ -332,13 +332,9 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
                             turret_heading_, turret_.getCurrentPosition(), turret_angle_tolerance_);
         } else {
             status =
-                    MathUtil.isNear(
-                            turret_heading_,
-                            LocalizationSubsystem.getInstance()
+                    Math.abs(Rotation2d.fromRadians(turret_heading_).minus(LocalizationSubsystem.getInstance()
                                     .getFieldPose()
-                                    .getRotation()
-                                    .getRadians(),
-                            rotation_angle_tolerance_);
+                                    .getRotation()).getRadians()) < rotation_angle_tolerance_;
         }
         return status;
     }
