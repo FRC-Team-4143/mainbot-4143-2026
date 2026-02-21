@@ -44,12 +44,14 @@ public abstract class OI {
         SmartDashboard.putData(
                 "Zero Wheel Offsets",
                 SwerveSubsystem.getInstance().setModuleOffsets().ignoringDisable(true));
+        SmartDashboard.putData("Set Shooter Zero", Commands.runOnce(()-> ShooterSubsystem.getInstance().setWantedState(ShooterStates.SPIN_DOWN)));
         // =============================================================================
         // DRIVER CONTROLLER BINDINGS
         // =============================================================================
         driver_controller_
                 .rightStick()
                 .onTrue(SwerveSubsystem.getInstance().toggleFieldCentric().ignoringDisable(true));
+
 
         // =============================================================================
         // OPERATOR CONTROLLER BINDINGS
@@ -84,6 +86,28 @@ public abstract class OI {
                                     LocalizationSubsystem.getInstance()
                                             .setWantedState(LocalizationStates.FULL);
                                 }));
+        driver_controller_
+                .leftTrigger()
+                .whileTrue(
+                        Commands.startEnd(
+                                () -> {
+                                    ShooterSubsystem.getInstance()
+                                            .setWantedState(ShooterStates.AIMING);
+                                    SwerveSubsystem.getInstance()
+                                            .setWantedState(
+                                                    SwerveStates.FIELD_CENTRIC_ROTATION_LOCK);
+                                    LocalizationSubsystem.getInstance()
+                                            .setWantedState(LocalizationStates.SHOOTING_FOCUS);
+                                },
+                                () -> {
+                                    ShooterSubsystem.getInstance()
+                                            .setWantedState(ShooterStates.TRACKING);
+                                    SwerveSubsystem.getInstance()
+                                            .setWantedState(SwerveStates.FIELD_CENTRIC);
+                                    LocalizationSubsystem.getInstance()
+                                            .setWantedState(LocalizationStates.FULL);
+                                }));
+
 
         // Set Intake to MANUAL control
         driver_controller_
@@ -103,6 +127,11 @@ public abstract class OI {
                                     // HopperSubsystem.getInstance().setWantedState(HopperStates.IDLE);
                                 }));
     }
+
+
+
+
+
 
     /**
      * @return driver controller left joystick x axis
