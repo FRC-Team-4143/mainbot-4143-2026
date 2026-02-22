@@ -22,7 +22,7 @@ public class ShooterConstants extends MwConstants {
 
     public enum ShooterStates {
         /** Aiming at target with shooter spinning and robot rotating, waiting to be ready */
-        AIMING,
+        SHOOT_WAIT,
         /** Dumping game pieces out backwards */
         DUMP,
         /** Actively shooting game pieces into target */
@@ -34,7 +34,11 @@ public class ShooterConstants extends MwConstants {
         /** Manual tuning mode for testing and calibration */
         TUNING,
         /** Manual control mode with fixed setpoints */
-        MANUAL
+        MANUAL,
+        /** Smooth return to 0 velocity for clean disable */
+        SPIN_DOWN,
+        /** Aiming at target with shooter spinning and robot rotating, with no intent to SHOOT */
+        AIMING
     }
 
     // =============================================================================

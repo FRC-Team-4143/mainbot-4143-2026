@@ -75,7 +75,9 @@ public class Robot extends TimedRobot {
     }
 
     @Override
-    public void disabledInit() {}
+    public void disabledInit() {
+        ShooterSubsystem.getInstance().setWantedState(ShooterStates.IDLE);
+    }
 
     @Override
     public void disabledPeriodic() {
