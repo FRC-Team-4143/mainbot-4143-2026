@@ -108,6 +108,5 @@ public class Right_Start_Neutral_Depot_Climb extends Auto {
                         () ->
                                 ShooterSubsystem.getInstance()
                                         .setWantedState(ShooterStates.TRACKING)));
-        
     }
 }

@@ -17,7 +17,7 @@ public class Neutral_Cycles extends Auto {
         // Register trajectories first
         // These should be loaded in the order they will be used to ensure correct start poses\
         loadTrajectory(ChoreoTraj.CycleNeutralFirst.name());
-        //loadTrajectory(ChoreoTraj.CycleNeutralSecond.name());
+        // loadTrajectory(ChoreoTraj.CycleNeutralSecond.name());
         loadTrajectory(ChoreoTraj.CycleNeutralThird.name());
         loadTrajectory(ChoreoTraj.OutpostClimbNeutral.name());
 
@@ -82,8 +82,11 @@ public class Neutral_Cycles extends Auto {
                                                         .hasChoreoTimeElapsed(1)),
                 // Shoot here if needed
                 Commands.runOnce(
-                        () -> {ShooterSubsystem.getInstance().setWantedState(ShooterStates.SHOOT);
-                                SwerveSubsystem.getInstance().setWantedState(SwerveStates.FIELD_CENTRIC_ROTATION_LOCK);}),
+                        () -> {
+                            ShooterSubsystem.getInstance().setWantedState(ShooterStates.SHOOT);
+                            SwerveSubsystem.getInstance()
+                                    .setWantedState(SwerveStates.FIELD_CENTRIC_ROTATION_LOCK);
+                        }),
                 new WaitCommand(3),
                 Commands.runOnce(
                         () ->

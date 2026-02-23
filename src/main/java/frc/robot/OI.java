@@ -5,8 +5,8 @@
 package frc.robot;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -39,19 +39,22 @@ public abstract class OI {
         SmartDashboard.putData(
                 "Set Start Pose",
                 Commands.runOnce(LocalizationSubsystem.getInstance()::resetPoseEstimatorAuto)
-                        .onlyIf(RobotBase::isSimulation)
                         .ignoringDisable(true));
         SmartDashboard.putData(
                 "Zero Wheel Offsets",
                 SwerveSubsystem.getInstance().setModuleOffsets().ignoringDisable(true));
-        SmartDashboard.putData("Set Shooter Zero", Commands.runOnce(()-> ShooterSubsystem.getInstance().setWantedState(ShooterStates.SPIN_DOWN)));
+        SmartDashboard.putData(
+                "Set Shooter Zero",
+                Commands.runOnce(
+                        () ->
+                                ShooterSubsystem.getInstance()
+                                        .setWantedState(ShooterStates.SPIN_DOWN)));
         // =============================================================================
         // DRIVER CONTROLLER BINDINGS
         // =============================================================================
         driver_controller_
                 .rightStick()
                 .onTrue(SwerveSubsystem.getInstance().toggleFieldCentric().ignoringDisable(true));
-
 
         // =============================================================================
         // OPERATOR CONTROLLER BINDINGS
@@ -108,7 +111,6 @@ public abstract class OI {
                                             .setWantedState(LocalizationStates.FULL);
                                 }));
 
-
         // Set Intake to MANUAL control
         driver_controller_
                 .rightBumper()
@@ -117,21 +119,45 @@ public abstract class OI {
                                 () -> {
                                     IntakeSubsystem.getInstance()
                                             .setWantedState(IntakeStates.INTAKE);
-                                    //     HopperSubsystem.getInstance()
-                                    //             .setWantedState(HopperStates.SHOOTING);
                                 },
                                 () -> {
                                     IntakeSubsystem.getInstance()
                                             .setWantedState(IntakeStates.STORE);
-                                    //
-                                    // HopperSubsystem.getInstance().setWantedState(HopperStates.IDLE);
+                                }));
+        driver_controller_
+                .b()
+                .whileTrue(
+                        Commands.startEnd(
+                                () -> {
+                                    SwerveSubsystem.getInstance()
+                                            .setChassisSpeedRotationLock(
+                                                    new ChassisSpeeds(0, -1, 0),
+                                                    Rotation2d.k180deg);
+                                    SwerveSubsystem.getInstance()
+                                            .setWantedState(
+                                                    SwerveStates.CHASSIS_SPEED_ROTATION_LOCK);
+                                },
+                                () -> {
+                                    SwerveSubsystem.getInstance()
+                                            .setWantedState(SwerveStates.FIELD_CENTRIC);
+                                }));
+        driver_controller_
+                .x()
+                .whileTrue(
+                        Commands.startEnd(
+                                () -> {
+                                    SwerveSubsystem.getInstance()
+                                            .setChassisSpeedRotationLock(
+                                                    new ChassisSpeeds(0, 1, 0), Rotation2d.k180deg);
+                                    SwerveSubsystem.getInstance()
+                                            .setWantedState(
+                                                    SwerveStates.CHASSIS_SPEED_ROTATION_LOCK);
+                                },
+                                () -> {
+                                    SwerveSubsystem.getInstance()
+                                            .setWantedState(SwerveStates.FIELD_CENTRIC);
                                 }));
     }
-
-
-
-
-
 
     /**
      * @return driver controller left joystick x axis

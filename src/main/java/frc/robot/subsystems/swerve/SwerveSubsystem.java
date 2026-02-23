@@ -141,7 +141,7 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
                         .withXPositiveReference(XPositiveReference.OperatorPerspective);
         choreo_rotation_lock_request_ =
                 new ChassisRequest.FieldCentricFacingAngle()
-                        .withDriveRequestType(DriveControlMode.OPEN_LOOP)
+                        .withDriveRequestType(DriveControlMode.CLOSED_LOOP)
                         .withSteerRequestType(SteerControlMode.CLOSED_LOOP)
                         .withDeadband(CONSTANTS.MAX_TRANSLATION_RATE * 0.01)
                         .withRotationalDeadband(CONSTANTS.MAX_ANGULAR_RATE * 0.01)
@@ -149,7 +149,7 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
                         .withXPositiveReference(XPositiveReference.TowardsRedAlliance);
         robot_centric_rotation_lock_request_ =
                 new ChassisRequest.RobotCentricFacingAngle()
-                        .withDriveRequestType(DriveControlMode.OPEN_LOOP)
+                        .withDriveRequestType(DriveControlMode.CLOSED_LOOP)
                         .withSteerRequestType(SteerControlMode.CLOSED_LOOP)
                         .withDeadband(CONSTANTS.MAX_TRANSLATION_RATE * 0.01)
                         .withRotationalDeadband(CONSTANTS.MAX_ANGULAR_RATE * 0.01)
