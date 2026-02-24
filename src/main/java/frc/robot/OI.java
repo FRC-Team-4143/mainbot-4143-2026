@@ -64,20 +64,8 @@ public abstract class OI {
         // =============================================================================
         // TESTING BINDINGS (THESE SHOULD BE REMOVED BEFORE COMPETITION)
         // =============================================================================
-        //set to diagonal for driving over bumbs
-        
-        //public void bumpOrientation() {
-                //setDesiredRotationLock(CONSTANTS.BLUE_ORIENTATION.getRotation());
-                //AllianceFlipUtil.apply(CONSTANTS.BLUE_ORIENTATION).getRotation();
-        driver_controller_.leftStick().whileTrue(
-                Commands.startEnd(
-                        () -> {SwerveSubsystem.getInstance().setDesiredRotationLock(FieldTargets.BUMP_ORIENTATION.getRotation());
-                                
-                        }, null, null)
-        );
 
-
-        // Set Shooter and Hopper to MANUAL control
+        // Shoots the robot while held, returns to tracking when released
         driver_controller_
                 .rightTrigger()
                 .whileTrue(
@@ -102,6 +90,8 @@ public abstract class OI {
                                     LocalizationSubsystem.getInstance()
                                             .setWantedState(LocalizationStates.FULL);
                                 }));
+
+        // Aims the robot at the hub while held, returns to normal tracking when released
         driver_controller_
                 .leftTrigger()
                 .whileTrue(
@@ -124,7 +114,25 @@ public abstract class OI {
                                             .setWantedState(LocalizationStates.FULL);
                                 }));
 
-        // Set Intake to MANUAL control
+        // Snaps robot to nearest bump crossing angle while held, returns to normal field centric when released 
+        driver_controller_
+                .leftStick()
+                .whileTrue(
+                        Commands.startEnd(
+                                () -> {
+                                    SwerveSubsystem.getInstance()
+                                            .setDesiredRotationLock(
+                                                    FieldTargets.getNearestSnapAngle());
+                                    SwerveSubsystem.getInstance()
+                                            .setWantedState(
+                                                    SwerveStates.FIELD_CENTRIC_ROTATION_LOCK);
+                                },
+                                () -> {
+                                    SwerveSubsystem.getInstance()
+                                            .setWantedState(SwerveStates.FIELD_CENTRIC);
+                                }));
+
+        // Intakes the robot while held, returns to stored when released
         driver_controller_
                 .rightBumper()
                 .whileTrue(
@@ -137,6 +145,8 @@ public abstract class OI {
                                     IntakeSubsystem.getInstance()
                                             .setWantedState(IntakeStates.STORE);
                                 }));
+        
+        // Used for testing chassis velocity control, should be removed before competition
         driver_controller_
                 .b()
                 .whileTrue(
@@ -154,6 +164,8 @@ public abstract class OI {
                                     SwerveSubsystem.getInstance()
                                             .setWantedState(SwerveStates.FIELD_CENTRIC);
                                 }));
+
+        // Used for testing chassis velocity control, should be removed before competition
         driver_controller_
                 .x()
                 .whileTrue(
