@@ -8,10 +8,9 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.subsystems.intake.IntakeConstants.IntakeStates;
-import frc.robot.subsystems.gamestates.GameStatesSubsystem;
-import frc.robot.subsystems.gamestates.GameStatesConstants;
 import frc.robot.subsystems.gamestates.GameStatesConstants.GameStates;
+import frc.robot.subsystems.gamestates.GameStatesSubsystem;
+import frc.robot.subsystems.intake.IntakeConstants.IntakeStates;
 import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterStates;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
@@ -40,9 +39,6 @@ public abstract class OI {
                                     SwerveSubsystem.getInstance()
                                             .setWantedState(
                                                     SwerveStates.FIELD_CENTRIC_ROTATION_LOCK);
-                                    GameStatesSubsystem.getInstance()
-                                            .setWantedState(
-                                                    GameStates.SCORE);
                                 },
                                 () -> {
                                     ShooterSubsystem.getInstance()
@@ -50,8 +46,7 @@ public abstract class OI {
                                     SwerveSubsystem.getInstance()
                                             .setWantedState(SwerveStates.FIELD_CENTRIC);
                                     GameStatesSubsystem.getInstance()
-                                            .setWantedState(
-                                                    GameStates.HOLD);
+                                            .setWantedState(GameStates.HOLD);
                                 }));
         driver_controller_
                 .b()
@@ -63,6 +58,17 @@ public abstract class OI {
                                 () ->
                                         IntakeSubsystem.getInstance()
                                                 .setWantedState(IntakeStates.CLOSED)));
+        driver_controller_
+                .x()
+                .onTrue(
+                        Commands.runOnce(
+                                () -> {
+                                    if (GameStatesSubsystem.getInstance().getAutoClimbReady()) {
+                                        GameStatesSubsystem.getInstance().setAutoClimbReady(false);
+                                    } else {
+                                        GameStatesSubsystem.getInstance().setAutoClimbReady(true);
+                                    }
+                                }));
     }
 
     /**

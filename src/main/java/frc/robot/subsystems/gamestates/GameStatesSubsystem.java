@@ -24,11 +24,12 @@ public class GameStatesSubsystem extends MwSubsystem<GameStates, GameStatesConst
     }
 
     // Variables, temporary
-    Boolean goal_active_ = true;
-    Boolean operator_presses_climb_button_ = false;
-    Boolean full_load_ = false;
-    boolean pass_overide_ = false;
-    Boolean auto_climb_ready_ = true;
+    // prefer primitives to avoid accidental nulls from boxed Boolean
+    private boolean goal_active_ = false;
+    private boolean operator_presses_climb_button_ = false;
+    private boolean full_load_ = false;
+    private boolean pass_overide_ = false;
+    private boolean auto_climb_ready_ = true;
 
     public GameStatesSubsystem() {
         super(GameStates.HOLD, new GameStatesConstants());
@@ -105,36 +106,35 @@ public class GameStatesSubsystem extends MwSubsystem<GameStates, GameStatesConst
             system_state_ = GameStates.SCORE;
         } else if (system_state_ == GameStates.HOLD && (isPassZone(robotpose) || pass_overide_)) {//validated
             system_state_ = GameStates.PASS;
-        } else if (system_state_ == GameStates.HOLD && auto_climb_ready_) {
+        } else if (system_state_ == GameStates.HOLD && auto_climb_ready_) {//validated
             system_state_ = GameStates.AUTO_CLIMB;
-        } else if (system_state_ == GameStates.HOLD && operator_presses_climb_button_) {
+            System.out.println("should be in auto climb -> set system_state_=" + system_state_);
+        } else if (system_state_ == GameStates.HOLD && operator_presses_climb_button_) {//validated
             system_state_ = GameStates.TELEOP_CLIMB;
         } else {
         } // empty to not interfere with rest of state machine
         // SCORE transistions
-        if (system_state_ == GameStates.SCORE && (isPassZone(robotpose) || !goal_active_)) {
+        if (system_state_ == GameStates.SCORE && (isPassZone(robotpose) || !goal_active_)) {//validated
             system_state_ = GameStates.HOLD;
-        } else if (system_state_ == GameStates.SCORE && auto_climb_ready_) {
+        } else if (system_state_ == GameStates.SCORE && auto_climb_ready_) {//validated
             system_state_ = GameStates.AUTO_CLIMB;
-        } else if (system_state_ == GameStates.SCORE && operator_presses_climb_button_) {
+        } else if (system_state_ == GameStates.SCORE && operator_presses_climb_button_) {//validated
             system_state_ = GameStates.TELEOP_CLIMB;
-        }else if (wanted == GameStates.SCORE && goal_active_){
-            system_state_ = GameStates.SCORE;
         } else {
         } // empty to not interfere with rest of state machine
         // PASS transistions
         if (system_state_ == GameStates.PASS && (inHoldZone(robotpose) //|| !pass_overide_
-        )) {
+        )) {//validated
             system_state_ = GameStates.HOLD;
         } else {
         } // empty to not interfere with rest of state machine
         // AUTO_CLIMB transitions
-        if (system_state_ == GameStates.AUTO_CLIMB && RobotState.isTeleop()) {
+        if (system_state_ == GameStates.AUTO_CLIMB && RobotState.isTeleop()) {//validated
             system_state_ = GameStates.DOWN_CLIMB;
         } else {
         } // empty to not interfere with rest of state machine
         // DOWN_CLIMB transistions
-        if (system_state_ == GameStates.DOWN_CLIMB && isDownClimbFinished()) {
+        if (system_state_ == GameStates.DOWN_CLIMB && isDownClimbFinished()) {//validated
             system_state_ = GameStates.HOLD;
         } else {
         } // empty to not interfere with rest of state machine
@@ -171,6 +171,23 @@ public class GameStatesSubsystem extends MwSubsystem<GameStates, GameStatesConst
     // condition much be in any hold zone
 
     private boolean isDownClimbFinished() {
-        return false;
+        return true;
+    }
+
+    //modify temp variables
+    public boolean getGoalActive() {
+        return goal_active_;
+    }
+
+    public void setGoalActive(boolean trueORfalse) {
+        goal_active_ = trueORfalse;
+    }
+
+    public boolean getAutoClimbReady() {
+        return auto_climb_ready_;
+    }
+
+    public void setAutoClimbReady(boolean trueORfalse) {
+        auto_climb_ready_ = trueORfalse;
     }
 }
