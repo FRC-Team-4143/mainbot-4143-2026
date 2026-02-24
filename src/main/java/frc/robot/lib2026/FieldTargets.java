@@ -1,5 +1,7 @@
 package frc.robot.lib2026;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 
@@ -32,4 +34,7 @@ public class FieldTargets {
         public static final double TURRET_PASS_ANGLE_TOLERANCE = Units.degreesToRadians(1.0);
         public static final double ROTATION_PASS_ANGLE_TOLERANCE = Units.degreesToRadians(6.0);
     }
+
+//bump rotation constants
+        public static final Pose2d BUMP_ORIENTATION = new Pose2d(0, 0, Rotation2d.fromDegrees(45));
 }

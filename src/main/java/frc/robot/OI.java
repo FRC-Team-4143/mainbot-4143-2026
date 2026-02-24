@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.subsystems.hopper.HopperConstants.HopperStates;
+import frc.robot.lib2026.FieldTargets;
 import frc.robot.subsystems.hopper.HopperSubsystem;
 import frc.robot.subsystems.intake.IntakeConstants.IntakeStates;
 import frc.robot.subsystems.intake.IntakeSubsystem;
@@ -63,6 +64,18 @@ public abstract class OI {
         // =============================================================================
         // TESTING BINDINGS (THESE SHOULD BE REMOVED BEFORE COMPETITION)
         // =============================================================================
+        //set to diagonal for driving over bumbs
+        
+        //public void bumpOrientation() {
+                //setDesiredRotationLock(CONSTANTS.BLUE_ORIENTATION.getRotation());
+                //AllianceFlipUtil.apply(CONSTANTS.BLUE_ORIENTATION).getRotation();
+        driver_controller_.leftStick().whileTrue(
+                Commands.startEnd(
+                        () -> {SwerveSubsystem.getInstance().setDesiredRotationLock(FieldTargets.BUMP_ORIENTATION.getRotation());
+                                
+                        }, null, null)
+        );
+
 
         // Set Shooter and Hopper to MANUAL control
         driver_controller_
