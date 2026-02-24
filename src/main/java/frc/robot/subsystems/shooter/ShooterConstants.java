@@ -33,8 +33,10 @@ public class ShooterConstants extends MwConstants {
         TRACKING,
         /** Manual tuning mode for testing and calibration */
         TUNING,
-        /** Manual control mode with fixed setpoints */
-        MANUAL,
+        /** Manual control mode for hub shooting */
+        MANUALHUB,
+        /** Manual control mode for pasing */
+        MANUALPASS,
         /** Smooth return to 0 velocity for clean disable */
         SPIN_DOWN,
         /** Aiming at target with shooter spinning and robot rotating, with no intent to SHOOT */
@@ -72,7 +74,13 @@ public class ShooterConstants extends MwConstants {
     public final double FLYWHEEL_EFF_FACTOR = 2.2;
     public final Slot1Configs FLYWHEEL_VELOCITY_GAINS =
             new Slot1Configs().withKP(0.5).withKV(0.118).withKI(2);
-    public final double FLYWHEEL_MANUAL_VELOCITY = 330.0;
+    
+    // Manual mode flywheel velocities (rad/s) - TUNE THESE!
+    public final double FLYWHEEL_MANUAL_HUB_VELOCITY = 330.0; // Flywheel speed for hub shots
+    public final double FLYWHEEL_MANUAL_PASS_VELOCITY = 250.0; // Flywheel speed for passing
+    
+    @Deprecated
+    public final double FLYWHEEL_MANUAL_VELOCITY = 330.0; // Use FLYWHEEL_MANUAL_HUB_VELOCITY instead
 
     // =============================================================================
     // MECHANICAL CONSTANTS - INDEXER
@@ -94,7 +102,14 @@ public class ShooterConstants extends MwConstants {
     public final double HOOD_MAX_ANGLE = Units.degreesToRadians(79);
     public final double HOOD_HOME_POSITION = Units.degreesToRadians(81.170);
     public final Slot0Configs HOOD_POSITION_GAINS = new Slot0Configs().withKP(100).withKD(0.15);
-    public final double HOOD_MANUAL_ANGLE = Units.degreesToRadians(0);
+    
+    // Manual mode hood angles (radians) - TUNE THESE!
+    public final double HOOD_MANUAL_HUB_ANGLE = Units.degreesToRadians(65.0); // Hood angle for hub shots
+    public final double HOOD_MANUAL_PASS_ANGLE = Units.degreesToRadians(45.0); // Hood angle for passing
+    
+    @Deprecated
+    public final double HOOD_MANUAL_ANGLE = Units.degreesToRadians(0); // Use HOOD_MANUAL_HUB_ANGLE instead
+    
     // Hood feedforward gain for velocity (V/(rad/s)) - converts hood angular velocity to voltage
     public final double HOOD_KV = 0.0;
 

@@ -40,7 +40,7 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
     private RollerMech hood_;
 
     // Shooter parameters calculated from LaunchCalculator
-    private double flywheel_omega_ = CONSTANTS.FLYWHEEL_MANUAL_VELOCITY;
+    private double flywheel_omega_ = CONSTANTS.FLYWHEEL_MANUAL_HUB_VELOCITY;
     private double hood_angle_ = CONSTANTS.HOOD_MAX_ANGLE;
     private double heading_angle_ = 0.0;
     private double hood_feedforward_ = 0.0;
@@ -148,9 +148,12 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
                         robot_pose, robot_velocity, target_);
 
         // Update shooter parameters based on the launch calculator
-        // Skip the shooter parameters update if invalid or in manual mode to allow for
+        // Skip the shooter parameters update if invalid or in manual modes to allow for
         // testing with manual setpoints
-        if (launch_params_.is_valid && system_state_ != ShooterStates.MANUAL) {
+        if (launch_params_.is_valid 
+                && system_state_ != ShooterStates.TUNING
+                && system_state_ != ShooterStates.MANUALHUB
+                && system_state_ != ShooterStates.MANUALPASS) {
             flywheel_omega_ = launch_params_.flywheel_speed;
 
             // Store heading angle for robot rotation
@@ -218,10 +221,36 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
                                         CONSTANTS.SHOOTER_CENTER.getY()),
                                 heading_feedforward_);
                 break;
-            case MANUAL:
-                flywheel_.setTargetVelocity(CONSTANTS.FLYWHEEL_MANUAL_VELOCITY);
+            case MANUALHUB:
+                // Manual hub shooting mode - uses fixed setpoints for hub shots
+                // Target is automatically set to HUB for alignment
+                setTarget(FieldTargets.Shooter.HUB);
+                flywheel_.setTargetVelocity(CONSTANTS.FLYWHEEL_MANUAL_HUB_VELOCITY);
                 indexer_.setTargetDutyCycle(CONSTANTS.INDEXER_DUTY_CYCLE);
-                hood_.setCurrentPosition(CONSTANTS.HOOD_MANUAL_ANGLE);
+                hood_.setTargetPosition(CONSTANTS.HOOD_MANUAL_HUB_ANGLE);
+                // Robot rotation is handled by launch calculator since we set the target
+                SwerveSubsystem.getInstance()
+                        .setDesiredRotationLockCORWithFF(
+                                Rotation2d.fromRadians(heading_angle_),
+                                new Translation2d(
+                                        CONSTANTS.SHOOTER_CENTER.getX(),
+                                        CONSTANTS.SHOOTER_CENTER.getY()),
+                                heading_feedforward_);
+                break;
+            case MANUALPASS:
+                // Manual pass mode - uses fixed setpoints for passing
+                // Target should be set externally to LEFT_PASS or RIGHT_PASS
+                flywheel_.setTargetVelocity(CONSTANTS.FLYWHEEL_MANUAL_PASS_VELOCITY);
+                indexer_.setTargetDutyCycle(CONSTANTS.INDEXER_DUTY_CYCLE);
+                hood_.setTargetPosition(CONSTANTS.HOOD_MANUAL_PASS_ANGLE);
+                // Robot rotation is handled by launch calculator with current target
+                SwerveSubsystem.getInstance()
+                        .setDesiredRotationLockCORWithFF(
+                                Rotation2d.fromRadians(heading_angle_),
+                                new Translation2d(
+                                        CONSTANTS.SHOOTER_CENTER.getX(),
+                                        CONSTANTS.SHOOTER_CENTER.getY()),
+                                heading_feedforward_);
                 break;
             case TUNING:
                 // code does NOTHING to allow for testing
@@ -394,6 +423,54 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
         flywheel_vel_tol_ = flywheel_vel_tol;
         hood_pos_tol_ = hood_pos_tol;
         rot_pos_tol_ = rot_pos_tol;
+    }
+
+    /**
+     * Sets the shooter to MANUALHUB mode with HUB as the target.
+     * This mode uses fixed shooter setpoints for hub shots instead of the launch calculator.
+     * Useful when the calculated trajectory isn't working or for consistent close-range shots.
+     * 
+     * Setpoints used:
+     * - Flywheel: FLYWHEEL_MANUAL_HUB_VELOCITY
+     * - Hood: HOOD_MANUAL_HUB_ANGLE
+     * - Robot will rotate to face HUB
+     * - Indexer will feed at normal rate
+     */
+    public void enableManualHubMode() {
+        setTarget(FieldTargets.Shooter.HUB);
+        setWantedState(ShooterStates.MANUALHUB);
+    }
+
+    /**
+     * Sets the shooter to MANUALPASS mode for passing to a specific target.
+     * This mode uses fixed shooter setpoints for passing instead of the launch calculator.
+     * Useful for consistent passing shots where launch calculator may overcomplicate.
+     * 
+     * Setpoints used:
+     * - Flywheel: FLYWHEEL_MANUAL_PASS_VELOCITY
+     * - Hood: HOOD_MANUAL_PASS_ANGLE
+     * - Robot will rotate to face the current target
+     * - Indexer will feed at normal rate
+     * 
+     * @param passTarget The target to pass to (e.g., FieldTargets.Shooter.LEFT_PASS)
+     */
+    public void enableManualPassMode(Translation3d passTarget) {
+        setTarget(passTarget);
+        setWantedState(ShooterStates.MANUALPASS);
+    }
+
+    /**
+     * Convenience method for left pass using manual mode
+     */
+    public void enableManualLeftPass() {
+        enableManualPassMode(FieldTargets.Shooter.LEFT_PASS);
+    }
+
+    /**
+     * Convenience method for right pass using manual mode
+     */
+    public void enableManualRightPass() {
+        enableManualPassMode(FieldTargets.Shooter.RIGHT_PASS);
     }
 
     // =============================================================================
