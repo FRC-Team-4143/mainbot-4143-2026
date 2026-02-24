@@ -19,7 +19,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -122,12 +121,14 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
     @Override
     public void handleStateTransition(ShooterStates wanted) {
         if (wanted == ShooterStates.SHOOT
-                && system_state_ != ShooterStates.AIMING
+                && system_state_ != ShooterStates.SHOOT_WAIT
                 && system_state_ != ShooterStates.SHOOT) {
-            system_state_ = ShooterStates.AIMING;
-        } else if (system_state_ == ShooterStates.AIMING && isShooterReady()) {
+            system_state_ = ShooterStates.SHOOT_WAIT;
+        } else if (system_state_ == ShooterStates.SHOOT_WAIT && isShooterReady()) {
             system_state_ = ShooterStates.SHOOT;
-        } else if (system_state_ == ShooterStates.AIMING && !isShooterReady() && wanted == ShooterStates.SHOOT) {
+        } else if (system_state_ == ShooterStates.SHOOT_WAIT
+                && !isShooterReady()
+                && wanted == ShooterStates.SHOOT) {
             // Nap time : Blocks deafult transition from occuring
         } else {
             system_state_ = wanted;
@@ -178,6 +179,18 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
                 flywheel_.setTargetVelocity(flywheel_omega_);
                 indexer_.setTargetDutyCycle(0);
                 hood_.setTargetPositionWithFF(hood_angle_, hood_feedforward_);
+                break;
+            case SHOOT_WAIT:
+                flywheel_.setTargetVelocity(flywheel_omega_);
+                indexer_.setTargetDutyCycle(0);
+                hood_.setTargetPositionWithFF(hood_angle_, hood_feedforward_);
+                SwerveSubsystem.getInstance()
+                        .setDesiredRotationLockCORWithFF(
+                                Rotation2d.fromRadians(heading_angle_),
+                                new Translation2d(
+                                        CONSTANTS.SHOOTER_CENTER.getX(),
+                                        CONSTANTS.SHOOTER_CENTER.getY()),
+                                heading_feedforward_);
                 break;
             case AIMING:
                 flywheel_.setTargetVelocity(flywheel_omega_);
@@ -248,13 +261,18 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
                 indexer_.setTargetDutyCycle(0);
                 hood_.setTargetPosition(CONSTANTS.HOOD_IDLE_POSITION);
                 break;
+            case SPIN_DOWN:
+                flywheel_.setTargetVelocityMotionProfile(0);
+                indexer_.setTargetDutyCycle(0);
+                hood_.setTargetPosition(CONSTANTS.HOOD_IDLE_POSITION);
+                break;
         }
 
         // LaunchCalculator Logging
         DogLog.log(getSubsystemKey() + "LaunchCalculator/Valid", launch_params_.is_valid);
         DogLog.log(
                 getSubsystemKey() + "LaunchCalculator/HoodAngle",
-                Units.radiansToDegrees(launch_params_.hood_angle),
+                launch_params_.hood_angle,
                 Radians);
         DogLog.log(
                 getSubsystemKey() + "LaunchCalculator/HoodVelocity",

@@ -140,7 +140,7 @@ public class GameStatesSubsystem extends MwSubsystem<GameStates, GameStatesConst
             ShooterSubsystem.getInstance().setTarget(FieldTargets.Shooter.HUB);
         } else if (FieldRegions.HOLD_REGIONS.contains(
                 LocalizationSubsystem.getInstance().getFieldPose())) {
-            ShooterSubsystem.getInstance().setWantedState(ShooterStates.AIMING);
+            ShooterSubsystem.getInstance().setWantedState(ShooterStates.SHOOT_WAIT);
         }
         switch (system_state_) {
             case HOLD:
@@ -150,13 +150,13 @@ public class GameStatesSubsystem extends MwSubsystem<GameStates, GameStatesConst
                 ClimberSubsystem.getInstance().setWantedState(ClimberStates.STOWED);
                 break;
             case SCORE:
-                ShooterSubsystem.getInstance().setWantedState(ShooterStates.AIMING);
+                ShooterSubsystem.getInstance().setWantedState(ShooterStates.SHOOT_WAIT);
                 IntakeSubsystem.getInstance().setWantedState(IntakeStates.INTAKE);
                 HopperSubsystem.getInstance().setWantedState(HopperStates.SHOOTING);
                 ClimberSubsystem.getInstance().setWantedState(ClimberStates.STOWED);
                 break;
             case PASS:
-                ShooterSubsystem.getInstance().setWantedState(ShooterStates.AIMING);
+                ShooterSubsystem.getInstance().setWantedState(ShooterStates.SHOOT_WAIT);
                 IntakeSubsystem.getInstance().setWantedState(IntakeStates.INTAKE);
                 HopperSubsystem.getInstance().setWantedState(HopperStates.SHOOTING);
                 ClimberSubsystem.getInstance().setWantedState(ClimberStates.STOWED);

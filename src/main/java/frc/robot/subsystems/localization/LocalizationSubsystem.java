@@ -85,6 +85,7 @@ public class LocalizationSubsystem extends MwSubsystem<LocalizationStates, Local
 
         // Put the field visualizer on SmartDashboard once during initialization
         SmartDashboard.putData("Field", field_visualizer_);
+        DogLog.log(getSubsystemKey() + "SwerveNoise", false);
     }
 
     // reset
@@ -223,6 +224,7 @@ public class LocalizationSubsystem extends MwSubsystem<LocalizationStates, Local
      * data.
      */
     public void enableSwerveMeasurementNoise() {
+        DogLog.log(getSubsystemKey() + "SwerveNoise", true);
         swerve_noise_enabled_ = true;
     }
 

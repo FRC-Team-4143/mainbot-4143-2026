@@ -44,10 +44,10 @@ public class LocalizationConstants extends MwConstants {
     // Vision covariance matrices for different focus modes
     // Standard deviations: [x (meters), y (meters), theta (radians)]
     public final Matrix<N3, N1> DEFAULT_VISION_STD_DEV = VecBuilder.fill(0.9, 0.9, 0.9);
-    public final Matrix<N3, N1> SHOOTING_FOCUSED_STD_DEV = VecBuilder.fill(0.5, 0.5, 0.1);
-    public final Matrix<N3, N1> SHOOTING_NOT_FOCUSED_STD_DEV = VecBuilder.fill(1.0, 1.0, 0.5);
-    public final Matrix<N3, N1> CLIMBING_FOCUSED_STD_DEV = VecBuilder.fill(0.5, 0.5, 0.1);
-    public final Matrix<N3, N1> CLIMBING_NOT_FOCUSED_STD_DEV = VecBuilder.fill(1.0, 1.0, 0.5);
+    public final Matrix<N3, N1> SHOOTING_FOCUSED_STD_DEV = VecBuilder.fill(0.9, 0.9, 0.9);
+    public final Matrix<N3, N1> SHOOTING_NOT_FOCUSED_STD_DEV = VecBuilder.fill(0.9, 0.9, 0.9);
+    public final Matrix<N3, N1> CLIMBING_FOCUSED_STD_DEV = VecBuilder.fill(0.9, 0.9, 0.9);
+    public final Matrix<N3, N1> CLIMBING_NOT_FOCUSED_STD_DEV = VecBuilder.fill(0.9, 0.9, 0.9);
 
     // Maximum allowed rotation difference between vision measurement and current pose (radians)
     // Measurements with larger rotation differences will be discarded
