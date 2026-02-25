@@ -157,40 +157,39 @@ public class ShooterConstants extends MwConstants {
 
         // Configure range limits
         LAUNCH_CALCULATOR.setMinDistance(1.34); // Minimum shooting distance in meters
-        LAUNCH_CALCULATOR.setMaxDistance(6.5); // Maximum shooting distance in meters
+        LAUNCH_CALCULATOR.setMaxDistance(15.0); // Maximum shooting distance in meters
         LAUNCH_CALCULATOR.setPhaseDelay(0.03); // Processing and actuator delay in seconds
 
         // Populate hood angle map (distance in meters -> angle in radians)
         // Empirically determined values from testing
-        LAUNCH_CALCULATOR.addHoodAnglePoint(1.34, Units.degreesToRadians(74.48));
-        LAUNCH_CALCULATOR.addHoodAnglePoint(1.78, Units.degreesToRadians(74.48));
-        LAUNCH_CALCULATOR.addHoodAnglePoint(2.17, Units.degreesToRadians(70.0));
+        LAUNCH_CALCULATOR.addHoodAnglePoint(1.34, Units.degreesToRadians(85.94));
+        LAUNCH_CALCULATOR.addHoodAnglePoint(1.78, Units.degreesToRadians(85.94));
+        LAUNCH_CALCULATOR.addHoodAnglePoint(2.17, Units.degreesToRadians(80.21));
         LAUNCH_CALCULATOR.addHoodAnglePoint(2.81, Units.degreesToRadians(71.62));
-        LAUNCH_CALCULATOR.addHoodAnglePoint(3.82, Units.degreesToRadians(64.46));
-        LAUNCH_CALCULATOR.addHoodAnglePoint(4.40, Units.degreesToRadians(64.46));
-        LAUNCH_CALCULATOR.addHoodAnglePoint(4.77, Units.degreesToRadians(63.03));
-        LAUNCH_CALCULATOR.addHoodAnglePoint(5.60, Units.degreesToRadians(63.03));
-        LAUNCH_CALCULATOR.addHoodAnglePoint(6.50, Units.degreesToRadians(63.03));
+        LAUNCH_CALCULATOR.addHoodAnglePoint(3.82, Units.degreesToRadians(68.75));
+        LAUNCH_CALCULATOR.addHoodAnglePoint(4.40, Units.degreesToRadians(65.89));
+        LAUNCH_CALCULATOR.addHoodAnglePoint(4.77, Units.degreesToRadians(65.89));
+        LAUNCH_CALCULATOR.addHoodAnglePoint(5.60, Units.degreesToRadians(65.89));
+        LAUNCH_CALCULATOR.addHoodAnglePoint(6.50, Units.degreesToRadians(65.89));
 
         // Populate flywheel speed map (distance in meters -> speed in rad/s)
         // Empirically determined values from testing
-        LAUNCH_CALCULATOR.addFlywheelSpeedPoint(1.34, 210.0);
-        LAUNCH_CALCULATOR.addFlywheelSpeedPoint(1.78, 260.0);
-        LAUNCH_CALCULATOR.addFlywheelSpeedPoint(2.17, 270.0);
-        LAUNCH_CALCULATOR.addFlywheelSpeedPoint(2.81, 285.0);
-        LAUNCH_CALCULATOR.addFlywheelSpeedPoint(3.82, 320.0);
-        LAUNCH_CALCULATOR.addFlywheelSpeedPoint(4.40, 330.0);
+        LAUNCH_CALCULATOR.addFlywheelSpeedPoint(1.34, 260.0);
+        LAUNCH_CALCULATOR.addFlywheelSpeedPoint(1.78, 270.0);
+        LAUNCH_CALCULATOR.addFlywheelSpeedPoint(2.17, 285.0);
+        LAUNCH_CALCULATOR.addFlywheelSpeedPoint(2.81, 310.0);
+        LAUNCH_CALCULATOR.addFlywheelSpeedPoint(3.82, 335.0);
+        LAUNCH_CALCULATOR.addFlywheelSpeedPoint(4.40, 340.0);
         LAUNCH_CALCULATOR.addFlywheelSpeedPoint(4.77, 360.0);
-        LAUNCH_CALCULATOR.addFlywheelSpeedPoint(5.60, 367.0);
+        LAUNCH_CALCULATOR.addFlywheelSpeedPoint(5.60, 375.0);
         LAUNCH_CALCULATOR.addFlywheelSpeedPoint(6.50, 420.0);
+        LAUNCH_CALCULATOR.addFlywheelSpeedPoint(15, 420.0);
 
         // Populate time of flight map (distance in meters -> time in seconds)
         // Empirically determined values from testing
-        LAUNCH_CALCULATOR.addTimeOfFlightPoint(1.38, 0.90);
-        LAUNCH_CALCULATOR.addTimeOfFlightPoint(1.88, 1.09);
-        LAUNCH_CALCULATOR.addTimeOfFlightPoint(3.15, 1.11);
-        LAUNCH_CALCULATOR.addTimeOfFlightPoint(4.55, 1.12);
-        LAUNCH_CALCULATOR.addTimeOfFlightPoint(5.68, 1.16);
+        LAUNCH_CALCULATOR.addTimeOfFlightPoint(1.5, 1.129);
+        LAUNCH_CALCULATOR.addTimeOfFlightPoint(3, 1.293);
+        LAUNCH_CALCULATOR.addTimeOfFlightPoint(5.00, 1.413);
 
         // =============================================================================
         // MOTOR CONFIGURATION INITIALIZATION

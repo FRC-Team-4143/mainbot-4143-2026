@@ -37,7 +37,7 @@ import java.util.Optional;
 
 public class Robot extends TimedRobot {
 
-    private Alliance alliance_ = null; // Current alliance, used to set driver perspective
+    private Alliance alliance_ = Alliance.Blue; // Current alliance, used to set driver perspective
     private RobotContainer robot_container_;
 
     public Robot() {
@@ -84,6 +84,7 @@ public class Robot extends TimedRobot {
     @Override
     public void disabledInit() {
         ShooterSubsystem.getInstance().setWantedState(ShooterStates.IDLE);
+        HubMonitor.seedActiveAlliance(HubMonitor.ActiveAlliance.INVALID);
     }
 
     @Override

@@ -40,7 +40,7 @@ public class HopperConstants extends MwConstants {
 
     public final boolean HOPPER_MOTOR_INVERTED = false;
     public final double HOPPER_GEAR_RATIO = 1.0;
-    public final double HOPPER_DANGER_CURRENT = 20;
+    public final double HOPPER_DANGER_CURRENT = 40;
     public final double HOPPER_VELOCITY_TARGET = 200;
     public final Slot1Configs HOPPER_VELOCITY_GAINS = new Slot1Configs().withKV(.122).withKP(0.5);
 
