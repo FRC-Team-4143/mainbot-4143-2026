@@ -26,6 +26,7 @@ public class ShootFuel extends Command {
     public void initialize() {
         ShooterSubsystem.getInstance().setWantedState(ShooterStates.SHOOT);
         HopperSubsystem.getInstance().setWantedState(HopperStates.SHOOTING);
+        SwerveSubsystem.getInstance().setTeleOpVelocityScalar(0.25);
         SwerveSubsystem.getInstance().setWantedState(SwerveStates.FIELD_CENTRIC_ROTATION_LOCK);
         LocalizationSubsystem.getInstance().setWantedState(LocalizationStates.SHOOTING_FOCUS);
     }
@@ -39,6 +40,7 @@ public class ShootFuel extends Command {
     public void end(boolean interrupted) {
         ShooterSubsystem.getInstance().setWantedState(ShooterStates.TRACKING);
         HopperSubsystem.getInstance().setWantedState(HopperStates.IDLE);
+        SwerveSubsystem.getInstance().setTeleOpVelocityScalar(1.0);
         SwerveSubsystem.getInstance().setWantedState(SwerveStates.FIELD_CENTRIC);
         LocalizationSubsystem.getInstance().setWantedState(LocalizationStates.FULL);
     }
