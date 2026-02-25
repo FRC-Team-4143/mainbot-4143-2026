@@ -65,7 +65,7 @@ public class IntakeConstants extends MwConstants {
     public final double PIVOT_DEPLOY_POSITION = Units.degreesToRadians(11);
     public final double PIVOT_STORE_POSITION = Units.degreesToRadians(95);
     public final double PIVOT_TOLERANCE = Units.degreesToRadians(5);
-    public final Slot0Configs PIVOT_POSITION_GAINS = new Slot0Configs().withKG(0.12).withKP(250.0);
+    public final Slot0Configs PIVOT_POSITION_GAINS = new Slot0Configs().withKG(0).withKP(.0);
 
     // =============================================================================
     // MOTOR CONFIGURATION OBJECTS
