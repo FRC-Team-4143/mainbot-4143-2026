@@ -35,8 +35,10 @@ public class ShooterConstants extends MwConstants {
         TUNING,
         /** Manual control mode with fixed setpoints */
         MANUALHUB,
-
-        MANUALPASS
+        /** Manual control mode with fixed setpoints for passing */
+        MANUALPASS,
+        /** Hood zeroing sequence - drives hood to hard stop and resets position */
+        HOOD_ZEROING
     }
 
     // =============================================================================
@@ -108,6 +110,25 @@ public class ShooterConstants extends MwConstants {
     
     // Hood feedforward gain for velocity (V/(rad/s)) - converts hood angular velocity to voltage
     public final double HOOD_KV = 0.0;
+
+    // =============================================================================
+    // HOOD ZEROING CONSTANTS
+    // =============================================================================
+    
+    // Duty cycle to apply during zeroing (negative to drive toward home position)
+    // Start conservative, increase if hood doesn't reach hard stop
+    public final double HOOD_ZEROING_DUTY_CYCLE = -0.15; // -15% power
+    
+    // Current threshold in amps to detect hard stop (when hood hits mechanical limit)
+    // Tune this based on testing - too low = false positives, too high = potential damage
+    public final double HOOD_ZEROING_CURRENT_THRESHOLD = 15.0; // amps
+    
+    // Number of consecutive samples above threshold before confirming hard stop
+    // Prevents false triggers from current spikes
+    public final int HOOD_ZEROING_CURRENT_SAMPLES = 5; // ~100ms at 20ms loop time
+    
+    // Maximum time to run zeroing sequence before aborting (safety timeout)
+    public final double HOOD_ZEROING_TIMEOUT_SECONDS = 5.0;
 
     // =============================================================================
     // CONTROL AND OPERATIONAL CONSTANTS

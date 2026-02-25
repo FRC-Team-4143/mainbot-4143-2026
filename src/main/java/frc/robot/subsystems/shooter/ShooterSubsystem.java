@@ -23,6 +23,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.lib2026.FieldTargets;
 import frc.robot.subsystems.localization.LocalizationSubsystem;
@@ -56,6 +57,11 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
 
     // Hood feedforward gain - made tunable for easy adjustment
     private double hood_kv_ = CONSTANTS.HOOD_KV;
+
+    // Hood zeroing state tracking
+    private int hood_zeroing_current_samples_ = 0;
+    private double hood_zeroing_start_time_ = 0.0;
+    private boolean hood_zeroing_complete_ = false;
 
     // getInstance
     public static ShooterSubsystem getInstance() {
@@ -104,6 +110,10 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
                 "Home Hood",
                 Commands.runOnce(() -> hood_.setCurrentPosition(CONSTANTS.HOOD_HOME_POSITION))
                         .ignoringDisable(true));
+        
+        SmartDashboard.putData(
+                "Zero Hood (Auto)",
+                zeroHoodCommand().ignoringDisable(true));
     }
 
     // reset
@@ -238,6 +248,10 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
                                         CONSTANTS.SHOOTER_CENTER.getX(),
                                         CONSTANTS.SHOOTER_CENTER.getY()),
                                 heading_feedforward_);
+                break;
+            case HOOD_ZEROING:
+                // Hood zeroing sequence - drives hood to hard stop and resets encoder
+                handleHoodZeroing(timestamp);
                 break;
             case TUNING:
                 // code does NOTHING to allow for testing
@@ -495,5 +509,114 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
                                 .getRadians(),
                         rot_pos_tol_);
         return status;
+    }
+
+    /**
+     * Handles the hood zeroing sequence logic.
+     * Drives the hood toward the hard stop using duty cycle control and monitors current.
+     * When current threshold is exceeded for sufficient samples, sets the position to home.
+     * 
+     * @param timestamp Current timestamp in seconds
+     */
+    private void handleHoodZeroing(double timestamp) {
+        // Initialize on first entry to this state
+        if (hood_zeroing_current_samples_ == 0 && hood_zeroing_start_time_ == 0.0) {
+            hood_zeroing_start_time_ = timestamp;
+            hood_zeroing_complete_ = false;
+            DogLog.log(getSubsystemKey() + "HoodZeroing/Started", true);
+        }
+
+        // Safety timeout check
+        if (timestamp - hood_zeroing_start_time_ > CONSTANTS.HOOD_ZEROING_TIMEOUT_SECONDS) {
+            DogLog.log(getSubsystemKey() + "HoodZeroing/TimedOut", true);
+            setWantedState(ShooterStates.IDLE);
+            resetZeroingState();
+            return;
+        }
+
+        // If zeroing is complete, transition to IDLE
+        if (hood_zeroing_complete_) {
+            DogLog.log(getSubsystemKey() + "HoodZeroing/Complete", true);
+            setWantedState(ShooterStates.IDLE);
+            resetZeroingState();
+            return;
+        }
+
+        // Drive hood toward hard stop with duty cycle control
+        hood_.setTargetDutyCycle(CONSTANTS.HOOD_ZEROING_DUTY_CYCLE);
+        
+        // Keep other mechanisms safe during zeroing
+        flywheel_.setTargetVelocity(0);
+        indexer_.setTargetDutyCycle(0);
+
+        // Monitor current draw
+        double current = hood_.getLeaderCurrent();
+        DogLog.log(getSubsystemKey() + "HoodZeroing/Current", current);
+        DogLog.log(getSubsystemKey() + "HoodZeroing/Samples", hood_zeroing_current_samples_);
+
+        // Check if current is above threshold
+        if (current >= CONSTANTS.HOOD_ZEROING_CURRENT_THRESHOLD) {
+            hood_zeroing_current_samples_++;
+            
+            // If we have enough consecutive high-current samples, we've hit the hard stop
+            if (hood_zeroing_current_samples_ >= CONSTANTS.HOOD_ZEROING_CURRENT_SAMPLES) {
+                // Stop the motor immediately
+                hood_.setTargetDutyCycle(0);
+                
+                // Set current position as home
+                hood_.setCurrentPosition(CONSTANTS.HOOD_HOME_POSITION);
+                
+                hood_zeroing_complete_ = true;
+                DogLog.log(getSubsystemKey() + "HoodZeroing/PositionSet", CONSTANTS.HOOD_HOME_POSITION);
+            }
+        } else {
+            // Reset counter if current drops below threshold (not at hard stop yet)
+            hood_zeroing_current_samples_ = 0;
+        }
+    }
+
+    /**
+     * Resets the hood zeroing state variables.
+     * Called when exiting the HOOD_ZEROING state.
+     */
+    private void resetZeroingState() {
+        hood_zeroing_current_samples_ = 0;
+        hood_zeroing_start_time_ = 0.0;
+        hood_zeroing_complete_ = false;
+    }
+
+    /**
+     * Checks if the hood zeroing sequence is currently active.
+     * 
+     * @return true if hood is currently zeroing, false otherwise
+     */
+    public boolean isHoodZeroing() {
+        return system_state_ == ShooterStates.HOOD_ZEROING;
+    }
+
+    /**
+     * Starts the hood zeroing sequence.
+     * This will drive the hood to its hard stop and reset the encoder position.
+     * The sequence will automatically complete and return to IDLE when done.
+     * 
+     * Use this method or create a command with:
+     * Commands.runOnce(() -> shooter.startHoodZeroing())
+     */
+    public void startHoodZeroing() {
+        resetZeroingState();
+        setWantedState(ShooterStates.HOOD_ZEROING);
+        DogLog.log(getSubsystemKey() + "HoodZeroing/Initiated", true);
+    }
+
+    /**
+     * Creates a command to zero the hood.
+     * The command will finish when zeroing is complete or times out.
+     * 
+     * @return Command that performs hood zeroing
+     */
+    public Command zeroHoodCommand() {
+        return Commands.runOnce(() -> startHoodZeroing())
+                .andThen(Commands.waitUntil(() -> !isHoodZeroing()))
+                .withName("ZeroHood");
     }
 }
