@@ -41,10 +41,11 @@ public class Robot extends TimedRobot {
     private RobotContainer robot_container_;
 
     public Robot() {
-        // Load the subsystems
-        robot_container_ = RobotContainer.getInstance();
         AllianceFlipUtil.configureFieldGeometry(
                 FieldConstants.FIELD_SYMMETRY_TYPE, FieldConstants.FIELD_CENTER);
+
+        // Load the subsystems
+        robot_container_ = RobotContainer.getInstance();
 
         // Configure External Interfaces
         OI.configureBindings();
