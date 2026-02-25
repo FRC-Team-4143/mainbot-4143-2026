@@ -10,16 +10,15 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.subsystems.hopper.HopperConstants.HopperStates;
-import frc.robot.lib2026.FieldTargets;
-import frc.robot.subsystems.hopper.HopperSubsystem;
+import frc.robot.commands.AimAtTarget;
+import frc.robot.commands.IntakeFuel;
+import frc.robot.commands.RotateForBump;
+import frc.robot.commands.ShootFuel;
 import frc.robot.subsystems.intake.IntakeConstants.IntakeStates;
 import frc.robot.subsystems.intake.IntakeSubsystem;
-import frc.robot.subsystems.localization.LocalizationConstants.LocalizationStates;
 import frc.robot.subsystems.localization.LocalizationSubsystem;
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterStates;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
-import frc.robot.subsystems.swerve.SwerveConstants.SwerveStates;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 import java.util.Optional;
 
@@ -45,7 +44,7 @@ public abstract class OI {
                 "Zero Wheel Offsets",
                 SwerveSubsystem.getInstance().setModuleOffsets().ignoringDisable(true));
         SmartDashboard.putData(
-                "Set Shooter Zero",
+                "Spin Down Flywheel",
                 Commands.runOnce(
                         () ->
                                 ShooterSubsystem.getInstance()
@@ -56,6 +55,10 @@ public abstract class OI {
         driver_controller_
                 .rightStick()
                 .onTrue(SwerveSubsystem.getInstance().toggleFieldCentric().ignoringDisable(true));
+        driver_controller_.rightTrigger().whileTrue(new ShootFuel());
+        driver_controller_.leftTrigger().whileTrue(new AimAtTarget());
+        driver_controller_.leftStick().whileTrue(new RotateForBump());
+        driver_controller_.rightBumper().whileTrue(new IntakeFuel());
 
         // =============================================================================
         // OPERATOR CONTROLLER BINDINGS
@@ -65,123 +68,19 @@ public abstract class OI {
         // TESTING BINDINGS (THESE SHOULD BE REMOVED BEFORE COMPETITION)
         // =============================================================================
 
-        // Shoots the robot while held, returns to tracking when released
-        driver_controller_
-                .rightTrigger()
-                .whileTrue(
-                        Commands.startEnd(
-                                () -> {
-                                    ShooterSubsystem.getInstance()
-                                            .setWantedState(ShooterStates.SHOOT);
-                                    HopperSubsystem.getInstance()
-                                            .setWantedState(HopperStates.SHOOTING);
-                                    SwerveSubsystem.getInstance()
-                                            .setWantedState(
-                                                    SwerveStates.FIELD_CENTRIC_ROTATION_LOCK);
-                                    LocalizationSubsystem.getInstance()
-                                            .setWantedState(LocalizationStates.SHOOTING_FOCUS);
-                                },
-                                () -> {
-                                    ShooterSubsystem.getInstance()
-                                            .setWantedState(ShooterStates.TRACKING);
-                                    HopperSubsystem.getInstance().setWantedState(HopperStates.IDLE);
-                                    SwerveSubsystem.getInstance()
-                                            .setWantedState(SwerveStates.FIELD_CENTRIC);
-                                    LocalizationSubsystem.getInstance()
-                                            .setWantedState(LocalizationStates.FULL);
-                                }));
-
-        // Aims the robot at the hub while held, returns to normal tracking when released
-        driver_controller_
-                .leftTrigger()
-                .whileTrue(
-                        Commands.startEnd(
-                                () -> {
-                                    ShooterSubsystem.getInstance()
-                                            .setWantedState(ShooterStates.AIMING);
-                                    SwerveSubsystem.getInstance()
-                                            .setWantedState(
-                                                    SwerveStates.FIELD_CENTRIC_ROTATION_LOCK);
-                                    LocalizationSubsystem.getInstance()
-                                            .setWantedState(LocalizationStates.SHOOTING_FOCUS);
-                                },
-                                () -> {
-                                    ShooterSubsystem.getInstance()
-                                            .setWantedState(ShooterStates.TRACKING);
-                                    SwerveSubsystem.getInstance()
-                                            .setWantedState(SwerveStates.FIELD_CENTRIC);
-                                    LocalizationSubsystem.getInstance()
-                                            .setWantedState(LocalizationStates.FULL);
-                                }));
-
-        // Snaps robot to nearest bump crossing angle while held, returns to normal field centric when released 
-        driver_controller_
-                .leftStick()
-                .whileTrue(
-                        Commands.startEnd(
-                                () -> {
-                                    SwerveSubsystem.getInstance()
-                                            .setDesiredRotationLock(
-                                                    FieldTargets.getNearestSnapAngle());
-                                    SwerveSubsystem.getInstance()
-                                            .setWantedState(
-                                                    SwerveStates.FIELD_CENTRIC_ROTATION_LOCK);
-                                },
-                                () -> {
-                                    SwerveSubsystem.getInstance()
-                                            .setWantedState(SwerveStates.FIELD_CENTRIC);
-                                }));
-
-        // Intakes the robot while held, returns to stored when released
-        driver_controller_
-                .rightBumper()
-                .whileTrue(
-                        Commands.startEnd(
-                                () -> {
-                                    IntakeSubsystem.getInstance()
-                                            .setWantedState(IntakeStates.INTAKE);
-                                },
-                                () -> {
-                                    IntakeSubsystem.getInstance()
-                                            .setWantedState(IntakeStates.STORE);
-                                }));
-        
         // Used for testing chassis velocity control, should be removed before competition
         driver_controller_
                 .b()
                 .whileTrue(
-                        Commands.startEnd(
-                                () -> {
-                                    SwerveSubsystem.getInstance()
-                                            .setChassisSpeedRotationLock(
-                                                    new ChassisSpeeds(0, -1, 0),
-                                                    Rotation2d.k180deg);
-                                    SwerveSubsystem.getInstance()
-                                            .setWantedState(
-                                                    SwerveStates.CHASSIS_SPEED_ROTATION_LOCK);
-                                },
-                                () -> {
-                                    SwerveSubsystem.getInstance()
-                                            .setWantedState(SwerveStates.FIELD_CENTRIC);
-                                }));
+                        SwerveSubsystem.getInstance()
+                                .chassisTuningCommand(new ChassisSpeeds(0, 1, 0)));
 
         // Used for testing chassis velocity control, should be removed before competition
         driver_controller_
                 .x()
                 .whileTrue(
-                        Commands.startEnd(
-                                () -> {
-                                    SwerveSubsystem.getInstance()
-                                            .setChassisSpeedRotationLock(
-                                                    new ChassisSpeeds(0, 1, 0), Rotation2d.k180deg);
-                                    SwerveSubsystem.getInstance()
-                                            .setWantedState(
-                                                    SwerveStates.CHASSIS_SPEED_ROTATION_LOCK);
-                                },
-                                () -> {
-                                    SwerveSubsystem.getInstance()
-                                            .setWantedState(SwerveStates.FIELD_CENTRIC);
-                                }));
+                        SwerveSubsystem.getInstance()
+                                .chassisTuningCommand(new ChassisSpeeds(1, 0, 0)));
     }
 
     /**

@@ -15,6 +15,8 @@ public class HopperConstants extends MwConstants {
     public enum HopperStates {
         /** Idle state with hopper stopped */
         IDLE,
+        /** Actively intaking game pieces */
+        INTAKE,
         /** Actively feeding game pieces to shooter */
         SHOOTING,
         /** Unjamming by reversing hopper */

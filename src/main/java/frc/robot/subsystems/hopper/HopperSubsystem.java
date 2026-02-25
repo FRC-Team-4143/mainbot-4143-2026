@@ -82,6 +82,7 @@ public class HopperSubsystem extends MwSubsystem<HopperStates, HopperConstants> 
     @Override
     public void updateLogic(double timestamp) {
         switch (system_state_) {
+            case INTAKE:
             case SHOOTING:
                 hopper_.setTargetVelocity(CONSTANTS.HOPPER_VELOCITY_TARGET);
                 break;

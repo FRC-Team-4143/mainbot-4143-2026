@@ -25,7 +25,8 @@ public class FieldTargets {
      * @return The nearest snap angle
      */
     public static Rotation2d getNearestSnapAngle() {
-        Rotation2d current_rotation = LocalizationSubsystem.getInstance().getFieldPose().getRotation();
+        Rotation2d current_rotation =
+                LocalizationSubsystem.getInstance().getFieldPose().getRotation();
         // Find nearest angle using Rotation2d methods to handle wrap-around properly
         Rotation2d nearest_angle = SNAP_ANGLES[0];
         double min_difference = Math.abs(current_rotation.minus(nearest_angle).getRadians());

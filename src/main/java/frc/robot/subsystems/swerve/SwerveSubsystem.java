@@ -79,6 +79,7 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
     private Translation2d desired_rotation_lock_cor_ = new Translation2d();
     private double desired_rotation_lock_feedforward_ = 0.0;
     private ChassisSpeeds desired_chassis_speeds_ = new ChassisSpeeds(0, 0, 0);
+    private ChassisSpeeds desired_tuning_chassis_speeds_ = new ChassisSpeeds(0, 0, 0);
     private double tele_op_velocity_scalar_ = 1.0;
 
     // IO Members
@@ -91,6 +92,7 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
     private ChassisRequest.FieldCentricFacingAngle field_centric_rotation_lock_request_;
     private ChassisRequest.RobotCentricFacingAngle robot_centric_rotation_lock_request_;
     private ChassisRequest.ApplyFieldSpeeds field_speeds_request_;
+    private ChassisRequest.ApplyChassisSpeeds chassis_speeds_request_;
 
     // getInstance
     public static SwerveSubsystem getInstance() {
@@ -156,6 +158,10 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
                         .withHeadingController(CONSTANTS.HEADING_CONTROLLER);
         field_speeds_request_ =
                 new ChassisRequest.ApplyFieldSpeeds()
+                        .withDriveRequestType(DriveControlMode.CLOSED_LOOP)
+                        .withSteerRequestType(SteerControlMode.CLOSED_LOOP);
+        chassis_speeds_request_ =
+                new ChassisRequest.ApplyChassisSpeeds()
                         .withDriveRequestType(DriveControlMode.CLOSED_LOOP)
                         .withSteerRequestType(SteerControlMode.CLOSED_LOOP);
 
@@ -269,6 +275,7 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
                     case CRAWL_FIELD_CENTRIC -> SwerveStates.CRAWL_FIELD_CENTRIC;
                     case CRAWL_FIELD_CENTRIC_ROTATION_LOCK ->
                             SwerveStates.CRAWL_FIELD_CENTRIC_ROTATION_LOCK;
+                    case TUNING -> SwerveStates.TUNING;
                     default -> SwerveStates.IDLE;
                 };
     }
@@ -334,6 +341,12 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
                 break;
             case CRAWL_FIELD_CENTRIC_ROTATION_LOCK:
                 handleFieldCentricCrawlState(true);
+                break;
+            case TUNING:
+                swerve_mech_.setChassisRequest(
+                        chassis_speeds_request_.withSpeeds(desired_tuning_chassis_speeds_));
+                DogLog.log(
+                        getSubsystemKey() + "Tuning/ChassisSpeed", desired_tuning_chassis_speeds_);
                 break;
             case IDLE:
             default:
@@ -667,6 +680,33 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
         desired_rotation_lock_rot_ = rotation;
         desired_rotation_lock_cor_ = center_point;
         desired_rotation_lock_feedforward_ = feedforward;
+    }
+
+    /**
+     * Updates the internal target for the robot to follow in TUNING
+     *
+     * @param speeds desired chassis speeds for tuning
+     */
+    public void setDesiredTuningChassisSpeed(ChassisSpeeds speeds) {
+        desired_tuning_chassis_speeds_ = speeds;
+    }
+
+    public Command chassisTuningCommand(ChassisSpeeds speeds) {
+        return Commands.startEnd(
+                        () -> {
+                            setDesiredTuningChassisSpeed(speeds);
+                            setWantedState(SwerveStates.TUNING);
+                        },
+                        () -> {
+                            setWantedState(SwerveStates.FIELD_CENTRIC);
+                        })
+                .withName(
+                        "Chassis Tuning : X="
+                                + speeds.vxMetersPerSecond
+                                + " Y="
+                                + speeds.vyMetersPerSecond
+                                + " Omega="
+                                + speeds.omegaRadiansPerSecond);
     }
 
     /**
