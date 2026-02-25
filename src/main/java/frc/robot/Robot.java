@@ -7,9 +7,11 @@ package frc.robot;
 import com.marswars.auto.Auto;
 import com.marswars.auto.AutoManager;
 import com.marswars.geometry.AllianceFlipUtil;
+import com.marswars.logging.Elastic;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.autos.Center_Depot_Outpost_Climb;
 import frc.robot.autos.Left_Start_Neutral_Outpost_Climb;
@@ -63,7 +65,10 @@ public class Robot extends TimedRobot {
     }
 
     @Override
-    public void robotInit() {}
+    public void robotInit() {
+        Elastic.selectTab("Autonomous");
+        SmartDashboard.putData(CommandScheduler.getInstance());
+    }
 
     @Override
     public void robotPeriodic() {
@@ -99,6 +104,7 @@ public class Robot extends TimedRobot {
 
     @Override
     public void autonomousInit() {
+        Elastic.selectTab("Autonomous");
         Auto selected_auto = AutoManager.getInstance().getSelectedAuto();
         CommandScheduler.getInstance().schedule(selected_auto);
     }
@@ -113,6 +119,7 @@ public class Robot extends TimedRobot {
     public void teleopInit() {
         CommandScheduler.getInstance().cancelAll();
         SwerveSubsystem.getInstance().setWantedState(SwerveStates.FIELD_CENTRIC);
+        Elastic.selectTab("Teleoperated");
     }
 
     @Override
