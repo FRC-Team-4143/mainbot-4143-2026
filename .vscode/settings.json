@@ -64,5 +64,6 @@
     "INTAKEMOTOR",
     "intaker",
     "Nivore"
-  ]
+  ],
+  "wpilib.autoStartRioLog": false
 }

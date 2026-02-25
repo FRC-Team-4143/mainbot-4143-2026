@@ -22,7 +22,7 @@ public class ShooterConstants extends MwConstants {
 
     public enum ShooterStates {
         /** Aiming at target with shooter spinning and robot rotating, waiting to be ready */
-        AIMING,
+        SHOOT_WAIT,
         /** Dumping game pieces out backwards */
         DUMP,
         /** Actively shooting game pieces into target */
@@ -33,12 +33,21 @@ public class ShooterConstants extends MwConstants {
         TRACKING,
         /** Manual tuning mode for testing and calibration */
         TUNING,
-        /** Manual control mode with fixed setpoints */
+        /** Manual control mode for hub shooting */
         MANUALHUB,
+<<<<<<< HEAD
         /** Manual control mode with fixed setpoints for passing */
         MANUALPASS,
         /** Hood zeroing sequence - drives hood to hard stop and resets position */
         HOOD_ZEROING
+=======
+        /** Manual control mode for pasing */
+        MANUALPASS,
+        /** Smooth return to 0 velocity for clean disable */
+        SPIN_DOWN,
+        /** Aiming at target with shooter spinning and robot rotating, with no intent to SHOOT */
+        AIMING
+>>>>>>> e5e4fc9179ead702f632e998cdf5a0bc03e515b3
     }
 
     // =============================================================================
