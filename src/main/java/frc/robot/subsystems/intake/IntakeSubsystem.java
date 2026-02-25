@@ -1,8 +1,12 @@
 package frc.robot.subsystems.intake;
 
+import com.marswars.mechanisms.ArmMech;
 import com.marswars.mechanisms.RollerMech;
 import com.marswars.subsystem.MwSubsystem;
 import com.marswars.subsystem.SubsystemIoBase;
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.intake.IntakeConstants.IntakeStates;
 import java.util.Arrays;
 import java.util.List;
@@ -10,6 +14,10 @@ import java.util.List;
 public class IntakeSubsystem extends MwSubsystem<IntakeStates, IntakeConstants> {
     private static IntakeSubsystem instance_ = null;
 
+    private RollerMech roller_;
+    private ArmMech pivot_;
+
+    // getInstance
     public static IntakeSubsystem getInstance() {
         if (instance_ == null) {
             instance_ = new IntakeSubsystem();
@@ -17,72 +25,96 @@ public class IntakeSubsystem extends MwSubsystem<IntakeStates, IntakeConstants> 
         return instance_;
     }
 
-    private RollerMech intaker_;
-    private RollerMech armer_;
-
+    // Constructor
     public IntakeSubsystem() {
-        super(IntakeStates.CLOSED, new IntakeConstants());
-        intaker_ =
+        super(IntakeStates.STORE, new IntakeConstants());
+        roller_ =
                 new RollerMech(
                         getSubsystemKey(),
-                        "Intaker",
-                        List.of(CONSTANTS.INTAKE_MOTOR_CONFIG),
-                        CONSTANTS.INTAKE_GEAR_RATIO);
+                        "Roller",
+                        List.of(CONSTANTS.ROLLER_MOTOR_CONFIG),
+                        CONSTANTS.ROLLER_GEAR_RATIO);
 
-        armer_ =
-                new RollerMech(
+        pivot_ =
+                new ArmMech(
                         getSubsystemKey(),
-                        "Armer",
-                        List.of(CONSTANTS.ARM_MOTOR_CONFIG),
-                        CONSTANTS.ARM_GEAR_RATIO);
+                        "Pivot",
+                        List.of(CONSTANTS.PIVOT_MOTOR_CONFIG),
+                        CONSTANTS.PIVOT_GEAR_RATIO,
+                        CONSTANTS.PIVOT_LENGTH,
+                        CONSTANTS.PIVOT_MASS,
+                        CONSTANTS.PIVOT_MIN,
+                        CONSTANTS.PIVOT_MAX);
+        pivot_.setCurrentPosition(CONSTANTS.PIVOT_HOME_POSITION);
+
+        SmartDashboard.putData(
+                "Home Pivot",
+                Commands.runOnce(() -> pivot_.setCurrentPosition(CONSTANTS.PIVOT_HOME_POSITION))
+                        .ignoringDisable(true));
     }
 
-    @Override
-    public void updateLogic(double timestamp) { // all placeholders right now
-        switch (system_state_) {
-            case CLOSED:
-                intaker_.setTargetDutyCycle(0.0);
-                armer_.setTargetPosition(0.0);
-                break;
-            case DEPLOYED:
-                intaker_.setTargetDutyCycle(0.0);
-                armer_.setTargetPosition(0.5);
-                break;
-            case ROLLING:
-                intaker_.setTargetDutyCycle(0.5);
-                armer_.setTargetPosition(0.5);
-                break;
-        }
-    }
-
-    protected void handleStateTransition(IntakeStates wantedState) {
-        if ((system_state_ == IntakeStates.CLOSED) && (wantedState == IntakeStates.ROLLING)) {
-            system_state_ = IntakeStates.DEPLOYED;
-        } else if ((system_state_ == IntakeStates.ROLLING)
-                && (wantedState == IntakeStates.CLOSED)) {
-            system_state_ = IntakeStates.DEPLOYED;
-        } else if ((system_state_ == IntakeStates.CLOSED)
-                && (wantedState == IntakeStates.DEPLOYED)) {
-            system_state_ = IntakeStates.DEPLOYED;
-        } else if ((system_state_ == IntakeStates.DEPLOYED)
-                && (wantedState == IntakeStates.CLOSED)) {
-            system_state_ = IntakeStates.CLOSED;
-        } else if ((system_state_ == IntakeStates.DEPLOYED)
-                && (wantedState == IntakeStates.ROLLING)) {
-            system_state_ = IntakeStates.ROLLING;
-        } else if ((system_state_ == IntakeStates.ROLLING)
-                && (wantedState == IntakeStates.DEPLOYED)) {
-            system_state_ = IntakeStates.DEPLOYED;
-        }
-    }
-
+    // reset
     @Override
     public void reset() {
-        system_state_ = IntakeStates.CLOSED;
+        system_state_ = IntakeStates.IDLE;
     }
 
+    // getIos
     @Override
     public List<SubsystemIoBase> getIos() {
-        return Arrays.asList(intaker_, armer_);
+        return Arrays.asList(roller_, pivot_);
+    }
+
+    // handleStateTransition
+    @Override
+    protected void handleStateTransition(IntakeStates wantedState) {
+        if (system_state_ == IntakeStates.STORE && wantedState == IntakeStates.INTAKE) {
+            system_state_ = IntakeStates.DEPLOYING;
+        } else if (system_state_ == IntakeStates.STORE && wantedState == IntakeStates.OUTTAKE) {
+            system_state_ = IntakeStates.DEPLOYING;
+        } else if (system_state_ == IntakeStates.DEPLOYING
+                && MathUtil.isNear(
+                        CONSTANTS.PIVOT_DEPLOY_POSITION,
+                        pivot_.getCurrentPosition(),
+                        CONSTANTS.PIVOT_TOLERANCE)) {
+            system_state_ = IntakeStates.DEPLOYED;
+        } else {
+            system_state_ = wantedState;
+        }
+    }
+
+    // updateLogic
+    @Override
+    public void updateLogic(double timestamp) {
+        switch (system_state_) {
+            case STORE:
+                roller_.setTargetDutyCycle(0.0);
+                pivot_.setTargetPosition(CONSTANTS.PIVOT_STORE_POSITION);
+                break;
+            case DEPLOYING:
+                roller_.setTargetDutyCycle(0.0);
+                pivot_.setTargetPosition(CONSTANTS.PIVOT_DEPLOY_POSITION);
+                break;
+            case DEPLOYED:
+                roller_.setTargetDutyCycle(0.0);
+                pivot_.setTargetDutyCycle(0.0);
+                break;
+            case INTAKE:
+                roller_.setTargetDutyCycle(CONSTANTS.INTAKE_DUTY_CYCLE);
+                pivot_.setTargetDutyCycle(0.0);
+                break;
+            case OUTTAKE:
+                roller_.setTargetDutyCycle(-CONSTANTS.INTAKE_DUTY_CYCLE);
+                pivot_.setTargetDutyCycle(0.0);
+                break;
+            case TUNING:
+                // No default behavior for tuning mode
+                break;
+            default:
+            case IDLE:
+                roller_.setTargetDutyCycle(0.0);
+                pivot_.setTargetDutyCycle(0.0);
+                break;
+        }
     }
 }

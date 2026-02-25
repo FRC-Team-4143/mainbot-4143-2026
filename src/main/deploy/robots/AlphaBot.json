@@ -11,7 +11,7 @@
       "max_translation_rate": 5.0,
       "max_angular_rate": 10,
       "drive_motor": {
-        "bus_name": "rio",
+        "bus_name": "CANivore",
         "bus_id": 0,
         "type": "X60",
         "inverted": false,
@@ -26,11 +26,11 @@
           "kd": 0.0
         },
         "slot1": {
-          "ks": 0.0,
-          "kv": 0.0,
-          "ka": 0.0,
-          "kg": 0.0,
-          "kp": 0.0,
+          "ks": 0.2,
+          "kv": 0.1,
+          "ka": 0.02,
+          "kg": 0.3,
+          "kp": 8.0,
           "ki": 0.0,
           "kd": 0.0
         },
@@ -51,9 +51,9 @@
         }
       },
       "steer_motor": {
-        "bus_name": "rio",
+        "bus_name": "CANivore",
         "bus_id": 0,
-        "type": "X60",
+        "type": "X44",
         "inverted": false,
         "brake_mode": true,
         "slot0": {
@@ -98,8 +98,8 @@
       "x_position": 7.5,
       "y_position": 7.5,
       "invert_drive": false,
-      "module_type": "MK4I",
-      "module_gearing": "L3"
+      "module_type": "TSN",
+      "module_gearing": "P13-S18"
     },
     "fr": {
       "drive_id": 3,
@@ -108,8 +108,8 @@
       "x_position": 7.5,
       "y_position": -7.5,
       "invert_drive": false,
-      "module_type": "MK4I",
-      "module_gearing": "L3"
+      "module_type": "TSN",
+      "module_gearing": "P13-S18"
     },
     "bl": {
       "drive_id": 5,
@@ -118,8 +118,8 @@
       "x_position": -7.5,
       "y_position": 7.5,
       "invert_drive": false,
-      "module_type": "MK4I",
-      "module_gearing": "L3"
+      "module_type": "TSN",
+      "module_gearing": "P13-S18"
     },
     "br": {
       "drive_id": 7,
@@ -128,8 +128,8 @@
       "x_position": -7.5,
       "y_position": -7.5,
       "invert_drive": false,
-      "module_type": "MK4I",
-      "module_gearing": "L3"
+      "module_type": "TSN",
+      "module_gearing": "P13-S18"
     }
   },
   "intake": {
@@ -137,10 +137,14 @@
   },
   "shooter": {
     "translation": {
+      "x": -6.3,
+      "y": -3.0,
+      "z": 23.0
+    },
+    "rotation": {
       "x": 0.0,
       "y": 0.0,
-      "z": 24.18
-    },
-    "turret_enabled": false
+      "z": 180.0
+    }
   }
 }

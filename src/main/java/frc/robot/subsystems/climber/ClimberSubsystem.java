@@ -12,6 +12,10 @@ import java.util.List;
 public class ClimberSubsystem extends MwSubsystem<ClimberStates, ClimberConstants> {
     private static ClimberSubsystem instance_ = null;
 
+    private RollerMech deploy_joint_;
+    private ArmMech flip_joint_;
+
+    // getInstance
     public static ClimberSubsystem getInstance() {
         if (instance_ == null) {
             instance_ = new ClimberSubsystem();
@@ -19,19 +23,16 @@ public class ClimberSubsystem extends MwSubsystem<ClimberStates, ClimberConstant
         return instance_;
     }
 
-    private RollerMech Extender_;
-    private ArmMech Arm_;
-
-    // climer constructor
+    // Constructor
     public ClimberSubsystem() {
         super(ClimberStates.STOWED, new ClimberConstants());
-        Extender_ =
+        deploy_joint_ =
                 new RollerMech(
                         getSubsystemKey(),
                         "Extender",
                         List.of(CONSTANTS.EXTENDER_MOTOR_CONFIG),
                         CONSTANTS.EXTENDER_GEAR_RATIO);
-        Arm_ =
+        flip_joint_ =
                 new ArmMech(
                         getSubsystemKey(),
                         "Arm",
@@ -43,33 +44,19 @@ public class ClimberSubsystem extends MwSubsystem<ClimberStates, ClimberConstant
                         CONSTANTS.ARM_MIN_ANGLE);
     }
 
-    // state machine
+    // reset
     @Override
-    public void updateLogic(double timestamp) {
-        switch (system_state_) {
-            case STOWED:
-                Extender_.setTargetPosition(CONSTANTS.EXTENDER_STOWED_ANGLE);
-                Arm_.setTargetPosition(CONSTANTS.ARM_L0_POSITION);
-                break;
-            case DEPLOY:
-                Extender_.setTargetPosition(CONSTANTS.EXTENDER_DEPLOYED_ANGLE);
-                break;
-            case L1_CLIMB:
-                Arm_.setTargetPosition(CONSTANTS.ARM_L1_CLIMB);
-                Extender_.setTargetPosition(CONSTANTS.EXTENDER_DEPLOYED_ANGLE);
-                break;
-            case L1_DOWN:
-                Arm_.setTargetPosition(CONSTANTS.ARM_L0_POSITION);
-                Extender_.setTargetPosition(CONSTANTS.EXTENDER_DEPLOYED_ANGLE);
-                break;
-            case L3_CLIMB:
-                Arm_.setTargetPosition(CONSTANTS.ARM_L3_CLIMB);
-                Extender_.setTargetPosition(CONSTANTS.EXTENDER_DEPLOYED_ANGLE);
-                break;
-        }
+    public void reset() {
+        system_state_ = ClimberStates.STOWED;
     }
 
-    // states transitions, tell what each state can transition too based on conditions
+    // getIos
+    @Override
+    public List<SubsystemIoBase> getIos() {
+        return Arrays.asList(deploy_joint_, flip_joint_);
+    }
+
+    // handleStateTransition
     @Override
     public void handleStateTransition(ClimberStates wanted_state) {
         if (system_state_ == ClimberStates.STOWED && wanted_state == ClimberStates.DEPLOY) {
@@ -98,20 +85,40 @@ public class ClimberSubsystem extends MwSubsystem<ClimberStates, ClimberConstant
         } // no commands
     }
 
+    // updateLogic
     @Override
-    public List<SubsystemIoBase> getIos() {
-        return Arrays.asList(Extender_, Arm_);
+    public void updateLogic(double timestamp) {
+        switch (system_state_) {
+            case STOWED:
+                deploy_joint_.setTargetPosition(CONSTANTS.EXTENDER_STOWED_ANGLE);
+                flip_joint_.setTargetPosition(CONSTANTS.ARM_L0_POSITION);
+                break;
+            case DEPLOY:
+                deploy_joint_.setTargetPosition(CONSTANTS.EXTENDER_DEPLOYED_ANGLE);
+                break;
+            case L1_CLIMB:
+                flip_joint_.setTargetPosition(CONSTANTS.ARM_L1_CLIMB);
+                deploy_joint_.setTargetPosition(CONSTANTS.EXTENDER_DEPLOYED_ANGLE);
+                break;
+            case L1_DOWN:
+                flip_joint_.setTargetPosition(CONSTANTS.ARM_L0_POSITION);
+                deploy_joint_.setTargetPosition(CONSTANTS.EXTENDER_DEPLOYED_ANGLE);
+                break;
+            case L3_CLIMB:
+                flip_joint_.setTargetPosition(CONSTANTS.ARM_L3_CLIMB);
+                deploy_joint_.setTargetPosition(CONSTANTS.EXTENDER_DEPLOYED_ANGLE);
+                break;
+        }
     }
 
-    @Override
-    public void reset() {
-        system_state_ = ClimberStates.STOWED;
-    }
+    // =============================================================================
+    // PRIVATE HELPER METHODS
+    // =============================================================================
 
     private boolean isDeployed() {
         return (MathUtil.isNear(
                 CONSTANTS.EXTENDER_DEPLOYED_ANGLE,
-                Extender_.getCurrentPosition(),
+                deploy_joint_.getCurrentPosition(),
                 CONSTANTS.EXTENDER_TOLERANCE_ANGLE));
     }
 }
