@@ -35,19 +35,15 @@ public class ShooterConstants extends MwConstants {
         TUNING,
         /** Manual control mode for hub shooting */
         MANUALHUB,
-<<<<<<< HEAD
+
         /** Manual control mode with fixed setpoints for passing */
         MANUALPASS,
         /** Hood zeroing sequence - drives hood to hard stop and resets position */
-        HOOD_ZEROING
-=======
-        /** Manual control mode for pasing */
-        MANUALPASS,
+        HOOD_ZEROING,
         /** Smooth return to 0 velocity for clean disable */
         SPIN_DOWN,
         /** Aiming at target with shooter spinning and robot rotating, with no intent to SHOOT */
         AIMING
->>>>>>> e5e4fc9179ead702f632e998cdf5a0bc03e515b3
     }
 
     // =============================================================================
