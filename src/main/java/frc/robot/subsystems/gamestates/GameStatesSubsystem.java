@@ -16,11 +16,11 @@ public class GameStatesSubsystem extends MwSubsystem<GameStates, GameStatesConst
     private static GameStatesSubsystem instance_ = null;
 
     // Variables, temporary
-    Boolean goal_active_ = false;
-    Boolean operator_presses_climb_button_ = false;
-    Boolean full_load_ = false;
+    boolean goal_active_ = false;
+    boolean operator_presses_climb_button_ = false;
+    boolean full_load_ = false;
     boolean pass_overide_ = false;
-    Boolean auto_climb_ready_ = false;
+    boolean auto_climb_ready_ = false;
 
     // getInstance
     public static GameStatesSubsystem getInstance() {
@@ -68,19 +68,19 @@ public class GameStatesSubsystem extends MwSubsystem<GameStates, GameStatesConst
             return;
         }
         // HOLD transitions
-        if (system_state_ == GameStates.HOLD && inAllianceZone(robotpose) && goal_active_) {
+        if (system_state_ == GameStates.HOLD && isInAllianceZone(robotpose) && goal_active_) {
             system_state_ = GameStates.SCORE;
         } else if (system_state_ == GameStates.HOLD
                 && isPassZone(robotpose)
                 && !pass_overide_
-                && !inHoldZone(robotpose)) {
+                && !isInHoldZone(robotpose)) {
             system_state_ = GameStates.PASS;
             // Set strict tolerances for scoring
             ShooterSubsystem.getInstance()
                     .setShootingTolerances(
                             FieldTargets.Shooter.FLYWHEEL_SPEED_TOLERANCE,
                             FieldTargets.Shooter.HOOD_POSITION_TOLERANCE,
-                            FieldTargets.Shooter.TURRET_ANGLE_TOLERANCE);
+                            FieldTargets.Shooter.ROTATION_ANGLE_TOLERANCE);
         } else if (system_state_ == GameStates.HOLD && (isPassZone(robotpose) || pass_overide_)) {
             system_state_ = GameStates.PASS;
         } else if (system_state_ == GameStates.HOLD && operator_presses_climb_button_) {
@@ -96,14 +96,14 @@ public class GameStatesSubsystem extends MwSubsystem<GameStates, GameStatesConst
         } // empty to not interfere with rest of state machine
         // PASS transistions
         if (system_state_ == GameStates.PASS
-                && (inHoldZone(robotpose) || inAllianceZone(robotpose) || pass_overide_)) {
+                && (isInHoldZone(robotpose) || isInAllianceZone(robotpose) || pass_overide_)) {
             system_state_ = GameStates.HOLD;
             // Return to strict tolerances when leaving PASS state
             ShooterSubsystem.getInstance()
                     .setShootingTolerances(
                             FieldTargets.Shooter.FLYWHEEL_SPEED_TOLERANCE,
                             FieldTargets.Shooter.HOOD_POSITION_TOLERANCE,
-                            FieldTargets.Shooter.TURRET_ANGLE_TOLERANCE);
+                            FieldTargets.Shooter.ROTATION_ANGLE_TOLERANCE);
         } else {
         } // empty to not interfere with rest of state machine
         // DOWN_CLIMB transistions
@@ -177,7 +177,7 @@ public class GameStatesSubsystem extends MwSubsystem<GameStates, GameStatesConst
     // PRIVATE HELPER METHODS
     // =============================================================================
 
-    private boolean inAllianceZone(Pose2d pose) {
+    private boolean isInAllianceZone(Pose2d pose) {
         return FieldRegions.ALLIANCE_ZONE.contains(pose);
     }
 
@@ -186,7 +186,7 @@ public class GameStatesSubsystem extends MwSubsystem<GameStates, GameStatesConst
                 || FieldRegions.OPP_ALLIANCE_ZONE.contains(pose);
     }
 
-    private boolean inHoldZone(Pose2d pose) {
+    private boolean isInHoldZone(Pose2d pose) {
         boolean in_zone = false;
         for (int i = 0; i < FieldRegions.HOLD_REGIONS.size(); i++) {
             in_zone = (in_zone || FieldRegions.HOLD_REGIONS.get(i).contains(pose));
@@ -196,19 +196,5 @@ public class GameStatesSubsystem extends MwSubsystem<GameStates, GameStatesConst
 
     private boolean isDownClimbFinished() {
         return false;
-    }
-
-    // for testing only
-
-    // set goal to active
-    public void GoalActive() {
-        goal_active_ = true;
-        return;
-    }
-
-    // sets goal to inactive
-    public void GoalInactive() {
-        goal_active_ = false;
-        return;
     }
 }
