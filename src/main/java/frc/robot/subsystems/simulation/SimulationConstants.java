@@ -59,6 +59,8 @@ public class SimulationConstants extends MwConstants {
     public final Rotation2d SHOOTER_LAUNCH_ROTATION =
             new Rotation2d(
                     Units.degreesToRadians(LOADER.getDoubleValue("shooter", "rotation", "z")));
+    public final double SHOOTER_WIDTH = Units.inchesToMeters(LOADER.getDoubleValue("shooter", "width"));
+    public final double FUEL_RADIUS = 0.075; // meters (from FuelSim)
     public final double SECONDS_PER_SHOT = 1.0 / 15.0; // balls per second
 
     // Flywheel load calculation:
