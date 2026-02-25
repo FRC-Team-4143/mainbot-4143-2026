@@ -22,6 +22,8 @@ public class ClimberConstants extends MwConstants {
         STOWED,
         /** Deploying climber mechanisms */
         DEPLOY,
+        /** Approaching tower with sensor-based alignment */
+        APPROACHING,
         /** Climbing to Level 1 */
         L1_CLIMB,
         /** Moving down from Level 1 */
@@ -47,14 +49,11 @@ public class ClimberConstants extends MwConstants {
 
     public final RangeMode SENSOR_MODE = RangeMode.SHORT; // SHORT mode for close-range precision
     
-    // Tower alignment sensing parameters
-    public final double SENSOR_RANGE_TOLERANCE = 20.0; // millimeters - deprecated, use ALIGNMENT_DEADBAND
-    public final double SENSOR_ALIGNMENT_DEADBAND = 5.0; // millimeters - how close sensors must be to consider aligned
-    public final double SENSOR_MAX_VALID_RANGE = 300.0; // millimeters - max distance to consider tower detected
-    public final double SENSOR_ALIGNMENT_KP = 0.01; // Proportional gain for alignment correction (tune this!)
-    
-    // Safety limits
-    public final double SENSOR_RANGE_LIMIT = 50.0; // millimeters - minimum safe distance to tower
+    // Tower alignment sensing parameters (discrete/binary detection)
+    // These sensors tell us IF we can see the tower, not HOW FAR away it is
+    public final double SENSOR_DETECTION_THRESHOLD = 100.0; // millimeters - if reading < this, sensor sees tower
+    public final double APPROACH_STRAFE_SPEED = 0.3; // m/s - lateral correction speed when aligning
+    public final double APPROACH_FORWARD_SPEED = 0.2; // m/s - forward speed while approaching tower
 
     // =============================================================================
     // MECHANICAL CONSTANTS - EXTENDER

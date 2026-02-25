@@ -6,7 +6,11 @@ import com.marswars.sensors.tof.PwfTof;
 import com.marswars.subsystem.MwSubsystem;
 import com.marswars.subsystem.SubsystemIoBase;
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import frc.robot.subsystems.climber.ClimberConstants.ClimberStates;
+import frc.robot.subsystems.localization.LocalizationSubsystem;
+import frc.robot.subsystems.swerve.SwerveSubsystem;
 
 import java.util.Arrays;
 import java.util.List;
@@ -21,7 +25,6 @@ public class ClimberSubsystem extends MwSubsystem<ClimberStates, ClimberConstant
 
     private double left_sensor_range_;
     private double right_sensor_range_;
-    private double alignment_error_; // Positive = need to move right, Negative = need to move left
 
     // getInstance
     public static ClimberSubsystem getInstance() {
@@ -75,34 +78,39 @@ public class ClimberSubsystem extends MwSubsystem<ClimberStates, ClimberConstant
     public void updateSensorReadings() {
         left_sensor_range_ = left_sensor_.getRange();
         right_sensor_range_ = right_sensor_.getRange();
-        calculateAlignmentError();
     }
 
     /**
-     * Calculates the alignment error based on the difference between left and right sensors.
-     * Positive error means the robot needs to move RIGHT (left sensor is farther).
-     * Negative error means the robot needs to move LEFT (right sensor is farther).
+     * Checks if the left sensor can see the tower (discrete detection).
+     * @return true if left sensor detects tower within threshold
      */
-    private void calculateAlignmentError() {
-        // If left sensor reads farther than right, we're too far left -> move right (+)
-        // If right sensor reads farther than left, we're too far right -> move left (-)
-        alignment_error_ = left_sensor_range_ - right_sensor_range_;
+    public boolean leftSensorSeesTower() {
+        return left_sensor_range_ > 0 && left_sensor_range_ < CONSTANTS.SENSOR_DETECTION_THRESHOLD;
     }
 
     /**
-     * Returns the lateral alignment error in millimeters.
-     * @return Positive if robot should move right, negative if it should move left
+     * Checks if the right sensor can see the tower (discrete detection).
+     * @return true if right sensor detects tower within threshold
      */
-    public double getAlignmentError() {
-        return alignment_error_;
+    public boolean rightSensorSeesTower() {
+        return right_sensor_range_ > 0 && right_sensor_range_ < CONSTANTS.SENSOR_DETECTION_THRESHOLD;
     }
 
     /**
-     * Checks if the robot is aligned with the vertical tower support within tolerance.
-     * @return true if both sensors are reading similar distances (aligned)
+     * Checks if both sensors can see the tower (robot is aligned).
+     * @return true if both sensors detect the tower
      */
     public boolean isAlignedWithTower() {
-        return Math.abs(alignment_error_) <= CONSTANTS.SENSOR_ALIGNMENT_DEADBAND;
+        return leftSensorSeesTower() && rightSensorSeesTower();
+    }
+
+    /**
+     * Checks if at least one sensor can see the tower.
+     * Both sensors maxed out means we can't see the tower at all.
+     * @return true if at least one sensor detects the tower
+     */
+    public boolean canSeeTower() {
+        return leftSensorSeesTower() || rightSensorSeesTower();
     }
 
     /**
@@ -122,80 +130,31 @@ public class ClimberSubsystem extends MwSubsystem<ClimberStates, ClimberConstant
     }
 
     /**
-     * Checks if both sensors are detecting the tower within valid range.
-     * @return true if both sensors have valid readings
-     */
-    public boolean areSensorsDetectingTower() {
-        return left_sensor_range_ > 0 
-            && right_sensor_range_ > 0
-            && left_sensor_range_ < CONSTANTS.SENSOR_MAX_VALID_RANGE
-            && right_sensor_range_ < CONSTANTS.SENSOR_MAX_VALID_RANGE;
-    }
-
-    /**
-     * Calculates a normalized correction value for lateral movement (-1.0 to 1.0).
-     * Use this to provide a strafe correction to the drivetrain.
-     * Positive values mean strafe right, negative means strafe left.
-     * 
-     * @param maxCorrection Maximum correction value (typically drivetrain max strafe speed)
-     * @return Correction value scaled to maxCorrection
-     */
-    public double getLateralCorrectionValue(double maxCorrection) {
-        if (!areSensorsDetectingTower()) {
-            return 0.0; // No correction if sensors don't have valid readings
-        }
-
-        // Apply a proportional gain to the alignment error
-        double correction = alignment_error_ * CONSTANTS.SENSOR_ALIGNMENT_KP;
-
-        // Clamp the correction to the maximum allowed
-        correction = MathUtil.clamp(correction, -maxCorrection, maxCorrection);
-
-        return correction;
-    }
-
-    /* sets the sensors ranges (how close the nearest object is)
-     * @deprecated Use updateSensorReadings() instead
-     */
-    @Deprecated
-    public void setSensors() { // incomplete
-        left_sensor_range_ = left_sensor_.getRange();
-        right_sensor_range_ = right_sensor_.getRange();
-    }
-
-    /**
-     * Determines the alignment status and which direction correction is needed.
-     * @return String describing alignment status: "ALIGNED", "MOVE_RIGHT", "MOVE_LEFT", or "NO_TOWER_DETECTED"
+     * Determines the alignment status for line-following logic.
+     * @return String describing what action to take: "MOVE_LEFT", "MOVE_RIGHT", "ALIGNED", or "NO_TOWER"
      */
     public String getAlignmentStatus() {
-        if (!areSensorsDetectingTower()) {
-            return "NO_TOWER_DETECTED";
+        boolean leftSees = leftSensorSeesTower();
+        boolean rightSees = rightSensorSeesTower();
+        
+        // Both sensors maxed = can't see tower at all
+        if (!leftSees && !rightSees) {
+            return "NO_TOWER";
         }
         
-        if (isAlignedWithTower()) {
+        // Both see tower = aligned
+        if (leftSees && rightSees) {
             return "ALIGNED";
         }
         
-        return alignment_error_ > 0 ? "MOVE_RIGHT" : "MOVE_LEFT";
-    }
-
-    /* return which climber sensor is out of place, 
-     * returns null otherwise
-     * @deprecated Use getAlignmentStatus() or getLateralCorrectionValue() instead
-    */
-    @Deprecated
-    public PwfTof checkSensors() { // incomplete
-        setSensors();
-        if(CONSTANTS.SENSOR_RANGE_TOLERANCE < left_sensor_range_) {
-            return left_sensor_; // when returned, have the robot then move right a bit
+        // Left sees but right doesn't = too far right, move left
+        if (leftSees && !rightSees) {
+            return "MOVE_LEFT";
         }
-        else if(CONSTANTS.SENSOR_RANGE_TOLERANCE < right_sensor_range_) {
-            return right_sensor_; // when returned, have the robot then move left a bit
-        }
-        return null; // when returned, simply have the robot move forward
-        // would a new climber state work? called APPROCHING?
+        
+        // Right sees but left doesn't = too far left, move right
+        return "MOVE_RIGHT";
     }
-
 
 
     // reset
@@ -217,7 +176,9 @@ public class ClimberSubsystem extends MwSubsystem<ClimberStates, ClimberConstant
             system_state_ = ClimberStates.DEPLOY;
         } else {
         } // no command
-        if (system_state_ == ClimberStates.DEPLOY
+        if (system_state_ == ClimberStates.DEPLOY && isDeployed() && wanted_state == ClimberStates.APPROACHING) {
+            system_state_ = ClimberStates.APPROACHING;
+        } else if (system_state_ == ClimberStates.DEPLOY
                 && isDeployed()
                 && wanted_state == ClimberStates.L1_CLIMB) {
             system_state_ = ClimberStates.L1_CLIMB;
@@ -227,6 +188,12 @@ public class ClimberSubsystem extends MwSubsystem<ClimberStates, ClimberConstant
             system_state_ = ClimberStates.L3_CLIMB;
         } else if (system_state_ == ClimberStates.DEPLOY && wanted_state == ClimberStates.STOWED) {
             system_state_ = ClimberStates.STOWED;
+        } else {
+        } // no commands
+        if (system_state_ == ClimberStates.APPROACHING && wanted_state == ClimberStates.L1_CLIMB) {
+            system_state_ = ClimberStates.L1_CLIMB;
+        } else if (system_state_ == ClimberStates.APPROACHING && wanted_state == ClimberStates.DEPLOY) {
+            system_state_ = ClimberStates.DEPLOY;
         } else {
         } // no commands
         if (system_state_ == ClimberStates.L1_CLIMB && wanted_state == ClimberStates.L1_DOWN) {
@@ -252,6 +219,55 @@ public class ClimberSubsystem extends MwSubsystem<ClimberStates, ClimberConstant
                 break;
             case DEPLOY:
                 deploy_joint_.setTargetPosition(CONSTANTS.EXTENDER_DEPLOYED_ANGLE);
+                break;
+            case APPROACHING:
+                // Tower approach with sensor-based line following
+                // Keep climber deployed during approach
+                deploy_joint_.setTargetPosition(CONSTANTS.EXTENDER_DEPLOYED_ANGLE);
+                flip_joint_.setTargetPosition(CONSTANTS.ARM_L0_POSITION);
+                
+                // Line-following logic - discrete sensor feedback
+                boolean leftSees = leftSensorSeesTower();
+                boolean rightSees = rightSensorSeesTower();
+                
+                // Determine chassis speeds based on discrete sensor readings
+                double forwardSpeed = CONSTANTS.APPROACH_FORWARD_SPEED;
+                double strafeSpeed = 0.0;
+                
+                if (!leftSees && !rightSees) {
+                    // Both sensors maxed out - can't see tower at all
+                    // Stop moving, we've lost the line
+                    forwardSpeed = 0.0;
+                    strafeSpeed = 0.0;
+                } else if (leftSees && !rightSees) {
+                    // Left sees tower, right doesn't = too far right
+                    // Move left to get back on line
+                    strafeSpeed = -CONSTANTS.APPROACH_STRAFE_SPEED; // Negative = left
+                } else if (!leftSees && rightSees) {
+                    // Right sees tower, left doesn't = too far left
+                    // Move right to get back on line
+                    strafeSpeed = CONSTANTS.APPROACH_STRAFE_SPEED; // Positive = right
+                } else {
+                    // Both sensors see tower = aligned
+                    // Drive straight forward
+                    strafeSpeed = 0.0;
+                }
+                
+                // Get current rotation for field-relative control
+                Rotation2d currentRotation = LocalizationSubsystem.getInstance()
+                        .getFieldPose()
+                        .getRotation();
+                
+                // Create field-relative chassis speeds
+                ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(
+                    forwardSpeed,   // X: Forward
+                    strafeSpeed,    // Y: Strafe (- = left, + = right)
+                    0.0,            // Omega: No rotation
+                    currentRotation
+                );
+                
+                // Command swerve to execute the speeds with rotation lock
+                SwerveSubsystem.getInstance().setChassisSpeedRotationLock(speeds, currentRotation);
                 break;
             case L1_CLIMB:
                 flip_joint_.setTargetPosition(CONSTANTS.ARM_L1_CLIMB);
