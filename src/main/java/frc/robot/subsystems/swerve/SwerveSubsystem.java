@@ -179,7 +179,9 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
 
     // reset
     @Override
-    public void reset() {}
+    public void reset() {
+        system_state_ = SwerveStates.IDLE;
+    }
 
     // getIos
     public List<SubsystemIoBase> getIos() {

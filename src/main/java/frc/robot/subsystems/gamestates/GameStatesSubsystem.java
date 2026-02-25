@@ -6,15 +6,8 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.RobotState;
 import frc.robot.lib2026.FieldRegions;
 import frc.robot.lib2026.FieldTargets;
-import frc.robot.subsystems.climber.ClimberConstants.ClimberStates;
-import frc.robot.subsystems.climber.ClimberSubsystem;
 import frc.robot.subsystems.gamestates.GameStatesConstants.GameStates;
-import frc.robot.subsystems.hopper.HopperConstants.HopperStates;
-import frc.robot.subsystems.hopper.HopperSubsystem;
-import frc.robot.subsystems.intake.IntakeConstants.IntakeStates;
-import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.localization.LocalizationSubsystem;
-import frc.robot.subsystems.shooter.ShooterConstants.ShooterStates;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
 import java.util.ArrayList;
 import java.util.List;
@@ -142,7 +135,7 @@ public class GameStatesSubsystem extends MwSubsystem<GameStates, GameStatesConst
         //  else if (FieldRegions.HOLD_REGIONS.contains(
         //         LocalizationSubsystem.getInstance().getFieldPose())) {
         //     ShooterSubsystem.getInstance().setWantedState(ShooterStates.SHOOT_WAIT);
-        // } 
+        // }
         // switch (system_state_) {
         //     case HOLD:
         //         ShooterSubsystem.getInstance().setWantedState(ShooterStates.IDLE);

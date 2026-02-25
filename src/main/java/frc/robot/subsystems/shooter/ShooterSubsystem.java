@@ -124,7 +124,7 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
                 && system_state_ != ShooterStates.SHOOT_WAIT
                 && system_state_ != ShooterStates.SHOOT) {
             system_state_ = ShooterStates.SHOOT_WAIT;
-        } else if (system_state_ == ShooterStates.SHOOT_WAIT 
+        } else if (system_state_ == ShooterStates.SHOOT_WAIT
                 && isShooterReady()
                 && wanted == ShooterStates.SHOOT) {
             system_state_ = ShooterStates.SHOOT;

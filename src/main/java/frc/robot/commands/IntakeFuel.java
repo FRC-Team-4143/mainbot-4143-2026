@@ -6,9 +6,9 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.hopper.HopperConstants.HopperStates;
-import frc.robot.subsystems.intake.IntakeSubsystem;
-import frc.robot.subsystems.intake.IntakeConstants.IntakeStates;
 import frc.robot.subsystems.hopper.HopperSubsystem;
+import frc.robot.subsystems.intake.IntakeConstants.IntakeStates;
+import frc.robot.subsystems.intake.IntakeSubsystem;
 
 public class IntakeFuel extends Command {
 
