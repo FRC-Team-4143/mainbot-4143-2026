@@ -64,7 +64,7 @@ public class ShooterConstants extends MwConstants {
     public final boolean FLYWHEEL_FOLLOWER_1_INVERTED = true;
     public final boolean FLYWHEEL_FOLLOWER_2_INVERTED = true;
     public final boolean FLYWHEEL_FOLLOWER_3_INVERTED = true;
-    public final double FLYWHEEL_GEAR_RATIO = 1.0;
+    public final double FLYWHEEL_GEAR_RATIO = 1.5;
     public final double FLYWHEEL_WHEEL_RADIUS_METERS = Units.inchesToMeters(2);
     public final double FLYWHEEL_MASS_KG = Units.lbsToKilograms(3.5);
     public final double FLYWHEEL_INERTIA =
@@ -192,7 +192,6 @@ public class ShooterConstants extends MwConstants {
         HUB_LAUNCH_CALCULATOR.addTimeOfFlightPoint(3, 1.293);
         HUB_LAUNCH_CALCULATOR.addTimeOfFlightPoint(5.00, 1.413);
 
-
         PASS_LAUNCH_CALCULATOR =
                 new LaunchCalculator("Subsystem/Shooter/PassLaunchCalculator/", SHOOTER_CENTER);
 
@@ -228,7 +227,6 @@ public class ShooterConstants extends MwConstants {
         PASS_LAUNCH_CALCULATOR.addTimeOfFlightPoint(1.5, 1.129);
         PASS_LAUNCH_CALCULATOR.addTimeOfFlightPoint(3, 1.293);
         PASS_LAUNCH_CALCULATOR.addTimeOfFlightPoint(5.00, 1.413);
-
 
         // =============================================================================
         // MOTOR CONFIGURATION INITIALIZATION
