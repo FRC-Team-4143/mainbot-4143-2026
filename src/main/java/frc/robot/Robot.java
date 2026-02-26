@@ -86,6 +86,10 @@ public class Robot extends TimedRobot {
             LocalizationSubsystem.getInstance().setTagFocus(alliance_);
             HubMonitor.seedActiveAlliance(HubMonitor.ActiveAlliance.INVALID);
         }
+
+        // Reseed gyro from vision measurements while disabled to establish known good starting state
+        // This provides a backup for cases when vision goes down or for features that rely on gyro
+        LocalizationSubsystem.getInstance().reseedGyroFromVision();
     }
 
     @Override

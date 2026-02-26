@@ -22,6 +22,7 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.localization.LocalizationConstants.LocalizationStates;
@@ -46,6 +47,10 @@ public class LocalizationSubsystem extends MwSubsystem<LocalizationStates, Local
     private ArrayList<Pose3d> detected_tag_poses_ = new ArrayList<Pose3d>();
     private ArrayList<Pose2d> estimated_vision_poses_ = new ArrayList<Pose2d>();
     private boolean swerve_noise_enabled_ = false;
+
+    // gyro reseeding from vision while disabled
+    private double last_gyro_reseed_time_ = 0.0;
+    private static final double GYRO_RESEED_PERIOD_SECONDS = 1.0; // Rate limit to once per second
 
     // getInstance
     // Singleton Accessor
@@ -239,6 +244,60 @@ public class LocalizationSubsystem extends MwSubsystem<LocalizationStates, Local
         } else {
             shooting_focus_tags_ = CONSTANTS.SHOOTING_FOCUS_TAG_IDS_RED;
             climbing_focus_tags_ = CONSTANTS.CLIMBING_FOCUS_TAG_IDS_RED;
+        }
+    }
+
+    /**
+     * Attempts to reseed the gyro yaw from vision-based pose estimates while the robot is disabled.
+     * This provides a known good starting orientation when vision is available, which serves as a
+     * backup for cases when vision goes down or for other features that rely on gyro data.
+     *
+     * <p>Rate limiting is applied to prevent excessive reseeding attempts - only one reseed per
+     * GYRO_RESEED_PERIOD_SECONDS will be performed.
+     *
+     * <p>Requirements for reseeding:
+     * <ul>
+     *   <li>Sufficient time has passed since the last reseed attempt (rate limiting)
+     *   <li>At least one valid vision measurement with minimum required tags is available
+     *   <li>Robot is not spinning too fast (yaw rate check)
+     * </ul>
+     */
+    public void reseedGyroFromVision() {
+        double current_time = Timer.getFPGATimestamp();
+        
+        // Rate limit: only reseed once per GYRO_RESEED_PERIOD_SECONDS
+        if (current_time - last_gyro_reseed_time_ < GYRO_RESEED_PERIOD_SECONDS) {
+            return;
+        }
+
+        // Check if robot is spinning too fast - skip reseeding if so
+        if (SwerveSubsystem.getInstance().getGyroYawRate() > CONSTANTS.YAW_RATE_DISCARD) {
+            return;
+        }
+
+        // Get latest vision measurements from proxy server
+        List<TagSolutionData> vision_measurements =
+                ProxyServerThread.getInstance().getLatestTagSolutions();
+
+        // Try to find a valid vision measurement to use for reseeding
+        for (TagSolutionData vision_data : vision_measurements) {
+            // Need at least the minimum number of tags for a reliable measurement
+            if (vision_data.detectedIds.size() < CONSTANTS.MIN_TAG_COUNT_FOR_VISION_UPDATE) {
+                continue;
+            }
+
+            // Found a valid vision measurement - use its rotation to reseed the gyro
+            Rotation2d vision_yaw = vision_data.pose.getRotation();
+            SwerveSubsystem.getInstance().setGyroYaw(vision_yaw);
+            
+            // Update the timestamp to enforce rate limiting
+            last_gyro_reseed_time_ = current_time;
+            
+            DogLog.log(getSubsystemKey() + "GyroReseedYaw", vision_yaw.getDegrees());
+            DogLog.log(getSubsystemKey() + "GyroReseedTimestamp", current_time);
+            
+            // Successfully reseeded - exit after first valid measurement
+            return;
         }
     }
 
