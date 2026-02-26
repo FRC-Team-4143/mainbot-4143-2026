@@ -26,9 +26,7 @@ public class GameStatesSubsystem extends MwSubsystem<GameStates, GameStatesConst
     // Variables, temporary
     // prefer primitives to avoid accidental nulls from boxed Boolean
     private boolean goal_active_ = false;
-    private boolean operator_presses_climb_button_ = false;
-    private boolean full_load_ = false;
-    private boolean pass_overide_ = false;
+    private boolean is_climb_time_ = false;
     private boolean auto_climb_ready_ = true;
 
     public GameStatesSubsystem() {
@@ -102,39 +100,37 @@ public class GameStatesSubsystem extends MwSubsystem<GameStates, GameStatesConst
             return;
         }
         // HOLD transitions
-        if (system_state_ == GameStates.HOLD && inAllianceZone(robotpose) && goal_active_) {//validated
+        if (system_state_ == GameStates.HOLD && inAllianceZone(robotpose) && goal_active_) {
             system_state_ = GameStates.SCORE;
-        } else if (system_state_ == GameStates.HOLD && (isPassZone(robotpose) || pass_overide_)) {//validated
+        } else if (system_state_ == GameStates.HOLD && (isPassZone(robotpose) )) {
             system_state_ = GameStates.PASS;
-        } else if (system_state_ == GameStates.HOLD && auto_climb_ready_) {//validated
+        } else if (system_state_ == GameStates.HOLD && auto_climb_ready_) {
             system_state_ = GameStates.AUTO_CLIMB;
-            System.out.println("should be in auto climb -> set system_state_=" + system_state_);
-        } else if (system_state_ == GameStates.HOLD && operator_presses_climb_button_) {//validated
+        } else if (system_state_ == GameStates.HOLD && is_climb_time_) {
             system_state_ = GameStates.TELEOP_CLIMB;
         } else {
         } // empty to not interfere with rest of state machine
         // SCORE transistions
-        if (system_state_ == GameStates.SCORE && (isPassZone(robotpose) || !goal_active_)) {//validated
+        if (system_state_ == GameStates.SCORE && (isPassZone(robotpose) || !goal_active_)) {
             system_state_ = GameStates.HOLD;
-        } else if (system_state_ == GameStates.SCORE && auto_climb_ready_) {//validated
+        } else if (system_state_ == GameStates.SCORE && auto_climb_ready_) {
             system_state_ = GameStates.AUTO_CLIMB;
-        } else if (system_state_ == GameStates.SCORE && operator_presses_climb_button_) {//validated
+        } else if (system_state_ == GameStates.SCORE && is_climb_time_) {
             system_state_ = GameStates.TELEOP_CLIMB;
         } else {
         } // empty to not interfere with rest of state machine
         // PASS transistions
-        if (system_state_ == GameStates.PASS && (inHoldZone(robotpose) //|| !pass_overide_
-        )) {//validated
+        if (system_state_ == GameStates.PASS && (inHoldZone(robotpose))) {
             system_state_ = GameStates.HOLD;
         } else {
         } // empty to not interfere with rest of state machine
         // AUTO_CLIMB transitions
-        if (system_state_ == GameStates.AUTO_CLIMB && RobotState.isTeleop()) {//validated
+        if (system_state_ == GameStates.AUTO_CLIMB && RobotState.isTeleop()) {
             system_state_ = GameStates.DOWN_CLIMB;
         } else {
         } // empty to not interfere with rest of state machine
         // DOWN_CLIMB transistions
-        if (system_state_ == GameStates.DOWN_CLIMB && isDownClimbFinished()) {//validated
+        if (system_state_ == GameStates.DOWN_CLIMB && isDownClimbFinished()) {
             system_state_ = GameStates.HOLD;
         } else {
         } // empty to not interfere with rest of state machine
@@ -189,5 +185,9 @@ public class GameStatesSubsystem extends MwSubsystem<GameStates, GameStatesConst
 
     public void setAutoClimbReady(boolean trueORfalse) {
         auto_climb_ready_ = trueORfalse;
+    }
+
+    public void setIsClimbTime(boolean value){
+        is_climb_time_ = value; 
     }
 }
