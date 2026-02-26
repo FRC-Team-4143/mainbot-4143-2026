@@ -79,7 +79,6 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
     private Translation2d desired_rotation_lock_cor_ = new Translation2d();
     private double desired_rotation_lock_feedforward_ = 0.0;
     private ChassisSpeeds desired_chassis_speeds_ = new ChassisSpeeds(0, 0, 0);
-    private ChassisSpeeds desired_tuning_chassis_speeds_ = new ChassisSpeeds(0, 0, 0);
     private double tele_op_velocity_scalar_ = 1.0;
 
     // IO Members
@@ -210,21 +209,22 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
             // Determine which crawl state to use based on the wanted state
             if (wanted_state == SwerveStates.FIELD_CENTRIC_ROTATION_LOCK) {
                 system_state_ = SwerveStates.CRAWL_FIELD_CENTRIC_ROTATION_LOCK;
-            } else if (wanted_state == SwerveStates.CHASSIS_SPEED_ROTATION_LOCK) {
-                system_state_ = SwerveStates.CRAWL_ROTATION_LOCK;
+            } else if (wanted_state == SwerveStates.ROBOT_CENTRIC_ROTATION_LOCK
+                    || wanted_state == SwerveStates.CHASSIS_SPEEDS_ROTATION_LOCK) {
+                system_state_ = SwerveStates.CRAWL_ROBOT_CENTRIC_ROTATION_LOCK;
             } else if (wanted_state == SwerveStates.FIELD_CENTRIC) {
                 system_state_ = SwerveStates.CRAWL_FIELD_CENTRIC;
             } else {
                 // Default to robot-centric crawl for all other states
-                system_state_ = SwerveStates.CRAWL;
+                system_state_ = SwerveStates.CRAWL_ROBOT_CENTRIC;
             }
             return;
         }
 
         system_state_ =
                 switch (wanted_state) {
-                    case FIELD_CENTRIC -> SwerveStates.FIELD_CENTRIC;
                     case ROBOT_CENTRIC -> SwerveStates.ROBOT_CENTRIC;
+                    case FIELD_CENTRIC -> SwerveStates.FIELD_CENTRIC;
                     case CHOREO_PATH -> {
                         // If we are not already in a choreo path state, restart the timer
                         // The additional check is needed to prevent resetting the timer when
@@ -247,6 +247,12 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
                             yield SwerveStates.CHOREO_PATH;
                         }
                     }
+                    case TRACTOR_BEAM -> SwerveStates.TRACTOR_BEAM;
+                    case CHASSIS_SPEEDS -> SwerveStates.CHASSIS_SPEEDS;
+                    case CRAWL_ROBOT_CENTRIC -> SwerveStates.CRAWL_ROBOT_CENTRIC;
+                    case CRAWL_FIELD_CENTRIC -> SwerveStates.CRAWL_FIELD_CENTRIC;
+                    case ROBOT_CENTRIC_ROTATION_LOCK -> SwerveStates.ROBOT_CENTRIC_ROTATION_LOCK;
+                    case FIELD_CENTRIC_ROTATION_LOCK -> SwerveStates.FIELD_CENTRIC_ROTATION_LOCK;
                     case CHOREO_PATH_ROTATION_LOCK -> {
                         // If we are not already in a choreo path state, restart the timer
                         // The additional check is needed to prevent resetting the timer when
@@ -269,14 +275,11 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
                             yield SwerveStates.CHOREO_PATH_ROTATION_LOCK;
                         }
                     }
-                    case FIELD_CENTRIC_ROTATION_LOCK -> SwerveStates.FIELD_CENTRIC_ROTATION_LOCK;
-                    case CHASSIS_SPEED_ROTATION_LOCK -> SwerveStates.CHASSIS_SPEED_ROTATION_LOCK;
-                    case TRACTOR_BEAM -> SwerveStates.TRACTOR_BEAM;
-                    case CRAWL -> SwerveStates.CRAWL;
-                    case CRAWL_ROTATION_LOCK -> SwerveStates.CRAWL_ROTATION_LOCK;
-                    case CRAWL_FIELD_CENTRIC -> SwerveStates.CRAWL_FIELD_CENTRIC;
+                    case CRAWL_ROBOT_CENTRIC_ROTATION_LOCK ->
+                            SwerveStates.CRAWL_ROBOT_CENTRIC_ROTATION_LOCK;
                     case CRAWL_FIELD_CENTRIC_ROTATION_LOCK ->
                             SwerveStates.CRAWL_FIELD_CENTRIC_ROTATION_LOCK;
+                    case CHASSIS_SPEEDS_ROTATION_LOCK -> SwerveStates.CHASSIS_SPEEDS_ROTATION_LOCK;
                     case TUNING -> SwerveStates.TUNING;
                     default -> SwerveStates.IDLE;
                 };
@@ -287,26 +290,43 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
     public void updateLogic(double timestamp) {
         // Update the request to apply based on the system state
         switch (system_state_) {
-            case FIELD_CENTRIC:
-                swerve_mech_.setChassisRequest(
-                        field_centric_request_.withTwist(calculateSpeedsBasedOnJoystickInputs()));
-                break;
             case ROBOT_CENTRIC:
                 swerve_mech_.setChassisRequest(
                         robot_centric_request_.withTwist(calculateSpeedsBasedOnJoystickInputs()));
                 break;
+            case FIELD_CENTRIC:
+                swerve_mech_.setChassisRequest(
+                        field_centric_request_.withTwist(calculateSpeedsBasedOnJoystickInputs()));
+                break;
+            case CHOREO_PATH:
+                choreoPathState();
+                break;
             case TRACTOR_BEAM:
                 tractorBeamState();
                 break;
-            case CHASSIS_SPEED_ROTATION_LOCK:
+            case CHASSIS_SPEEDS:
+                swerve_mech_.setChassisRequest(
+                        chassis_speeds_request_.withSpeeds(desired_chassis_speeds_));
+                DogLog.log(getSubsystemKey() + "DesiredChassisSpeeds", desired_chassis_speeds_);
+                break;
+            case CRAWL_ROBOT_CENTRIC:
+                handleCrawlState(false);
+                break;
+            case CRAWL_FIELD_CENTRIC:
+                handleFieldCentricCrawlState(false);
+                break;
+            case ROBOT_CENTRIC_ROTATION_LOCK:
+                Twist2d robot_centric_twist = calculateSpeedsBasedOnJoystickInputs();
                 swerve_mech_.setChassisRequest(
                         robot_centric_rotation_lock_request_
                                 .withTargetHeading(desired_rotation_lock_rot_)
-                                .withSpeeds(desired_chassis_speeds_)
+                                .withSpeeds(
+                                        new ChassisSpeeds(
+                                                robot_centric_twist.dx,
+                                                robot_centric_twist.dy,
+                                                0.0))
                                 .withCenterOfRotation(desired_rotation_lock_cor_)
                                 .withHeadingFeedforward(desired_rotation_lock_feedforward_));
-                DogLog.log(
-                        getSubsystemKey() + "RotationLock/ChassisSpeed", desired_chassis_speeds_);
                 DogLog.log(
                         getSubsystemKey() + "RotationLock/Rotation",
                         desired_rotation_lock_rot_.getRadians(),
@@ -326,29 +346,34 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
                         Radians);
                 DogLog.log(getSubsystemKey() + "RotationLock/COR", desired_rotation_lock_cor_);
                 break;
-            case CHOREO_PATH:
-                choreoPathState();
-                break;
             case CHOREO_PATH_ROTATION_LOCK:
                 choreoPathRotationLockState();
                 break;
-            case CRAWL:
-                handleCrawlState(false);
-                break;
-            case CRAWL_ROTATION_LOCK:
+            case CRAWL_ROBOT_CENTRIC_ROTATION_LOCK:
                 handleCrawlState(true);
-                break;
-            case CRAWL_FIELD_CENTRIC:
-                handleFieldCentricCrawlState(false);
                 break;
             case CRAWL_FIELD_CENTRIC_ROTATION_LOCK:
                 handleFieldCentricCrawlState(true);
                 break;
+            case CHASSIS_SPEEDS_ROTATION_LOCK:
+                swerve_mech_.setChassisRequest(
+                        robot_centric_rotation_lock_request_
+                                .withTargetHeading(desired_rotation_lock_rot_)
+                                .withSpeeds(desired_chassis_speeds_)
+                                .withCenterOfRotation(desired_rotation_lock_cor_)
+                                .withHeadingFeedforward(desired_rotation_lock_feedforward_));
+                DogLog.log(
+                        getSubsystemKey() + "RotationLock/ChassisSpeed", desired_chassis_speeds_);
+                DogLog.log(
+                        getSubsystemKey() + "RotationLock/Rotation",
+                        desired_rotation_lock_rot_.getRadians(),
+                        Radians);
+                DogLog.log(getSubsystemKey() + "RotationLock/COR", desired_rotation_lock_cor_);
+                break;
             case TUNING:
                 swerve_mech_.setChassisRequest(
-                        chassis_speeds_request_.withSpeeds(desired_tuning_chassis_speeds_));
-                DogLog.log(
-                        getSubsystemKey() + "Tuning/ChassisSpeed", desired_tuning_chassis_speeds_);
+                        chassis_speeds_request_.withSpeeds(desired_chassis_speeds_));
+                DogLog.log(getSubsystemKey() + "DesiredChassisSpeeds", desired_chassis_speeds_);
                 break;
             case IDLE:
             default:
@@ -640,10 +665,8 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
      * @param speeds desired chassis speeds
      * @param rotation desired rotation to lock to
      */
-    public void setChassisSpeedRotationLock(ChassisSpeeds speeds, Rotation2d rotation) {
-        desired_rotation_lock_rot_ = rotation;
+    public void setDesiredChassisSpeed(ChassisSpeeds speeds) {
         desired_chassis_speeds_ = speeds;
-        desired_rotation_lock_feedforward_ = 0.0;
     }
 
     /**
@@ -684,19 +707,10 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
         desired_rotation_lock_feedforward_ = feedforward;
     }
 
-    /**
-     * Updates the internal target for the robot to follow in TUNING
-     *
-     * @param speeds desired chassis speeds for tuning
-     */
-    public void setDesiredTuningChassisSpeed(ChassisSpeeds speeds) {
-        desired_tuning_chassis_speeds_ = speeds;
-    }
-
     public Command chassisTuningCommand(ChassisSpeeds speeds) {
         return Commands.startEnd(
                         () -> {
-                            setDesiredTuningChassisSpeed(speeds);
+                            setDesiredChassisSpeed(speeds);
                             setWantedState(SwerveStates.TUNING);
                         },
                         () -> {

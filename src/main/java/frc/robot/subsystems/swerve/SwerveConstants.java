@@ -17,19 +17,37 @@ public class SwerveConstants extends MwConstants {
     // ENUMS AND STATE DEFINITIONS
     // =============================================================================
 
+    /** Swerve drive operational states defining different control modes. */
     public enum SwerveStates {
-        FIELD_CENTRIC,
+        /** Drive relative to the robot's orientation using joystick inputs. */
         ROBOT_CENTRIC,
+        /** Drive relative to the field's orientation using joystick inputs. */
+        FIELD_CENTRIC,
+        /** Follow a pre-planned Choreo trajectory path with Choreo rotation control. */
         CHOREO_PATH,
-        CHOREO_PATH_ROTATION_LOCK,
-        FIELD_CENTRIC_ROTATION_LOCK,
+        /** Drive towards a target pose using feedback control. */
         TRACTOR_BEAM,
-        CHASSIS_SPEED_ROTATION_LOCK,
-        CRAWL,
-        CRAWL_ROTATION_LOCK,
+        /** Drive using raw ChassisSpeeds including rotation. */
+        CHASSIS_SPEEDS,
+        /** Slow precision movement relative to robot orientation using POV/D-pad. */
+        CRAWL_ROBOT_CENTRIC,
+        /** Slow precision movement relative to field orientation using POV/D-pad. */
         CRAWL_FIELD_CENTRIC,
+        /** Drive relative to robot orientation with rotation locked to a target heading. */
+        ROBOT_CENTRIC_ROTATION_LOCK,
+        /** Drive relative to field orientation with rotation locked to a target heading. */
+        FIELD_CENTRIC_ROTATION_LOCK,
+        /** Follow a Choreo trajectory path with rotation locked to a target heading. */
+        CHOREO_PATH_ROTATION_LOCK,
+        /** Drive using raw ChassisSpeeds with rotation locked to a target heading. */
+        CHASSIS_SPEEDS_ROTATION_LOCK,
+        /** Slow precision movement relative to robot with rotation locked to a target heading. */
+        CRAWL_ROBOT_CENTRIC_ROTATION_LOCK,
+        /** Slow precision movement relative to field with rotation locked to a target heading. */
         CRAWL_FIELD_CENTRIC_ROTATION_LOCK,
+        /** Manual tuning mode for testing chassis speeds. */
         TUNING,
+        /** Idle state with no movement commands. */
         IDLE
     }
 

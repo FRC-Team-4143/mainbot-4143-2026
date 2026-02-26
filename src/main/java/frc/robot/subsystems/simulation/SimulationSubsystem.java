@@ -11,6 +11,7 @@ import com.marswars.vision.MwVisionSim;
 import dev.doglog.DogLog;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -31,6 +32,7 @@ public class SimulationSubsystem extends MwSubsystem<SimulationStates, Simulatio
     private static SimulationSubsystem instance_ = null;
 
     private MwVisionSim vision_sim_;
+    private FuelSim fuel_sim_;
     private int hopper_fuel_count_ = 0;
     private boolean outpost_full = false;
     private final Random noise_generator_ = new Random();
@@ -60,7 +62,8 @@ public class SimulationSubsystem extends MwSubsystem<SimulationStates, Simulatio
         }
 
         // Setup Fuel Simulation
-        FuelSim.getInstance()
+        fuel_sim_ = new FuelSim();
+        fuel_sim_
                 .registerRobot(
                         CONSTANTS.BASE_WIDTH,
                         CONSTANTS.BASE_LENGTH,
@@ -69,10 +72,10 @@ public class SimulationSubsystem extends MwSubsystem<SimulationStates, Simulatio
                                 ? LocalizationSubsystem.getInstance()::getSmoothPose
                                 : LocalizationSubsystem.getInstance()::getFieldPose,
                         LocalizationSubsystem.getInstance()::getChassisSpeedsFieldRelative);
-        FuelSim.getInstance().enableAirResistance();
+        fuel_sim_.enableAirResistance();
 
         // Setup Intake Simulation - Out the Front of the Robot
-        FuelSim.getInstance()
+        fuel_sim_
                 .registerIntake(
                         // Front Frame
                         CONSTANTS.BASE_LENGTH / 2.0,
@@ -89,7 +92,7 @@ public class SimulationSubsystem extends MwSubsystem<SimulationStates, Simulatio
                         () -> hopper_fuel_count_++);
 
         // Start Fuel Simulation
-        if (CONSTANTS.SIM_FUEL_ENABLED) FuelSim.getInstance().start();
+        if (CONSTANTS.SIM_FUEL_ENABLED) fuel_sim_.start();
 
         // Setup autonomous reset
         RobotModeTriggers.autonomous().onTrue(Commands.runOnce(this::resetForAuto));
@@ -133,8 +136,8 @@ public class SimulationSubsystem extends MwSubsystem<SimulationStates, Simulatio
 
         // FuelSim
         launchFuel(timestamp);
-        FuelSim.getInstance().updateSim();
-        DogLog.log(getSubsystemKey() + "FuelSim/Fuel", FuelSim.getInstance().getLoggableFuel());
+        fuel_sim_.updateSim();
+        DogLog.log(getSubsystemKey() + "FuelSim/Fuel", fuel_sim_.getLoggableFuel());
         DogLog.log(getSubsystemKey() + "FuelSim/HopperCount", hopper_fuel_count_);
     }
 
@@ -149,7 +152,17 @@ public class SimulationSubsystem extends MwSubsystem<SimulationStates, Simulatio
                 && hopper_fuel_count_ > 0
                 && CONSTANTS.SIM_FUEL_ENABLED) {
             if (timestamp - last_shot_timestamp_ >= CONSTANTS.SECONDS_PER_SHOT) {
-                FuelSim.getInstance()
+                // Calculate random lateral offset across shooter width
+                // Account for ball radius - the center of the ball must stay within the shooter
+                // Random offset between -(SHOOTER_WIDTH/2 - FUEL_RADIUS) and +(SHOOTER_WIDTH/2 - FUEL_RADIUS)
+                double max_lateral_offset = CONSTANTS.SHOOTER_WIDTH / 2.0 - CONSTANTS.FUEL_RADIUS;
+                double lateral_offset = (noise_generator_.nextDouble() - 0.5) * 2.0 * max_lateral_offset;
+                Translation3d launch_offset = new Translation3d(
+                        CONSTANTS.SHOOTER_LAUNCH_OFFSET.getX(),
+                        CONSTANTS.SHOOTER_LAUNCH_OFFSET.getY() + lateral_offset,
+                        CONSTANTS.SHOOTER_LAUNCH_OFFSET.getZ());
+                
+                fuel_sim_
                         .launchFuel(
                                 MetersPerSecond.of(
                                         ShooterSubsystem.getInstance().getLaunchVelocity()),
@@ -160,7 +173,7 @@ public class SimulationSubsystem extends MwSubsystem<SimulationStates, Simulatio
                                                 .getRotation()
                                                 .rotateBy(CONSTANTS.SHOOTER_LAUNCH_ROTATION)
                                                 .getRadians()),
-                                CONSTANTS.SHOOTER_LAUNCH_OFFSET);
+                                launch_offset);
                 ShooterSubsystem.getInstance()
                         .applyLoadFromBall(
                                 CONSTANTS.FUEL_MASS_KG
@@ -180,8 +193,8 @@ public class SimulationSubsystem extends MwSubsystem<SimulationStates, Simulatio
 
         // Reset fuel simulation
         hopper_fuel_count_ = 0;
-        FuelSim.getInstance().clearFuel();
-        FuelSim.getInstance().spawnStartingFuel();
+        fuel_sim_.clearFuel();
+        fuel_sim_.spawnStartingFuel();
     }
 
     /**

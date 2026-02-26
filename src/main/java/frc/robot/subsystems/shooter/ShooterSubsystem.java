@@ -14,6 +14,8 @@ import com.marswars.subsystem.MwSubsystem;
 import com.marswars.subsystem.SubsystemIoBase;
 import dev.doglog.DogLog;
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.filter.Debouncer;
+import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -45,8 +47,10 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
     private double heading_angle_ = 0.0;
     private double hood_feedforward_ = 0.0;
     private double heading_feedforward_ = 0.0;
-    private Translation2d target_ = new Translation2d(0.0, 0.0);
+    private Translation3d target_ = new Translation3d(0.0, 0.0, 0.0);
+    private LaunchCalculator launch_calculator_ = CONSTANTS.HUB_LAUNCH_CALCULATOR;
     private LaunchCalculator.LaunchParameters launch_params_ = null;
+    private final Debouncer shooter_ready_debouncer = new Debouncer(CONSTANTS.SHOOTER_READY_DEBOUNCE_TIME, DebounceType.kRising);
 
     // Adjustable shooting tolerances - initialized to strict defaults
     private double flywheel_vel_tol_ = FieldTargets.Shooter.FLYWHEEL_SPEED_TOLERANCE;
@@ -146,16 +150,16 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
 
         // Calculate launch parameters using the LaunchCalculator
         launch_params_ =
-                CONSTANTS.LAUNCH_CALCULATOR.calculateLaunchParameters(
-                        robot_pose, robot_velocity, target_);
+                launch_calculator_.calculateLaunchParameters(
+                        robot_pose, robot_velocity, target_.toTranslation2d());
 
         // Update shooter parameters based on the launch calculator
         // Skip the shooter parameters update if invalid or in manual modes to allow for
         // testing with manual setpoints
         if (launch_params_.is_valid
                 && system_state_ != ShooterStates.TUNING
-                && system_state_ != ShooterStates.MANUALHUB
-                && system_state_ != ShooterStates.MANUALPASS) {
+                && system_state_ != ShooterStates.MANUAL_HUB
+                && system_state_ != ShooterStates.MANUAL_PASS) {
             flywheel_omega_ = launch_params_.flywheel_speed;
 
             // Store heading angle for robot rotation
@@ -172,7 +176,7 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
             hood_feedforward_ = launch_params_.hood_velocity * hood_kv_;
 
             // Store heading feedforward velocity (rad/s) for use in all states
-            heading_feedforward_ = 0; // launch_params_.heading_velocity;
+            heading_feedforward_ = launch_params_.heading_velocity;
         }
 
         // Execute state-specific behavior
@@ -223,36 +227,17 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
                                         CONSTANTS.SHOOTER_CENTER.getY()),
                                 heading_feedforward_);
                 break;
-            case MANUALHUB:
+            case MANUAL_HUB:
                 // Manual hub shooting mode - uses fixed setpoints for hub shots
-                // Target is automatically set to HUB for alignment
-                setTarget(FieldTargets.Shooter.HUB);
                 flywheel_.setTargetVelocity(CONSTANTS.FLYWHEEL_MANUAL_HUB_VELOCITY);
                 indexer_.setTargetDutyCycle(CONSTANTS.INDEXER_DUTY_CYCLE);
                 hood_.setTargetPosition(CONSTANTS.HOOD_MANUAL_HUB_ANGLE);
-                // Robot rotation is handled by launch calculator since we set the target
-                SwerveSubsystem.getInstance()
-                        .setDesiredRotationLockCORWithFF(
-                                Rotation2d.fromRadians(heading_angle_),
-                                new Translation2d(
-                                        CONSTANTS.SHOOTER_CENTER.getX(),
-                                        CONSTANTS.SHOOTER_CENTER.getY()),
-                                heading_feedforward_);
                 break;
-            case MANUALPASS:
+            case MANUAL_PASS:
                 // Manual pass mode - uses fixed setpoints for passing
-                // Target should be set externally to LEFT_PASS or RIGHT_PASS
                 flywheel_.setTargetVelocity(CONSTANTS.FLYWHEEL_MANUAL_PASS_VELOCITY);
                 indexer_.setTargetDutyCycle(CONSTANTS.INDEXER_DUTY_CYCLE);
                 hood_.setTargetPosition(CONSTANTS.HOOD_MANUAL_PASS_ANGLE);
-                // Robot rotation is handled by launch calculator with current target
-                SwerveSubsystem.getInstance()
-                        .setDesiredRotationLockCORWithFF(
-                                Rotation2d.fromRadians(heading_angle_),
-                                new Translation2d(
-                                        CONSTANTS.SHOOTER_CENTER.getX(),
-                                        CONSTANTS.SHOOTER_CENTER.getY()),
-                                heading_feedforward_);
                 break;
             case TUNING:
                 // code does NOTHING to allow for testing
@@ -273,19 +258,19 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
         // LaunchCalculator Logging
         DogLog.log(getSubsystemKey() + "LaunchCalculator/Valid", launch_params_.is_valid);
         DogLog.log(
-                getSubsystemKey() + "LaunchCalculator/HoodAngle",
+                getSubsystemKey() + "LaunchCalculator/Hood/Angle",
                 launch_params_.hood_angle,
                 Radians);
         DogLog.log(
-                getSubsystemKey() + "LaunchCalculator/HoodVelocity",
+                getSubsystemKey() + "LaunchCalculator/Hood/Velocity",
                 launch_params_.hood_velocity,
                 RadiansPerSecond);
         DogLog.log(
-                getSubsystemKey() + "LaunchCalculator/HeadingAngle",
+                getSubsystemKey() + "LaunchCalculator/Heading/Angle",
                 launch_params_.heading_angle.getRadians(),
                 Radians);
         DogLog.log(
-                getSubsystemKey() + "LaunchCalculator/HeadingVelocity",
+                getSubsystemKey() + "LaunchCalculator/Heading/Velocity",
                 launch_params_.heading_velocity,
                 RadiansPerSecond);
         DogLog.log(
@@ -294,9 +279,9 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
                 RadiansPerSecond);
         DogLog.log(getSubsystemKey() + "LaunchCalculator/Target", target_);
         DogLog.log(
-                getSubsystemKey() + "LaunchCalculator/Distance", launch_params_.distance, Meters);
+                getSubsystemKey() + "LaunchCalculator/Distance/Lookahead", launch_params_.distance, Meters);
         DogLog.log(
-                getSubsystemKey() + "LaunchCalculator/DistanceNoLookahead",
+                getSubsystemKey() + "LaunchCalculator/Distance/Raw",
                 launch_params_.distance_no_lookahead,
                 Meters);
         DogLog.log(
@@ -311,11 +296,11 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
 
         // Hood Feedforward Logging
         DogLog.log(
-                getSubsystemKey() + "LaunchCalculator/HoodFeedforward", hood_feedforward_, Volts);
+                getSubsystemKey() + "LaunchCalculator/Hood/Feedforward", hood_feedforward_, Volts);
 
         // Heading Feedforward Logging
         DogLog.log(
-                getSubsystemKey() + "LaunchCalculator/HeadingFeedforward",
+                getSubsystemKey() + "LaunchCalculator/Heading/Feedforward",
                 heading_feedforward_,
                 RadiansPerSecond);
 
@@ -340,7 +325,7 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
         if (launch_params_ == null || !launch_params_.is_valid) {
             return false;
         }
-        return isFlywheelAtSpeed() && isHoodAtPosition() && isRotationAtPosition();
+        return shooter_ready_debouncer.calculate(isFlywheelAtSpeed() && isHoodAtPosition() && isRotationAtPosition());
     }
 
     /**
@@ -365,7 +350,8 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
         if (launch_params_ == null || !launch_params_.is_valid) {
             return 0.0;
         } else {
-            return launch_params_.flywheel_speed * CONSTANTS.FLYWHEEL_WHEEL_RADIUS_METERS;
+            // angular speed * radius * eff_factor
+            return launch_params_.flywheel_speed * CONSTANTS.FLYWHEEL_WHEEL_RADIUS_METERS * 0.5;
         }
     }
 
@@ -387,27 +373,19 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
      *     of the target relative to the field
      */
     public void setTarget(Translation3d target) {
-        Translation2d target2d = target.toTranslation2d();
-        Optional<Alliance> alliance = DriverStation.getAlliance();
-        if (alliance.isPresent() && alliance.get() == Alliance.Red) {
-            target2d = AllianceFlipUtil.apply(target2d);
-        }
-        target_ = target2d;
-    }
-
-    /**
-     * Sets the target for the shooter to calculate a solution for. The target is a 2D translation
-     * where x and y are the horizontal coordinates of the target relative to the field.
-     *
-     * @param target the target translation in meters, where x and y are the horizontal coordinates
-     *     of the target relative to the field
-     */
-    public void setTarget(Translation2d target) {
         Optional<Alliance> alliance = DriverStation.getAlliance();
         if (alliance.isPresent() && alliance.get() == Alliance.Red) {
             target = AllianceFlipUtil.apply(target);
         }
         target_ = target;
+
+        // Automatically switch LaunchCalculator based on target selection to use appropriate set of
+        // empirically determined parameters for hub shots vs passes
+        if(target.equals(FieldTargets.Shooter.HUB)) {
+            launch_calculator_ = CONSTANTS.HUB_LAUNCH_CALCULATOR;
+        } else {
+            launch_calculator_ = CONSTANTS.PASS_LAUNCH_CALCULATOR;
+        }
     }
 
     /**
@@ -425,44 +403,6 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
         flywheel_vel_tol_ = flywheel_vel_tol;
         hood_pos_tol_ = hood_pos_tol;
         rot_pos_tol_ = rot_pos_tol;
-    }
-
-    /**
-     * Sets the shooter to MANUALHUB mode with HUB as the target. This mode uses fixed shooter
-     * setpoints for hub shots instead of the launch calculator. Useful when the calculated
-     * trajectory isn't working or for consistent close-range shots.
-     *
-     * <p>Setpoints used: - Flywheel: FLYWHEEL_MANUAL_HUB_VELOCITY - Hood: HOOD_MANUAL_HUB_ANGLE -
-     * Robot will rotate to face HUB - Indexer will feed at normal rate
-     */
-    public void enableManualHubMode() {
-        setTarget(FieldTargets.Shooter.HUB);
-        setWantedState(ShooterStates.MANUALHUB);
-    }
-
-    /**
-     * Sets the shooter to MANUALPASS mode for passing to a specific target. This mode uses fixed
-     * shooter setpoints for passing instead of the launch calculator. Useful for consistent passing
-     * shots where launch calculator may overcomplicate.
-     *
-     * <p>Setpoints used: - Flywheel: FLYWHEEL_MANUAL_PASS_VELOCITY - Hood: HOOD_MANUAL_PASS_ANGLE -
-     * Robot will rotate to face the current target - Indexer will feed at normal rate
-     *
-     * @param passTarget The target to pass to (e.g., FieldTargets.Shooter.LEFT_PASS)
-     */
-    public void enableManualPassMode(Translation3d passTarget) {
-        setTarget(passTarget);
-        setWantedState(ShooterStates.MANUALPASS);
-    }
-
-    /** Convenience method for left pass using manual mode */
-    public void enableManualLeftPass() {
-        enableManualPassMode(FieldTargets.Shooter.LEFT_PASS);
-    }
-
-    /** Convenience method for right pass using manual mode */
-    public void enableManualRightPass() {
-        enableManualPassMode(FieldTargets.Shooter.RIGHT_PASS);
     }
 
     // =============================================================================
