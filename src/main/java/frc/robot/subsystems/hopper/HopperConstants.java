@@ -1,5 +1,6 @@
 package frc.robot.subsystems.hopper;
 
+import com.ctre.phoenix6.configs.Slot1Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.marswars.subsystem.MwConstants;
 import com.marswars.util.FxMotorConfig;
@@ -12,11 +13,18 @@ public class HopperConstants extends MwConstants {
     // =============================================================================
 
     public enum HopperStates {
+        /** Idle state with hopper stopped */
         IDLE,
+        /** Actively intaking game pieces */
+        INTAKE,
+        /** Actively feeding game pieces to shooter */
         SHOOTING,
+        /** Unjamming by reversing hopper */
         UNJAM_REVERSE,
+        /** Unjamming by running hopper forward */
         UNJAM_FORWARD,
-        PROFILE
+        /** Manual tuning mode for testing and calibration */
+        TUNING,
     }
 
     // =============================================================================
@@ -25,7 +33,6 @@ public class HopperConstants extends MwConstants {
 
     // Motor CAN IDs
     public final int HOPPER_MOTOR_ID = 20;
-    public final int FEED_MOTOR_ID = 21;
 
     // =============================================================================
     // MECHANICAL CONSTANTS - HOPPER
@@ -33,17 +40,9 @@ public class HopperConstants extends MwConstants {
 
     public final boolean HOPPER_MOTOR_INVERTED = false;
     public final double HOPPER_GEAR_RATIO = 1.0;
-    public final double HOPPER_DANGER_CURRENT = 20;
-    public final double HOPPER_DUTY_CYCLE = 0.5;
-
-    // =============================================================================
-    // MECHANICAL CONSTANTS - FEED
-    // =============================================================================
-
-    public final boolean FEED_MOTOR_INVERTED = false;
-    public final double FEED_GEAR_RATIO = 1.0;
-    public final double FEED_DANGER_CURRENT = 0.0;
-    public final double FEED_DUTY_CYCLE = 0.5;
+    public final double HOPPER_DANGER_CURRENT = 40;
+    public final double HOPPER_VELOCITY_TARGET = 200;
+    public final Slot1Configs HOPPER_VELOCITY_GAINS = new Slot1Configs().withKV(.122).withKP(0.5);
 
     // =============================================================================
     // CONTROL AND OPERATIONAL CONSTANTS
@@ -57,7 +56,8 @@ public class HopperConstants extends MwConstants {
     // =============================================================================
 
     public final FxMotorConfig HOPPER_MOTOR_CONFIG = new FxMotorConfig();
-    public final FxMotorConfig FEED_MOTOR_CONFIG = new FxMotorConfig();
+
+    // public final FxMotorConfig FEED_MOTOR_CONFIG = new FxMotorConfig();
 
     // =============================================================================
     // CONSTRUCTOR - MOTOR CONFIGURATION INITIALIZATION
@@ -67,13 +67,8 @@ public class HopperConstants extends MwConstants {
         // Configure Hopper Motor
         HOPPER_MOTOR_CONFIG.can_id = HOPPER_MOTOR_ID;
         HOPPER_MOTOR_CONFIG.motor_type = FxMotorType.FALCON500;
-        HOPPER_MOTOR_CONFIG.canbus_name = "CANivore";
+        HOPPER_MOTOR_CONFIG.canbus_name = "rio";
         HOPPER_MOTOR_CONFIG.config = new TalonFXConfiguration();
-
-        // Configure Feed Motor
-        FEED_MOTOR_CONFIG.can_id = FEED_MOTOR_ID;
-        FEED_MOTOR_CONFIG.motor_type = FxMotorType.X60;
-        FEED_MOTOR_CONFIG.canbus_name = "rio";
-        FEED_MOTOR_CONFIG.config = new TalonFXConfiguration();
+        HOPPER_MOTOR_CONFIG.config.Slot1 = HOPPER_VELOCITY_GAINS;
     }
 }

@@ -3,7 +3,8 @@ package frc.robot.subsystems.shooter;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.Slot1Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.marswars.geometry.LaunchTrajectory;
+import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.marswars.geometry.LaunchCalculator;
 import com.marswars.subsystem.MwConstants;
 import com.marswars.util.FxMotorConfig;
 import com.marswars.util.FxMotorConfig.FxMotorType;
@@ -11,7 +12,6 @@ import com.marswars.util.PhoenixUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 
 public class ShooterConstants extends MwConstants {
@@ -21,12 +21,26 @@ public class ShooterConstants extends MwConstants {
     // =============================================================================
 
     public enum ShooterStates {
-        AIMING,
+        /** Aiming at target with shooter spinning and robot rotating, waiting to be ready */
+        SHOOT_WAIT,
+        /** Dumping game pieces out backwards */
         DUMP,
+        /** Actively shooting game pieces into target */
         SHOOT,
+        /** Idle state with shooter mechanisms at rest */
         IDLE,
+        /** Tracking target with shooter spinning but not shooting */
         TRACKING,
-        PROFILE
+        /** Manual tuning mode for testing and calibration */
+        TUNING,
+        /** Manual control mode for hub shooting */
+        MANUALHUB,
+        /** Manual control mode for pasing */
+        MANUALPASS,
+        /** Smooth return to 0 velocity for clean disable */
+        SPIN_DOWN,
+        /** Aiming at target with shooter spinning and robot rotating, with no intent to SHOOT */
+        AIMING
     }
 
     // =============================================================================
@@ -41,16 +55,15 @@ public class ShooterConstants extends MwConstants {
     public final int INDEXER_LEADER_ID = 14;
     public final int INDEXER_FOLLOWER_ID = 15;
     public final int HOOD_ID = 16;
-    public final int TURRET_ID = 19; // bookmark
 
     // =============================================================================
     // MECHANICAL CONSTANTS - FLYWHEEL
     // =============================================================================
 
-    public final boolean FLYWHEEL_LEADER_INVERTED = false;
-    public final boolean FLYWHEEL_FOLLOWER_1_INVERTED = false;
-    public final boolean FLYWHEEL_FOLLOWER_2_INVERTED = false;
-    public final boolean FLYWHEEL_FOLLOWER_3_INVERTED = false;
+    public final boolean FLYWHEEL_LEADER_INVERTED = true;
+    public final boolean FLYWHEEL_FOLLOWER_1_INVERTED = true;
+    public final boolean FLYWHEEL_FOLLOWER_2_INVERTED = true;
+    public final boolean FLYWHEEL_FOLLOWER_3_INVERTED = true;
     public final double FLYWHEEL_GEAR_RATIO = 1.0;
     public final double FLYWHEEL_WHEEL_RADIUS_METERS = Units.inchesToMeters(2);
     public final double FLYWHEEL_MASS_KG = Units.lbsToKilograms(3.5);
@@ -58,10 +71,17 @@ public class ShooterConstants extends MwConstants {
             0.5
                     * FLYWHEEL_MASS_KG
                     * Math.pow(FLYWHEEL_WHEEL_RADIUS_METERS, 2.0); // kg m^2, approximate
-    public final double FLYWHEEL_EFF_FACTOR = 1.0;
-    public final double FLYWHEEL_SPEED_TOLERANCE = 50.0;
+    public final double FLYWHEEL_EFF_FACTOR = 2.2;
     public final Slot1Configs FLYWHEEL_VELOCITY_GAINS =
-            new Slot1Configs().withKP(0.5).withKV(0.117);
+            new Slot1Configs().withKP(0.5).withKV(0.118).withKI(2);
+
+    // Manual mode flywheel velocities (rad/s) - TUNE THESE!
+    public final double FLYWHEEL_MANUAL_HUB_VELOCITY = 330.0; // Flywheel speed for hub shots
+    public final double FLYWHEEL_MANUAL_PASS_VELOCITY = 250.0; // Flywheel speed for passing
+
+    @Deprecated
+    public final double FLYWHEEL_MANUAL_VELOCITY =
+            330.0; // Use FLYWHEEL_MANUAL_HUB_VELOCITY instead
 
     // =============================================================================
     // MECHANICAL CONSTANTS - INDEXER
@@ -75,43 +95,40 @@ public class ShooterConstants extends MwConstants {
     // MECHANICAL CONSTANTS - HOOD
     // =============================================================================
 
-    public final boolean HOOD_INVERTED = true;
+    public final boolean HOOD_INVERTED = false;
     public final double HOOD_GEAR_RATIO =
-            (5.0 * (372.0 / 40.0)); // motor rotations / output mechanism rotations
+            9.0 * (372.0 / 40.0); // motor rotations / output mechanism rotations
     // Min/max physical hood angles (radians). Configure to match the mechanical limits
-    public final double HOOD_MIN_ANGLE = Units.degreesToRadians(45);
-    public final double HOOD_MAX_ANGLE = Units.degreesToRadians(83.673);
-    public final double HOOD_HOME_POSITION = Units.degreesToRadians(83.673);
+    public final double HOOD_MIN_ANGLE = Units.degreesToRadians(30);
+    public final double HOOD_MAX_ANGLE = Units.degreesToRadians(79);
+    public final double HOOD_HOME_POSITION = Units.degreesToRadians(81.170);
+    public final Slot0Configs HOOD_POSITION_GAINS = new Slot0Configs().withKP(100).withKD(0.15);
 
-    // Tolerances are expressed in hood position units (radians) for comparing against
-    // the mech's current position/readback.
-    public final double HOOD_POSITION_TOLERANCE =
-            Units.degreesToRadians(0.5); // 0.5 degrees tolerance
-    public final Slot0Configs HOOD_POSITION_GAINS = new Slot0Configs().withKP(30).withKD(0.15);
+    // Manual mode hood angles (radians) - TUNE THESE!
+    public final double HOOD_MANUAL_HUB_ANGLE =
+            Units.degreesToRadians(65.0); // Hood angle for hub shots
+    public final double HOOD_MANUAL_PASS_ANGLE =
+            Units.degreesToRadians(45.0); // Hood angle for passing
 
-    // =============================================================================
-    // MECHANICAL CONSTANTS - TURRET (needs actual values)
-    // =============================================================================
+    @Deprecated
+    public final double HOOD_MANUAL_ANGLE =
+            Units.degreesToRadians(0); // Use HOOD_MANUAL_HUB_ANGLE instead
 
-    public final double TURRET_GEAR_RATIO = 1.0;
-    public final double TURRET_MOI = 0.001;
-    public final double TURRET_ANGLE_TOLERANCE = 1.0;
-    public final Slot0Configs TURRET_POSITION_GAINS = new Slot0Configs().withKP(10);
+    // Hood feedforward gain for velocity (V/(rad/s)) - converts hood angular velocity to voltage
+    public final double HOOD_KV = 0.0;
 
     // =============================================================================
     // CONTROL AND OPERATIONAL CONSTANTS
     // =============================================================================
     public final double INDEXER_DUTY_CYCLE = 0.3; // 30% power for indexing
-    public final double LAUNCH_HEIGHT = Units.inchesToMeters(getDoubleConstant("translation", "z"));
-    public final LaunchTrajectory SOLVER =
-            new LaunchTrajectory(new Translation3d(), LAUNCH_HEIGHT, true);
-    public final double MAX_TURRET_WRAP = Units.degreesToRadians(190);
+    public final double SHOOTER_IDLE_SPEED = 300.0;
+    public final double HOOD_IDLE_POSITION = Units.degreesToRadians(80);
     public final Transform2d SHOOTER_CENTER =
             new Transform2d(
                     new Translation2d(
-                            getDoubleConstant("translation", "x"),
-                            getDoubleConstant("translation", "y")),
-                    new Rotation2d());
+                            Units.inchesToMeters(getDoubleConstant("translation", "x")),
+                            Units.inchesToMeters(getDoubleConstant("translation", "y"))),
+                    Rotation2d.fromDegrees(getDoubleConstant("rotation", "z")));
 
     // =============================================================================
     // MOTOR CONFIGURATION OBJECTS
@@ -123,14 +140,60 @@ public class ShooterConstants extends MwConstants {
     public final FxMotorConfig INDEXER_LEADER_MOTOR_CONFIG = new FxMotorConfig();
     public final FxMotorConfig INDEXER_FOLLOWER_MOTOR_CONFIG = new FxMotorConfig();
     public final FxMotorConfig HOOD_MOTOR_CONFIGS = new FxMotorConfig();
-    public final FxMotorConfig TURRET_MOTOR_CONFIGS = new FxMotorConfig();
-    public final boolean TURRET_ENABLED = getBoolConstant("turret_enabled");
+
+    // =============================================================================
+    // LAUNCH CALCULATOR - Map-based shooting with motion compensation
+    // =============================================================================
+    public final LaunchCalculator LAUNCH_CALCULATOR;
 
     // =============================================================================
     // CONSTRUCTOR - MOTOR CONFIGURATION INITIALIZATION
     // =============================================================================
 
     public ShooterConstants() {
+        // Initialize Launch Calculator with robot-to-shooter transform
+        LAUNCH_CALCULATOR =
+                new LaunchCalculator("Subsystem/Shooter/LaunchCalculator/", SHOOTER_CENTER);
+
+        // Configure range limits
+        LAUNCH_CALCULATOR.setMinDistance(1.34); // Minimum shooting distance in meters
+        LAUNCH_CALCULATOR.setMaxDistance(15.0); // Maximum shooting distance in meters
+        LAUNCH_CALCULATOR.setPhaseDelay(0.03); // Processing and actuator delay in seconds
+
+        // Populate hood angle map (distance in meters -> angle in radians)
+        // Empirically determined values from testing
+        LAUNCH_CALCULATOR.addHoodAnglePoint(1.34, Units.degreesToRadians(85.94));
+        LAUNCH_CALCULATOR.addHoodAnglePoint(1.78, Units.degreesToRadians(85.94));
+        LAUNCH_CALCULATOR.addHoodAnglePoint(2.17, Units.degreesToRadians(80.21));
+        LAUNCH_CALCULATOR.addHoodAnglePoint(2.81, Units.degreesToRadians(71.62));
+        LAUNCH_CALCULATOR.addHoodAnglePoint(3.82, Units.degreesToRadians(68.75));
+        LAUNCH_CALCULATOR.addHoodAnglePoint(4.40, Units.degreesToRadians(65.89));
+        LAUNCH_CALCULATOR.addHoodAnglePoint(4.77, Units.degreesToRadians(65.89));
+        LAUNCH_CALCULATOR.addHoodAnglePoint(5.60, Units.degreesToRadians(65.89));
+        LAUNCH_CALCULATOR.addHoodAnglePoint(6.50, Units.degreesToRadians(65.89));
+
+        // Populate flywheel speed map (distance in meters -> speed in rad/s)
+        // Empirically determined values from testing
+        LAUNCH_CALCULATOR.addFlywheelSpeedPoint(1.34, 260.0);
+        LAUNCH_CALCULATOR.addFlywheelSpeedPoint(1.78, 270.0);
+        LAUNCH_CALCULATOR.addFlywheelSpeedPoint(2.17, 285.0);
+        LAUNCH_CALCULATOR.addFlywheelSpeedPoint(2.81, 310.0);
+        LAUNCH_CALCULATOR.addFlywheelSpeedPoint(3.82, 335.0);
+        LAUNCH_CALCULATOR.addFlywheelSpeedPoint(4.40, 340.0);
+        LAUNCH_CALCULATOR.addFlywheelSpeedPoint(4.77, 360.0);
+        LAUNCH_CALCULATOR.addFlywheelSpeedPoint(5.60, 375.0);
+        LAUNCH_CALCULATOR.addFlywheelSpeedPoint(6.50, 420.0);
+        LAUNCH_CALCULATOR.addFlywheelSpeedPoint(15, 420.0);
+
+        // Populate time of flight map (distance in meters -> time in seconds)
+        // Empirically determined values from testing
+        LAUNCH_CALCULATOR.addTimeOfFlightPoint(1.5, 1.129);
+        LAUNCH_CALCULATOR.addTimeOfFlightPoint(3, 1.293);
+        LAUNCH_CALCULATOR.addTimeOfFlightPoint(5.00, 1.413);
+
+        // =============================================================================
+        // MOTOR CONFIGURATION INITIALIZATION
+        // =============================================================================
         // Configure Indexer Leader Motor
         INDEXER_LEADER_MOTOR_CONFIG.can_id = INDEXER_LEADER_ID;
         INDEXER_LEADER_MOTOR_CONFIG.motor_type = FxMotorType.X44;
@@ -155,6 +218,17 @@ public class ShooterConstants extends MwConstants {
         SHOOTER_LEADER_MOTOR_CONFIG.config.MotorOutput.Inverted =
                 PhoenixUtil.toInvertedValue(FLYWHEEL_LEADER_INVERTED);
         SHOOTER_LEADER_MOTOR_CONFIG.config.Slot1 = FLYWHEEL_VELOCITY_GAINS;
+        SHOOTER_LEADER_MOTOR_CONFIG.config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+        SHOOTER_LEADER_MOTOR_CONFIG.config.Voltage.PeakReverseVoltage = 0.0;
+        // MotionMagic tuned for ~3 second ramp to 300 rad/s (47.75 rot/s)
+        // Acceleration: 16 rot/s² (47.75 / 3)
+        // Jerk: 80 rot/s³ (5x acceleration for smooth motion)
+        SHOOTER_LEADER_MOTOR_CONFIG.config.MotionMagic.MotionMagicAcceleration = 16.0;
+        SHOOTER_LEADER_MOTOR_CONFIG.config.MotionMagic.MotionMagicJerk = 80.0;
+        // SHOOTER_LEADER_MOTOR_CONFIG.config.CurrentLimits.StatorCurrentLimit = 120.0;
+        // SHOOTER_LEADER_MOTOR_CONFIG.config.CurrentLimits.StatorCurrentLimitEnable = true;
+        // SHOOTER_LEADER_MOTOR_CONFIG.config.CurrentLimits.SupplyCurrentLimit = 70.0;
+        // SHOOTER_LEADER_MOTOR_CONFIG.config.CurrentLimits.SupplyCurrentLimitEnable = true;
 
         // Configure Shooter Follower 1 Motor
         SHOOTER_FOLLOWER_MOTOR_1_CONFIG.can_id = SHOOTER_FOLLOWER_1_ID;
@@ -163,6 +237,12 @@ public class ShooterConstants extends MwConstants {
         SHOOTER_FOLLOWER_MOTOR_1_CONFIG.config = new TalonFXConfiguration();
         SHOOTER_FOLLOWER_MOTOR_1_CONFIG.config.MotorOutput.Inverted =
                 PhoenixUtil.toInvertedValue(FLYWHEEL_FOLLOWER_1_INVERTED);
+        SHOOTER_FOLLOWER_MOTOR_1_CONFIG.config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+        SHOOTER_FOLLOWER_MOTOR_1_CONFIG.config.Voltage.PeakReverseVoltage = 0.0;
+        // SHOOTER_FOLLOWER_MOTOR_1_CONFIG.config.CurrentLimits.StatorCurrentLimit = 120.0;
+        // SHOOTER_FOLLOWER_MOTOR_1_CONFIG.config.CurrentLimits.StatorCurrentLimitEnable = true;
+        // SHOOTER_FOLLOWER_MOTOR_1_CONFIG.config.CurrentLimits.SupplyCurrentLimit = 70.0;
+        // SHOOTER_FOLLOWER_MOTOR_1_CONFIG.config.CurrentLimits.SupplyCurrentLimitEnable = true;
 
         // Configure Shooter Follower 2 Motor
         SHOOTER_FOLLOWER_MOTOR_2_CONFIG.can_id = SHOOTER_FOLLOWER_2_ID;
@@ -171,6 +251,12 @@ public class ShooterConstants extends MwConstants {
         SHOOTER_FOLLOWER_MOTOR_2_CONFIG.config = new TalonFXConfiguration();
         SHOOTER_FOLLOWER_MOTOR_2_CONFIG.config.MotorOutput.Inverted =
                 PhoenixUtil.toInvertedValue(FLYWHEEL_FOLLOWER_2_INVERTED);
+        SHOOTER_FOLLOWER_MOTOR_2_CONFIG.config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+        SHOOTER_FOLLOWER_MOTOR_2_CONFIG.config.Voltage.PeakReverseVoltage = 0.0;
+        // SHOOTER_FOLLOWER_MOTOR_2_CONFIG.config.CurrentLimits.StatorCurrentLimit = 120.0;
+        // SHOOTER_FOLLOWER_MOTOR_2_CONFIG.config.CurrentLimits.StatorCurrentLimitEnable = true;
+        // SHOOTER_FOLLOWER_MOTOR_2_CONFIG.config.CurrentLimits.SupplyCurrentLimit = 70.0;
+        // SHOOTER_FOLLOWER_MOTOR_2_CONFIG.config.CurrentLimits.SupplyCurrentLimitEnable = true;
 
         // Configure Shooter Follower 3 Motor
         SHOOTER_FOLLOWER_MOTOR_3_CONFIG.can_id = SHOOTER_FOLLOWER_3_ID;
@@ -179,6 +265,12 @@ public class ShooterConstants extends MwConstants {
         SHOOTER_FOLLOWER_MOTOR_3_CONFIG.config = new TalonFXConfiguration();
         SHOOTER_FOLLOWER_MOTOR_3_CONFIG.config.MotorOutput.Inverted =
                 PhoenixUtil.toInvertedValue(FLYWHEEL_FOLLOWER_3_INVERTED);
+        SHOOTER_FOLLOWER_MOTOR_3_CONFIG.config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+        SHOOTER_FOLLOWER_MOTOR_3_CONFIG.config.Voltage.PeakReverseVoltage = 0.0;
+        // SHOOTER_FOLLOWER_MOTOR_3_CONFIG.config.CurrentLimits.StatorCurrentLimit = 120.0;
+        // SHOOTER_FOLLOWER_MOTOR_3_CONFIG.config.CurrentLimits.StatorCurrentLimitEnable = true;
+        // SHOOTER_FOLLOWER_MOTOR_3_CONFIG.config.CurrentLimits.SupplyCurrentLimit = 70.0;
+        // SHOOTER_FOLLOWER_MOTOR_3_CONFIG.config.CurrentLimits.SupplyCurrentLimitEnable = true;
 
         // Configure Hood Motor
         HOOD_MOTOR_CONFIGS.can_id = HOOD_ID;
@@ -187,35 +279,7 @@ public class ShooterConstants extends MwConstants {
         HOOD_MOTOR_CONFIGS.config = new TalonFXConfiguration();
         HOOD_MOTOR_CONFIGS.config.MotorOutput.Inverted = PhoenixUtil.toInvertedValue(HOOD_INVERTED);
         HOOD_MOTOR_CONFIGS.config.Slot0 = HOOD_POSITION_GAINS;
-
-        // Configure Turret Motor
-        TURRET_MOTOR_CONFIGS.can_id = TURRET_ID;
-        TURRET_MOTOR_CONFIGS.motor_type = FxMotorType.X44;
-        TURRET_MOTOR_CONFIGS.canbus_name = "rio";
-        TURRET_MOTOR_CONFIGS.config = new TalonFXConfiguration();
-        TURRET_MOTOR_CONFIGS.config.Slot0 = TURRET_POSITION_GAINS;
-
-        // Solver Map Population
-        SOLVER.addVelocityPoint(0.0, 6.283);
-        SOLVER.addVelocityPoint(0.5, 6.382);
-        SOLVER.addVelocityPoint(1.0, 6.635);
-        SOLVER.addVelocityPoint(1.5, 6.977);
-        SOLVER.addVelocityPoint(2.0, 7.367);
-        SOLVER.addVelocityPoint(2.5, 7.764);
-        SOLVER.addVelocityPoint(3.0, 8.160);
-        SOLVER.addVelocityPoint(3.5, 8.544);
-        SOLVER.addVelocityPoint(4.0, 8.928);
-        SOLVER.addVelocityPoint(4.5, 9.288);
-        SOLVER.addVelocityPoint(5.0, 9.648);
-        SOLVER.addVelocityPoint(5.5, 9.996);
-        SOLVER.addVelocityPoint(6.0, 10.332);
-        SOLVER.addVelocityPoint(6.5, 10.656);
-        SOLVER.addVelocityPoint(7.0, 10.980);
-        SOLVER.addVelocityPoint(7.5, 11.292);
-        SOLVER.addVelocityPoint(8.0, 11.592);
-        SOLVER.addVelocityPoint(8.5, 11.892);
-        SOLVER.addVelocityPoint(9.0, 12.180);
-        SOLVER.addVelocityPoint(9.5, 12.456);
-        SOLVER.addVelocityPoint(10.0, 12.744);
+        HOOD_MOTOR_CONFIGS.config.CurrentLimits.SupplyCurrentLimit = 10;
+        HOOD_MOTOR_CONFIGS.config.CurrentLimits.SupplyCurrentLimitEnable = true;
     }
 }

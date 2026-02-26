@@ -5,16 +5,20 @@
 package frc.robot;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.subsystems.gamestates.GameStatesConstants.GameStates;
-import frc.robot.subsystems.gamestates.GameStatesSubsystem;
+import frc.robot.commands.AimAtTarget;
+import frc.robot.commands.IntakeFuel;
+import frc.robot.commands.RotateForBump;
+import frc.robot.commands.ShootFuel;
 import frc.robot.subsystems.intake.IntakeConstants.IntakeStates;
 import frc.robot.subsystems.intake.IntakeSubsystem;
+import frc.robot.subsystems.localization.LocalizationSubsystem;
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterStates;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
-import frc.robot.subsystems.swerve.SwerveConstants.SwerveStates;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 import java.util.Optional;
 
@@ -27,79 +31,96 @@ public abstract class OI {
     public static void configureBindings() {
         DriverStation.silenceJoystickConnectionWarning(true);
 
-        driver_controller_.rightStick().onTrue(SwerveSubsystem.getInstance().toggleFieldCentric());
-
+        // =============================================================================
+        // SMARTDASHBOARD COMMANDS
+        // =============================================================================
+        SmartDashboard.putData(
+                "Zero Gyro Yaw", SwerveSubsystem.getInstance().zeroGyroYaw().ignoringDisable(true));
+        SmartDashboard.putData(
+                "Set Start Pose",
+                Commands.runOnce(LocalizationSubsystem.getInstance()::resetPoseEstimatorAuto)
+                        .ignoringDisable(true));
+        SmartDashboard.putData(
+                "Zero Wheel Offsets",
+                SwerveSubsystem.getInstance().setModuleOffsets().ignoringDisable(true));
+        SmartDashboard.putData(
+                "Spin Down Flywheel",
+                Commands.runOnce(
+                        () ->
+                                ShooterSubsystem.getInstance()
+                                        .setWantedState(ShooterStates.SPIN_DOWN)));
+        // =============================================================================
+        // DRIVER CONTROLLER BINDINGS
+        // =============================================================================
         driver_controller_
-                .a()
-                .whileTrue(
-                        Commands.startEnd(
-                                () -> {
-                                    ShooterSubsystem.getInstance()
-                                            .setWantedState(ShooterStates.SHOOT);
-                                    SwerveSubsystem.getInstance()
-                                            .setWantedState(
-                                                    SwerveStates.FIELD_CENTRIC_ROTATION_LOCK);
-                                },
-                                () -> {
-                                    ShooterSubsystem.getInstance()
-                                            .setWantedState(ShooterStates.TRACKING);
-                                    SwerveSubsystem.getInstance()
-                                            .setWantedState(SwerveStates.FIELD_CENTRIC);
-                                    GameStatesSubsystem.getInstance()
-                                            .setWantedState(GameStates.HOLD);
-                                }));
+                .rightStick()
+                .onTrue(SwerveSubsystem.getInstance().toggleFieldCentric().ignoringDisable(true));
+        driver_controller_.rightTrigger().whileTrue(new ShootFuel());
+        driver_controller_.leftTrigger().whileTrue(new AimAtTarget());
+        driver_controller_.leftStick().whileTrue(new RotateForBump());
+        driver_controller_.rightBumper().whileTrue(new IntakeFuel());
+
+        // =============================================================================
+        // OPERATOR CONTROLLER BINDINGS
+        // =============================================================================
+
+        // =============================================================================
+        // TESTING BINDINGS (THESE SHOULD BE REMOVED BEFORE COMPETITION)
+        // =============================================================================
+
+        // Used for testing chassis velocity control, should be removed before competition
         driver_controller_
                 .b()
                 .whileTrue(
-                        Commands.startEnd(
-                                () ->
-                                        IntakeSubsystem.getInstance()
-                                                .setWantedState(IntakeStates.ROLLING),
-                                () ->
-                                        IntakeSubsystem.getInstance()
-                                                .setWantedState(IntakeStates.CLOSED)));
+                        SwerveSubsystem.getInstance()
+                                .chassisTuningCommand(new ChassisSpeeds(0, 1, 0)));
+
+        // Used for testing chassis velocity control, should be removed before competition
         driver_controller_
                 .x()
-                .onTrue(
-                        Commands.runOnce(
-                                () -> {
-                                    if (GameStatesSubsystem.getInstance().getAutoClimbReady()) {
-                                        GameStatesSubsystem.getInstance().setAutoClimbReady(false);
-                                    } else {
-                                        GameStatesSubsystem.getInstance().setAutoClimbReady(true);
-                                    }
-                                }));
+                .whileTrue(
+                        SwerveSubsystem.getInstance()
+                                .chassisTuningCommand(new ChassisSpeeds(1, 0, 0)));
     }
 
     /**
-     * @return driver controller left joystick x axis scaled quadratically
+     * @return driver controller left joystick x axis
      */
     public static double getDriverJoystickLeftX() {
         return driver_controller_.getLeftX();
     }
 
     /**
-     * @return driver controller left joystick y axis scaled quadratically
+     * @return driver controller left joystick y axis
      */
     public static double getDriverJoystickLeftY() {
         return driver_controller_.getLeftY();
     }
 
     /**
-     * @return driver controller right joystick x axis scaled quadratically
+     * @return driver controller right joystick x axis
      */
     public static double getDriverJoystickRightX() {
         return driver_controller_.getRightX();
     }
 
+    /**
+     * @return operator controller right joystick x axis
+     */
     public static double getOperatorJoystickRightX() {
         return operator_controller_.getRightX();
     }
 
+    /**
+     * @return operator controller right joystick y axis
+     */
     public static double getOperatorJoystickRightY() {
         return operator_controller_.getRightY();
     }
 
+    /**
+     * @return operator controller left joystick y axis
+     */
     public static double getOperatorJoystickLeftY() {
         return operator_controller_.getLeftY();
     }
@@ -109,6 +130,14 @@ public abstract class OI {
      */
     public static Optional<Rotation2d> getDriverJoystickPOV() {
         int pov = driver_controller_.getHID().getPOV();
+        return (pov != -1) ? Optional.of(Rotation2d.fromDegrees(pov)) : Optional.empty();
+    }
+
+    /**
+     * @return operator controller joystick pov angle in degrees, empty if nothing is pressed
+     */
+    public static Optional<Rotation2d> getOperatorJoystickPOV() {
+        int pov = operator_controller_.getHID().getPOV();
         return (pov != -1) ? Optional.of(Rotation2d.fromDegrees(pov)) : Optional.empty();
     }
 }

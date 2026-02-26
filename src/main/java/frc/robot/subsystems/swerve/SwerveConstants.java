@@ -25,6 +25,11 @@ public class SwerveConstants extends MwConstants {
         FIELD_CENTRIC_ROTATION_LOCK,
         TRACTOR_BEAM,
         CHASSIS_SPEED_ROTATION_LOCK,
+        CRAWL,
+        CRAWL_ROTATION_LOCK,
+        CRAWL_FIELD_CENTRIC,
+        CRAWL_FIELD_CENTRIC_ROTATION_LOCK,
+        TUNING,
         IDLE
     }
 
@@ -44,8 +49,8 @@ public class SwerveConstants extends MwConstants {
     // =============================================================================
 
     public final int PIGEON2_ID = 0;
-    public final String PIGEON2_CANBUS_NAME = "rio";
-    public final String MODULE_CANBUS_NAME = "rio";
+    public final String PIGEON2_CANBUS_NAME = "CANivore";
+    public final String MODULE_CANBUS_NAME = "CANivore";
 
     // =============================================================================
     // PHYSICAL ROBOT CONSTANTS
@@ -80,6 +85,7 @@ public class SwerveConstants extends MwConstants {
 
     public final double CONTROLLER_DEADBAND = 0.05;
     public final double MAX_TRANSLATION_RATE = getDoubleConstant("com", "max_translation_rate");
+    public final double MAX_CRAWL_RATE = 0.5; // Meters per second, max speed during crawl mode
     public final double MAX_ANGULAR_RATE = getDoubleConstant("com", "max_angular_rate");
     public final PhoenixPIDController HEADING_CONTROLLER = new PhoenixPIDController(7.3, 0.0, 0.07);
 
@@ -88,13 +94,13 @@ public class SwerveConstants extends MwConstants {
     // =============================================================================
 
     public boolean FLIP_TRAJECTORY_ON_RED = false;
-    public final double CHOREO_TRANSLATION_ERROR_MARGIN = Units.inchesToMeters(1.0);
-    public final double CHOREO_TRANSLATION_CONTROLLER_KP = 0.0;
+    public final double CHOREO_TRANSLATION_ERROR_MARGIN = Units.inchesToMeters(3.0);
+    public final double CHOREO_TRANSLATION_CONTROLLER_KP = 1.0;
     public final double CHOREO_TRANSLATION_CONTROLLER_KI = 0.0;
     public final double CHOREO_TRANSLATION_CONTROLLER_KD = 0.0;
-    public final double CHOREO_THETA_CONTROLLER_KP = 0.0;
+    public final double CHOREO_THETA_CONTROLLER_KP = 7.3;
     public final double CHOREO_THETA_CONTROLLER_KI = 0.0;
-    public final double CHOREO_THETA_CONTROLLER_KD = 0.0;
+    public final double CHOREO_THETA_CONTROLLER_KD = 0.07;
 
     // =============================================================================
     // TRACTOR BEAM CONSTANTS
@@ -153,8 +159,6 @@ public class SwerveConstants extends MwConstants {
         FL_DRIVE_MOTOR_CONFIG.can_id = getIntConstant("fl", "drive_id");
         FL_DRIVE_MOTOR_CONFIG.config.MotorOutput.Inverted =
                 PhoenixUtil.toInvertedValue(getBoolConstant("fl", "invert_drive"));
-        FL_DRIVE_MOTOR_CONFIG.config.Feedback.SensorToMechanismRatio =
-                FL_MODULE_CONFIG.module_type.driveRatio;
         FL_MODULE_CONFIG.drive_motor_config = FL_DRIVE_MOTOR_CONFIG;
 
         // FL Steer Motor Configuration
@@ -180,8 +184,6 @@ public class SwerveConstants extends MwConstants {
         FR_DRIVE_MOTOR_CONFIG.can_id = getIntConstant("fr", "drive_id");
         FR_DRIVE_MOTOR_CONFIG.config.MotorOutput.Inverted =
                 PhoenixUtil.toInvertedValue(getBoolConstant("fr", "invert_drive"));
-        FR_DRIVE_MOTOR_CONFIG.config.Feedback.SensorToMechanismRatio =
-                FR_MODULE_CONFIG.module_type.driveRatio;
         FR_MODULE_CONFIG.drive_motor_config = FR_DRIVE_MOTOR_CONFIG;
 
         // FR Steer Motor Configuration
@@ -207,8 +209,6 @@ public class SwerveConstants extends MwConstants {
         BL_DRIVE_MOTOR_CONFIG.can_id = getIntConstant("bl", "drive_id");
         BL_DRIVE_MOTOR_CONFIG.config.MotorOutput.Inverted =
                 PhoenixUtil.toInvertedValue(getBoolConstant("bl", "invert_drive"));
-        BL_DRIVE_MOTOR_CONFIG.config.Feedback.SensorToMechanismRatio =
-                BL_MODULE_CONFIG.module_type.driveRatio;
         BL_MODULE_CONFIG.drive_motor_config = BL_DRIVE_MOTOR_CONFIG;
 
         // BL Steer Motor Configuration
@@ -234,8 +234,6 @@ public class SwerveConstants extends MwConstants {
         BR_DRIVE_MOTOR_CONFIG.can_id = getIntConstant("br", "drive_id");
         BR_DRIVE_MOTOR_CONFIG.config.MotorOutput.Inverted =
                 PhoenixUtil.toInvertedValue(getBoolConstant("br", "invert_drive"));
-        BR_DRIVE_MOTOR_CONFIG.config.Feedback.SensorToMechanismRatio =
-                BR_MODULE_CONFIG.module_type.driveRatio;
         BR_MODULE_CONFIG.drive_motor_config = BR_DRIVE_MOTOR_CONFIG;
 
         // BR Steer Motor Configuration
