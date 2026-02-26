@@ -353,7 +353,8 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
         if (launch_params_ == null || !launch_params_.is_valid) {
             return 0.0;
         } else {
-            return launch_params_.flywheel_speed * CONSTANTS.FLYWHEEL_WHEEL_RADIUS_METERS;
+            // angular speed * radius * eff_factor
+            return launch_params_.flywheel_speed * CONSTANTS.FLYWHEEL_WHEEL_RADIUS_METERS * 0.5;
         }
     }
 
