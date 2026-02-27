@@ -88,19 +88,18 @@ public class IntakeSubsystem extends MwSubsystem<IntakeStates, IntakeConstants> 
             system_state_ = IntakeStates.SHOOTING;
         } else if (wantedState == IntakeStates.SHOOTING
                 && system_state_ == IntakeStates.SHOOTING
-                && intake_timer_.hasElapsed(0.5)) {
+                && intake_timer_.hasElapsed(CONSTANTS.SHOOTING_CYCLE_TIME)) {
             intake_timer_.reset();
-            intake_timer_.start();
             system_state_ = IntakeStates.RACKING;
         } else if (wantedState == IntakeStates.SHOOTING
                 && system_state_ == IntakeStates.RACKING
-                && intake_timer_.hasElapsed(0.5)) {
+                && intake_timer_.hasElapsed(CONSTANTS.SHOOTING_CYCLE_TIME)) {
             intake_timer_.reset();
-            intake_timer_.start();
             system_state_ = IntakeStates.SHOOTING;
-        } else if (wantedState == IntakeStates.SHOOTING && !intake_timer_.hasElapsed(0.5)) {
-            // do nothing
+        } else if (wantedState == IntakeStates.SHOOTING && !intake_timer_.hasElapsed(CONSTANTS.SHOOTING_CYCLE_TIME)) {
+            // do nothing while time is elapsing
         } else {
+            if (intake_timer_.isRunning()) intake_timer_.stop();
             system_state_ = wantedState;
         }
     }
@@ -133,7 +132,7 @@ public class IntakeSubsystem extends MwSubsystem<IntakeStates, IntakeConstants> 
             case RACKING:
                 roller_.setTargetDutyCycle(0.0);
                 pivot_.setTargetPosition(CONSTANTS.PIVOT_RACKING_POSITION);
-
+                break;
             case TUNING:
                 // No default behavior for tuning mode
                 break;
