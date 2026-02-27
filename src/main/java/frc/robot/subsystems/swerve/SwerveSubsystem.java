@@ -1031,6 +1031,15 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
         return Commands.runOnce(() -> swerve_mech_.setGyroYaw(operator_forward_direction_));
     }
 
+    /**
+     * Sets the gyro yaw to a specific heading. This is useful for setting the gyro to a known heading
+     * during autonomous or if the gyro drifts significantly during a match.
+     * @param yaw the desired heading to set the gyro to
+     */
+    public void setGyroYaw(Rotation2d yaw) {
+        swerve_mech_.setGyroYaw(yaw);
+    }
+
     /** Returns the module states (turn angles and drive velocities) for all of the modules. */
     public SwerveModuleState[] getModuleStates() {
         return swerve_mech_.getModuleStates();
