@@ -15,65 +15,78 @@ import frc.robot.subsystems.swerve.SwerveConstants.SwerveStates;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 
 public class TeleOpCommands {
-    
+
     /**
      * This command aims the robot at the target with no intent to shoot, used for lining up shots
      * or for teleop control while aiming.
-     * 
+     *
      * <p>On Initialize:
+     *
      * <ul>
      *   <li>Shooter: AIMING
      *   <li>Swerve: FIELD_CENTRIC_ROTATION_LOCK
      *   <li>Localization: SHOOTING_FOCUS
      * </ul>
-     * 
+     *
      * <p>On End:
+     *
      * <ul>
      *   <li>Shooter: TRACKING
      *   <li>Swerve: FIELD_CENTRIC
      *   <li>Localization: FULL
      * </ul>
      */
-    static Command aimAtTargetCommand(){
-        return Commands.startEnd(() -> {
-            ShooterSubsystem.getInstance().setWantedState(ShooterStates.AIMING);
-            SwerveSubsystem.getInstance().setWantedState(SwerveStates.FIELD_CENTRIC_ROTATION_LOCK);
-            LocalizationSubsystem.getInstance().setWantedState(LocalizationStates.SHOOTING_FOCUS);
-        }, () -> {
-            ShooterSubsystem.getInstance().setWantedState(ShooterStates.TRACKING);
-            SwerveSubsystem.getInstance().setWantedState(SwerveStates.FIELD_CENTRIC);
-            LocalizationSubsystem.getInstance().setWantedState(LocalizationStates.FULL);
-        });
+    static Command aimAtTargetCommand() {
+        return Commands.startEnd(
+                () -> {
+                    ShooterSubsystem.getInstance().setWantedState(ShooterStates.AIMING);
+                    SwerveSubsystem.getInstance()
+                            .setWantedState(SwerveStates.FIELD_CENTRIC_ROTATION_LOCK);
+                    LocalizationSubsystem.getInstance()
+                            .setWantedState(LocalizationStates.SHOOTING_FOCUS);
+                },
+                () -> {
+                    ShooterSubsystem.getInstance().setWantedState(ShooterStates.TRACKING);
+                    SwerveSubsystem.getInstance().setWantedState(SwerveStates.FIELD_CENTRIC);
+                    LocalizationSubsystem.getInstance().setWantedState(LocalizationStates.FULL);
+                });
     }
 
     /**
      * This command snaps robot to nearest bump crossing angle while held, returns to normal field
      * centric when released.
-     * 
+     *
      * <p>On Initialize:
+     *
      * <ul>
      *   <li>Swerve: Sets desired rotation lock to nearest snap angle
      *   <li>Swerve: FIELD_CENTRIC_ROTATION_LOCK
      * </ul>
-     * 
+     *
      * <p>On End:
+     *
      * <ul>
      *   <li>Swerve: FIELD_CENTRIC
      * </ul>
      */
-    static Command rotateForBumpCommand(){
-        return Commands.startEnd(() -> {
-            SwerveSubsystem.getInstance().setDesiredRotationLock(FieldTargets.getNearestSnapAngle());
-            SwerveSubsystem.getInstance().setWantedState(SwerveStates.FIELD_CENTRIC_ROTATION_LOCK);
-        }, () -> {
-            SwerveSubsystem.getInstance().setWantedState(SwerveStates.FIELD_CENTRIC);
-        });
+    static Command rotateForBumpCommand() {
+        return Commands.startEnd(
+                () -> {
+                    SwerveSubsystem.getInstance()
+                            .setDesiredRotationLock(FieldTargets.getNearestSnapAngle());
+                    SwerveSubsystem.getInstance()
+                            .setWantedState(SwerveStates.FIELD_CENTRIC_ROTATION_LOCK);
+                },
+                () -> {
+                    SwerveSubsystem.getInstance().setWantedState(SwerveStates.FIELD_CENTRIC);
+                });
     }
 
     /**
      * This command shoots fuel at the target, used for teleop control while shooting.
-     * 
+     *
      * <p>On Initialize:
+     *
      * <ul>
      *   <li>Shooter: SHOOT
      *   <li>Hopper: SHOOTING
@@ -81,8 +94,9 @@ public class TeleOpCommands {
      *   <li>Swerve: FIELD_CENTRIC_ROTATION_LOCK
      *   <li>Localization: SHOOTING_FOCUS
      * </ul>
-     * 
+     *
      * <p>On End:
+     *
      * <ul>
      *   <li>Shooter: TRACKING
      *   <li>Hopper: IDLE
@@ -91,45 +105,52 @@ public class TeleOpCommands {
      *   <li>Localization: FULL
      * </ul>
      */
-    static Command shootFuelCommand(){
-        return Commands.startEnd(() -> {
-            ShooterSubsystem.getInstance().setWantedState(ShooterStates.SHOOT);
-            HopperSubsystem.getInstance().setWantedState(HopperStates.SHOOTING);
-            SwerveSubsystem.getInstance().setTeleOpVelocityScalar(0.25);
-            SwerveSubsystem.getInstance().setWantedState(SwerveStates.FIELD_CENTRIC_ROTATION_LOCK);
-            LocalizationSubsystem.getInstance().setWantedState(LocalizationStates.SHOOTING_FOCUS);
-        }, () -> {
-            ShooterSubsystem.getInstance().setWantedState(ShooterStates.TRACKING);
-            HopperSubsystem.getInstance().setWantedState(HopperStates.IDLE);
-            SwerveSubsystem.getInstance().setTeleOpVelocityScalar(1.0);
-            SwerveSubsystem.getInstance().setWantedState(SwerveStates.FIELD_CENTRIC);
-            LocalizationSubsystem.getInstance().setWantedState(LocalizationStates.FULL);
-        });
+    static Command shootFuelCommand() {
+        return Commands.startEnd(
+                () -> {
+                    ShooterSubsystem.getInstance().setWantedState(ShooterStates.SHOOT);
+                    HopperSubsystem.getInstance().setWantedState(HopperStates.SHOOTING);
+                    SwerveSubsystem.getInstance().setTeleOpVelocityScalar(0.25);
+                    SwerveSubsystem.getInstance()
+                            .setWantedState(SwerveStates.FIELD_CENTRIC_ROTATION_LOCK);
+                    LocalizationSubsystem.getInstance()
+                            .setWantedState(LocalizationStates.SHOOTING_FOCUS);
+                },
+                () -> {
+                    ShooterSubsystem.getInstance().setWantedState(ShooterStates.TRACKING);
+                    HopperSubsystem.getInstance().setWantedState(HopperStates.IDLE);
+                    SwerveSubsystem.getInstance().setTeleOpVelocityScalar(1.0);
+                    SwerveSubsystem.getInstance().setWantedState(SwerveStates.FIELD_CENTRIC);
+                    LocalizationSubsystem.getInstance().setWantedState(LocalizationStates.FULL);
+                });
     }
 
     /**
      * This command intakes fuel and agitates the hopper, used for teleop control while intaking.
-     * 
+     *
      * <p>On Initialize:
+     *
      * <ul>
      *   <li>Intake: INTAKE
      *   <li>Hopper: INTAKE
      * </ul>
-     * 
+     *
      * <p>On End:
+     *
      * <ul>
      *   <li>Intake: IDLE
      *   <li>Hopper: IDLE
      * </ul>
      */
-    static Command intakeFuelCommand(){
-        return Commands.startEnd(() -> {
-            IntakeSubsystem.getInstance().setWantedState(IntakeStates.INTAKE);
-            HopperSubsystem.getInstance().setWantedState(HopperStates.INTAKE);
-        }, () -> {
-            IntakeSubsystem.getInstance().setWantedState(IntakeStates.IDLE);
-            HopperSubsystem.getInstance().setWantedState(HopperStates.IDLE);
-        });
+    static Command intakeFuelCommand() {
+        return Commands.startEnd(
+                () -> {
+                    IntakeSubsystem.getInstance().setWantedState(IntakeStates.INTAKE);
+                    HopperSubsystem.getInstance().setWantedState(HopperStates.INTAKE);
+                },
+                () -> {
+                    IntakeSubsystem.getInstance().setWantedState(IntakeStates.IDLE);
+                    HopperSubsystem.getInstance().setWantedState(HopperStates.IDLE);
+                });
     }
-
 }

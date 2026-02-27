@@ -96,7 +96,8 @@ public class IntakeSubsystem extends MwSubsystem<IntakeStates, IntakeConstants> 
                 && intake_timer_.hasElapsed(CONSTANTS.SHOOTING_CYCLE_TIME)) {
             intake_timer_.reset();
             system_state_ = IntakeStates.SHOOTING;
-        } else if (wantedState == IntakeStates.SHOOTING && !intake_timer_.hasElapsed(CONSTANTS.SHOOTING_CYCLE_TIME)) {
+        } else if (wantedState == IntakeStates.SHOOTING
+                && !intake_timer_.hasElapsed(CONSTANTS.SHOOTING_CYCLE_TIME)) {
             // do nothing while time is elapsing
         } else {
             if (intake_timer_.isRunning()) intake_timer_.stop();
