@@ -10,12 +10,6 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.commands.AimAtTarget;
-import frc.robot.commands.IntakeFuel;
-import frc.robot.commands.RotateForBump;
-import frc.robot.commands.ShootFuel;
-import frc.robot.subsystems.intake.IntakeConstants.IntakeStates;
-import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.localization.LocalizationSubsystem;
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterStates;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
@@ -55,10 +49,10 @@ public abstract class OI {
         driver_controller_
                 .rightStick()
                 .onTrue(SwerveSubsystem.getInstance().toggleFieldCentric().ignoringDisable(true));
-        driver_controller_.rightTrigger().whileTrue(new ShootFuel());
-        driver_controller_.leftTrigger().whileTrue(new AimAtTarget());
-        driver_controller_.leftStick().whileTrue(new RotateForBump());
-        driver_controller_.rightBumper().whileTrue(new IntakeFuel());
+        driver_controller_.rightTrigger().whileTrue(TeleOpCommands.shootFuelCommand());
+        driver_controller_.leftTrigger().whileTrue(TeleOpCommands.aimAtTargetCommand());
+        driver_controller_.leftStick().whileTrue(TeleOpCommands.rotateForBumpCommand());
+        driver_controller_.rightBumper().whileTrue(TeleOpCommands.intakeFuelCommand());
 
         // =============================================================================
         // OPERATOR CONTROLLER BINDINGS
@@ -81,16 +75,6 @@ public abstract class OI {
                 .whileTrue(
                         SwerveSubsystem.getInstance()
                                 .chassisTuningCommand(new ChassisSpeeds(1, 0, 0)));
-        driver_controller_
-                .a()
-                .whileTrue(
-                        Commands.startEnd(
-                                () ->
-                                        IntakeSubsystem.getInstance()
-                                                .setWantedState(IntakeStates.SHOOTING),
-                                () ->
-                                        IntakeSubsystem.getInstance()
-                                                .setWantedState(IntakeStates.STORE)));
     }
 
     /**
