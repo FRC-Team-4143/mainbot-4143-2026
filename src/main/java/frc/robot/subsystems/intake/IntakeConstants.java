@@ -30,10 +30,10 @@ public class IntakeConstants extends MwConstants {
         IDLE,
         /** Manual tuning mode for testing and calibration */
         TUNING,
+        /** Position for shooting game pieces */
         SHOOTING,
-        RACKING,
-        /** Manual control mode with fixed setpoints */
-        MANUAL;
+        /** Position for racking game pieces */
+        RACKING
     }
 
     // =============================================================================
