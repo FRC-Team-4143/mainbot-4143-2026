@@ -17,7 +17,7 @@ public class IntakeSubsystem extends MwSubsystem<IntakeStates, IntakeConstants> 
 
     private RollerMech roller_;
     private ArmMech pivot_;
-    private final Timer intake_timer_ = new Timer();  
+    private final Timer intake_timer_ = new Timer();
 
     // getInstance
     public static IntakeSubsystem getInstance() {
@@ -80,25 +80,29 @@ public class IntakeSubsystem extends MwSubsystem<IntakeStates, IntakeConstants> 
                         pivot_.getCurrentPosition(),
                         CONSTANTS.PIVOT_TOLERANCE)) {
             system_state_ = IntakeStates.DEPLOYED;
-        }
-        else if(wantedState == IntakeStates.SHOOTING && (system_state_ != IntakeStates.SHOOTING && system_state_ != IntakeStates.RACKING)){
+        } else if (wantedState == IntakeStates.SHOOTING
+                && (system_state_ != IntakeStates.SHOOTING
+                        && system_state_ != IntakeStates.RACKING)) {
             intake_timer_.reset();
             intake_timer_.start();
             system_state_ = IntakeStates.SHOOTING;
-        } else if (wantedState == IntakeStates.SHOOTING && system_state_ == IntakeStates.SHOOTING && intake_timer_.hasElapsed(0.5)){
+        } else if (wantedState == IntakeStates.SHOOTING
+                && system_state_ == IntakeStates.SHOOTING
+                && intake_timer_.hasElapsed(0.5)) {
             intake_timer_.reset();
             intake_timer_.start();
             system_state_ = IntakeStates.RACKING;
-        } else if (wantedState == IntakeStates.SHOOTING && system_state_ == IntakeStates.RACKING && intake_timer_.hasElapsed(0.5)){
+        } else if (wantedState == IntakeStates.SHOOTING
+                && system_state_ == IntakeStates.RACKING
+                && intake_timer_.hasElapsed(0.5)) {
             intake_timer_.reset();
             intake_timer_.start();
             system_state_ = IntakeStates.SHOOTING;
-        } else if (wantedState == IntakeStates.SHOOTING && !intake_timer_.hasElapsed(0.5)){
-            //do nothing
+        } else if (wantedState == IntakeStates.SHOOTING && !intake_timer_.hasElapsed(0.5)) {
+            // do nothing
         } else {
             system_state_ = wantedState;
         }
-        
     }
 
     // updateLogic

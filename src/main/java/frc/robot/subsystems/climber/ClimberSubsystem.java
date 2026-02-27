@@ -30,18 +30,18 @@ public class ClimberSubsystem extends MwSubsystem<ClimberStates, ClimberConstant
                 new RollerMech(
                         getSubsystemKey(),
                         "Extender",
-                        List.of(CONSTANTS.EXTENDER_MOTOR_CONFIG),
-                        CONSTANTS.EXTENDER_GEAR_RATIO);
+                        List.of(CONSTANTS.DEPLOY_MOTOR_CONFIG),
+                        CONSTANTS.DEPLOY_GEAR_RATIO);
         flip_joint_ =
                 new ArmMech(
                         getSubsystemKey(),
                         "Arm",
-                        List.of(CONSTANTS.ARM_MOTOR_CONFIG),
-                        CONSTANTS.ARM_GEAR_RATIO,
-                        CONSTANTS.ARM_LENGTH,
-                        CONSTANTS.ARM_MASS,
-                        CONSTANTS.ARM_MAX_ANGLE,
-                        CONSTANTS.ARM_MIN_ANGLE);
+                        List.of(CONSTANTS.FLIP_MOTOR_CONFIG),
+                        CONSTANTS.FLIP_GEAR_RATIO,
+                        CONSTANTS.FLIP_LENGTH,
+                        CONSTANTS.FLIP_MASS,
+                        CONSTANTS.FLIP_MAX_ANGLE,
+                        CONSTANTS.FLIP_MIN_ANGLE);
     }
 
     // reset
@@ -90,23 +90,23 @@ public class ClimberSubsystem extends MwSubsystem<ClimberStates, ClimberConstant
     public void updateLogic(double timestamp) {
         switch (system_state_) {
             case STOWED:
-                deploy_joint_.setTargetPosition(CONSTANTS.EXTENDER_STOWED_ANGLE);
-                flip_joint_.setTargetPosition(CONSTANTS.ARM_L0_POSITION);
+                deploy_joint_.setTargetPosition(CONSTANTS.DEPLOY_STOWED_ANGLE);
+                flip_joint_.setTargetPosition(CONSTANTS.FLIP_L0_POSITION);
                 break;
             case DEPLOY:
-                deploy_joint_.setTargetPosition(CONSTANTS.EXTENDER_DEPLOYED_ANGLE);
+                deploy_joint_.setTargetPosition(CONSTANTS.DEPLOY_DEPLOYED_ANGLE);
                 break;
             case L1_CLIMB:
-                flip_joint_.setTargetPosition(CONSTANTS.ARM_L1_CLIMB);
-                deploy_joint_.setTargetPosition(CONSTANTS.EXTENDER_DEPLOYED_ANGLE);
+                flip_joint_.setTargetPosition(CONSTANTS.FLIP_L1_CLIMB);
+                deploy_joint_.setTargetPosition(CONSTANTS.DEPLOY_DEPLOYED_ANGLE);
                 break;
             case L1_DOWN:
-                flip_joint_.setTargetPosition(CONSTANTS.ARM_L0_POSITION);
-                deploy_joint_.setTargetPosition(CONSTANTS.EXTENDER_DEPLOYED_ANGLE);
+                flip_joint_.setTargetPosition(CONSTANTS.FLIP_L0_POSITION);
+                deploy_joint_.setTargetPosition(CONSTANTS.DEPLOY_DEPLOYED_ANGLE);
                 break;
             case L3_CLIMB:
-                flip_joint_.setTargetPosition(CONSTANTS.ARM_L3_CLIMB);
-                deploy_joint_.setTargetPosition(CONSTANTS.EXTENDER_DEPLOYED_ANGLE);
+                flip_joint_.setTargetPosition(CONSTANTS.FLIP_L3_CLIMB);
+                deploy_joint_.setTargetPosition(CONSTANTS.DEPLOY_DEPLOYED_ANGLE);
                 break;
         }
     }
@@ -117,8 +117,8 @@ public class ClimberSubsystem extends MwSubsystem<ClimberStates, ClimberConstant
 
     private boolean isDeployed() {
         return (MathUtil.isNear(
-                CONSTANTS.EXTENDER_DEPLOYED_ANGLE,
+                CONSTANTS.DEPLOY_DEPLOYED_ANGLE,
                 deploy_joint_.getCurrentPosition(),
-                CONSTANTS.EXTENDER_TOLERANCE_ANGLE));
+                CONSTANTS.DEPLOY_TOLERANCE_ANGLE));
     }
 }

@@ -43,7 +43,8 @@ public class FuelSim {
     // Drag coefficient of smooth sphere:
     // https://en.wikipedia.org/wiki/Drag_coefficient#/media/File:14ilf1l.svg
     protected static final double DRAG_COF = 0.47; // dimensionless
-    protected static final double DRAG_FORCE_FACTOR = 0.5 * AIR_DENSITY * DRAG_COF * FUEL_CROSS_AREA;
+    protected static final double DRAG_FORCE_FACTOR =
+            0.5 * AIR_DENSITY * DRAG_COF * FUEL_CROSS_AREA;
 
     protected static FuelSim instance = null;
 
@@ -349,9 +350,7 @@ public class FuelSim {
     protected double bumperHeight;
     protected ArrayList<SimIntake> intakes = new ArrayList<>();
 
-    /**
-     * Creates a new instance of FuelSim
-     */
+    /** Creates a new instance of FuelSim */
     public FuelSim() {
         // Initialize grid
         for (int i = 0; i < GRID_COLS; i++) {
