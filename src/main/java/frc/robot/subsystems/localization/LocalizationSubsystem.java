@@ -21,15 +21,13 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.localization.LocalizationConstants.LocalizationStates;
 import frc.robot.subsystems.simulation.SimulationSubsystem;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
-
-import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -113,8 +111,10 @@ public class LocalizationSubsystem extends MwSubsystem<LocalizationStates, Local
         List<TagSolutionData> vision_measurements =
                 ProxyServerThread.getInstance().getLatestTagSolutions();
 
-        if(RobotState.isDisabled() && ProxyServerThread.getInstance().hasClientConnection()){
-            SwerveSubsystem.getInstance().setGyroYaw(field_pose_estimator_.getEstimatedPosition().getRotation());
+        // If the robot is disabled and there is a client connection, update the gyro yaw
+        if (RobotState.isDisabled() && ProxyServerThread.getInstance().hasClientConnection()) {
+            SwerveSubsystem.getInstance()
+                    .setGyroYaw(field_pose_estimator_.getEstimatedPosition().getRotation());
         }
         switch (system_state_) {
             case SHOOTING_FOCUS: // This state uses the same swerve measurements but different

@@ -1031,8 +1031,8 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
         return Commands.runOnce(() -> swerve_mech_.setGyroYaw(operator_forward_direction_));
     }
 
-    public void setGyroYaw(Rotation2d newYaw){
-        swerve_mech_.setGyroYaw(newYaw);
+    public void setGyroYaw(Rotation2d yaw) {
+        swerve_mech_.setGyroYaw(yaw);
     }
 
     /** Returns the module states (turn angles and drive velocities) for all of the modules. */

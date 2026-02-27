@@ -50,7 +50,8 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
     private Translation3d target_ = new Translation3d(0.0, 0.0, 0.0);
     private LaunchCalculator launch_calculator_ = CONSTANTS.HUB_LAUNCH_CALCULATOR;
     private LaunchCalculator.LaunchParameters launch_params_ = null;
-    private final Debouncer shooter_ready_debouncer = new Debouncer(CONSTANTS.SHOOTER_READY_DEBOUNCE_TIME, DebounceType.kRising);
+    private final Debouncer shooter_ready_debouncer =
+            new Debouncer(CONSTANTS.SHOOTER_READY_DEBOUNCE_TIME, DebounceType.kRising);
 
     // Adjustable shooting tolerances - initialized to strict defaults
     private double flywheel_vel_tol_ = FieldTargets.Shooter.FLYWHEEL_SPEED_TOLERANCE;
@@ -279,7 +280,9 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
                 RadiansPerSecond);
         DogLog.log(getSubsystemKey() + "LaunchCalculator/Target", target_);
         DogLog.log(
-                getSubsystemKey() + "LaunchCalculator/Distance/Lookahead", launch_params_.distance, Meters);
+                getSubsystemKey() + "LaunchCalculator/Distance/Lookahead",
+                launch_params_.distance,
+                Meters);
         DogLog.log(
                 getSubsystemKey() + "LaunchCalculator/Distance/Raw",
                 launch_params_.distance_no_lookahead,
@@ -325,7 +328,8 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
         if (launch_params_ == null || !launch_params_.is_valid) {
             return false;
         }
-        return shooter_ready_debouncer.calculate(isFlywheelAtSpeed() && isHoodAtPosition() && isRotationAtPosition());
+        return shooter_ready_debouncer.calculate(
+                isFlywheelAtSpeed() && isHoodAtPosition() && isRotationAtPosition());
     }
 
     /**
@@ -381,7 +385,7 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
 
         // Automatically switch LaunchCalculator based on target selection to use appropriate set of
         // empirically determined parameters for hub shots vs passes
-        if(target.equals(FieldTargets.Shooter.HUB)) {
+        if (target.equals(FieldTargets.Shooter.HUB)) {
             launch_calculator_ = CONSTANTS.HUB_LAUNCH_CALCULATOR;
         } else {
             launch_calculator_ = CONSTANTS.PASS_LAUNCH_CALCULATOR;
