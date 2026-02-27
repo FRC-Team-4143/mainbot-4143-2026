@@ -14,6 +14,8 @@ import frc.robot.commands.AimAtTarget;
 import frc.robot.commands.IntakeFuel;
 import frc.robot.commands.RotateForBump;
 import frc.robot.commands.ShootFuel;
+import frc.robot.subsystems.intake.IntakeSubsystem;
+import frc.robot.subsystems.intake.IntakeConstants.IntakeStates;
 import frc.robot.subsystems.localization.LocalizationSubsystem;
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterStates;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
@@ -79,6 +81,11 @@ public abstract class OI {
                 .whileTrue(
                         SwerveSubsystem.getInstance()
                                 .chassisTuningCommand(new ChassisSpeeds(1, 0, 0)));
+        driver_controller_
+                .a().whileTrue(Commands.startEnd(() -> IntakeSubsystem.getInstance().setWantedState(IntakeStates.SHOOTING),
+                                               () -> IntakeSubsystem.getInstance().setWantedState(IntakeStates.STORE)));
+                
+                        
     }
 
     /**

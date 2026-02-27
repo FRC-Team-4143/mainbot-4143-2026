@@ -3,7 +3,11 @@ package frc.robot.subsystems.climber;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.marswars.subsystem.MwConstants;
 import com.marswars.util.FxMotorConfig;
+import com.marswars.util.NovaMotorConfig;
 import com.marswars.util.FxMotorConfig.FxMotorType;
+import com.marswars.util.NovaMotorConfig.NovaMotorType;
+import com.thethriftybot.devices.ThriftyNova.ThriftyNovaConfig;
+
 import edu.wpi.first.math.util.Units;
 
 // IMPORTANT
@@ -65,8 +69,8 @@ public class ClimberConstants extends MwConstants {
     // MOTOR CONFIGURATION OBJECTS
     // =============================================================================
 
-    public final FxMotorConfig EXTENDER_MOTOR_CONFIG = new FxMotorConfig();
-    public final FxMotorConfig ARM_MOTOR_CONFIG = new FxMotorConfig();
+    public final NovaMotorConfig EXTENDER_MOTOR_CONFIG = new NovaMotorConfig();
+    public final NovaMotorConfig ARM_MOTOR_CONFIG = new NovaMotorConfig();
 
     // =============================================================================
     // CONSTRUCTOR - MOTOR CONFIGURATION INITIALIZATION
@@ -75,14 +79,14 @@ public class ClimberConstants extends MwConstants {
     public ClimberConstants() {
         // Configure Extender Motor
         EXTENDER_MOTOR_CONFIG.can_id = EXTENDERMOTER_ID;
-        EXTENDER_MOTOR_CONFIG.motor_type = FxMotorType.FALCON500; // Place Holder
+        EXTENDER_MOTOR_CONFIG.motor_type = NovaMotorType.NEO_550; // Place Holder
         EXTENDER_MOTOR_CONFIG.canbus_name = "CANivore"; // Place Holder
-        EXTENDER_MOTOR_CONFIG.config = new TalonFXConfiguration(); // Place Holder
+        EXTENDER_MOTOR_CONFIG.config = new ThriftyNovaConfig(); // Place Holder
 
         // Configure Arm Motor
         ARM_MOTOR_CONFIG.can_id = ARM_MOTER_ID; // Place Holder
-        ARM_MOTOR_CONFIG.motor_type = FxMotorType.X60; // Place Holder
+        ARM_MOTOR_CONFIG.motor_type = NovaMotorType.VORTEX; // Place Holder
         ARM_MOTOR_CONFIG.canbus_name = "rio"; // Place Holder
-        ARM_MOTOR_CONFIG.config = new TalonFXConfiguration(); // Place Holder
+        ARM_MOTOR_CONFIG.config = new ThriftyNovaConfig(); // Place Holder
     }
 }
