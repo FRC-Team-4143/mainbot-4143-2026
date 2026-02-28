@@ -180,9 +180,9 @@ public class ShooterConstants extends MwConstants {
         HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(1.78, 270.0);
         HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(2.17, 285.0);
         HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(2.81, 310.0);
-        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(3.82, 335.0);
-        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(4.40, 340.0);
-        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(4.77, 360.0);
+        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(3.82, 297.0);
+        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(4.40, 305.0);
+        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(4.77, 320.0);
         HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(5.60, 375.0);
         HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(6.50, 420.0);
 
