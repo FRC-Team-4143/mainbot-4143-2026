@@ -74,11 +74,10 @@ public class GameStatesSubsystem extends MwSubsystem<GameStates, GameStatesConst
             return;
         }
         // HOLD transitions
-        if (system_state_ == GameStates.HOLD && inAllianceZone(robotpose) && goal_active_) {//validated
+        if (system_state_ == GameStates.HOLD && inAllianceZone(robotpose) && goal_active_) {
             system_state_ = GameStates.SCORE;
         } else if (system_state_ == GameStates.HOLD
                 && isPassZone(robotpose)
-                && !pass_overide_
                 && !inHoldZone(robotpose)) {
             system_state_ = GameStates.PASS;
             // Set strict tolerances for scoring
@@ -87,22 +86,26 @@ public class GameStatesSubsystem extends MwSubsystem<GameStates, GameStatesConst
                             FieldTargets.Shooter.FLYWHEEL_SPEED_TOLERANCE,
                             FieldTargets.Shooter.HOOD_POSITION_TOLERANCE,
                             FieldTargets.Shooter.TURRET_ANGLE_TOLERANCE);
-        } else if (system_state_ == GameStates.HOLD && (isPassZone(robotpose) || pass_overide_)) {
+        } else if (system_state_ == GameStates.HOLD && (isPassZone(robotpose))) {
             system_state_ = GameStates.PASS;
-        } else if (system_state_ == GameStates.HOLD && operator_presses_climb_button_) {
+        // } else if (system_state_ == GameStates.HOLD && auto_climb_ready_) {
+        //     system_state_ = GameStates.AUTO_CLIMB;
+        } else if (system_state_ == GameStates.HOLD && is_climb_time_) {
             system_state_ = GameStates.TELEOP_CLIMB;
         } else {
         } // empty to not interfere with rest of state machine
         // SCORE transistions
-        if (system_state_ == GameStates.SCORE && (isPassZone(robotpose) || !goal_active_)) {//validated
+        if (system_state_ == GameStates.SCORE && (isPassZone(robotpose) || !goal_active_)) {
             system_state_ = GameStates.HOLD;
-        } else if (system_state_ == GameStates.SCORE && operator_presses_climb_button_) {
+        //} else if (system_state_ == GameStates.SCORE && auto_climb_ready_) {
+             //system_state_ = GameStates.AUTO_CLIMB;
+        } else if (system_state_ == GameStates.SCORE && is_climb_time_) {
             system_state_ = GameStates.TELEOP_CLIMB;
         } else {
         } // empty to not interfere with rest of state machine
         // PASS transistions
         if (system_state_ == GameStates.PASS
-                && (inHoldZone(robotpose) || inAllianceZone(robotpose) || pass_overide_)) {
+                && (inHoldZone(robotpose) || inAllianceZone(robotpose))) {
             system_state_ = GameStates.HOLD;
             // Return to strict tolerances when leaving PASS state
             ShooterSubsystem.getInstance()
@@ -112,8 +115,13 @@ public class GameStatesSubsystem extends MwSubsystem<GameStates, GameStatesConst
                             FieldTargets.Shooter.TURRET_ANGLE_TOLERANCE);
         } else {
         } // empty to not interfere with rest of state machine
+         //     // AUTO_CLIMB transitions
+    //     if (system_state_ == GameStates.AUTO_CLIMB && RobotState.isTeleop()) {
+    //         system_state_ = GameStates.DOWN_CLIMB;
+    //     } else {
+    //     } // empty to not interfere with rest of state machine
         // DOWN_CLIMB transistions
-        if (system_state_ == GameStates.DOWN_CLIMB && isDownClimbFinished()) {//validated
+        if (system_state_ == GameStates.DOWN_CLIMB && isDownClimbFinished()) {
             system_state_ = GameStates.HOLD;
         } else {
         } // empty to not interfere with rest of state machine
@@ -179,55 +187,10 @@ public class GameStatesSubsystem extends MwSubsystem<GameStates, GameStatesConst
         // }
     }
 
-<<<<<<< HEAD
-    public void handleStateTransition(GameStates wanted) {
-        Pose2d robotpose = LocalizationSubsystem.getInstance().getFieldPose();
-        // transtions out of TELEOP_CLIMB, no transtions
-        if (system_state_ == GameStates.TELEOP_CLIMB) {
-            system_state_ = GameStates.TELEOP_CLIMB;
-            return;
-        }
-        // HOLD transitions
-        if (system_state_ == GameStates.HOLD && inAllianceZone(robotpose) && goal_active_) {
-            system_state_ = GameStates.SCORE;
-        } else if (system_state_ == GameStates.HOLD && (isPassZone(robotpose) )) {
-            system_state_ = GameStates.PASS;
-        } else if (system_state_ == GameStates.HOLD && auto_climb_ready_) {
-            system_state_ = GameStates.AUTO_CLIMB;
-        } else if (system_state_ == GameStates.HOLD && is_climb_time_) {
-            system_state_ = GameStates.TELEOP_CLIMB;
-        } else {
-        } // empty to not interfere with rest of state machine
-        // SCORE transistions
-        if (system_state_ == GameStates.SCORE && (isPassZone(robotpose) || !goal_active_)) {
-            system_state_ = GameStates.HOLD;
-        } else if (system_state_ == GameStates.SCORE && auto_climb_ready_) {
-            system_state_ = GameStates.AUTO_CLIMB;
-        } else if (system_state_ == GameStates.SCORE && is_climb_time_) {
-            system_state_ = GameStates.TELEOP_CLIMB;
-        } else {
-        } // empty to not interfere with rest of state machine
-        // PASS transistions
-        if (system_state_ == GameStates.PASS && (inHoldZone(robotpose))) {
-            system_state_ = GameStates.HOLD;
-        } else {
-        } // empty to not interfere with rest of state machine
-        // AUTO_CLIMB transitions
-        if (system_state_ == GameStates.AUTO_CLIMB && RobotState.isTeleop()) {
-            system_state_ = GameStates.DOWN_CLIMB;
-        } else {
-        } // empty to not interfere with rest of state machine
-        // DOWN_CLIMB transistions
-        if (system_state_ == GameStates.DOWN_CLIMB && isDownClimbFinished()) {
-            system_state_ = GameStates.HOLD;
-        } else {
-        } // empty to not interfere with rest of state machine
-    }
-=======
+    
     // =============================================================================
     // PRIVATE HELPER METHODS
     // =============================================================================
->>>>>>> 3cd8b6f9ba8025eee5c8383f425de6b59f15a41f
 
     private boolean inAllianceZone(Pose2d pose) {
         return FieldRegions.ALLIANCE_ZONE.contains(pose);
@@ -267,10 +230,9 @@ public class GameStatesSubsystem extends MwSubsystem<GameStates, GameStatesConst
         auto_climb_ready_ = trueORfalse;
     }
 
-<<<<<<< HEAD
     public void setIsClimbTime(boolean value){
         is_climb_time_ = value; 
-=======
+    }
     // for testing only
 
     // set goal to active
@@ -283,6 +245,5 @@ public class GameStatesSubsystem extends MwSubsystem<GameStates, GameStatesConst
     public void GoalInactive() {
         goal_active_ = false;
         return;
->>>>>>> 3cd8b6f9ba8025eee5c8383f425de6b59f15a41f
     }
 }
