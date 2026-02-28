@@ -34,8 +34,8 @@ public class ClimberConstants extends MwConstants {
     // =============================================================================
 
     // Motor CAN IDs
-    public final int DEPLOY_MOTOR_ID = 21;
-    public final int FLIP_MOTOR_ID = 22;
+    public final int DEPLOY_MOTOR_ID = 40;
+    public final int FLIP_MOTOR_ID = 41;
 
     // =============================================================================
     // MECHANICAL CONSTANTS - DEPLOY
