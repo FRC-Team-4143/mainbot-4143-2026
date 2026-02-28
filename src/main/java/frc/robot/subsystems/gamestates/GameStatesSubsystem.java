@@ -146,45 +146,45 @@ public class GameStatesSubsystem extends MwSubsystem<GameStates, GameStatesConst
                 LocalizationSubsystem.getInstance().getFieldPose())) {
             ShooterSubsystem.getInstance().setTarget(FieldTargets.Shooter.HUB);
         }
-        //  else if (FieldRegions.HOLD_REGIONS.contains(
-        //         LocalizationSubsystem.getInstance().getFieldPose())) {
-        //     ShooterSubsystem.getInstance().setWantedState(ShooterStates.SHOOT_WAIT);
-        // } 
-        // switch (system_state_) {
-        //     case HOLD:
-        //         ShooterSubsystem.getInstance().setWantedState(ShooterStates.IDLE);
-        //         IntakeSubsystem.getInstance().setWantedState(IntakeStates.INTAKE);
-        //         HopperSubsystem.getInstance().setWantedState(HopperStates.SHOOTING);
-        //         ClimberSubsystem.getInstance().setWantedState(ClimberStates.STOWED);
-        //         break;
-        //     case SCORE:
-        //         ShooterSubsystem.getInstance().setWantedState(ShooterStates.SHOOT_WAIT);
-        //         IntakeSubsystem.getInstance().setWantedState(IntakeStates.INTAKE);
-        //         HopperSubsystem.getInstance().setWantedState(HopperStates.SHOOTING);
-        //         ClimberSubsystem.getInstance().setWantedState(ClimberStates.STOWED);
-        //         break;
-        //     case PASS:
-        //         ShooterSubsystem.getInstance().setWantedState(ShooterStates.SHOOT_WAIT);
-        //         IntakeSubsystem.getInstance().setWantedState(IntakeStates.INTAKE);
-        //         HopperSubsystem.getInstance().setWantedState(HopperStates.SHOOTING);
-        //         ClimberSubsystem.getInstance().setWantedState(ClimberStates.STOWED);
-        //         break;
-        //     case TELEOP_CLIMB:
-        //         ShooterSubsystem.getInstance().setWantedState(ShooterStates.IDLE);
-        //         HopperSubsystem.getInstance().setWantedState(HopperStates.IDLE);
-        //         IntakeSubsystem.getInstance().setWantedState(IntakeStates.STORE);
-        //         ClimberSubsystem.getInstance().setWantedState(ClimberStates.L3_CLIMB);
-        //         break;
-        //     case DOWN_CLIMB:
-        //         ShooterSubsystem.getInstance().setWantedState(ShooterStates.IDLE);
-        //         HopperSubsystem.getInstance().setWantedState(HopperStates.IDLE);
-        //         IntakeSubsystem.getInstance().setWantedState(IntakeStates.STORE);
-        //         ClimberSubsystem.getInstance().setWantedState(ClimberStates.L1_DOWN);
-        //         break;
-        //     case AUTO:
-        //         // GSM does nothing in auto mode
-        //         break;
-        // }
+         else if (FieldRegions.HOLD_REGIONS.contains(
+                LocalizationSubsystem.getInstance().getFieldPose())) {
+            ShooterSubsystem.getInstance().setWantedState(ShooterStates.SHOOT_WAIT);
+        } 
+        switch (system_state_) {
+            case HOLD:
+                ShooterSubsystem.getInstance().setWantedState(ShooterStates.IDLE);
+                IntakeSubsystem.getInstance().setWantedState(IntakeStates.INTAKE);
+                HopperSubsystem.getInstance().setWantedState(HopperStates.SHOOTING);
+                ClimberSubsystem.getInstance().setWantedState(ClimberStates.STOWED);
+                break;
+            case SCORE:
+                ShooterSubsystem.getInstance().setWantedState(ShooterStates.SHOOT_WAIT);
+                IntakeSubsystem.getInstance().setWantedState(IntakeStates.INTAKE);
+                HopperSubsystem.getInstance().setWantedState(HopperStates.SHOOTING);
+                ClimberSubsystem.getInstance().setWantedState(ClimberStates.STOWED);
+                break;
+            case PASS:
+                ShooterSubsystem.getInstance().setWantedState(ShooterStates.SHOOT_WAIT);
+                IntakeSubsystem.getInstance().setWantedState(IntakeStates.INTAKE);
+                HopperSubsystem.getInstance().setWantedState(HopperStates.SHOOTING);
+                ClimberSubsystem.getInstance().setWantedState(ClimberStates.STOWED);
+                break;
+            case TELEOP_CLIMB:
+                ShooterSubsystem.getInstance().setWantedState(ShooterStates.IDLE);
+                HopperSubsystem.getInstance().setWantedState(HopperStates.IDLE);
+                IntakeSubsystem.getInstance().setWantedState(IntakeStates.STORE);
+                ClimberSubsystem.getInstance().setWantedState(ClimberStates.L3_CLIMB);
+                break;
+            case DOWN_CLIMB:
+                ShooterSubsystem.getInstance().setWantedState(ShooterStates.IDLE);
+                HopperSubsystem.getInstance().setWantedState(HopperStates.IDLE);
+                IntakeSubsystem.getInstance().setWantedState(IntakeStates.STORE);
+                ClimberSubsystem.getInstance().setWantedState(ClimberStates.L1_DOWN);
+                break;
+            case AUTO:
+                // GSM does nothing in auto mode
+                break;
+        }
     }
 
     
