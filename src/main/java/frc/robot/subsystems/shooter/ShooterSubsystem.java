@@ -341,7 +341,7 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
         if (launch_params_ == null || !launch_params_.is_valid) {
             return CONSTANTS.HOOD_MAX_ANGLE;
         } else {
-            return hood_angle_;
+            return hood_.getCurrentPosition();
         }
     }
 
@@ -355,7 +355,7 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
             return 0.0;
         } else {
             // angular speed * radius * eff_factor
-            return launch_params_.flywheel_speed * CONSTANTS.FLYWHEEL_WHEEL_RADIUS_METERS * 0.5;
+            return flywheel_.getCurrentVelocity() * CONSTANTS.FLYWHEEL_WHEEL_RADIUS_METERS * 0.5;
         }
     }
 

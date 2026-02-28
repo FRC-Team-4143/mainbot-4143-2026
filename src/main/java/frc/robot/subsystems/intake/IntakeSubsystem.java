@@ -144,4 +144,16 @@ public class IntakeSubsystem extends MwSubsystem<IntakeStates, IntakeConstants> 
                 break;
         }
     }
+
+    // =============================================================================
+    // PUBLIC HELPER METHODS
+    // =============================================================================
+
+    /**
+     * Returns the current angle of the pivot joint in radians. (Used for testing and visualization purposes)
+     * @return the current angle of the pivot joint in radians
+     */
+    public double getPivotAngle() {
+        return pivot_.getCurrentPosition();
+    }
 }

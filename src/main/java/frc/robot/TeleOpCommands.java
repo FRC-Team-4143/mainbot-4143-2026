@@ -146,11 +146,9 @@ public class TeleOpCommands {
         return Commands.startEnd(
                 () -> {
                     IntakeSubsystem.getInstance().setWantedState(IntakeStates.INTAKE);
-                    HopperSubsystem.getInstance().setWantedState(HopperStates.INTAKE);
                 },
                 () -> {
-                    IntakeSubsystem.getInstance().setWantedState(IntakeStates.IDLE);
-                    HopperSubsystem.getInstance().setWantedState(HopperStates.IDLE);
+                    IntakeSubsystem.getInstance().setWantedState(IntakeStates.STORE);
                 });
     }
 }

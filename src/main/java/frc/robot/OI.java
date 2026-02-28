@@ -49,10 +49,10 @@ public abstract class OI {
         driver_controller_
                 .rightStick()
                 .onTrue(SwerveSubsystem.getInstance().toggleFieldCentric().ignoringDisable(true));
-        driver_controller_.rightTrigger().whileTrue(TeleOpCommands.shootFuelCommand());
+        driver_controller_.a().whileTrue(TeleOpCommands.shootFuelCommand());
         driver_controller_.leftTrigger().whileTrue(TeleOpCommands.aimAtTargetCommand());
         driver_controller_.leftStick().whileTrue(TeleOpCommands.rotateForBumpCommand());
-        driver_controller_.rightBumper().whileTrue(TeleOpCommands.intakeFuelCommand());
+        driver_controller_.b().whileTrue(TeleOpCommands.intakeFuelCommand());
 
         // =============================================================================
         // OPERATOR CONTROLLER BINDINGS

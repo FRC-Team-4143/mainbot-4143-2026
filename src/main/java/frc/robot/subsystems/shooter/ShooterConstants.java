@@ -66,7 +66,7 @@ public class ShooterConstants extends MwConstants {
     public final boolean FLYWHEEL_FOLLOWER_3_INVERTED = true;
     public final double FLYWHEEL_GEAR_RATIO = 1.5;
     public final double FLYWHEEL_WHEEL_RADIUS_METERS = Units.inchesToMeters(2);
-    public final double FLYWHEEL_MASS_KG = Units.lbsToKilograms(3.5);
+    public final double FLYWHEEL_MASS_KG = Units.lbsToKilograms(4.5);
     public final double FLYWHEEL_INERTIA =
             0.5
                     * FLYWHEEL_MASS_KG

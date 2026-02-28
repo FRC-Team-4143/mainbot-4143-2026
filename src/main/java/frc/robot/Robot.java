@@ -80,6 +80,9 @@ public class Robot extends TimedRobot {
 
         // Update the hub active status
         HubMonitor.isHubActive(DriverStation.getMatchTime());
+
+        // Visualize the 3D Robot
+        Mechanism3dViz.publish();
     }
 
     @Override

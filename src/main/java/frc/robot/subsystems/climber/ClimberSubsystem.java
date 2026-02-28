@@ -112,6 +112,18 @@ public class ClimberSubsystem extends MwSubsystem<ClimberStates, ClimberConstant
     }
 
     // =============================================================================
+    // PUBLIC HELPER METHODS
+    // =============================================================================
+
+    /**
+     * Returns the current angle of the deploy joint in radians. (Used for testing and visualization purposes)
+     * @return the current angle of the deploy joint in radians
+     */
+    public double getDeployAngle() {
+        return deploy_joint_.getCurrentPosition();
+    }
+
+    // =============================================================================
     // PRIVATE HELPER METHODS
     // =============================================================================
 
