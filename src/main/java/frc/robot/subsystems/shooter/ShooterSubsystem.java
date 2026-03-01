@@ -377,7 +377,7 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
 
         // Automatically switch LaunchCalculator based on target selection to use appropriate set of
         // empirically determined parameters for hub shots vs passes
-        if (MathUtil.isNear(FieldTargets.Shooter.HUB.getZ(), target.getZ(), 1E6)) {
+        if (MathUtil.isNear(FieldTargets.Shooter.HUB.getZ(), target.getZ(), 1E-6)) {
             launch_calculator_ = CONSTANTS.HUB_LAUNCH_CALCULATOR;
         } else {
             launch_calculator_ = CONSTANTS.PASS_LAUNCH_CALCULATOR;

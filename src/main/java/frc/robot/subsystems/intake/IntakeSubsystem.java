@@ -5,7 +5,6 @@ import com.marswars.mechanisms.RollerMech;
 import com.marswars.subsystem.MwSubsystem;
 import com.marswars.subsystem.SubsystemIoBase;
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.intake.IntakeConstants.IntakeStates;
@@ -17,7 +16,6 @@ public class IntakeSubsystem extends MwSubsystem<IntakeStates, IntakeConstants> 
 
     private RollerMech roller_;
     private ArmMech pivot_;
-    private final Timer intake_timer_ = new Timer();
 
     // getInstance
     public static IntakeSubsystem getInstance() {
@@ -70,37 +68,15 @@ public class IntakeSubsystem extends MwSubsystem<IntakeStates, IntakeConstants> 
     // handleStateTransition
     @Override
     protected void handleStateTransition(IntakeStates wantedState) {
-        if (system_state_ == IntakeStates.STORE && wantedState == IntakeStates.INTAKE) {
+        if (!MathUtil.isNear(CONSTANTS.PIVOT_DEPLOY_POSITION, pivot_.getCurrentPosition(), CONSTANTS.DEPLOY_PIVOT_TOLERANCE) && wantedState == IntakeStates.INTAKE) {
             system_state_ = IntakeStates.DEPLOYING;
         } else if (system_state_ == IntakeStates.STORE && wantedState == IntakeStates.OUTTAKE) {
             system_state_ = IntakeStates.DEPLOYING;
-        } else if (system_state_ == IntakeStates.DEPLOYING
-                && MathUtil.isNear(
-                        CONSTANTS.PIVOT_DEPLOY_POSITION,
-                        pivot_.getCurrentPosition(),
-                        CONSTANTS.PIVOT_TOLERANCE)) {
-            system_state_ = IntakeStates.DEPLOYED;
-        } else if (wantedState == IntakeStates.SHOOTING
-                && (system_state_ != IntakeStates.SHOOTING
-                        && system_state_ != IntakeStates.RACKING)) {
-            intake_timer_.reset();
-            intake_timer_.start();
-            system_state_ = IntakeStates.SHOOTING;
-        } else if (wantedState == IntakeStates.SHOOTING
-                && system_state_ == IntakeStates.SHOOTING
-                && intake_timer_.hasElapsed(CONSTANTS.SHOOTING_CYCLE_TIME)) {
-            intake_timer_.reset();
-            system_state_ = IntakeStates.RACKING;
-        } else if (wantedState == IntakeStates.SHOOTING
-                && system_state_ == IntakeStates.RACKING
-                && intake_timer_.hasElapsed(CONSTANTS.SHOOTING_CYCLE_TIME)) {
-            intake_timer_.reset();
-            system_state_ = IntakeStates.SHOOTING;
-        } else if (wantedState == IntakeStates.SHOOTING
-                && !intake_timer_.hasElapsed(CONSTANTS.SHOOTING_CYCLE_TIME)) {
-            // do nothing while time is elapsing
+        } else if (system_state_ == IntakeStates.DEPLOYING){
+            if(MathUtil.isNear(CONSTANTS.PIVOT_DEPLOY_POSITION, pivot_.getCurrentPosition(), CONSTANTS.DEPLOY_PIVOT_TOLERANCE)) {
+                system_state_ = IntakeStates.DEPLOYED;
+            }
         } else {
-            if (intake_timer_.isRunning()) intake_timer_.stop();
             system_state_ = wantedState;
         }
     }
@@ -109,7 +85,6 @@ public class IntakeSubsystem extends MwSubsystem<IntakeStates, IntakeConstants> 
     @Override
     public void updateLogic(double timestamp) {
         switch (system_state_) {
-            case SHOOTING:
             case STORE:
                 roller_.setTargetDutyCycle(0.0);
                 pivot_.setTargetPosition(CONSTANTS.PIVOT_STORE_POSITION);
@@ -129,10 +104,6 @@ public class IntakeSubsystem extends MwSubsystem<IntakeStates, IntakeConstants> 
             case OUTTAKE:
                 roller_.setTargetDutyCycle(-CONSTANTS.INTAKE_DUTY_CYCLE);
                 pivot_.setTargetDutyCycle(0.0);
-                break;
-            case RACKING:
-                roller_.setTargetDutyCycle(0.0);
-                pivot_.setTargetPosition(CONSTANTS.PIVOT_RACKING_POSITION);
                 break;
             case TUNING:
                 // No default behavior for tuning mode

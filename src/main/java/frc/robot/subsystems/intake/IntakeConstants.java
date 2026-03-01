@@ -29,11 +29,7 @@ public class IntakeConstants extends MwConstants {
         /** Idle state with intake mechanisms stopped */
         IDLE,
         /** Manual tuning mode for testing and calibration */
-        TUNING,
-        /** Position for shooting game pieces */
-        SHOOTING,
-        /** Position for racking game pieces */
-        RACKING
+        TUNING
     }
 
     // =============================================================================
@@ -65,10 +61,10 @@ public class IntakeConstants extends MwConstants {
     public final double PIVOT_HOME_POSITION = Units.degreesToRadians(11);
     public final double PIVOT_STATOR_CURRENT_LIMIT = 60;
     public final double PIVOT_DEPLOY_POSITION = Units.degreesToRadians(11);
-    public final double PIVOT_RACKING_POSITION = Units.degreesToRadians(75);
-    public final double PIVOT_STORE_POSITION = Units.degreesToRadians(95);
-    public final double PIVOT_TOLERANCE = Units.degreesToRadians(5);
-    public final Slot0Configs PIVOT_POSITION_GAINS = new Slot0Configs().withKG(0).withKP(.0);
+    public final double PIVOT_RACKING_POSITION = Units.degreesToRadians(60);
+    public final double PIVOT_STORE_POSITION = Units.degreesToRadians(98);
+    public final double DEPLOY_PIVOT_TOLERANCE = Units.degreesToRadians(20);
+    public final Slot0Configs PIVOT_POSITION_GAINS = new Slot0Configs().withKG(2).withKP(50);
 
     // Time to wait between cycling SHOOTING and RACKING modes (seconds)
     public final double SHOOTING_CYCLE_TIME = 1.0;

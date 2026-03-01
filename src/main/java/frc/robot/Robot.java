@@ -24,6 +24,8 @@ import frc.robot.lib2026.FieldRegions;
 import frc.robot.lib2026.FieldTargets;
 import frc.robot.lib2026.HubMonitor;
 import frc.robot.subsystems.hopper.HopperConstants.HopperStates;
+import frc.robot.subsystems.climber.ClimberSubsystem;
+import frc.robot.subsystems.climber.ClimberConstants.ClimberStates;
 import frc.robot.subsystems.hopper.HopperSubsystem;
 import frc.robot.subsystems.intake.IntakeConstants.IntakeStates;
 import frc.robot.subsystems.intake.IntakeSubsystem;
@@ -138,6 +140,7 @@ public class Robot extends TimedRobot {
         ShooterSubsystem.getInstance().setWantedState(ShooterStates.TUNING);
         HopperSubsystem.getInstance().setWantedState(HopperStates.TUNING);
         IntakeSubsystem.getInstance().setWantedState(IntakeStates.TUNING);
+        ClimberSubsystem.getInstance().setWantedState(ClimberStates.TUNNING);
     }
 
     @Override

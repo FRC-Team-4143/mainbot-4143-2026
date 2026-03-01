@@ -1,13 +1,15 @@
 package frc.robot.subsystems.climber;
 
+import java.util.Arrays;
+import java.util.List;
+
 import com.marswars.mechanisms.ArmMech;
 import com.marswars.mechanisms.RollerMech;
 import com.marswars.subsystem.MwSubsystem;
 import com.marswars.subsystem.SubsystemIoBase;
+
 import edu.wpi.first.math.MathUtil;
 import frc.robot.subsystems.climber.ClimberConstants.ClimberStates;
-import java.util.Arrays;
-import java.util.List;
 
 public class ClimberSubsystem extends MwSubsystem<ClimberStates, ClimberConstants> {
     private static ClimberSubsystem instance_ = null;
@@ -59,6 +61,9 @@ public class ClimberSubsystem extends MwSubsystem<ClimberStates, ClimberConstant
     // handleStateTransition
     @Override
     public void handleStateTransition(ClimberStates wanted_state) {
+        if (wanted_state == ClimberStates.TUNNING) {
+            system_state_ = ClimberStates.TUNNING;
+    }
         if (system_state_ == ClimberStates.STOWED && wanted_state == ClimberStates.DEPLOY) {
             system_state_ = ClimberStates.DEPLOY;
         } else {
@@ -107,6 +112,9 @@ public class ClimberSubsystem extends MwSubsystem<ClimberStates, ClimberConstant
             case L3_CLIMB:
                 flip_joint_.setTargetPosition(CONSTANTS.FLIP_L3_CLIMB);
                 deploy_joint_.setTargetPosition(CONSTANTS.DEPLOY_DEPLOYED_ANGLE);
+                break;
+            case TUNNING:
+                flip_joint_.setTargetDutyCycle(.50);
                 break;
         }
     }

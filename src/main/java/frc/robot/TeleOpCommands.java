@@ -148,6 +148,13 @@ public class TeleOpCommands {
                     IntakeSubsystem.getInstance().setWantedState(IntakeStates.INTAKE);
                 },
                 () -> {
+                    IntakeSubsystem.getInstance().setWantedState(IntakeStates.IDLE);
+                });
+    }
+
+    static Command storeIntakeCommand() {
+        return Commands.runOnce(
+                () -> {
                     IntakeSubsystem.getInstance().setWantedState(IntakeStates.STORE);
                 });
     }

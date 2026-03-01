@@ -10,6 +10,8 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.subsystems.intake.IntakeSubsystem;
+import frc.robot.subsystems.intake.IntakeConstants.IntakeStates;
 import frc.robot.subsystems.localization.LocalizationSubsystem;
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterStates;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
@@ -53,6 +55,7 @@ public abstract class OI {
         driver_controller_.leftTrigger().whileTrue(TeleOpCommands.aimAtTargetCommand());
         driver_controller_.leftStick().whileTrue(TeleOpCommands.rotateForBumpCommand());
         driver_controller_.rightBumper().whileTrue(TeleOpCommands.intakeFuelCommand());
+        driver_controller_.leftBumper().onFalse(TeleOpCommands.storeIntakeCommand());
 
         // =============================================================================
         // OPERATOR CONTROLLER BINDINGS

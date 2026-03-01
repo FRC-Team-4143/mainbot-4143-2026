@@ -26,7 +26,8 @@ public class ClimberConstants extends MwConstants {
         /** Moving down from Level 1 */
         L1_DOWN,
         /** Climbing to Level 3 */
-        L3_CLIMB
+        L3_CLIMB,
+        TUNNING
     }
 
     // =============================================================================
@@ -76,7 +77,7 @@ public class ClimberConstants extends MwConstants {
         // Configure DEPLOY Motor
         DEPLOY_MOTOR_CONFIG.can_id = DEPLOY_MOTOR_ID;
         DEPLOY_MOTOR_CONFIG.motor_type = NovaMotorType.NEO_550;
-        DEPLOY_MOTOR_CONFIG.canbus_name = "CANivore";
+        DEPLOY_MOTOR_CONFIG.canbus_name = "rio";
         DEPLOY_MOTOR_CONFIG.config = new ThriftyNovaConfig();
 
         // Configure FLIP Motor
