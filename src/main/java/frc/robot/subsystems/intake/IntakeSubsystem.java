@@ -68,12 +68,19 @@ public class IntakeSubsystem extends MwSubsystem<IntakeStates, IntakeConstants> 
     // handleStateTransition
     @Override
     protected void handleStateTransition(IntakeStates wantedState) {
-        if (!MathUtil.isNear(CONSTANTS.PIVOT_DEPLOY_POSITION, pivot_.getCurrentPosition(), CONSTANTS.DEPLOY_PIVOT_TOLERANCE) && wantedState == IntakeStates.INTAKE) {
+        if (!MathUtil.isNear(
+                        CONSTANTS.PIVOT_DEPLOY_POSITION,
+                        pivot_.getCurrentPosition(),
+                        CONSTANTS.DEPLOY_PIVOT_TOLERANCE)
+                && wantedState == IntakeStates.INTAKE) {
             system_state_ = IntakeStates.DEPLOYING;
         } else if (system_state_ == IntakeStates.STORE && wantedState == IntakeStates.OUTTAKE) {
             system_state_ = IntakeStates.DEPLOYING;
-        } else if (system_state_ == IntakeStates.DEPLOYING){
-            if(MathUtil.isNear(CONSTANTS.PIVOT_DEPLOY_POSITION, pivot_.getCurrentPosition(), CONSTANTS.DEPLOY_PIVOT_TOLERANCE)) {
+        } else if (system_state_ == IntakeStates.DEPLOYING) {
+            if (MathUtil.isNear(
+                    CONSTANTS.PIVOT_DEPLOY_POSITION,
+                    pivot_.getCurrentPosition(),
+                    CONSTANTS.DEPLOY_PIVOT_TOLERANCE)) {
                 system_state_ = IntakeStates.DEPLOYED;
             }
         } else {
@@ -121,7 +128,9 @@ public class IntakeSubsystem extends MwSubsystem<IntakeStates, IntakeConstants> 
     // =============================================================================
 
     /**
-     * Returns the current angle of the pivot joint in radians. (Used for testing and visualization purposes)
+     * Returns the current angle of the pivot joint in radians. (Used for testing and visualization
+     * purposes)
+     *
      * @return the current angle of the pivot joint in radians
      */
     public double getPivotAngle() {

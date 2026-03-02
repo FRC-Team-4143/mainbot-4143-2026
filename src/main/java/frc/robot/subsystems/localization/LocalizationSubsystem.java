@@ -21,7 +21,6 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.Timer;
@@ -120,7 +119,9 @@ public class LocalizationSubsystem extends MwSubsystem<LocalizationStates, Local
                 ProxyServerThread.getInstance().getLatestTagSolutions();
 
         // If the robot is disabled and there is a client connection, update the gyro yaw
-        if (RobotState.isDisabled() && ProxyServerThread.getInstance().hasClientConnection() && zero_yaw_timer_.hasElapsed(1.0)) {
+        if (RobotState.isDisabled()
+                && ProxyServerThread.getInstance().hasClientConnection()
+                && zero_yaw_timer_.hasElapsed(1.0)) {
             SwerveSubsystem.getInstance()
                     .setGyroYaw(field_pose_estimator_.getEstimatedPosition().getRotation());
             zero_yaw_timer_.reset();
@@ -358,7 +359,7 @@ public class LocalizationSubsystem extends MwSubsystem<LocalizationStates, Local
             SwerveDrivePoseEstimator pose_estimator, List<SwerveMeasurement> swerve_measurements) {
 
         // Ingore Odom updates when disabled
-        if(RobotState.isDisabled()) return;
+        if (RobotState.isDisabled()) return;
 
         for (SwerveMeasurement measurement : swerve_measurements) {
             // Optionally add noise for simulation

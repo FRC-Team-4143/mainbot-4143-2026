@@ -147,7 +147,7 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
         // Get the current robot pose and velocity
         Pose2d robot_pose = LocalizationSubsystem.getInstance().getFieldPose();
         ChassisSpeeds robot_velocity = new ChassisSpeeds();
-                //LocalizationSubsystem.getInstance().getChassisSpeedsFieldRelative();
+        // LocalizationSubsystem.getInstance().getChassisSpeedsFieldRelative();
 
         // Calculate launch parameters using the LaunchCalculator
         launch_params_ =
@@ -338,7 +338,7 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
      * @return the launch angle in radians, or the max hood angle if no valid solution
      */
     public double getLaunchAngle() {
-            return hood_.getCurrentPosition();
+        return hood_.getCurrentPosition();
     }
 
     /**
@@ -347,8 +347,8 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
      * @return the launch velocity in meters per second, or 0.0 if no valid solution
      */
     public double getLaunchVelocity() {
-            // angular speed * radius * eff_factor
-            return flywheel_.getCurrentVelocity() * CONSTANTS.FLYWHEEL_WHEEL_RADIUS_METERS * 0.5;
+        // angular speed * radius * eff_factor
+        return flywheel_.getCurrentVelocity() * CONSTANTS.FLYWHEEL_WHEEL_RADIUS_METERS * 0.5;
     }
 
     /**
