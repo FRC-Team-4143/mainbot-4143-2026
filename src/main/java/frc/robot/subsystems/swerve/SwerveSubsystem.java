@@ -607,7 +607,8 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
      * @return A command that sets the desired choreo trajectory
      */
     public Command setDesiredChoreoTrajectoryCommand(Trajectory<SwerveSample> trajectory) {
-        return Commands.runOnce(() -> setDesiredChoreoTrajectory(trajectory));
+        return Commands.runOnce(() -> setDesiredChoreoTrajectory(trajectory))
+                .withName("Set Choreo Trajectory : " + trajectory.name());
     }
 
     /**
@@ -731,14 +732,17 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
      * @return A command that toggles the field centric mode
      */
     public Command toggleFieldCentric() {
+        String new_mode =
+                (system_state_ == SwerveStates.FIELD_CENTRIC) ? "ROBOT_CENTRIC" : "FIELD_CENTRIC";
         return Commands.runOnce(
-                () -> {
-                    if (system_state_ == SwerveStates.FIELD_CENTRIC) {
-                        setWantedState(SwerveStates.ROBOT_CENTRIC);
-                    } else {
-                        setWantedState(SwerveStates.FIELD_CENTRIC);
-                    }
-                });
+                        () -> {
+                            if (system_state_ == SwerveStates.FIELD_CENTRIC) {
+                                setWantedState(SwerveStates.ROBOT_CENTRIC);
+                            } else {
+                                setWantedState(SwerveStates.FIELD_CENTRIC);
+                            }
+                        })
+                .withName("Toggle Field Centric: " + new_mode);
     }
 
     // ------------------------------------------------
@@ -1023,12 +1027,15 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
 
     /** Stores the current encoder readings as offsets */
     public Command setModuleOffsets() {
-        return Commands.runOnce(() -> swerve_mech_.setModuleOffsets());
+        return Commands.runOnce(() -> swerve_mech_.setModuleOffsets())
+                .withName("Set Module Offsets");
     }
 
     /** Zeros the gyro yaw to the operator forward direction */
     public Command zeroGyroYaw() {
-        return Commands.runOnce(() -> swerve_mech_.setGyroYaw(operator_forward_direction_));
+        return Commands.runOnce(() -> swerve_mech_.setGyroYaw(operator_forward_direction_))
+                .withName(
+                        "Zero Gyro Yaw: " + operator_forward_direction_.getDegrees() + " Degrees");
     }
 
     /**

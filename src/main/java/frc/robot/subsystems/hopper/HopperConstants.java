@@ -2,9 +2,9 @@ package frc.robot.subsystems.hopper;
 
 import com.ctre.phoenix6.configs.Slot1Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.marswars.mechanisms.MotorConfig;
+import com.marswars.mechanisms.MotorConfig.TalonMotorType;
 import com.marswars.subsystem.MwConstants;
-import com.marswars.util.FxMotorConfig;
-import com.marswars.util.FxMotorConfig.FxMotorType;
 
 public class HopperConstants extends MwConstants {
 
@@ -55,9 +55,9 @@ public class HopperConstants extends MwConstants {
     // MOTOR CONFIGURATION OBJECTS
     // =============================================================================
 
-    public final FxMotorConfig HOPPER_MOTOR_CONFIG = new FxMotorConfig();
+    public final MotorConfig HOPPER_MOTOR_CONFIG = new MotorConfig();
 
-    // public final FxMotorConfig FEED_MOTOR_CONFIG = new FxMotorConfig();
+    // public final MotorConfig FEED_MOTOR_CONFIG = new MotorConfig();
 
     // =============================================================================
     // CONSTRUCTOR - MOTOR CONFIGURATION INITIALIZATION
@@ -66,9 +66,10 @@ public class HopperConstants extends MwConstants {
     public HopperConstants() {
         // Configure Hopper Motor
         HOPPER_MOTOR_CONFIG.can_id = HOPPER_MOTOR_ID;
-        HOPPER_MOTOR_CONFIG.motor_type = FxMotorType.FALCON500;
+        HOPPER_MOTOR_CONFIG.motor_type = TalonMotorType.X44;
         HOPPER_MOTOR_CONFIG.canbus_name = "rio";
-        HOPPER_MOTOR_CONFIG.config = new TalonFXConfiguration();
-        HOPPER_MOTOR_CONFIG.config.Slot1 = HOPPER_VELOCITY_GAINS;
+        TalonFXConfiguration hopper_config = new TalonFXConfiguration();
+        hopper_config.Slot1 = HOPPER_VELOCITY_GAINS;
+        HOPPER_MOTOR_CONFIG.apply(hopper_config);
     }
 }

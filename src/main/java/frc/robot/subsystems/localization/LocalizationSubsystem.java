@@ -23,6 +23,7 @@ import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.RobotState;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.localization.LocalizationConstants.LocalizationStates;
@@ -47,6 +48,9 @@ public class LocalizationSubsystem extends MwSubsystem<LocalizationStates, Local
     private ArrayList<Pose3d> detected_tag_poses_ = new ArrayList<Pose3d>();
     private ArrayList<Pose2d> estimated_vision_poses_ = new ArrayList<Pose2d>();
     private boolean swerve_noise_enabled_ = false;
+
+    // timer for zeroing field pose
+    private Timer zero_yaw_timer_;
 
     // getInstance
     // Singleton Accessor
@@ -87,6 +91,9 @@ public class LocalizationSubsystem extends MwSubsystem<LocalizationStates, Local
         // Put the field visualizer on SmartDashboard once during initialization
         SmartDashboard.putData("Field", field_visualizer_);
         DogLog.log(getSubsystemKey() + "SwerveNoise", false);
+
+        zero_yaw_timer_ = new Timer();
+        zero_yaw_timer_.start();
     }
 
     // reset
@@ -112,9 +119,12 @@ public class LocalizationSubsystem extends MwSubsystem<LocalizationStates, Local
                 ProxyServerThread.getInstance().getLatestTagSolutions();
 
         // If the robot is disabled and there is a client connection, update the gyro yaw
-        if (RobotState.isDisabled() && ProxyServerThread.getInstance().hasClientConnection()) {
+        if (RobotState.isDisabled()
+                && ProxyServerThread.getInstance().hasClientConnection()
+                && zero_yaw_timer_.hasElapsed(1.0)) {
             SwerveSubsystem.getInstance()
                     .setGyroYaw(field_pose_estimator_.getEstimatedPosition().getRotation());
+            zero_yaw_timer_.reset();
         }
         switch (system_state_) {
             case SHOOTING_FOCUS: // This state uses the same swerve measurements but different
@@ -347,6 +357,10 @@ public class LocalizationSubsystem extends MwSubsystem<LocalizationStates, Local
      */
     private void applySwerveMeasurements(
             SwerveDrivePoseEstimator pose_estimator, List<SwerveMeasurement> swerve_measurements) {
+
+        // Ingore Odom updates when disabled
+        if (RobotState.isDisabled()) return;
+
         for (SwerveMeasurement measurement : swerve_measurements) {
             // Optionally add noise for simulation
             if (swerve_noise_enabled_) {

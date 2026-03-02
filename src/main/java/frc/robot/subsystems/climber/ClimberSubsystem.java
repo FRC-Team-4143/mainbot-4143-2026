@@ -59,6 +59,9 @@ public class ClimberSubsystem extends MwSubsystem<ClimberStates, ClimberConstant
     // handleStateTransition
     @Override
     public void handleStateTransition(ClimberStates wanted_state) {
+        if (wanted_state == ClimberStates.TUNNING) {
+            system_state_ = ClimberStates.TUNNING;
+        }
         if (system_state_ == ClimberStates.STOWED && wanted_state == ClimberStates.DEPLOY) {
             system_state_ = ClimberStates.DEPLOY;
         } else {
@@ -108,6 +111,10 @@ public class ClimberSubsystem extends MwSubsystem<ClimberStates, ClimberConstant
                 flip_joint_.setTargetPosition(CONSTANTS.FLIP_L3_CLIMB);
                 deploy_joint_.setTargetPosition(CONSTANTS.DEPLOY_DEPLOYED_ANGLE);
                 break;
+            case TUNNING:
+                // allow manual control of both joints through the dashboard for testing and
+                // calibration
+                break;
         }
     }
 
@@ -116,11 +123,23 @@ public class ClimberSubsystem extends MwSubsystem<ClimberStates, ClimberConstant
     // =============================================================================
 
     /**
-     * Returns the current angle of the deploy joint in radians. (Used for testing and visualization purposes)
+     * Returns the current angle of the deploy joint in radians. (Used for testing and visualization
+     * purposes)
+     *
      * @return the current angle of the deploy joint in radians
      */
     public double getDeployAngle() {
         return deploy_joint_.getCurrentPosition();
+    }
+
+    /**
+     * Returns the current angle of the flip joint in radians. (Used for testing and visualization
+     * purposes)
+     *
+     * @return the current angle of the flip joint in radians
+     */
+    public double getFlipAngle() {
+        return flip_joint_.getCurrentPosition();
     }
 
     // =============================================================================

@@ -4,30 +4,39 @@ import dev.doglog.DogLog;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
-import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.climber.ClimberSubsystem;
 import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.localization.LocalizationSubsystem;
+import frc.robot.subsystems.shooter.ShooterSubsystem;
 
 public class Mechanism3dViz {
 
-    static private final Pose3d HOOD_POSE_OFFSET = new Pose3d(-0.177, 0.0, 0.579, new Rotation3d(0.0, 0.0, 0.0));
-    static private final double HOOD_HOME_POSITION = Units.degreesToRadians(81.170);
+    private static final Pose3d HOOD_POSE_OFFSET =
+            new Pose3d(-0.177, 0.0, 0.579, new Rotation3d(0.0, 0.0, 0.0));
+    private static final double HOOD_HOME_POSITION = Units.degreesToRadians(81.170);
 
-    static private final Pose3d INTAKE_POSE_OFFSET = new Pose3d(0.0, 0.0, 0.0, new Rotation3d(0.0, 0.0, 0.0));
-    static private final double INTAKE_HOME_POSITION = Units.degreesToRadians(11.0);
-    static private final double INTAKE_STORE_POSITION = Units.degreesToRadians(95.0);
-    static private final double INTAKE_RANGE = INTAKE_STORE_POSITION - INTAKE_HOME_POSITION;
+    private static final Pose3d INTAKE_POSE_OFFSET =
+            new Pose3d(0.0, 0.0, 0.0, new Rotation3d(0.0, 0.0, 0.0));
+    private static final double INTAKE_HOME_POSITION = Units.degreesToRadians(11.0);
+    private static final double INTAKE_STORE_POSITION = Units.degreesToRadians(95.0);
+    private static final double INTAKE_RANGE = INTAKE_STORE_POSITION - INTAKE_HOME_POSITION;
 
-    static private final Pose3d CLIMBER_POSE_OFFSET = new Pose3d(-0.299, 0.279, 0.0, new Rotation3d(0.0, 0.0, Units.degreesToRadians(-10.5)));
-    
+    private static final Pose3d CLIMBER_POSE_OFFSET =
+            new Pose3d(-0.229, 0.279, 0.0, new Rotation3d(0.0, 0.0, Units.degreesToRadians(-10.5)));
+    private static final double CLIMBER_FLIP_DEADBAND = Units.degreesToRadians(5.0);
+
     static Pose3d robot_pose_ = new Pose3d();
     static Pose3d hood_pose_ = HOOD_POSE_OFFSET;
     static Pose3d intake_pose_ = new Pose3d();
     static Pose3d climber_pose_ = new Pose3d();
 
-    static public void publish(){
+    /**
+     * Publishes the current poses of the robot and mechanisms to DogLog for visualization in
+     * AdvantageScope 3D Field
+     */
+    public static void publish() {
         updateRobotPose();
         updateHoodPose();
         updateIntakePose();
@@ -40,35 +49,46 @@ public class Mechanism3dViz {
     }
 
     /**
-     * Updates the pose of the robot based on its current field pose.
-     * The pitch of the robot will change as the climber flip joint moves.
+     * Updates the pose of the robot based on its current field pose. The pitch of the robot will
+     * change as the climber flip joint moves.
      */
-    static private void updateRobotPose(){
-        robot_pose_ = new Pose3d(LocalizationSubsystem.getInstance().getFieldPose());
+    private static void updateRobotPose() {
+        double flip_angle = ClimberSubsystem.getInstance().getFlipAngle();
+        // Apply 5 degree deadband - robot doesn't start to flip until after 5 degrees
+        double flip_angle_with_deadband =
+                Math.abs(flip_angle) > CLIMBER_FLIP_DEADBAND ? flip_angle : 0.0;
+        robot_pose_ =
+                new Pose3d(LocalizationSubsystem.getInstance().getFieldPose())
+                        .rotateAround(
+                                new Translation3d(0, 0, 0.711),
+                                new Rotation3d(0.0, flip_angle_with_deadband, 0.0));
     }
 
-    /**
-     * Updates the pose of the hood mechanism based on its current angle.
-     */
-    static private void updateHoodPose(){
+    /** Updates the pose of the hood mechanism based on its current angle. */
+    private static void updateHoodPose() {
         double hood_angle = ShooterSubsystem.getInstance().getLaunchAngle() - HOOD_HOME_POSITION;
-        hood_pose_ = new Pose3d(HOOD_POSE_OFFSET.getTranslation(), new Rotation3d(0.0, hood_angle, 0.0));
+        hood_pose_ =
+                new Pose3d(HOOD_POSE_OFFSET.getTranslation(), new Rotation3d(0.0, hood_angle, 0.0));
     }
-    
-    /**
-     * Updates the pose of the intake mechanism based on its current position.
-     */
-    static private void updateIntakePose(){
+
+    /** Updates the pose of the intake mechanism based on its current position. */
+    private static void updateIntakePose() {
         double intake_angle = IntakeSubsystem.getInstance().getPivotAngle() - INTAKE_HOME_POSITION;
         double intake_ratio = intake_angle / INTAKE_RANGE;
-        intake_pose_ = INTAKE_POSE_OFFSET.transformBy(new Transform3d(-0.3 * intake_ratio, 0.0, 0.0, Rotation3d.kZero));
+        intake_pose_ =
+                INTAKE_POSE_OFFSET.transformBy(
+                        new Transform3d(-0.3 * intake_ratio, 0.0, 0.0, Rotation3d.kZero));
     }
 
-    /**
-     * Updates the pose of the climber mechanism based on its current deploy angle.
-     */
-    static private void updateClimberPose(){
-        climber_pose_ = CLIMBER_POSE_OFFSET.rotateBy(new Rotation3d(0.0, ClimberSubsystem.getInstance().getDeployAngle(), 0.0));
+    /** Updates the pose of the climber mechanism based on its current deploy angle. */
+    private static void updateClimberPose() {
+        climber_pose_ =
+                new Pose3d(
+                        CLIMBER_POSE_OFFSET.getTranslation(),
+                        new Rotation3d(
+                                0.0,
+                                0.0,
+                                CLIMBER_POSE_OFFSET.getRotation().getZ()
+                                        + ClimberSubsystem.getInstance().getDeployAngle()));
     }
-
 }

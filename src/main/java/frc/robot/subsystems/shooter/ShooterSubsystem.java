@@ -146,8 +146,8 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
     public void updateLogic(double timestamp) {
         // Get the current robot pose and velocity
         Pose2d robot_pose = LocalizationSubsystem.getInstance().getFieldPose();
-        ChassisSpeeds robot_velocity =
-                LocalizationSubsystem.getInstance().getChassisSpeedsFieldRelative();
+        ChassisSpeeds robot_velocity = new ChassisSpeeds();
+        // LocalizationSubsystem.getInstance().getChassisSpeedsFieldRelative();
 
         // Calculate launch parameters using the LaunchCalculator
         launch_params_ =
@@ -338,11 +338,7 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
      * @return the launch angle in radians, or the max hood angle if no valid solution
      */
     public double getLaunchAngle() {
-        if (launch_params_ == null || !launch_params_.is_valid) {
-            return CONSTANTS.HOOD_MAX_ANGLE;
-        } else {
-            return hood_.getCurrentPosition();
-        }
+        return hood_.getCurrentPosition();
     }
 
     /**
@@ -351,12 +347,8 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
      * @return the launch velocity in meters per second, or 0.0 if no valid solution
      */
     public double getLaunchVelocity() {
-        if (launch_params_ == null || !launch_params_.is_valid) {
-            return 0.0;
-        } else {
-            // angular speed * radius * eff_factor
-            return flywheel_.getCurrentVelocity() * CONSTANTS.FLYWHEEL_WHEEL_RADIUS_METERS * 0.5;
-        }
+        // angular speed * radius * eff_factor
+        return flywheel_.getCurrentVelocity() * CONSTANTS.FLYWHEEL_WHEEL_RADIUS_METERS * 0.5;
     }
 
     /**
@@ -385,7 +377,7 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
 
         // Automatically switch LaunchCalculator based on target selection to use appropriate set of
         // empirically determined parameters for hub shots vs passes
-        if (target.equals(FieldTargets.Shooter.HUB)) {
+        if (MathUtil.isNear(FieldTargets.Shooter.HUB.getZ(), target.getZ(), 1E-6)) {
             launch_calculator_ = CONSTANTS.HUB_LAUNCH_CALCULATOR;
         } else {
             launch_calculator_ = CONSTANTS.PASS_LAUNCH_CALCULATOR;

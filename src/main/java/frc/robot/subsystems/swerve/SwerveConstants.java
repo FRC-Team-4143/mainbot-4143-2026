@@ -1,11 +1,11 @@
 package frc.robot.subsystems.swerve;
 
 import com.ctre.phoenix6.swerve.utility.PhoenixPIDController;
+import com.marswars.mechanisms.MotorConfig;
 import com.marswars.subsystem.MwConstants;
 import com.marswars.swerve_lib.SwerveDriveConfig;
 import com.marswars.swerve_lib.module.ModuleType;
 import com.marswars.swerve_lib.module.SwerveModuleConfig;
-import com.marswars.util.FxMotorConfig;
 import com.marswars.util.PhoenixUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -134,8 +134,8 @@ public class SwerveConstants extends MwConstants {
     // SWERVE MODULE CONFIGURATION OBJECTS
     // =============================================================================
 
-    public final FxMotorConfig DRIVE_MOTOR_CONFIG = new FxMotorConfig();
-    public final FxMotorConfig STEER_MOTOR_CONFIG = new FxMotorConfig();
+    public final MotorConfig DRIVE_MOTOR_CONFIG = new MotorConfig();
+    public final MotorConfig STEER_MOTOR_CONFIG = new MotorConfig();
 
     public final SwerveModuleConfig FL_MODULE_CONFIG = new SwerveModuleConfig();
     public final SwerveModuleConfig FR_MODULE_CONFIG = new SwerveModuleConfig();
@@ -173,14 +173,14 @@ public class SwerveConstants extends MwConstants {
                 new Translation2d(FL_MODULE_CONFIG.location_x, FL_MODULE_CONFIG.location_y);
 
         // FL Drive Motor Configuration
-        final FxMotorConfig FL_DRIVE_MOTOR_CONFIG = new FxMotorConfig(DRIVE_MOTOR_CONFIG);
+        final MotorConfig FL_DRIVE_MOTOR_CONFIG = new MotorConfig(DRIVE_MOTOR_CONFIG);
         FL_DRIVE_MOTOR_CONFIG.can_id = getIntConstant("fl", "drive_id");
-        FL_DRIVE_MOTOR_CONFIG.config.MotorOutput.Inverted =
+        FL_DRIVE_MOTOR_CONFIG.getAsFXConfig().MotorOutput.Inverted =
                 PhoenixUtil.toInvertedValue(getBoolConstant("fl", "invert_drive"));
         FL_MODULE_CONFIG.drive_motor_config = FL_DRIVE_MOTOR_CONFIG;
 
         // FL Steer Motor Configuration
-        final FxMotorConfig FL_STEER_MOTOR_CONFIG = new FxMotorConfig(STEER_MOTOR_CONFIG);
+        final MotorConfig FL_STEER_MOTOR_CONFIG = new MotorConfig(STEER_MOTOR_CONFIG);
         FL_STEER_MOTOR_CONFIG.can_id = getIntConstant("fl", "steer_id");
         FL_MODULE_CONFIG.steer_motor_config = FL_STEER_MOTOR_CONFIG;
 
@@ -198,14 +198,14 @@ public class SwerveConstants extends MwConstants {
                 new Translation2d(FR_MODULE_CONFIG.location_x, FR_MODULE_CONFIG.location_y);
 
         // FR Drive Motor Configuration
-        final FxMotorConfig FR_DRIVE_MOTOR_CONFIG = new FxMotorConfig(DRIVE_MOTOR_CONFIG);
+        final MotorConfig FR_DRIVE_MOTOR_CONFIG = new MotorConfig(DRIVE_MOTOR_CONFIG);
         FR_DRIVE_MOTOR_CONFIG.can_id = getIntConstant("fr", "drive_id");
-        FR_DRIVE_MOTOR_CONFIG.config.MotorOutput.Inverted =
+        FR_DRIVE_MOTOR_CONFIG.getAsFXConfig().MotorOutput.Inverted =
                 PhoenixUtil.toInvertedValue(getBoolConstant("fr", "invert_drive"));
         FR_MODULE_CONFIG.drive_motor_config = FR_DRIVE_MOTOR_CONFIG;
 
         // FR Steer Motor Configuration
-        final FxMotorConfig FR_STEER_MOTOR_CONFIG = new FxMotorConfig(STEER_MOTOR_CONFIG);
+        final MotorConfig FR_STEER_MOTOR_CONFIG = new MotorConfig(STEER_MOTOR_CONFIG);
         FR_STEER_MOTOR_CONFIG.can_id = getIntConstant("fr", "steer_id");
         FR_MODULE_CONFIG.steer_motor_config = FR_STEER_MOTOR_CONFIG;
 
@@ -223,14 +223,14 @@ public class SwerveConstants extends MwConstants {
                 new Translation2d(BL_MODULE_CONFIG.location_x, BL_MODULE_CONFIG.location_y);
 
         // BL Drive Motor Configuration
-        final FxMotorConfig BL_DRIVE_MOTOR_CONFIG = new FxMotorConfig(DRIVE_MOTOR_CONFIG);
+        final MotorConfig BL_DRIVE_MOTOR_CONFIG = new MotorConfig(DRIVE_MOTOR_CONFIG);
         BL_DRIVE_MOTOR_CONFIG.can_id = getIntConstant("bl", "drive_id");
-        BL_DRIVE_MOTOR_CONFIG.config.MotorOutput.Inverted =
+        BL_DRIVE_MOTOR_CONFIG.getAsFXConfig().MotorOutput.Inverted =
                 PhoenixUtil.toInvertedValue(getBoolConstant("bl", "invert_drive"));
         BL_MODULE_CONFIG.drive_motor_config = BL_DRIVE_MOTOR_CONFIG;
 
         // BL Steer Motor Configuration
-        final FxMotorConfig BL_STEER_MOTOR_CONFIG = new FxMotorConfig(STEER_MOTOR_CONFIG);
+        final MotorConfig BL_STEER_MOTOR_CONFIG = new MotorConfig(STEER_MOTOR_CONFIG);
         BL_STEER_MOTOR_CONFIG.can_id = getIntConstant("bl", "steer_id");
         BL_MODULE_CONFIG.steer_motor_config = BL_STEER_MOTOR_CONFIG;
 
@@ -248,14 +248,14 @@ public class SwerveConstants extends MwConstants {
                 new Translation2d(BR_MODULE_CONFIG.location_x, BR_MODULE_CONFIG.location_y);
 
         // BR Drive Motor Configuration
-        final FxMotorConfig BR_DRIVE_MOTOR_CONFIG = new FxMotorConfig(DRIVE_MOTOR_CONFIG);
+        final MotorConfig BR_DRIVE_MOTOR_CONFIG = new MotorConfig(DRIVE_MOTOR_CONFIG);
         BR_DRIVE_MOTOR_CONFIG.can_id = getIntConstant("br", "drive_id");
-        BR_DRIVE_MOTOR_CONFIG.config.MotorOutput.Inverted =
+        BR_DRIVE_MOTOR_CONFIG.getAsFXConfig().MotorOutput.Inverted =
                 PhoenixUtil.toInvertedValue(getBoolConstant("br", "invert_drive"));
         BR_MODULE_CONFIG.drive_motor_config = BR_DRIVE_MOTOR_CONFIG;
 
         // BR Steer Motor Configuration
-        final FxMotorConfig BR_STEER_MOTOR_CONFIG = new FxMotorConfig(STEER_MOTOR_CONFIG);
+        final MotorConfig BR_STEER_MOTOR_CONFIG = new MotorConfig(STEER_MOTOR_CONFIG);
         BR_STEER_MOTOR_CONFIG.can_id = getIntConstant("br", "steer_id");
         BR_MODULE_CONFIG.steer_motor_config = BR_STEER_MOTOR_CONFIG;
 

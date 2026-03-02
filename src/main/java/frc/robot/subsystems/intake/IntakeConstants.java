@@ -3,9 +3,9 @@ package frc.robot.subsystems.intake;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.SlotConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.marswars.mechanisms.MotorConfig;
+import com.marswars.mechanisms.MotorConfig.TalonMotorType;
 import com.marswars.subsystem.MwConstants;
-import com.marswars.util.FxMotorConfig;
-import com.marswars.util.FxMotorConfig.FxMotorType;
 import com.marswars.util.PhoenixUtil;
 import edu.wpi.first.math.util.Units;
 
@@ -29,11 +29,7 @@ public class IntakeConstants extends MwConstants {
         /** Idle state with intake mechanisms stopped */
         IDLE,
         /** Manual tuning mode for testing and calibration */
-        TUNING,
-        /** Position for shooting game pieces */
-        SHOOTING,
-        /** Position for racking game pieces */
-        RACKING
+        TUNING
     }
 
     // =============================================================================
@@ -65,10 +61,10 @@ public class IntakeConstants extends MwConstants {
     public final double PIVOT_HOME_POSITION = Units.degreesToRadians(11);
     public final double PIVOT_STATOR_CURRENT_LIMIT = 60;
     public final double PIVOT_DEPLOY_POSITION = Units.degreesToRadians(11);
-    public final double PIVOT_RACKING_POSITION = Units.degreesToRadians(75);
-    public final double PIVOT_STORE_POSITION = Units.degreesToRadians(95);
-    public final double PIVOT_TOLERANCE = Units.degreesToRadians(5);
-    public final Slot0Configs PIVOT_POSITION_GAINS = new Slot0Configs().withKG(0).withKP(.0);
+    public final double PIVOT_RACKING_POSITION = Units.degreesToRadians(60);
+    public final double PIVOT_STORE_POSITION = Units.degreesToRadians(98);
+    public final double DEPLOY_PIVOT_TOLERANCE = Units.degreesToRadians(20);
+    public final Slot0Configs PIVOT_POSITION_GAINS = new Slot0Configs().withKG(2).withKP(50);
 
     // Time to wait between cycling SHOOTING and RACKING modes (seconds)
     public final double SHOOTING_CYCLE_TIME = 1.0;
@@ -77,8 +73,8 @@ public class IntakeConstants extends MwConstants {
     // MOTOR CONFIGURATION OBJECTS
     // =============================================================================
 
-    public final FxMotorConfig ROLLER_MOTOR_CONFIG = new FxMotorConfig();
-    public final FxMotorConfig PIVOT_MOTOR_CONFIG = new FxMotorConfig();
+    public final MotorConfig ROLLER_MOTOR_CONFIG = new MotorConfig();
+    public final MotorConfig PIVOT_MOTOR_CONFIG = new MotorConfig();
 
     // =============================================================================
     // CONSTRUCTOR - MOTOR CONFIGURATION INITIALIZATION
@@ -87,22 +83,22 @@ public class IntakeConstants extends MwConstants {
     public IntakeConstants() {
         // Configure Roller Motor
         ROLLER_MOTOR_CONFIG.can_id = ROLLER_MOTOR_ID;
-        ROLLER_MOTOR_CONFIG.motor_type = FxMotorType.X60;
+        ROLLER_MOTOR_CONFIG.motor_type = TalonMotorType.X60;
         ROLLER_MOTOR_CONFIG.canbus_name = "rio";
-        ROLLER_MOTOR_CONFIG.config = new TalonFXConfiguration();
-        ROLLER_MOTOR_CONFIG.config.MotorOutput.Inverted =
-                PhoenixUtil.toInvertedValue(ROLLER_MOTOR_INVERTED);
+        TalonFXConfiguration roller_config = new TalonFXConfiguration();
+        roller_config.MotorOutput.Inverted = PhoenixUtil.toInvertedValue(ROLLER_MOTOR_INVERTED);
+        ROLLER_MOTOR_CONFIG.apply(roller_config);
 
         // Configure Pivot Motor
         PIVOT_MOTOR_CONFIG.can_id = PIVOT_MOTOR_ID;
-        PIVOT_MOTOR_CONFIG.motor_type = FxMotorType.X44;
+        PIVOT_MOTOR_CONFIG.motor_type = TalonMotorType.X44;
         PIVOT_MOTOR_CONFIG.canbus_name = "CANivore";
-        PIVOT_MOTOR_CONFIG.config = new TalonFXConfiguration();
-        PIVOT_MOTOR_CONFIG.config.Slot0 = Slot0Configs.from(PIVOT_POSITION_SLOT_CONFIG);
-        PIVOT_MOTOR_CONFIG.config.MotorOutput.Inverted =
-                PhoenixUtil.toInvertedValue(PIVOT_MOTOR_INVERTED);
-        PIVOT_MOTOR_CONFIG.config.CurrentLimits.StatorCurrentLimit = PIVOT_STATOR_CURRENT_LIMIT;
-        PIVOT_MOTOR_CONFIG.config.CurrentLimits.StatorCurrentLimitEnable = true;
-        PIVOT_MOTOR_CONFIG.config.Slot0 = PIVOT_POSITION_GAINS;
+        TalonFXConfiguration pivot_config = new TalonFXConfiguration();
+        pivot_config.Slot0 = Slot0Configs.from(PIVOT_POSITION_SLOT_CONFIG);
+        pivot_config.MotorOutput.Inverted = PhoenixUtil.toInvertedValue(PIVOT_MOTOR_INVERTED);
+        pivot_config.CurrentLimits.StatorCurrentLimit = PIVOT_STATOR_CURRENT_LIMIT;
+        pivot_config.CurrentLimits.StatorCurrentLimitEnable = true;
+        pivot_config.Slot0 = PIVOT_POSITION_GAINS;
+        PIVOT_MOTOR_CONFIG.apply(pivot_config);
     }
 }
