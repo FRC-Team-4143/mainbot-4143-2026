@@ -5,9 +5,9 @@ import com.ctre.phoenix6.configs.Slot1Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.marswars.geometry.LaunchCalculator;
+import com.marswars.mechanisms.MotorConfig;
+import com.marswars.mechanisms.MotorConfig.TalonMotorType;
 import com.marswars.subsystem.MwConstants;
-import com.marswars.util.FxMotorConfig;
-import com.marswars.util.FxMotorConfig.FxMotorType;
 import com.marswars.util.PhoenixUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
@@ -134,13 +134,13 @@ public class ShooterConstants extends MwConstants {
     // =============================================================================
     // MOTOR CONFIGURATION OBJECTS
     // =============================================================================
-    public final FxMotorConfig SHOOTER_LEADER_MOTOR_CONFIG = new FxMotorConfig();
-    public final FxMotorConfig SHOOTER_FOLLOWER_MOTOR_1_CONFIG = new FxMotorConfig();
-    public final FxMotorConfig SHOOTER_FOLLOWER_MOTOR_2_CONFIG = new FxMotorConfig();
-    public final FxMotorConfig SHOOTER_FOLLOWER_MOTOR_3_CONFIG = new FxMotorConfig();
-    public final FxMotorConfig INDEXER_LEADER_MOTOR_CONFIG = new FxMotorConfig();
-    public final FxMotorConfig INDEXER_FOLLOWER_MOTOR_CONFIG = new FxMotorConfig();
-    public final FxMotorConfig HOOD_MOTOR_CONFIGS = new FxMotorConfig();
+    public final MotorConfig SHOOTER_LEADER_MOTOR_CONFIG = new MotorConfig();
+    public final MotorConfig SHOOTER_FOLLOWER_MOTOR_1_CONFIG = new MotorConfig();
+    public final MotorConfig SHOOTER_FOLLOWER_MOTOR_2_CONFIG = new MotorConfig();
+    public final MotorConfig SHOOTER_FOLLOWER_MOTOR_3_CONFIG = new MotorConfig();
+    public final MotorConfig INDEXER_LEADER_MOTOR_CONFIG = new MotorConfig();
+    public final MotorConfig INDEXER_FOLLOWER_MOTOR_CONFIG = new MotorConfig();
+    public final MotorConfig HOOD_MOTOR_CONFIGS = new MotorConfig();
 
     // =============================================================================
     // LAUNCH CALCULATOR - Map-based shooting with motion compensation
@@ -226,90 +226,97 @@ public class ShooterConstants extends MwConstants {
         // =============================================================================
         // Configure Indexer Leader Motor
         INDEXER_LEADER_MOTOR_CONFIG.can_id = INDEXER_LEADER_ID;
-        INDEXER_LEADER_MOTOR_CONFIG.motor_type = FxMotorType.X44;
+        INDEXER_LEADER_MOTOR_CONFIG.motor_type = TalonMotorType.X44;
         INDEXER_LEADER_MOTOR_CONFIG.canbus_name = "rio";
-        INDEXER_LEADER_MOTOR_CONFIG.config = new TalonFXConfiguration();
-        INDEXER_LEADER_MOTOR_CONFIG.config.MotorOutput.Inverted =
+        TalonFXConfiguration indexer_leader_config = new TalonFXConfiguration();
+        indexer_leader_config.MotorOutput.Inverted =
                 PhoenixUtil.toInvertedValue(INDEXER_LEADER_INVERTED);
+        INDEXER_LEADER_MOTOR_CONFIG.apply(indexer_leader_config);
 
         // Configure Indexer FOLLOWER Motor
         INDEXER_FOLLOWER_MOTOR_CONFIG.can_id = INDEXER_FOLLOWER_ID;
-        INDEXER_FOLLOWER_MOTOR_CONFIG.motor_type = FxMotorType.X44;
+        INDEXER_FOLLOWER_MOTOR_CONFIG.motor_type = TalonMotorType.X44;
         INDEXER_FOLLOWER_MOTOR_CONFIG.canbus_name = "rio";
-        INDEXER_FOLLOWER_MOTOR_CONFIG.config = new TalonFXConfiguration();
-        INDEXER_FOLLOWER_MOTOR_CONFIG.config.MotorOutput.Inverted =
+        TalonFXConfiguration indexer_follower_config = new TalonFXConfiguration();
+        indexer_follower_config.MotorOutput.Inverted =
                 PhoenixUtil.toInvertedValue(INDEXER_FOLLOWER_INVERTED);
+        INDEXER_FOLLOWER_MOTOR_CONFIG.apply(indexer_follower_config);
 
         // Configure Shooter Leader Motor
         SHOOTER_LEADER_MOTOR_CONFIG.can_id = SHOOTER_LEADER_ID;
-        SHOOTER_LEADER_MOTOR_CONFIG.motor_type = FxMotorType.X60;
+        SHOOTER_LEADER_MOTOR_CONFIG.motor_type = TalonMotorType.X60;
         SHOOTER_LEADER_MOTOR_CONFIG.canbus_name = "rio";
-        SHOOTER_LEADER_MOTOR_CONFIG.config = new TalonFXConfiguration();
-        SHOOTER_LEADER_MOTOR_CONFIG.config.MotorOutput.Inverted =
+        TalonFXConfiguration shooter_leader_config = new TalonFXConfiguration();
+        shooter_leader_config.MotorOutput.Inverted =
                 PhoenixUtil.toInvertedValue(FLYWHEEL_LEADER_INVERTED);
-        SHOOTER_LEADER_MOTOR_CONFIG.config.Slot1 = FLYWHEEL_VELOCITY_GAINS;
-        SHOOTER_LEADER_MOTOR_CONFIG.config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
-        SHOOTER_LEADER_MOTOR_CONFIG.config.Voltage.PeakReverseVoltage = 0.0;
+        shooter_leader_config.Slot1 = FLYWHEEL_VELOCITY_GAINS;
+        shooter_leader_config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+        shooter_leader_config.Voltage.PeakReverseVoltage = 0.0;
         // MotionMagic tuned for ~3 second ramp to 300 rad/s (47.75 rot/s)
         // Acceleration: 16 rot/s² (47.75 / 3)
         // Jerk: 80 rot/s³ (5x acceleration for smooth motion)
-        SHOOTER_LEADER_MOTOR_CONFIG.config.MotionMagic.MotionMagicAcceleration = 16.0;
-        SHOOTER_LEADER_MOTOR_CONFIG.config.MotionMagic.MotionMagicJerk = 80.0;
-        // SHOOTER_LEADER_MOTOR_CONFIG.config.CurrentLimits.StatorCurrentLimit = 120.0;
-        // SHOOTER_LEADER_MOTOR_CONFIG.config.CurrentLimits.StatorCurrentLimitEnable = true;
-        // SHOOTER_LEADER_MOTOR_CONFIG.config.CurrentLimits.SupplyCurrentLimit = 70.0;
-        // SHOOTER_LEADER_MOTOR_CONFIG.config.CurrentLimits.SupplyCurrentLimitEnable = true;
+        shooter_leader_config.MotionMagic.MotionMagicAcceleration = 16.0;
+        shooter_leader_config.MotionMagic.MotionMagicJerk = 80.0;
+        // shooter_leader_config.CurrentLimits.StatorCurrentLimit = 120.0;
+        // shooter_leader_config.CurrentLimits.StatorCurrentLimitEnable = true;
+        // shooter_leader_config.CurrentLimits.SupplyCurrentLimit = 70.0;
+        // shooter_leader_config.CurrentLimits.SupplyCurrentLimitEnable = true;
+        SHOOTER_LEADER_MOTOR_CONFIG.apply(shooter_leader_config);
 
         // Configure Shooter Follower 1 Motor
         SHOOTER_FOLLOWER_MOTOR_1_CONFIG.can_id = SHOOTER_FOLLOWER_1_ID;
-        SHOOTER_FOLLOWER_MOTOR_1_CONFIG.motor_type = FxMotorType.X60;
+        SHOOTER_FOLLOWER_MOTOR_1_CONFIG.motor_type = TalonMotorType.X60;
         SHOOTER_FOLLOWER_MOTOR_1_CONFIG.canbus_name = "rio";
-        SHOOTER_FOLLOWER_MOTOR_1_CONFIG.config = new TalonFXConfiguration();
-        SHOOTER_FOLLOWER_MOTOR_1_CONFIG.config.MotorOutput.Inverted =
+        TalonFXConfiguration shooter_follower_1_config = new TalonFXConfiguration();
+        shooter_follower_1_config.MotorOutput.Inverted =
                 PhoenixUtil.toInvertedValue(FLYWHEEL_FOLLOWER_1_INVERTED);
-        SHOOTER_FOLLOWER_MOTOR_1_CONFIG.config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
-        SHOOTER_FOLLOWER_MOTOR_1_CONFIG.config.Voltage.PeakReverseVoltage = 0.0;
-        // SHOOTER_FOLLOWER_MOTOR_1_CONFIG.config.CurrentLimits.StatorCurrentLimit = 120.0;
-        // SHOOTER_FOLLOWER_MOTOR_1_CONFIG.config.CurrentLimits.StatorCurrentLimitEnable = true;
-        // SHOOTER_FOLLOWER_MOTOR_1_CONFIG.config.CurrentLimits.SupplyCurrentLimit = 70.0;
-        // SHOOTER_FOLLOWER_MOTOR_1_CONFIG.config.CurrentLimits.SupplyCurrentLimitEnable = true;
+        shooter_follower_1_config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+        shooter_follower_1_config.Voltage.PeakReverseVoltage = 0.0;
+        // shooter_follower_1_config.CurrentLimits.StatorCurrentLimit = 120.0;
+        // shooter_follower_1_config.CurrentLimits.StatorCurrentLimitEnable = true;
+        // shooter_follower_1_config.CurrentLimits.SupplyCurrentLimit = 70.0;
+        // shooter_follower_1_config.CurrentLimits.SupplyCurrentLimitEnable = true;
+        SHOOTER_FOLLOWER_MOTOR_1_CONFIG.apply(shooter_follower_1_config);
 
         // Configure Shooter Follower 2 Motor
         SHOOTER_FOLLOWER_MOTOR_2_CONFIG.can_id = SHOOTER_FOLLOWER_2_ID;
-        SHOOTER_FOLLOWER_MOTOR_2_CONFIG.motor_type = FxMotorType.X60;
+        SHOOTER_FOLLOWER_MOTOR_2_CONFIG.motor_type = TalonMotorType.X60;
         SHOOTER_FOLLOWER_MOTOR_2_CONFIG.canbus_name = "rio";
-        SHOOTER_FOLLOWER_MOTOR_2_CONFIG.config = new TalonFXConfiguration();
-        SHOOTER_FOLLOWER_MOTOR_2_CONFIG.config.MotorOutput.Inverted =
+        TalonFXConfiguration shooter_follower_2_config = new TalonFXConfiguration();
+        shooter_follower_2_config.MotorOutput.Inverted =
                 PhoenixUtil.toInvertedValue(FLYWHEEL_FOLLOWER_2_INVERTED);
-        SHOOTER_FOLLOWER_MOTOR_2_CONFIG.config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
-        SHOOTER_FOLLOWER_MOTOR_2_CONFIG.config.Voltage.PeakReverseVoltage = 0.0;
-        // SHOOTER_FOLLOWER_MOTOR_2_CONFIG.config.CurrentLimits.StatorCurrentLimit = 120.0;
-        // SHOOTER_FOLLOWER_MOTOR_2_CONFIG.config.CurrentLimits.StatorCurrentLimitEnable = true;
-        // SHOOTER_FOLLOWER_MOTOR_2_CONFIG.config.CurrentLimits.SupplyCurrentLimit = 70.0;
-        // SHOOTER_FOLLOWER_MOTOR_2_CONFIG.config.CurrentLimits.SupplyCurrentLimitEnable = true;
+        shooter_follower_2_config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+        shooter_follower_2_config.Voltage.PeakReverseVoltage = 0.0;
+        // shooter_follower_2_config.CurrentLimits.StatorCurrentLimit = 120.0;
+        // shooter_follower_2_config.CurrentLimits.StatorCurrentLimitEnable = true;
+        // shooter_follower_2_config.CurrentLimits.SupplyCurrentLimit = 70.0;
+        // shooter_follower_2_config.CurrentLimits.SupplyCurrentLimitEnable = true;
+        SHOOTER_FOLLOWER_MOTOR_2_CONFIG.apply(shooter_follower_2_config);
 
         // Configure Shooter Follower 3 Motor
         SHOOTER_FOLLOWER_MOTOR_3_CONFIG.can_id = SHOOTER_FOLLOWER_3_ID;
-        SHOOTER_FOLLOWER_MOTOR_3_CONFIG.motor_type = FxMotorType.X60;
+        SHOOTER_FOLLOWER_MOTOR_3_CONFIG.motor_type = TalonMotorType.X60;
         SHOOTER_FOLLOWER_MOTOR_3_CONFIG.canbus_name = "rio";
-        SHOOTER_FOLLOWER_MOTOR_3_CONFIG.config = new TalonFXConfiguration();
-        SHOOTER_FOLLOWER_MOTOR_3_CONFIG.config.MotorOutput.Inverted =
+        TalonFXConfiguration shooter_follower_3_config = new TalonFXConfiguration();
+        shooter_follower_3_config.MotorOutput.Inverted =
                 PhoenixUtil.toInvertedValue(FLYWHEEL_FOLLOWER_3_INVERTED);
-        SHOOTER_FOLLOWER_MOTOR_3_CONFIG.config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
-        SHOOTER_FOLLOWER_MOTOR_3_CONFIG.config.Voltage.PeakReverseVoltage = 0.0;
-        // SHOOTER_FOLLOWER_MOTOR_3_CONFIG.config.CurrentLimits.StatorCurrentLimit = 120.0;
-        // SHOOTER_FOLLOWER_MOTOR_3_CONFIG.config.CurrentLimits.StatorCurrentLimitEnable = true;
-        // SHOOTER_FOLLOWER_MOTOR_3_CONFIG.config.CurrentLimits.SupplyCurrentLimit = 70.0;
-        // SHOOTER_FOLLOWER_MOTOR_3_CONFIG.config.CurrentLimits.SupplyCurrentLimitEnable = true;
+        shooter_follower_3_config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+        shooter_follower_3_config.Voltage.PeakReverseVoltage = 0.0;
+        // shooter_follower_3_config.CurrentLimits.StatorCurrentLimit = 120.0;
+        // shooter_follower_3_config.CurrentLimits.StatorCurrentLimitEnable = true;
+        // shooter_follower_3_config.CurrentLimits.SupplyCurrentLimit = 70.0;
+        // shooter_follower_3_config.CurrentLimits.SupplyCurrentLimitEnable = true;
+        SHOOTER_FOLLOWER_MOTOR_3_CONFIG.apply(shooter_follower_3_config);
 
         // Configure Hood Motor
         HOOD_MOTOR_CONFIGS.can_id = HOOD_ID;
-        HOOD_MOTOR_CONFIGS.motor_type = FxMotorType.X44;
+        HOOD_MOTOR_CONFIGS.motor_type = TalonMotorType.X44;
         HOOD_MOTOR_CONFIGS.canbus_name = "rio";
-        HOOD_MOTOR_CONFIGS.config = new TalonFXConfiguration();
-        HOOD_MOTOR_CONFIGS.config.MotorOutput.Inverted = PhoenixUtil.toInvertedValue(HOOD_INVERTED);
-        HOOD_MOTOR_CONFIGS.config.Slot0 = HOOD_POSITION_GAINS;
-        HOOD_MOTOR_CONFIGS.config.CurrentLimits.SupplyCurrentLimit = 10;
-        HOOD_MOTOR_CONFIGS.config.CurrentLimits.SupplyCurrentLimitEnable = true;
+        TalonFXConfiguration hood_config = new TalonFXConfiguration();
+        hood_config.MotorOutput.Inverted = PhoenixUtil.toInvertedValue(HOOD_INVERTED);
+        hood_config.Slot0 = HOOD_POSITION_GAINS;
+        hood_config.CurrentLimits.SupplyCurrentLimit = 10;
+        hood_config.CurrentLimits.SupplyCurrentLimitEnable = true;
+        HOOD_MOTOR_CONFIGS.apply(hood_config);
     }
 }

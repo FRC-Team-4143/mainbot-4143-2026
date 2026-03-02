@@ -1,14 +1,12 @@
 package frc.robot.subsystems.climber;
 
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.configs.TalonFXSConfiguration;
+import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.marswars.mechanisms.MotorConfig;
+import com.marswars.mechanisms.MotorConfig.TalonMotorType;
 import com.marswars.subsystem.MwConstants;
-import com.marswars.util.NovaMotorConfig;
-import com.marswars.util.NovaMotorConfig.NovaMotorType;
-import com.thethriftybot.devices.ThriftyNova.ThriftyNovaConfig;
 import edu.wpi.first.math.util.Units;
-
-// IMPORTANT
-// Change ALL placeholders BEFORE branch merge
-// Delete all Place Holders
 
 public class ClimberConstants extends MwConstants {
 
@@ -66,24 +64,32 @@ public class ClimberConstants extends MwConstants {
     // MOTOR CONFIGURATION OBJECTS
     // =============================================================================
 
-    public final NovaMotorConfig DEPLOY_MOTOR_CONFIG = new NovaMotorConfig();
-    public final NovaMotorConfig FLIP_MOTOR_CONFIG = new NovaMotorConfig();
+    public final MotorConfig DEPLOY_MOTOR_CONFIG = new MotorConfig();
+    public final MotorConfig FLIP_MOTOR_CONFIG = new MotorConfig();
 
     // =============================================================================
     // CONSTRUCTOR - MOTOR CONFIGURATION INITIALIZATION
     // =============================================================================
 
     public ClimberConstants() {
+
         // Configure DEPLOY Motor
         DEPLOY_MOTOR_CONFIG.can_id = DEPLOY_MOTOR_ID;
-        DEPLOY_MOTOR_CONFIG.motor_type = NovaMotorType.NEO_550;
+        DEPLOY_MOTOR_CONFIG.motor_type = TalonMotorType.NEO_550;
         DEPLOY_MOTOR_CONFIG.canbus_name = "rio";
-        DEPLOY_MOTOR_CONFIG.config = new ThriftyNovaConfig();
+        TalonFXSConfiguration deploy_config = new TalonFXSConfiguration();
+        deploy_config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+        deploy_config.CurrentLimits.StatorCurrentLimit = 30;
+        deploy_config.CurrentLimits.StatorCurrentLimitEnable = true;
+        deploy_config.CurrentLimits.SupplyCurrentLimit = 5;
+        deploy_config.CurrentLimits.SupplyCurrentLimitEnable = true;
+        DEPLOY_MOTOR_CONFIG.apply(deploy_config);
 
         // Configure FLIP Motor
         FLIP_MOTOR_CONFIG.can_id = FLIP_MOTOR_ID;
-        FLIP_MOTOR_CONFIG.motor_type = NovaMotorType.VORTEX;
+        FLIP_MOTOR_CONFIG.motor_type = TalonMotorType.X60;
         FLIP_MOTOR_CONFIG.canbus_name = "rio";
-        FLIP_MOTOR_CONFIG.config = new ThriftyNovaConfig();
+        TalonFXConfiguration flip_config = new TalonFXConfiguration();
+        FLIP_MOTOR_CONFIG.apply(flip_config);
     }
 }

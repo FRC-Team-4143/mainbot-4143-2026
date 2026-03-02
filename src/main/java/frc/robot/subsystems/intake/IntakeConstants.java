@@ -3,9 +3,9 @@ package frc.robot.subsystems.intake;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.SlotConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.marswars.mechanisms.MotorConfig;
+import com.marswars.mechanisms.MotorConfig.TalonMotorType;
 import com.marswars.subsystem.MwConstants;
-import com.marswars.util.FxMotorConfig;
-import com.marswars.util.FxMotorConfig.FxMotorType;
 import com.marswars.util.PhoenixUtil;
 import edu.wpi.first.math.util.Units;
 
@@ -73,8 +73,8 @@ public class IntakeConstants extends MwConstants {
     // MOTOR CONFIGURATION OBJECTS
     // =============================================================================
 
-    public final FxMotorConfig ROLLER_MOTOR_CONFIG = new FxMotorConfig();
-    public final FxMotorConfig PIVOT_MOTOR_CONFIG = new FxMotorConfig();
+    public final MotorConfig ROLLER_MOTOR_CONFIG = new MotorConfig();
+    public final MotorConfig PIVOT_MOTOR_CONFIG = new MotorConfig();
 
     // =============================================================================
     // CONSTRUCTOR - MOTOR CONFIGURATION INITIALIZATION
@@ -83,22 +83,22 @@ public class IntakeConstants extends MwConstants {
     public IntakeConstants() {
         // Configure Roller Motor
         ROLLER_MOTOR_CONFIG.can_id = ROLLER_MOTOR_ID;
-        ROLLER_MOTOR_CONFIG.motor_type = FxMotorType.X60;
+        ROLLER_MOTOR_CONFIG.motor_type = TalonMotorType.X60;
         ROLLER_MOTOR_CONFIG.canbus_name = "rio";
-        ROLLER_MOTOR_CONFIG.config = new TalonFXConfiguration();
-        ROLLER_MOTOR_CONFIG.config.MotorOutput.Inverted =
-                PhoenixUtil.toInvertedValue(ROLLER_MOTOR_INVERTED);
+        TalonFXConfiguration roller_config = new TalonFXConfiguration();
+        roller_config.MotorOutput.Inverted = PhoenixUtil.toInvertedValue(ROLLER_MOTOR_INVERTED);
+        ROLLER_MOTOR_CONFIG.apply(roller_config);
 
         // Configure Pivot Motor
         PIVOT_MOTOR_CONFIG.can_id = PIVOT_MOTOR_ID;
-        PIVOT_MOTOR_CONFIG.motor_type = FxMotorType.X44;
+        PIVOT_MOTOR_CONFIG.motor_type = TalonMotorType.X44;
         PIVOT_MOTOR_CONFIG.canbus_name = "CANivore";
-        PIVOT_MOTOR_CONFIG.config = new TalonFXConfiguration();
-        PIVOT_MOTOR_CONFIG.config.Slot0 = Slot0Configs.from(PIVOT_POSITION_SLOT_CONFIG);
-        PIVOT_MOTOR_CONFIG.config.MotorOutput.Inverted =
-                PhoenixUtil.toInvertedValue(PIVOT_MOTOR_INVERTED);
-        PIVOT_MOTOR_CONFIG.config.CurrentLimits.StatorCurrentLimit = PIVOT_STATOR_CURRENT_LIMIT;
-        PIVOT_MOTOR_CONFIG.config.CurrentLimits.StatorCurrentLimitEnable = true;
-        PIVOT_MOTOR_CONFIG.config.Slot0 = PIVOT_POSITION_GAINS;
+        TalonFXConfiguration pivot_config = new TalonFXConfiguration();
+        pivot_config.Slot0 = Slot0Configs.from(PIVOT_POSITION_SLOT_CONFIG);
+        pivot_config.MotorOutput.Inverted = PhoenixUtil.toInvertedValue(PIVOT_MOTOR_INVERTED);
+        pivot_config.CurrentLimits.StatorCurrentLimit = PIVOT_STATOR_CURRENT_LIMIT;
+        pivot_config.CurrentLimits.StatorCurrentLimitEnable = true;
+        pivot_config.Slot0 = PIVOT_POSITION_GAINS;
+        PIVOT_MOTOR_CONFIG.apply(pivot_config);
     }
 }
