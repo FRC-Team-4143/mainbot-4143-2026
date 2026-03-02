@@ -5,13 +5,10 @@
 package frc.robot;
 
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.subsystems.intake.IntakeSubsystem;
-import frc.robot.subsystems.intake.IntakeConstants.IntakeStates;
 import frc.robot.subsystems.localization.LocalizationSubsystem;
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterStates;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
@@ -51,11 +48,11 @@ public abstract class OI {
         driver_controller_
                 .rightStick()
                 .onTrue(SwerveSubsystem.getInstance().toggleFieldCentric().ignoringDisable(true));
-        driver_controller_.rightTrigger().whileTrue(TeleOpCommands.shootFuelCommand());
-        driver_controller_.leftTrigger().whileTrue(TeleOpCommands.aimAtTargetCommand());
-        driver_controller_.leftStick().whileTrue(TeleOpCommands.rotateForBumpCommand());
-        driver_controller_.rightBumper().whileTrue(TeleOpCommands.intakeFuelCommand());
-        driver_controller_.leftBumper().onFalse(TeleOpCommands.storeIntakeCommand());
+        driver_controller_.rightTrigger().whileTrue(ControlCommands.shootFuelCommand());
+        driver_controller_.leftTrigger().whileTrue(ControlCommands.aimAtTargetCommand());
+        driver_controller_.leftStick().whileTrue(ControlCommands.rotateForBumpCommand());
+        driver_controller_.rightBumper().whileTrue(ControlCommands.intakeFuelCommand());
+        driver_controller_.leftBumper().onFalse(ControlCommands.storeIntakeCommand());
 
         // =============================================================================
         // OPERATOR CONTROLLER BINDINGS
@@ -65,19 +62,19 @@ public abstract class OI {
         // TESTING BINDINGS (THESE SHOULD BE REMOVED BEFORE COMPETITION)
         // =============================================================================
 
-        // Used for testing chassis velocity control, should be removed before competition
-        driver_controller_
-                .x()
-                .whileTrue(
-                        SwerveSubsystem.getInstance()
-                                .chassisTuningCommand(new ChassisSpeeds(0, 1, 0)));
+        // // Used for testing chassis velocity control, should be removed before competition
+        // driver_controller_
+        //         .x()
+        //         .whileTrue(
+        //                 SwerveSubsystem.getInstance()
+        //                         .chassisTuningCommand(new ChassisSpeeds(0, 1, 0)));
 
-        // Used for testing chassis velocity control, should be removed before competition
-        driver_controller_
-                .y()
-                .whileTrue(
-                        SwerveSubsystem.getInstance()
-                                .chassisTuningCommand(new ChassisSpeeds(1, 0, 0)));
+        // // Used for testing chassis velocity control, should be removed before competition
+        // driver_controller_
+        //         .y()
+        //         .whileTrue(
+        //                 SwerveSubsystem.getInstance()
+        //                         .chassisTuningCommand(new ChassisSpeeds(1, 0, 0)));
     }
 
     /**
