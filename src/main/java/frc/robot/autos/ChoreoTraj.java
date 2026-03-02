@@ -24,35 +24,7 @@ public record ChoreoTraj(
     Pose2d initialPoseBlue,
     Pose2d endPoseBlue
 ) {
-    public static final ChoreoTraj LeftStartNeutralOutpost = new ChoreoTraj(
-	    "LeftStartNeutralOutpost",
-	    OptionalInt.empty(),
-	    8.13676,
-	    new Pose2d(3.467, 5.603, Rotation2d.fromRadians(-0.928)),
-	    new Pose2d(0.293, 0.733, Rotation2d.fromRadians(3.142))
-	);
-	public static final ChoreoTraj OutpostClimb = new ChoreoTraj(
-	    "OutpostClimb",
-	    OptionalInt.empty(),
-	    2.2752,
-	    new Pose2d(0.384, 0.671, Rotation2d.fromRadians(0)),
-	    new Pose2d(0.995, 2.742, Rotation2d.fromRadians(0))
-	);
-	public static final ChoreoTraj OutpostClimbRight = new ChoreoTraj(
-	    "OutpostClimbRight",
-	    OptionalInt.empty(),
-	    1.43759,
-	    new Pose2d(0.506, 6.005, Rotation2d.fromRadians(-3.128)),
-	    new Pose2d(1.001, 4.717, Rotation2d.fromRadians(3.142))
-	);
-	public static final ChoreoTraj RightStartNeutralDepot = new ChoreoTraj(
-	    "RightStartNeutralDepot",
-	    OptionalInt.empty(),
-	    7.14248,
-	    new Pose2d(3.467, 2.649, Rotation2d.fromRadians(0.755)),
-	    new Pose2d(0.416, 5.935, Rotation2d.fromRadians(2.124))
-	);
-	public static final ChoreoTraj CycleNeutralFirst = new ChoreoTraj(
+    public static final ChoreoTraj CycleNeutralFirst = new ChoreoTraj(
 	    "CycleNeutralFirst",
 	    OptionalInt.empty(),
 	    4.28324,
@@ -73,6 +45,20 @@ public record ChoreoTraj(
 	    new Pose2d(3.495, 2.534, Rotation2d.fromRadians(-2.293)),
 	    new Pose2d(3.476, 2.534, Rotation2d.fromRadians(-2.272))
 	);
+	public static final ChoreoTraj LeftStartNeutralOutpost = new ChoreoTraj(
+	    "LeftStartNeutralOutpost",
+	    OptionalInt.empty(),
+	    8.13676,
+	    new Pose2d(3.467, 5.603, Rotation2d.fromRadians(-0.928)),
+	    new Pose2d(0.293, 0.733, Rotation2d.fromRadians(3.142))
+	);
+	public static final ChoreoTraj OutpostClimb = new ChoreoTraj(
+	    "OutpostClimb",
+	    OptionalInt.empty(),
+	    2.2752,
+	    new Pose2d(0.384, 0.671, Rotation2d.fromRadians(0)),
+	    new Pose2d(0.995, 2.742, Rotation2d.fromRadians(0))
+	);
 	public static final ChoreoTraj OutpostClimbNeutral = new ChoreoTraj(
 	    "OutpostClimbNeutral",
 	    OptionalInt.empty(),
@@ -80,20 +66,34 @@ public record ChoreoTraj(
 	    new Pose2d(3.437, 2.475, Rotation2d.fromRadians(-2.195)),
 	    new Pose2d(1.059, 2.787, Rotation2d.fromRadians(0))
 	);
+	public static final ChoreoTraj OutpostClimbRight = new ChoreoTraj(
+	    "OutpostClimbRight",
+	    OptionalInt.empty(),
+	    1.43759,
+	    new Pose2d(0.506, 6.005, Rotation2d.fromRadians(-3.128)),
+	    new Pose2d(1.001, 4.717, Rotation2d.fromRadians(3.142))
+	);
+	public static final ChoreoTraj RightStartNeutralDepot = new ChoreoTraj(
+	    "RightStartNeutralDepot",
+	    OptionalInt.empty(),
+	    7.14248,
+	    new Pose2d(3.467, 2.649, Rotation2d.fromRadians(0.755)),
+	    new Pose2d(0.416, 5.935, Rotation2d.fromRadians(2.124))
+	);
 
     /**
      * A map between trajectory names and their corresponding data.
      * This allows for trajectory data to be looked up with strings during runtime.
      */
     public static final Map<String, ChoreoTraj> ALL_TRAJECTORIES = Map.ofEntries(
-    	Map.entry("LeftStartNeutralOutpost", LeftStartNeutralOutpost),
-		Map.entry("OutpostClimb", OutpostClimb),
-		Map.entry("OutpostClimbRight", OutpostClimbRight),
-		Map.entry("RightStartNeutralDepot", RightStartNeutralDepot),
-		Map.entry("CycleNeutralFirst", CycleNeutralFirst),
+    	Map.entry("CycleNeutralFirst", CycleNeutralFirst),
 		Map.entry("CycleNeutralSecond", CycleNeutralSecond),
 		Map.entry("CycleNeutralThird", CycleNeutralThird),
-		Map.entry("OutpostClimbNeutral", OutpostClimbNeutral)
+		Map.entry("LeftStartNeutralOutpost", LeftStartNeutralOutpost),
+		Map.entry("OutpostClimb", OutpostClimb),
+		Map.entry("OutpostClimbNeutral", OutpostClimbNeutral),
+		Map.entry("OutpostClimbRight", OutpostClimbRight),
+		Map.entry("RightStartNeutralDepot", RightStartNeutralDepot)
     );
 
     /**

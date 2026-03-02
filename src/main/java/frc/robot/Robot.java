@@ -18,6 +18,7 @@ import frc.robot.lib2026.FieldConstants;
 import frc.robot.lib2026.FieldRegions;
 import frc.robot.lib2026.FieldTargets;
 import frc.robot.lib2026.HubMonitor;
+import frc.robot.lib2026.HubDisplay;
 import frc.robot.subsystems.hopper.HopperConstants.HopperStates;
 import frc.robot.subsystems.hopper.HopperSubsystem;
 import frc.robot.subsystems.intake.IntakeConstants.IntakeStates;
@@ -66,8 +67,10 @@ public class Robot extends TimedRobot {
         // run the main robot loop for each subsystem
         robot_container_.doControlLoop();
 
-        // Update the hub active status
         HubMonitor.isHubActive(DriverStation.getMatchTime());
+
+        // Update and display the hub active status and transitions
+        HubDisplay.update(DriverStation.getMatchTime());
     }
 
     @Override

@@ -127,7 +127,9 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
             system_state_ = ShooterStates.AIMING;
         } else if (system_state_ == ShooterStates.AIMING && isShooterReady()) {
             system_state_ = ShooterStates.SHOOT;
-        } else if (system_state_ == ShooterStates.AIMING && !isShooterReady() && wanted == ShooterStates.SHOOT) {
+        } else if (system_state_ == ShooterStates.AIMING
+                && !isShooterReady()
+                && wanted == ShooterStates.SHOOT) {
             // Nap time : Blocks deafult transition from occuring
         } else {
             system_state_ = wanted;

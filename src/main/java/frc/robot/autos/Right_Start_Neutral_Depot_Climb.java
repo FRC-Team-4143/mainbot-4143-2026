@@ -2,7 +2,6 @@ package frc.robot.autos;
 
 import com.marswars.auto.Auto;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.lib2026.FieldTargets;
 import frc.robot.subsystems.intake.IntakeConstants.IntakeStates;
 import frc.robot.subsystems.intake.IntakeSubsystem;
@@ -53,8 +52,8 @@ public class Right_Start_Neutral_Depot_Climb extends Auto {
                                             .setWantedState(ShooterStates.SHOOT);
                                     SwerveSubsystem.getInstance()
                                             .setWantedState(SwerveStates.CHOREO_PATH_ROTATION_LOCK);
-                                        IntakeSubsystem.getInstance()
-                                                .setWantedState(IntakeStates.INTAKE);
+                                    IntakeSubsystem.getInstance()
+                                            .setWantedState(IntakeStates.INTAKE);
                                 }));
         SwerveSubsystem.getInstance()
                 .getChoreoEventTimeTrigger("Stop Shooting")
@@ -86,13 +85,13 @@ public class Right_Start_Neutral_Depot_Climb extends Auto {
                                         SwerveSubsystem.getInstance()
                                                 .setWantedState(SwerveStates.FIELD_CENTRIC))
                         .until(SwerveSubsystem.getInstance()::isAtChoreoSetpoint),
-        
-    
+
                 // Shoot here if needed
-                
+
                 // Move to the climb position
                 // Commands.runOnce(
-                //         () -> ShooterSubsystem.getInstance().setWantedState(ShooterStates.SHOOT)),
+                //         () ->
+                // ShooterSubsystem.getInstance().setWantedState(ShooterStates.SHOOT)),
                 SwerveSubsystem.getInstance()
                         .setDesiredChoreoTrajectoryCommand(
                                 getTrajectory(ChoreoTraj.OutpostClimbRight.name())),
@@ -105,6 +104,5 @@ public class Right_Start_Neutral_Depot_Climb extends Auto {
                                         SwerveSubsystem.getInstance()
                                                 .setWantedState(SwerveStates.FIELD_CENTRIC))
                         .until(SwerveSubsystem.getInstance()::isAtChoreoSetpoint));
-        
     }
 }
