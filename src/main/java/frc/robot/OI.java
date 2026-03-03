@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.subsystems.climber.ClimberSubsystem;
 import frc.robot.subsystems.localization.LocalizationSubsystem;
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterStates;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
@@ -58,7 +59,10 @@ public abstract class OI {
         // =============================================================================
         // OPERATOR CONTROLLER BINDINGS
         // =============================================================================
-
+        operator_controller_.a().onTrue(Commands.runOnce(() -> {ClimberSubsystem.getInstance().rotateDeployClockwise();}));
+        operator_controller_.b().onTrue(Commands.runOnce(() -> {ClimberSubsystem.getInstance().rotateDeployCounterClockwise();}));
+        operator_controller_.x().onTrue(Commands.runOnce(() -> {ClimberSubsystem.getInstance().rotateFlipClockwise();}));
+        operator_controller_.y().onTrue(Commands.runOnce(() -> {ClimberSubsystem.getInstance().rotateFlipCounterClockwise();}));
         // =============================================================================
         // TESTING BINDINGS (THESE SHOULD BE REMOVED BEFORE COMPETITION)
         // =============================================================================

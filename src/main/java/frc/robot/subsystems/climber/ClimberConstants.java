@@ -25,7 +25,8 @@ public class ClimberConstants extends MwConstants {
         L1_DOWN,
         /** Climbing to Level 3 */
         L3_CLIMB,
-        TUNNING
+        TUNNING,
+        MANUAL
     }
 
     // =============================================================================
