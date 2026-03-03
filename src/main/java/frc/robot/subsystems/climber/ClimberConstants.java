@@ -6,6 +6,8 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.marswars.mechanisms.MotorConfig;
 import com.marswars.mechanisms.MotorConfig.TalonMotorType;
 import com.marswars.subsystem.MwConstants;
+
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.util.Units;
 
 public class ClimberConstants extends MwConstants {
@@ -24,7 +26,9 @@ public class ClimberConstants extends MwConstants {
         /** Moving down from Level 1 */
         L1_DOWN,
         /** Climbing to Level 3 */
-        L3_CLIMB,
+        L3_CLIMB_START,
+        //* Stops flip after climb 3 is done */
+        L3_CLIMB_END,
         TUNNING
     }
 
@@ -57,7 +61,9 @@ public class ClimberConstants extends MwConstants {
     public final double FLIP_MIN_ANGLE = -2.0 * Math.PI; // Radians, min rotation angle
     public final double FLIP_MAX_ANGLE = 2.0 * Math.PI; // Radians, max rotation angle
     public final double FLIP_L1_CLIMB = (1 * Math.PI) / 6; // Radians, auto climb climb angle
-    public final double FLIP_L3_CLIMB = 1 * Math.PI; // radians, teleop climb height
+    public final double FLIP_L3_CLIMB_ANGLE = 1 * Math.PI; // radians, teleop climb height
+    public final double FLIP_L3_CLIMB_DUTY_CYCLE = .25; //percent power for climbing
+    public final double CLIMB_ANGLE_TOLARNCE = Units.degreesToRadians(5);
     public final double FLIP_L0_POSITION = 0; // angle for the flip to return to
 
     // =============================================================================

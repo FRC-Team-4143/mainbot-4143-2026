@@ -72,8 +72,8 @@ public class ClimberSubsystem extends MwSubsystem<ClimberStates, ClimberConstant
             system_state_ = ClimberStates.L1_CLIMB;
         } else if (system_state_ == ClimberStates.DEPLOY
                 && isDeployed()
-                && wanted_state == ClimberStates.L3_CLIMB) {
-            system_state_ = ClimberStates.L3_CLIMB;
+                && wanted_state == ClimberStates.L3_CLIMB_START) {
+            system_state_ = ClimberStates.L3_CLIMB_START;
         } else if (system_state_ == ClimberStates.DEPLOY && wanted_state == ClimberStates.STOWED) {
             system_state_ = ClimberStates.STOWED;
         } else {
@@ -86,6 +86,9 @@ public class ClimberSubsystem extends MwSubsystem<ClimberStates, ClimberConstant
             system_state_ = ClimberStates.DEPLOY;
         } else {
         } // no commands
+        if(system_state_ == ClimberStates.L3_CLIMB_START && MathUtil.isNear(ClimberSubsystem.getInstance().getFlipAngle(), CONSTANTS.FLIP_L3_CLIMB_ANGLE, CONSTANTS.CLIMB_ANGLE_TOLARNCE)){
+            system_state_ = ClimberStates.L3_CLIMB_END;
+        };
     }
 
     // updateLogic
@@ -107,10 +110,14 @@ public class ClimberSubsystem extends MwSubsystem<ClimberStates, ClimberConstant
                 flip_joint_.setTargetPosition(CONSTANTS.FLIP_L0_POSITION);
                 deploy_joint_.setTargetPosition(CONSTANTS.DEPLOY_DEPLOYED_ANGLE);
                 break;
-            case L3_CLIMB:
-                flip_joint_.setTargetPosition(CONSTANTS.FLIP_L3_CLIMB);
+            case L3_CLIMB_START:
+                flip_joint_.setTargetDutyCycle(CONSTANTS.FLIP_L3_CLIMB_DUTY_CYCLE);
                 deploy_joint_.setTargetPosition(CONSTANTS.DEPLOY_DEPLOYED_ANGLE);
                 break;
+            case L3_CLIMB_END:
+                flip_joint_.setTargetDutyCycle(0);//Zreo to stop movment
+
+            break;
             case TUNNING:
                 // allow manual control of both joints through the dashboard for testing and
                 // calibration
