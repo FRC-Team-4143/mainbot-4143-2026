@@ -5,6 +5,7 @@
 package frc.robot;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -62,19 +63,19 @@ public abstract class OI {
         // TESTING BINDINGS (THESE SHOULD BE REMOVED BEFORE COMPETITION)
         // =============================================================================
 
-        // // Used for testing chassis velocity control, should be removed before competition
-        // driver_controller_
-        //         .x()
-        //         .whileTrue(
-        //                 SwerveSubsystem.getInstance()
-        //                         .chassisTuningCommand(new ChassisSpeeds(0, 1, 0)));
+        // Used for testing chassis velocity control, should be removed before competition
+        driver_controller_
+                .x()
+                .whileTrue(
+                        SwerveSubsystem.getInstance()
+                                .chassisTuningCommand(new ChassisSpeeds(0, 1, 0)));
 
-        // // Used for testing chassis velocity control, should be removed before competition
-        // driver_controller_
-        //         .y()
-        //         .whileTrue(
-        //                 SwerveSubsystem.getInstance()
-        //                         .chassisTuningCommand(new ChassisSpeeds(1, 0, 0)));
+        // Used for testing chassis velocity control, should be removed before competition
+        driver_controller_
+                .y()
+                .whileTrue(
+                        SwerveSubsystem.getInstance()
+                                .chassisTuningCommand(new ChassisSpeeds(1, 0, 0)));
     }
 
     /**

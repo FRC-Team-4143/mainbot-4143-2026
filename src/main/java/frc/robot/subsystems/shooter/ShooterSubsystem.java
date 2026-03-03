@@ -146,8 +146,13 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
     public void updateLogic(double timestamp) {
         // Get the current robot pose and velocity
         Pose2d robot_pose = LocalizationSubsystem.getInstance().getFieldPose();
-        ChassisSpeeds robot_velocity = new ChassisSpeeds();
-        // LocalizationSubsystem.getInstance().getChassisSpeedsFieldRelative();
+
+        // Use DESIRED/SETPOINT velocity (what the robot is commanded to do) rather than
+        // measured velocity for better motion compensation predictability.
+        // This matches 6328's approach and is more predictive than measured velocity.
+        // Use field-relative version to ensure motion compensation works correctly on both
+        // blue and red alliances (LaunchCalculator needs global coordinate system velocities)
+        ChassisSpeeds robot_velocity = SwerveSubsystem.getInstance().getDesiredChassisSpeeds();
 
         // Calculate launch parameters using the LaunchCalculator
         launch_params_ =
