@@ -48,7 +48,7 @@ public class LocalizationSubsystem extends MwSubsystem<LocalizationStates, Local
     private ArrayList<Pose3d> detected_tag_poses_ = new ArrayList<Pose3d>();
     private ArrayList<Pose2d> estimated_vision_poses_ = new ArrayList<Pose2d>();
     private boolean swerve_noise_enabled_ = false;
-    
+
     // Timer to prevent continuous gyro updates while disabled
     private final Timer disabled_gyro_update_timer_ = new Timer();
 
@@ -91,7 +91,7 @@ public class LocalizationSubsystem extends MwSubsystem<LocalizationStates, Local
         // Put the field visualizer on SmartDashboard once during initialization
         SmartDashboard.putData("Field", field_visualizer_);
         DogLog.log(getSubsystemKey() + "SwerveNoise", false);
-        
+
         // Start the timer for disabled gyro updates
         disabled_gyro_update_timer_.start();
     }
@@ -233,11 +233,12 @@ public class LocalizationSubsystem extends MwSubsystem<LocalizationStates, Local
     }
 
     /**
-     * @return The chassis speeds in field-relative vectors
+     * @return The current chassis speeds in field-relative vectors
      */
-    public ChassisSpeeds getChassisSpeedsFieldRelative() {
+    public ChassisSpeeds getCurrentChassisSpeedsFieldRelative() {
         return ChassisSpeeds.fromRobotRelativeSpeeds(
-                SwerveSubsystem.getInstance().getChassisSpeeds(), getFieldPose().getRotation());
+                SwerveSubsystem.getInstance().getCurrentChassisSpeeds(),
+                getFieldPose().getRotation());
     }
 
     /**
