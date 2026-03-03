@@ -1,0 +1,568 @@
+{
+  "hubs": [
+    {
+      "x": -8,
+      "y": -8,
+      "width": 1936,
+      "height": 1048,
+      "state": {
+        "sidebar": {
+          "width": 411,
+          "expanded": [
+            "/Robot/Subsystem",
+            "/Robot/Subsystem/Shooter/TrajectorySolver",
+            "/Robot/FieldSimulation",
+            "/Robot/Subsystem/Localization/FieldPose/translation",
+            "/Tunable/Subsystem/Shooter/Flywheel/DutyCycle",
+            "/Tunable/Subsystem/Shooter/TopSpin",
+            "/Tunable/Subsystem/Shooter/TopSpin/DutyCycle",
+            "/Tunable/Subsystem/Shooter/Indexer/DutyCycle",
+            "/Tunable/Subsystem/Hopper/Feeder",
+            "/Tunable/Subsystem/Hopper/Feeder/DutyCycle",
+            "/Tunable/Subsystem/Hopper/Hopper",
+            "/Tunable/Subsystem/Hopper/Hopper/DutyCycle",
+            "/Robot/Subsystem/Climber/Elevator",
+            "/Robot/Subsystem/Climber/Elevator/control",
+            "/Robot/Subsystem/Climber/Elevator/motor0",
+            "/Robot/Subsystem/Climber/Elevator/control/position",
+            "/Robot/Subsystem/Climber/Elevator/control/velocity",
+            "/Robot/Subsystem/Climber/Extender/control/position",
+            "/Robot/Subsystem/Climber/Extender/control",
+            "/Robot/Subsystem/Climber/State",
+            "/Robot/Subsystem/GameStates/WantedState",
+            "/Robot/Subsystem/GameStates/State",
+            "/Robot/Subsystem/Simulation/FuelSim",
+            "/Robot/Subsystem/Swerve/Choreo",
+            "/Tunable/Subsystem/Swerve/ChoreoPath",
+            "/Tunable/Subsystem/Swerve/ChoreoPath/Translation",
+            "/Tunable/Subsystem/Swerve/ChoreoPath/Translation/Gains",
+            "/Tunable/Subsystem/Swerve/ChoreoPath/Rotation",
+            "/Tunable/Subsystem/Swerve/ChoreoPath/Rotation/Gains",
+            "/Robot/Subsystem/Swerve/State",
+            "/Robot/Subsystem/Swerve/WantedState",
+            "/Robot/Subsystem/Hopper/Hopper",
+            "/Tunable/Subsystem",
+            "/Tunable/Subsystem/Shooter/LaunchCalculator/FlywheelSpeed",
+            "/Tunable/Subsystem/Shooter/LaunchCalculator/HoodAngle",
+            "/Robot/Subsystem/Shooter/Flywheel/control",
+            "/Tunable/Subsystem/Shooter/LaunchCalculator/TimeOfFlight",
+            "/Robot/Subsystem/Shooter/LaunchCalculator/Distance",
+            "/Robot",
+            "/Robot/Subsystem/Shooter/LaunchCalculator/Heading",
+            "/Robot/Subsystem/Climber",
+            "/Robot/Subsystem/Climber/Arm",
+            "/Robot/Subsystem/Climber/Arm/control",
+            "/Tunable",
+            "/Tunable/Subsystem/Climber/Arm",
+            "/Tunable/Subsystem/Climber/Arm/DutyCycle",
+            "/Robot/Subsystem/Climber/Arm/control/duty_cycle",
+            "/Robot/Subsystem/Swerve/Pigeon2",
+            "/Robot/Subsystem/Swerve/Swerve",
+            "/Robot/Subsystem/Swerve/Swerve/ChassisYaw",
+            "/Tunable/Subsystem/Shooter/HubLaunchCalculator/FlywheelSpeed",
+            "/Tunable/Subsystem/Shooter/HubLaunchCalculator/HoodAngle",
+            "/Tunable/Subsystem/Intake/Pivot/PositionGains",
+            "/Robot/Subsystem/Intake/Pivot/control",
+            "/Robot/Subsystem/Intake/Pivot/control/position",
+            "/Robot/Subsystem/Intake/Pivot",
+            "/Tunable/Subsystem/Intake/Pivot/DutyCycle",
+            "/Robot/Subsystem/Intake",
+            "/Robot/Subsystem/Intake/Pivot/motor0",
+            "/Robot/Subsystem/Shooter",
+            "/Robot/Subsystem/Shooter/Flywheel",
+            "/Robot/Subsystem/Shooter/Flywheel/motor1",
+            "/Tunable/Subsystem/Shooter/PassLaunchCalculator/FlywheelSpeed",
+            "/Tunable/Subsystem/Shooter/PassLaunchCalculator/HoodAngle",
+            "/Tunable/Subsystem/Intake",
+            "/Tunable/Subsystem/Intake/Pivot",
+            "/Robot/Subsystem/Swerve",
+            "/Robot/Subsystem/Swerve/Swerve/ChassisSpeeds",
+            "/Robot/Subsystem/Swerve/Choreo/sample"
+          ]
+        },
+        "tabs": {
+          "selected": 5,
+          "tabs": [
+            {
+              "type": 0,
+              "title": "",
+              "controller": null,
+              "controllerUUID": "wcquhuertvyjvxagn3a74ojho3dkk37y",
+              "renderer": "",
+              "controlsHeight": 0
+            },
+            {
+              "type": 1,
+              "title": "Line Graph",
+              "controller": {
+                "leftSources": [
+                  {
+                    "type": "stepped",
+                    "logKey": "NT:/Robot/Subsystem/Shooter/Flywheel/control/velocity/actual",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#af2437",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "NT:/Robot/Subsystem/Shooter/Flywheel/control/velocity/target",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#3b875a",
+                      "size": "normal"
+                    }
+                  }
+                ],
+                "rightSources": [
+                  {
+                    "type": "stepped",
+                    "logKey": "NT:/Robot/Subsystem/Shooter/LaunchCalculator/Distance/Lookahead",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#e48b32",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "NT:/Robot/Subsystem/Shooter/Flywheel/motor1/temp",
+                    "logType": "Number",
+                    "visible": false,
+                    "options": {
+                      "color": "#858584",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "NT:/Robot/Subsystem/Shooter/Flywheel/motor0/temp",
+                    "logType": "Number",
+                    "visible": false,
+                    "options": {
+                      "color": "#2b66a2",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "NT:/Robot/Subsystem/Shooter/Flywheel/motor0/current_draw",
+                    "logType": "Number",
+                    "visible": false,
+                    "options": {
+                      "color": "#c0b487",
+                      "size": "normal"
+                    }
+                  }
+                ],
+                "discreteSources": [
+                  {
+                    "type": "stripes",
+                    "logKey": "NT:/Robot/Subsystem/Shooter/State/variant",
+                    "logType": "String",
+                    "visible": true,
+                    "options": {
+                      "color": "#e5b31b"
+                    }
+                  },
+                  {
+                    "type": "stripes",
+                    "logKey": "NT:/Robot/Subsystem/Intake/State/variant",
+                    "logType": "String",
+                    "visible": true,
+                    "options": {
+                      "color": "#80588e"
+                    }
+                  }
+                ],
+                "leftLockedRange": [
+                  250,
+                  500
+                ],
+                "rightLockedRange": [
+                  0,
+                  8
+                ],
+                "leftUnitConversion": {
+                  "autoTarget": null,
+                  "preset": null
+                },
+                "rightUnitConversion": {
+                  "autoTarget": null,
+                  "preset": null
+                },
+                "leftFilter": 0,
+                "rightFilter": 0
+              },
+              "controllerUUID": "ejs4lefbegbch60yip4cu4bczqzb0hnt",
+              "renderer": null,
+              "controlsHeight": 200
+            },
+            {
+              "type": 1,
+              "title": "Line Graph",
+              "controller": {
+                "leftSources": [
+                  {
+                    "type": "stepped",
+                    "logKey": "NT:/Robot/Subsystem/Swerve/Swerve/ChassisSpeeds/vx",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#2b66a2",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "NT:/Robot/Subsystem/Swerve/Swerve/ChassisSpeeds/vy",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#e5b31b",
+                      "size": "normal"
+                    }
+                  }
+                ],
+                "rightSources": [],
+                "discreteSources": [],
+                "leftLockedRange": null,
+                "rightLockedRange": null,
+                "leftUnitConversion": {
+                  "autoTarget": null,
+                  "preset": null
+                },
+                "rightUnitConversion": {
+                  "autoTarget": null,
+                  "preset": null
+                },
+                "leftFilter": 0,
+                "rightFilter": 0
+              },
+              "controllerUUID": "ek2wymfge82k04ndtgoy46i7g7xt401a",
+              "renderer": null,
+              "controlsHeight": 200
+            },
+            {
+              "type": 1,
+              "title": "Line Graph",
+              "controller": {
+                "leftSources": [
+                  {
+                    "type": "stepped",
+                    "logKey": "NT:/Robot/Subsystem/Intake/Pivot/control/position/actual",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#2b66a2",
+                      "size": "bold"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "NT:/Robot/Subsystem/Intake/Pivot/control/position/target",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#e5b31b",
+                      "size": "bold"
+                    }
+                  }
+                ],
+                "rightSources": [
+                  {
+                    "type": "stepped",
+                    "logKey": "NT:/Robot/Subsystem/Intake/Pivot/motor0/current_draw",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#e48b32",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "NT:/Robot/Subsystem/Intake/Pivot/motor0/applied_voltage",
+                    "logType": "Number",
+                    "visible": false,
+                    "options": {
+                      "color": "#c0b487",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "NT:/Robot/Subsystem/Intake/Pivot/motor0/temp",
+                    "logType": "Number",
+                    "visible": false,
+                    "options": {
+                      "color": "#858584",
+                      "size": "normal"
+                    }
+                  }
+                ],
+                "discreteSources": [
+                  {
+                    "type": "stripes",
+                    "logKey": "NT:/Robot/Subsystem/Intake/State/variant",
+                    "logType": "String",
+                    "visible": true,
+                    "options": {
+                      "color": "#af2437"
+                    }
+                  },
+                  {
+                    "type": "stripes",
+                    "logKey": "NT:/Robot/Subsystem/Intake/Pivot/control/mode",
+                    "logType": "String",
+                    "visible": true,
+                    "options": {
+                      "color": "#80588e"
+                    }
+                  }
+                ],
+                "leftLockedRange": [
+                  0,
+                  120
+                ],
+                "rightLockedRange": null,
+                "leftUnitConversion": {
+                  "autoTarget": null,
+                  "preset": {
+                    "type": "angle",
+                    "factor": 1,
+                    "from": "radians",
+                    "to": "degrees"
+                  }
+                },
+                "rightUnitConversion": {
+                  "autoTarget": "degrees",
+                  "preset": null
+                },
+                "leftFilter": 0,
+                "rightFilter": 0
+              },
+              "controllerUUID": "t1ldwf1tm17y0vxb85kd8lrjipsiesnu",
+              "renderer": null,
+              "controlsHeight": 200
+            },
+            {
+              "type": 2,
+              "title": "2D Field",
+              "controller": {
+                "sources": [
+                  {
+                    "type": "robot",
+                    "logKey": "NT:/Robot/Subsystem/Localization/FieldPose",
+                    "logType": "Pose2d",
+                    "visible": true,
+                    "options": {
+                      "bumpers": ""
+                    }
+                  },
+                  {
+                    "type": "trajectory",
+                    "logKey": "NT:Regions/HOLD_ZONE",
+                    "logType": "Translation2d[]",
+                    "visible": true,
+                    "options": {
+                      "color": "#00ff00",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "trajectory",
+                    "logKey": "NT:Regions/ALLIANCE_ZONE",
+                    "logType": "Translation2d[]",
+                    "visible": true,
+                    "options": {
+                      "color": "#0000ff",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "trajectory",
+                    "logKey": "NT:Regions/HOLD_ZONE",
+                    "logType": "Translation2d[]",
+                    "visible": true,
+                    "options": {
+                      "color": "#ffff00",
+                      "size": "bold"
+                    }
+                  },
+                  {
+                    "type": "trajectory",
+                    "logKey": "NT:Regions/OPP_ALLIANCE_HOLD_ZONE",
+                    "logType": "Translation2d[]",
+                    "visible": true,
+                    "options": {
+                      "color": "#ffff00",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "trajectory",
+                    "logKey": "NT:Regions/RIGHT_PASS_REGION",
+                    "logType": "Translation2d[]",
+                    "visible": true,
+                    "options": {
+                      "color": "#00ffff",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "trajectory",
+                    "logKey": "NT:Regions/OPP_HOLD_ZONE",
+                    "logType": "Translation2d[]",
+                    "visible": true,
+                    "options": {
+                      "color": "#00ff00",
+                      "size": "bold"
+                    }
+                  },
+                  {
+                    "type": "trajectory",
+                    "logKey": "NT:Regions/LEFT_PASS_REGION",
+                    "logType": "Translation2d[]",
+                    "visible": true,
+                    "options": {
+                      "color": "#00ffff",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "trajectory",
+                    "logKey": "NT:Regions/NEUTRAL_ZONE",
+                    "logType": "Translation2d[]",
+                    "visible": true,
+                    "options": {
+                      "color": "#ff00ff",
+                      "size": "bold"
+                    }
+                  }
+                ],
+                "field": "FRC:2026 Field",
+                "orientation": 1,
+                "size": "large"
+              },
+              "controllerUUID": "m2fvf8svwbprnan27fw819idv0wet04p",
+              "renderer": null,
+              "controlsHeight": 370
+            },
+            {
+              "type": 3,
+              "title": "3D Field",
+              "controller": {
+                "sources": [
+                  {
+                    "type": "robot",
+                    "logKey": "NT:/Robot/Mechanism3dViz/BasePose",
+                    "logType": "Pose3d",
+                    "visible": true,
+                    "options": {
+                      "model": "2026 MARS/WARS Mainbot"
+                    }
+                  },
+                  {
+                    "type": "component",
+                    "logKey": "NT:/Robot/Mechanism3dViz/HoodPose",
+                    "logType": "Pose3d",
+                    "visible": true,
+                    "options": {}
+                  },
+                  {
+                    "type": "component",
+                    "logKey": "NT:/Robot/Mechanism3dViz/IntakePose",
+                    "logType": "Pose3d",
+                    "visible": true,
+                    "options": {}
+                  },
+                  {
+                    "type": "component",
+                    "logKey": "NT:/Robot/Mechanism3dViz/ClimberPose",
+                    "logType": "Pose3d",
+                    "visible": true,
+                    "options": {}
+                  },
+                  {
+                    "type": "vision",
+                    "logKey": "NT:/Robot/Subsystem/Shooter/LaunchCalculator/Target",
+                    "logType": "Translation3d",
+                    "visible": true,
+                    "options": {
+                      "color": "#00ff00",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "trajectory",
+                    "logKey": "NT:Regions/LEFT_PASS_REGION",
+                    "logType": "Translation2d[]",
+                    "visible": false,
+                    "options": {
+                      "color": "#ff0000",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "trajectory",
+                    "logKey": "NT:Regions/RIGHT_PASS_REGION",
+                    "logType": "Translation2d[]",
+                    "visible": false,
+                    "options": {
+                      "color": "#ff8c00",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "trajectory",
+                    "logKey": "NT:/Robot/Subsystem/Swerve/Choreo/Trajectory",
+                    "logType": "Pose2d[]",
+                    "visible": true,
+                    "options": {
+                      "color": "#00ff00",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "ghost",
+                    "logKey": "NT:/Robot/Subsystem/Swerve/Choreo/sample/DesiredPose",
+                    "logType": "Pose2d",
+                    "visible": true,
+                    "options": {
+                      "model": "2026 MARS/WARS Mainbot",
+                      "color": "#00ff00"
+                    }
+                  }
+                ],
+                "game": "FRC:2026 Field"
+              },
+              "controllerUUID": "eci9nhoegwgv68gghd3z62cocb71q4as",
+              "renderer": {
+                "cameraIndex": -2,
+                "orbitFov": 50,
+                "cameraPosition": [
+                  -1.1241260487282976,
+                  3.9745927757223916,
+                  -0.13452266358616807
+                ],
+                "cameraTarget": [
+                  -0.10994375043644598,
+                  0.531491002004785,
+                  0.15135855205973878
+                ]
+              },
+              "controlsHeight": 296
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "satellites": [],
+  "version": "26.0.0"
+}

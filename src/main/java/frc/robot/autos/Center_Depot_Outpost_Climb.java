@@ -91,5 +91,6 @@ public class Center_Depot_Outpost_Climb extends Auto {
                                         SwerveSubsystem.getInstance()
                                                 .setWantedState(SwerveStates.FIELD_CENTRIC))
                         .until(SwerveSubsystem.getInstance()::isAtChoreoSetpoint));
+
     }
 }

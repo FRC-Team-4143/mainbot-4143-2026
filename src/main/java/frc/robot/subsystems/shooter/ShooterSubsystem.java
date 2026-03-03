@@ -146,8 +146,8 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
     public void updateLogic(double timestamp) {
         // Get the current robot pose and velocity
         Pose2d robot_pose = LocalizationSubsystem.getInstance().getFieldPose();
-        ChassisSpeeds robot_velocity = new ChassisSpeeds();
-        // LocalizationSubsystem.getInstance().getChassisSpeedsFieldRelative();
+        //ChassisSpeeds robot_velocity = new ChassisSpeeds();
+        ChassisSpeeds robot_velocity = LocalizationSubsystem.getInstance().getChassisSpeedsFieldRelative();
 
         // Calculate launch parameters using the LaunchCalculator
         launch_params_ =

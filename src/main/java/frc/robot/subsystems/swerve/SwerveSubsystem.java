@@ -918,7 +918,21 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
                                 .get()
                                 .getY(),
                         LocalizationSubsystem.getInstance().getFieldPose().getY(),
-                        CONSTANTS.CHOREO_TRANSLATION_ERROR_MARGIN);
+                        CONSTANTS.CHOREO_TRANSLATION_ERROR_MARGIN)
+                && MathUtil.isNear(
+                        desired_choreo_traj_
+                                .getFinalSample(CONSTANTS.FLIP_TRAJECTORY_ON_RED)  
+                                .get()
+                                .vx,
+                        LocalizationSubsystem.getInstance().getChassisSpeedsFieldRelative().vxMetersPerSecond,
+                        CONSTANTS.CHOREO_VELOCITY_ERROR_MARGIN)
+                && MathUtil.isNear(
+                        desired_choreo_traj_
+                                .getFinalSample(CONSTANTS.FLIP_TRAJECTORY_ON_RED)  
+                                .get()
+                                .vy,
+                        LocalizationSubsystem.getInstance().getChassisSpeedsFieldRelative().vyMetersPerSecond,
+                        CONSTANTS.CHOREO_VELOCITY_ERROR_MARGIN);
     }
 
     /**
