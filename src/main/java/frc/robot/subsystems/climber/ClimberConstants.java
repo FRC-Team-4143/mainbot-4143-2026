@@ -1,5 +1,6 @@
 package frc.robot.subsystems.climber;
 
+import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.configs.TalonFXSConfiguration;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -25,7 +26,8 @@ public class ClimberConstants extends MwConstants {
         L1_DOWN,
         /** Climbing to Level 3 */
         L3_CLIMB,
-        TUNNING
+        TUNNING,
+        MANUAL
     }
 
     // =============================================================================
@@ -41,10 +43,11 @@ public class ClimberConstants extends MwConstants {
     // =============================================================================
 
     public final boolean DEPLOY_MOTOR_INVERTED = false;
-    public final double DEPLOY_GEAR_RATIO = 5.0;
+    public final double DEPLOY_GEAR_RATIO = 25.0;
     public final double DEPLOY_DEPLOYED_ANGLE = (1 * Math.PI) / 2; // angle of DEPLOY being out
-    public final double DEPLOY_STOWED_ANGLE = 0; // angle of DEPLOY being stowed
+    public final double DEPLOY_STOWED_ANGLE = 0.0; // angle of DEPLOY being stowed
     public final double DEPLOY_TOLERANCE_ANGLE = Units.degreesToRadians(0.5);
+    public final double CLIMBER_HOME_POSITION = 0.0;
 
     // =============================================================================
     // MECHANICAL CONSTANTS - FLIP
@@ -83,13 +86,16 @@ public class ClimberConstants extends MwConstants {
         deploy_config.CurrentLimits.StatorCurrentLimitEnable = true;
         deploy_config.CurrentLimits.SupplyCurrentLimit = 5;
         deploy_config.CurrentLimits.SupplyCurrentLimitEnable = true;
+        deploy_config.Slot0 = new Slot0Configs().withKP(600);
         DEPLOY_MOTOR_CONFIG.apply(deploy_config);
 
         // Configure FLIP Motor
         FLIP_MOTOR_CONFIG.can_id = FLIP_MOTOR_ID;
         FLIP_MOTOR_CONFIG.motor_type = TalonMotorType.X60;
         FLIP_MOTOR_CONFIG.canbus_name = "rio";
+
         TalonFXConfiguration flip_config = new TalonFXConfiguration();
+        flip_config.Slot0 = new Slot0Configs().withKP(100);
         FLIP_MOTOR_CONFIG.apply(flip_config);
     }
 }
