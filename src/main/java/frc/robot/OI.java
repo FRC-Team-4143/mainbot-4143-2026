@@ -54,6 +54,7 @@ public abstract class OI {
         driver_controller_.leftStick().whileTrue(ControlCommands.rotateForBumpCommand());
         driver_controller_.rightBumper().whileTrue(ControlCommands.intakeFuelCommand());
         driver_controller_.leftBumper().onFalse(ControlCommands.storeIntakeCommand());
+        driver_controller_.x().whileTrue(ControlCommands.manualShootFuelCommand());
 
         // =============================================================================
         // OPERATOR CONTROLLER BINDINGS

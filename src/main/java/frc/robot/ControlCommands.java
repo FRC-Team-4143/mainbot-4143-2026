@@ -136,6 +136,26 @@ public class ControlCommands {
                 .ignoringDisable(true);
     }
 
+    static Command manualShootFuelCommand() {
+        return Commands.startEnd(
+                        () -> {
+                            ShooterSubsystem.getInstance().setWantedState(ShooterStates.MANUAL_HUB);
+                            HopperSubsystem.getInstance().setWantedState(HopperStates.SHOOTING);
+                            SwerveSubsystem.getInstance().setTeleOpVelocityScalar(0.25);
+                            LocalizationSubsystem.getInstance()
+                                    .setWantedState(LocalizationStates.SHOOTING_FOCUS);
+                        },
+                        () -> {
+                            ShooterSubsystem.getInstance().setWantedState(ShooterStates.TRACKING);
+                            HopperSubsystem.getInstance().setWantedState(HopperStates.IDLE);
+                            SwerveSubsystem.getInstance().setTeleOpVelocityScalar(1.0);
+                            LocalizationSubsystem.getInstance()
+                                    .setWantedState(LocalizationStates.FULL);
+                        })
+                .withName("Shoot Fuel Manually")
+                .ignoringDisable(true);
+    }
+
     /**
      * This command intakes fuel, used for teleop control while intaking.
      *
