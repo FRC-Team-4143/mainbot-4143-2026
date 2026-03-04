@@ -42,8 +42,6 @@ public class ClimberSubsystem extends MwSubsystem<ClimberStates, ClimberConstant
                         CONSTANTS.FLIP_MASS,
                         CONSTANTS.FLIP_MAX_ANGLE,
                         CONSTANTS.FLIP_MIN_ANGLE);
-
-
     }
 
     // reset

@@ -69,8 +69,7 @@ public class Right_Start_Neutral_Depot_Climb extends Auto {
                                 () -> {
                                     ShooterSubsystem.getInstance()
                                             .setWantedState(ShooterStates.TRACKING);
-                                    HopperSubsystem.getInstance()
-                                            .setWantedState(HopperStates.IDLE);
+                                    HopperSubsystem.getInstance().setWantedState(HopperStates.IDLE);
                                     SwerveSubsystem.getInstance()
                                             .setWantedState(SwerveStates.CHOREO_PATH);
                                 }));
@@ -95,11 +94,12 @@ public class Right_Start_Neutral_Depot_Climb extends Auto {
                                                 .setWantedState(SwerveStates.FIELD_CENTRIC))
                         .until(SwerveSubsystem.getInstance()::isAtChoreoSetpoint),
                 Commands.runOnce(
-                        () -> {ShooterSubsystem.getInstance().setWantedState(ShooterStates.SHOOT);
-                        HopperSubsystem.getInstance()
-                                            .setWantedState(HopperStates.SHOOTING);}),
+                        () -> {
+                            ShooterSubsystem.getInstance().setWantedState(ShooterStates.SHOOT);
+                            HopperSubsystem.getInstance().setWantedState(HopperStates.SHOOTING);
+                        }),
                 new WaitCommand(3),
-                
+
                 // Shoot here if needed
 
                 // Move to the climb position

@@ -55,8 +55,7 @@ public class Left_Start_Neutral_Outpost_Climb extends Auto {
                                 () -> {
                                     ShooterSubsystem.getInstance()
                                             .setWantedState(ShooterStates.TRACKING);
-                                    HopperSubsystem.getInstance()
-                                            .setWantedState(HopperStates.IDLE);
+                                    HopperSubsystem.getInstance().setWantedState(HopperStates.IDLE);
                                     SwerveSubsystem.getInstance()
                                             .setWantedState(SwerveStates.CHOREO_PATH);
                                 }));

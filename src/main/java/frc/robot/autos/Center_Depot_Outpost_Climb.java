@@ -2,11 +2,10 @@ package frc.robot.autos;
 
 import com.marswars.auto.Auto;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.lib2026.FieldTargets;
-import frc.robot.subsystems.intake.IntakeConstants.IntakeStates;
-import frc.robot.subsystems.hopper.HopperSubsystem;
 import frc.robot.subsystems.hopper.HopperConstants.HopperStates;
+import frc.robot.subsystems.hopper.HopperSubsystem;
+import frc.robot.subsystems.intake.IntakeConstants.IntakeStates;
 import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterStates;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
@@ -55,8 +54,7 @@ public class Center_Depot_Outpost_Climb extends Auto {
                                 () -> {
                                     ShooterSubsystem.getInstance()
                                             .setWantedState(ShooterStates.TRACKING);
-                                    HopperSubsystem.getInstance()
-                                            .setWantedState(HopperStates.IDLE);
+                                    HopperSubsystem.getInstance().setWantedState(HopperStates.IDLE);
                                     SwerveSubsystem.getInstance()
                                             .setWantedState(SwerveStates.CHOREO_PATH);
                                 }));
@@ -83,9 +81,10 @@ public class Center_Depot_Outpost_Climb extends Auto {
                 // Shoot here if needed
                 // Move to the climb position
                 Commands.runOnce(
-                        () -> {ShooterSubsystem.getInstance().setWantedState(ShooterStates.SHOOT);
-                        HopperSubsystem.getInstance()
-                                            .setWantedState(HopperStates.SHOOTING);}),
+                        () -> {
+                            ShooterSubsystem.getInstance().setWantedState(ShooterStates.SHOOT);
+                            HopperSubsystem.getInstance().setWantedState(HopperStates.SHOOTING);
+                        }),
                 SwerveSubsystem.getInstance()
                         .setDesiredChoreoTrajectoryCommand(
                                 getTrajectory(ChoreoTraj.OutpostClimb.name())),

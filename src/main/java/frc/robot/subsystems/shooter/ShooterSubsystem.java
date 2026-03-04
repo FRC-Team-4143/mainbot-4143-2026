@@ -243,7 +243,8 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
                 break;
             case MANUAL_PASS:
                 // Manual pass mode - uses fixed setpoints for passing
-                flywheel_.setTargetVelocity(CONSTANTS.FLYWHEEL_MANUAL_PASS_VELOCITY + flywheel_adj_);
+                flywheel_.setTargetVelocity(
+                        CONSTANTS.FLYWHEEL_MANUAL_PASS_VELOCITY + flywheel_adj_);
                 indexer_.setTargetDutyCycle(CONSTANTS.INDEXER_DUTY_CYCLE);
                 hood_.setTargetPosition(CONSTANTS.HOOD_MANUAL_PASS_ANGLE + hood_adj_);
                 break;
@@ -410,18 +411,20 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
 
     /**
      * adjustes flywheel speed in radians per second
+     *
      * @param adj amount speed is changed by
      */
     public void adjustFlywheel(double adj) {
-        flywheel_adj_=+ adj;
+        flywheel_adj_ = +adj;
     }
 
     /**
      * adjusts hood angle in radians
+     *
      * @param adj amount of offset
      */
     public void adjustHood(double adj) {
-        hood_adj_=+ adj;
+        hood_adj_ = +adj;
     }
 
     // =============================================================================
@@ -465,5 +468,4 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
                         rot_pos_tol_);
         return status;
     }
-
 }

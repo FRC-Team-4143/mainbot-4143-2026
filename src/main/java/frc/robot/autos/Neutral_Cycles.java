@@ -57,8 +57,7 @@ public class Neutral_Cycles extends Auto {
                                 () -> {
                                     ShooterSubsystem.getInstance()
                                             .setWantedState(ShooterStates.TRACKING);
-                                    HopperSubsystem.getInstance()
-                                            .setWantedState(HopperStates.IDLE);
+                                    HopperSubsystem.getInstance().setWantedState(HopperStates.IDLE);
                                     SwerveSubsystem.getInstance()
                                             .setWantedState(SwerveStates.CHOREO_PATH);
                                 }));
