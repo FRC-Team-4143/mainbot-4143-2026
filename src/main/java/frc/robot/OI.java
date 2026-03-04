@@ -69,8 +69,6 @@ public abstract class OI {
         driver_controller_.leftStick().whileTrue(ControlCommands.rotateForBumpCommand());
         driver_controller_.rightBumper().whileTrue(ControlCommands.intakeFuelCommand());
         driver_controller_.leftBumper().onFalse(ControlCommands.storeIntakeCommand());
-        driver_controller_.y().whileTrue(ControlCommands.manualShootFuelCommand());
-        driver_controller_.b().whileTrue(ControlCommands.manualPassFuelCommand());
         // =============================================================================
         // OPERATOR CONTROLLER BINDINGS
         // =============================================================================
@@ -79,7 +77,18 @@ public abstract class OI {
         // operator_controller_.b().onTrue(Commands.runOnce(() -> ClimberSubsystem.getInstance().setWantedState(ClimberStates.L1)));
         // operator_controller_.x().whileTrue(ClimberSubsystem.getInstance().bumpUpCommand());
         // operator_controller_.y().onTrue(Commands.runOnce(() -> ClimberSubsystem.getInstance().setWantedState(ClimberStates.GROUND)));
-
+        driver_controller_.back().whileTrue(ControlCommands.manualShootFuelCommand());
+        driver_controller_.start().whileTrue(ControlCommands.manualPassFuelCommand());
+        // driver_controller_.x().onTrue(Commands.runOnce(
+        // () -> ClimberSubsystem.getInstance().setWantedState(ClimberStates.L1_CLIMB)));
+        driver_controller_.y().onTrue(Commands.runOnce(
+        () -> ClimberSubsystem.getInstance().setWantedState(ClimberStates.GROUND)));
+        driver_controller_.a().onTrue(Commands.runOnce(
+        () -> ClimberSubsystem.getInstance().setWantedState(ClimberStates.DEPLOY)));
+        driver_controller_.b().onTrue(Commands.runOnce(
+        () -> ClimberSubsystem.getInstance().setWantedState(ClimberStates.STOWED)));
+        driver_controller_.x().onTrue(Commands.runOnce(
+        () -> ClimberSubsystem.getInstance().setWantedState(ClimberStates.L3)));
 
         operator_controller_
                 .povUp()
