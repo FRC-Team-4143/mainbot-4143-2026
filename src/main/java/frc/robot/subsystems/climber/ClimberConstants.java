@@ -1,5 +1,6 @@
 package frc.robot.subsystems.climber;
 
+import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.configs.TalonFXSConfiguration;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -104,6 +105,7 @@ public class ClimberConstants extends MwConstants {
         FLIP_MOTOR_CONFIG.can_id = FLIP_MOTOR_ID;
         FLIP_MOTOR_CONFIG.motor_type = TalonMotorType.X60;
         FLIP_MOTOR_CONFIG.canbus_name = "rio";
+
         TalonFXConfiguration flip_config = new TalonFXConfiguration();
         flip_config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
         flip_config.CurrentLimits.StatorCurrentLimitEnable = false;

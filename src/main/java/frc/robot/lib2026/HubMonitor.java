@@ -117,6 +117,10 @@ public class HubMonitor {
         DogLog.log(
                 "HubMonitor/Active", status ? HubMonitor.ACTIVE_COLOR : HubMonitor.INACTIVE_COLOR);
         DogLog.log("HubMonitor/Alliance", getActiveColor(active));
+        
+        // Log countdown timer for current stage
+        logStageCountdown(match_time);
+        
         return status;
     }
 
@@ -167,5 +171,41 @@ public class HubMonitor {
             default:
                 yield new String[] {INACTIVE_COLOR};
         };
+    }
+
+    /**
+     * Logs the countdown timer for the current stage based on match time
+     *
+     * @param match_time current match time
+     */
+    private static void logStageCountdown(double match_time) {
+        String stageName;
+        double timeRemaining;
+
+        if (match_time > TRANSITION) {
+            stageName = "TRANSITION";
+            timeRemaining = match_time - TRANSITION;
+        } else if (match_time > SHIFT_1) {
+            stageName = "SHIFT 1";
+            timeRemaining = match_time - SHIFT_1;
+        } else if (match_time > SHIFT_2) {
+            stageName = "SHIFT 2";
+            timeRemaining = match_time - SHIFT_2;
+        } else if (match_time > SHIFT_3) {
+            stageName = "SHIFT 3";
+            timeRemaining = match_time - SHIFT_3;
+        } else if (match_time > SHIFT_4) {
+            stageName = "SHIFT 4";
+            timeRemaining = match_time - SHIFT_4;
+        } else if (match_time > END_GAME) {
+            stageName = "END GAME";
+            timeRemaining = match_time - END_GAME;
+        } else {
+            stageName = "INVALID";
+            timeRemaining = 0;
+        }
+
+        DogLog.log("HubMonitor/CurrentShift", stageName);
+        DogLog.log("HubMonitor/ShiftTimeRemaining", timeRemaining);
     }
 }

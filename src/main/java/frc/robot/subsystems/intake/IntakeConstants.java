@@ -87,6 +87,7 @@ public class IntakeConstants extends MwConstants {
         ROLLER_MOTOR_CONFIG.canbus_name = "rio";
         TalonFXConfiguration roller_config = new TalonFXConfiguration();
         roller_config.MotorOutput.Inverted = PhoenixUtil.toInvertedValue(ROLLER_MOTOR_INVERTED);
+        roller_config.CurrentLimits.StatorCurrentLimitEnable = false;
         ROLLER_MOTOR_CONFIG.apply(roller_config);
 
         // Configure Pivot Motor

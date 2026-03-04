@@ -27,9 +27,9 @@ public record ChoreoTraj(
     public static final ChoreoTraj CenterDepotOutpost = new ChoreoTraj(
 	    "CenterDepotOutpost",
 	    OptionalInt.empty(),
-	    5.0033,
+	    10.50117,
 	    new Pose2d(3.723, 4.018, Rotation2d.fromRadians(-3.136)),
-	    new Pose2d(1.897, 1.793, Rotation2d.fromRadians(-3.122))
+	    new Pose2d(1.079, 0.741, Rotation2d.fromRadians(-3.122))
 	);
 	public static final ChoreoTraj CycleNeutralFirst = new ChoreoTraj(
 	    "CycleNeutralFirst",
@@ -76,9 +76,9 @@ public record ChoreoTraj(
 	public static final ChoreoTraj OutpostClimb = new ChoreoTraj(
 	    "OutpostClimb",
 	    OptionalInt.empty(),
-	    2.27161,
-	    new Pose2d(0.384, 0.671, Rotation2d.fromRadians(3.122)),
-	    new Pose2d(0.995, 2.742, Rotation2d.fromRadians(0))
+	    3.67916,
+	    new Pose2d(1.313, 0.702, Rotation2d.fromRadians(3.122)),
+	    new Pose2d(0.962, 2.475, Rotation2d.fromRadians(0))
 	);
 	public static final ChoreoTraj OutpostClimbNeutral = new ChoreoTraj(
 	    "OutpostClimbNeutral",
@@ -97,23 +97,23 @@ public record ChoreoTraj(
 	public static final ChoreoTraj OutpostClimbRight = new ChoreoTraj(
 	    "OutpostClimbRight",
 	    OptionalInt.empty(),
-	    1.43759,
-	    new Pose2d(0.506, 6.005, Rotation2d.fromRadians(-3.128)),
-	    new Pose2d(1.001, 4.717, Rotation2d.fromRadians(3.142))
+	    3.10545,
+	    new Pose2d(3.005, 5.89, Rotation2d.fromRadians(-3.116)),
+	    new Pose2d(1.194, 5.044, Rotation2d.fromRadians(3.142))
 	);
 	public static final ChoreoTraj RightStartNeutralDepot = new ChoreoTraj(
 	    "RightStartNeutralDepot",
 	    OptionalInt.empty(),
-	    7.14248,
-	    new Pose2d(3.467, 2.649, Rotation2d.fromRadians(0.755)),
-	    new Pose2d(0.416, 5.935, Rotation2d.fromRadians(2.124))
+	    9.40683,
+	    new Pose2d(3.632, 2.631, Rotation2d.fromRadians(-0.018)),
+	    new Pose2d(2.852, 5.772, Rotation2d.fromRadians(3.129))
 	);
 	public static final ChoreoTraj TestPath = new ChoreoTraj(
 	    "TestPath",
 	    OptionalInt.empty(),
-	    2.11544,
+	    4.1157,
 	    new Pose2d(2.5, 1, Rotation2d.fromRadians(0)),
-	    new Pose2d(2.5, 3, Rotation2d.fromRadians(0))
+	    new Pose2d(2.5, 5, Rotation2d.fromRadians(0))
 	);
 
     /**

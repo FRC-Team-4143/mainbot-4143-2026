@@ -5,12 +5,16 @@
 package frc.robot;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.subsystems.climber.ClimberSubsystem;
 import frc.robot.subsystems.climber.ClimberConstants.ClimberStates;
+import frc.robot.lib2026.HubMonitor;
 import frc.robot.subsystems.localization.LocalizationSubsystem;
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterStates;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
@@ -20,8 +24,10 @@ import java.util.Optional;
 public abstract class OI {
 
     // Sets up both controllers
-    private static CommandXboxController driver_controller_ = new CommandXboxController(0);
-    private static CommandXboxController operator_controller_ = new CommandXboxController(1);
+    private static final CommandXboxController driver_controller_ = new CommandXboxController(0);
+    private static final CommandXboxController operator_controller_ = new CommandXboxController(1);
+
+    private static final SendableChooser<HubMonitor.ActiveAlliance> hub_first_alliance_chooser_ = new SendableChooser<>();
 
     public static void configureBindings() {
         DriverStation.silenceJoystickConnectionWarning(true);
@@ -44,6 +50,14 @@ public abstract class OI {
                         () ->
                                 ShooterSubsystem.getInstance()
                                         .setWantedState(ShooterStates.SPIN_DOWN)));
+
+        // Set up the hub first alliance chooser on the dashboard
+        hub_first_alliance_chooser_.setDefaultOption("Auto", HubMonitor.ActiveAlliance.INVALID);
+        hub_first_alliance_chooser_.addOption("Blue", HubMonitor.ActiveAlliance.BLUE_ACTIVE);
+        hub_first_alliance_chooser_.addOption("Red", HubMonitor.ActiveAlliance.RED_ACTIVE);
+        hub_first_alliance_chooser_.onChange(HubMonitor::seedActiveAlliance);
+        SmartDashboard.putData("Hub - First Alliance", hub_first_alliance_chooser_);
+
         // =============================================================================
         // DRIVER CONTROLLER BINDINGS
         // =============================================================================
@@ -55,7 +69,8 @@ public abstract class OI {
         driver_controller_.leftStick().whileTrue(ControlCommands.rotateForBumpCommand());
         driver_controller_.rightBumper().whileTrue(ControlCommands.intakeFuelCommand());
         driver_controller_.leftBumper().onFalse(ControlCommands.storeIntakeCommand());
-
+        driver_controller_.y().whileTrue(ControlCommands.manualShootFuelCommand());
+        driver_controller_.b().whileTrue(ControlCommands.manualPassFuelCommand());
         // =============================================================================
         // OPERATOR CONTROLLER BINDINGS
         // =============================================================================
@@ -66,24 +81,40 @@ public abstract class OI {
         // operator_controller_.y().onTrue(Commands.runOnce(() -> ClimberSubsystem.getInstance().setWantedState(ClimberStates.GROUND)));
 
 
+        operator_controller_
+                .povUp()
+                .onTrue(
+                        Commands.runOnce(
+                                () -> {
+                                    ShooterSubsystem.getInstance().adjustFlywheel(2);
+                                }));
+        operator_controller_
+                .povDown()
+                .onTrue(
+                        Commands.runOnce(
+                                () -> {
+                                    ShooterSubsystem.getInstance().adjustFlywheel(-2);
+                                }));
+        operator_controller_
+                .povRight()
+                .onTrue(
+                        Commands.runOnce(
+                                () -> {
+                                    ShooterSubsystem.getInstance()
+                                            .adjustHood(Units.degreesToRadians(-2));
+                                }));
+        operator_controller_
+                .povLeft()
+                .onTrue(
+                        Commands.runOnce(
+                                () -> {
+                                    ShooterSubsystem.getInstance()
+                                            .adjustHood(Units.degreesToRadians(2));
+                                }));
         // =============================================================================
         // TESTING BINDINGS (THESE SHOULD BE REMOVED BEFORE COMPETITION)
 
         // =============================================================================
-
-        // // Used for testing chassis velocity control, should be removed before competition
-        // driver_controller_
-        //         .x()
-        //         .whileTrue(
-        //                 SwerveSubsystem.getInstance()
-        //                         .chassisTuningCommand(new ChassisSpeeds(0, 1, 0)));
-
-        // // Used for testing chassis velocity control, should be removed before competition
-        // driver_controller_
-        //         .y()
-        //         .whileTrue(
-        //                 SwerveSubsystem.getInstance()
-        //                         .chassisTuningCommand(new ChassisSpeeds(1, 0, 0)));
     }
 
     /**

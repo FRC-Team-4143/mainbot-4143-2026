@@ -8,6 +8,8 @@ import com.marswars.auto.Auto;
 import com.marswars.auto.AutoManager;
 import com.marswars.geometry.AllianceFlipUtil;
 import com.marswars.logging.Elastic;
+
+import dev.doglog.DogLog;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -82,6 +84,7 @@ public class Robot extends TimedRobot {
 
         // Update the hub active status
         HubMonitor.isHubActive(DriverStation.getMatchTime());
+        DogLog.log("Match Time", DriverStation.getMatchTime());
 
         // Visualize the 3D Robot
         Mechanism3dViz.publish();

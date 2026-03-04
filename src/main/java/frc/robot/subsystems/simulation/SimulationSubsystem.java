@@ -70,7 +70,7 @@ public class SimulationSubsystem extends MwSubsystem<SimulationStates, Simulatio
                 (CONSTANTS.SIM_VISION_ENABLED)
                         ? LocalizationSubsystem.getInstance()::getSmoothPose
                         : LocalizationSubsystem.getInstance()::getFieldPose,
-                LocalizationSubsystem.getInstance()::getChassisSpeedsFieldRelative);
+                LocalizationSubsystem.getInstance()::getCurrentChassisSpeedsFieldRelative);
         fuel_sim_.enableAirResistance();
 
         // Setup Intake Simulation - Out the Front of the Robot
