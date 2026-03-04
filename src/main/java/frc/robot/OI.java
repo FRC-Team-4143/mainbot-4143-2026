@@ -7,9 +7,11 @@ package frc.robot;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.lib2026.HubMonitor;
 import frc.robot.subsystems.localization.LocalizationSubsystem;
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterStates;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
@@ -19,8 +21,10 @@ import java.util.Optional;
 public abstract class OI {
 
     // Sets up both controllers
-    private static CommandXboxController driver_controller_ = new CommandXboxController(0);
-    private static CommandXboxController operator_controller_ = new CommandXboxController(1);
+    private static final CommandXboxController driver_controller_ = new CommandXboxController(0);
+    private static final CommandXboxController operator_controller_ = new CommandXboxController(1);
+
+    private static final SendableChooser<HubMonitor.ActiveAlliance> hub_first_alliance_chooser_ = new SendableChooser<>();
 
     public static void configureBindings() {
         DriverStation.silenceJoystickConnectionWarning(true);
@@ -43,6 +47,14 @@ public abstract class OI {
                         () ->
                                 ShooterSubsystem.getInstance()
                                         .setWantedState(ShooterStates.SPIN_DOWN)));
+
+        // Set up the hub first alliance chooser on the dashboard
+        hub_first_alliance_chooser_.setDefaultOption("Auto", HubMonitor.ActiveAlliance.INVALID);
+        hub_first_alliance_chooser_.addOption("Blue", HubMonitor.ActiveAlliance.BLUE_ACTIVE);
+        hub_first_alliance_chooser_.addOption("Red", HubMonitor.ActiveAlliance.RED_ACTIVE);
+        hub_first_alliance_chooser_.onChange(HubMonitor::seedActiveAlliance);
+        SmartDashboard.putData("Hub - First Alliance", hub_first_alliance_chooser_);
+
         // =============================================================================
         // DRIVER CONTROLLER BINDINGS
         // =============================================================================
