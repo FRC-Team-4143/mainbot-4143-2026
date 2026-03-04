@@ -7,6 +7,8 @@ import com.marswars.subsystem.SubsystemIoBase;
 import dev.doglog.DogLog;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.climber.ClimberConstants.ClimberStates;
 import java.util.Arrays;
 import java.util.List;
@@ -47,6 +49,11 @@ public class ClimberSubsystem extends MwSubsystem<ClimberStates, ClimberConstant
                         CONSTANTS.FLIP_MASS,
                         CONSTANTS.FLIP_MAX_ANGLE,
                         CONSTANTS.FLIP_MIN_ANGLE);
+
+        SmartDashboard.putData(
+                "Home Climber Position",
+                Commands.runOnce(() -> deploy_joint_.setCurrentPosition(CONSTANTS.CLIMBER_HOME_POSITION))
+                        .ignoringDisable(true));
     }
 
     // reset

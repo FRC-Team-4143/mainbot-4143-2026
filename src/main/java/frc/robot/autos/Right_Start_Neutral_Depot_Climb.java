@@ -3,6 +3,8 @@ package frc.robot.autos;
 import com.marswars.auto.Auto;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.lib2026.FieldTargets;
+import frc.robot.subsystems.hopper.HopperConstants.HopperStates;
+import frc.robot.subsystems.hopper.HopperSubsystem;
 import frc.robot.subsystems.intake.IntakeConstants.IntakeStates;
 import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterStates;
@@ -40,6 +42,8 @@ public class Right_Start_Neutral_Depot_Climb extends Auto {
                                 () -> {
                                     ShooterSubsystem.getInstance()
                                             .setWantedState(ShooterStates.SHOOT);
+                                    HopperSubsystem.getInstance()
+                                            .setWantedState(HopperStates.SHOOTING);
                                     SwerveSubsystem.getInstance()
                                             .setWantedState(SwerveStates.CHOREO_PATH_ROTATION_LOCK);
                                 }));
@@ -50,6 +54,8 @@ public class Right_Start_Neutral_Depot_Climb extends Auto {
                                 () -> {
                                     ShooterSubsystem.getInstance()
                                             .setWantedState(ShooterStates.SHOOT);
+                                    HopperSubsystem.getInstance()
+                                            .setWantedState(HopperStates.SHOOTING);
                                     SwerveSubsystem.getInstance()
                                             .setWantedState(SwerveStates.CHOREO_PATH_ROTATION_LOCK);
                                     IntakeSubsystem.getInstance()
@@ -62,6 +68,8 @@ public class Right_Start_Neutral_Depot_Climb extends Auto {
                                 () -> {
                                     ShooterSubsystem.getInstance()
                                             .setWantedState(ShooterStates.TRACKING);
+                                    HopperSubsystem.getInstance()
+                                            .setWantedState(HopperStates.IDLE);
                                     SwerveSubsystem.getInstance()
                                             .setWantedState(SwerveStates.CHOREO_PATH);
                                 }));
