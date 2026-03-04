@@ -136,43 +136,67 @@ public class ControlCommands {
                 .ignoringDisable(true);
     }
 
+    /**
+     * This command shoots fuel at the target with a fixed flywheel speed, used for teleop control
+     * while shooting when the vision tracking is not working.
+     *
+     * <p>On Initialize:
+     *
+     * <ul>
+     *   <li>Shooter: MANUAL_HUB
+     *   <li>Hopper: SHOOTING
+     * </ul>
+     *
+     * <p>On End:
+     *
+     * <ul>
+     *   <li>Shooter: TRACKING
+     *   <li>Hopper: IDLE
+     * </ul>
+     */
     static Command manualShootFuelCommand() {
         return Commands.startEnd(
                         () -> {
                             ShooterSubsystem.getInstance().setWantedState(ShooterStates.MANUAL_HUB);
                             HopperSubsystem.getInstance().setWantedState(HopperStates.SHOOTING);
-                            SwerveSubsystem.getInstance().setTeleOpVelocityScalar(0.25);
-                            LocalizationSubsystem.getInstance()
-                                    .setWantedState(LocalizationStates.SHOOTING_FOCUS);
                         },
                         () -> {
                             ShooterSubsystem.getInstance().setWantedState(ShooterStates.TRACKING);
                             HopperSubsystem.getInstance().setWantedState(HopperStates.IDLE);
-                            SwerveSubsystem.getInstance().setTeleOpVelocityScalar(1.0);
-                            LocalizationSubsystem.getInstance()
-                                    .setWantedState(LocalizationStates.FULL);
                         })
-                .withName("Shoot Fuel Manually")
+                .withName("Shoot Fuel Manual")
                 .ignoringDisable(true);
     }
 
+    /**
+     * This command shoots fuel at the target with a fixed flywheel speed and hood angle for
+     * passing, used for teleop control while passing when the vision tracking is not working.
+     *
+     * <p>On Initialize:
+     *
+     * <ul>
+     *   <li>Shooter: MANUAL_PASS
+     *   <li>Hopper: SHOOTING
+     * </ul>
+     *
+     * <p>On End:
+     *
+     * <ul>
+     *   <li>Shooter: TRACKING
+     *   <li>Hopper: IDLE
+     * </ul>
+     */
     static Command manualPassFuelCommand() {
         return Commands.startEnd(
                         () -> {
                             ShooterSubsystem.getInstance().setWantedState(ShooterStates.MANUAL_PASS);
                             HopperSubsystem.getInstance().setWantedState(HopperStates.SHOOTING);
-                            SwerveSubsystem.getInstance().setTeleOpVelocityScalar(0.25);
-                            LocalizationSubsystem.getInstance()
-                                    .setWantedState(LocalizationStates.SHOOTING_FOCUS);
                         },
                         () -> {
                             ShooterSubsystem.getInstance().setWantedState(ShooterStates.TRACKING);
                             HopperSubsystem.getInstance().setWantedState(HopperStates.IDLE);
-                            SwerveSubsystem.getInstance().setTeleOpVelocityScalar(1.0);
-                            LocalizationSubsystem.getInstance()
-                                    .setWantedState(LocalizationStates.FULL);
                         })
-                .withName("Pass Fuel Manually")
+                .withName("Pass Fuel Manual")
                 .ignoringDisable(true);
     }
 
