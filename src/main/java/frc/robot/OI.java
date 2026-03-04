@@ -69,6 +69,8 @@ public abstract class OI {
         driver_controller_.leftStick().whileTrue(ControlCommands.rotateForBumpCommand());
         driver_controller_.rightBumper().whileTrue(ControlCommands.intakeFuelCommand());
         driver_controller_.leftBumper().onFalse(ControlCommands.storeIntakeCommand());
+        driver_controller_.start().onTrue(ControlCommands.advanceClimbingStage());
+        driver_controller_.back().onTrue(ControlCommands.reverseClimbingStage());
         driver_controller_.y().whileTrue(ControlCommands.manualShootFuelCommand());
         driver_controller_.b().whileTrue(ControlCommands.manualPassFuelCommand());
         // =============================================================================
@@ -80,6 +82,8 @@ public abstract class OI {
         // operator_controller_.x().whileTrue(ClimberSubsystem.getInstance().bumpUpCommand());
         // operator_controller_.y().onTrue(Commands.runOnce(() -> ClimberSubsystem.getInstance().setWantedState(ClimberStates.GROUND)));
 
+        // driver_controller_.x().onTrue(Commands.runOnce(
+        // () -> ClimberSubsystem.getInstance().setWantedState(ClimberStates.L1)));
 
         operator_controller_
                 .povUp()
