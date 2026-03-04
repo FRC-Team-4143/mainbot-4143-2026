@@ -93,7 +93,9 @@ public class ClimberConstants extends MwConstants {
         FLIP_MOTOR_CONFIG.can_id = FLIP_MOTOR_ID;
         FLIP_MOTOR_CONFIG.motor_type = TalonMotorType.X60;
         FLIP_MOTOR_CONFIG.canbus_name = "rio";
+        
         TalonFXConfiguration flip_config = new TalonFXConfiguration();
+        flip_config.Slot0 = new Slot0Configs().withKP(100);
         FLIP_MOTOR_CONFIG.apply(flip_config);
     }
 }

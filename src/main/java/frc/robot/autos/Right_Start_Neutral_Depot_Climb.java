@@ -2,6 +2,7 @@ package frc.robot.autos;
 
 import com.marswars.auto.Auto;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.lib2026.FieldTargets;
 import frc.robot.subsystems.hopper.HopperConstants.HopperStates;
 import frc.robot.subsystems.hopper.HopperSubsystem;
@@ -93,7 +94,12 @@ public class Right_Start_Neutral_Depot_Climb extends Auto {
                                         SwerveSubsystem.getInstance()
                                                 .setWantedState(SwerveStates.FIELD_CENTRIC))
                         .until(SwerveSubsystem.getInstance()::isAtChoreoSetpoint),
-
+                Commands.runOnce(
+                        () -> {ShooterSubsystem.getInstance().setWantedState(ShooterStates.SHOOT);
+                        HopperSubsystem.getInstance()
+                                            .setWantedState(HopperStates.SHOOTING);}),
+                new WaitCommand(3),
+                
                 // Shoot here if needed
 
                 // Move to the climb position
