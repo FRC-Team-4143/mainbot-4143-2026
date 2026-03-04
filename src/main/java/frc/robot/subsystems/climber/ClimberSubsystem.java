@@ -4,7 +4,6 @@ import com.marswars.mechanisms.ArmMech;
 import com.marswars.mechanisms.RollerMech;
 import com.marswars.subsystem.MwSubsystem;
 import com.marswars.subsystem.SubsystemIoBase;
-
 import dev.doglog.DogLog;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.util.Units;
@@ -122,12 +121,13 @@ public class ClimberSubsystem extends MwSubsystem<ClimberStates, ClimberConstant
                 // calibration
                 break;
             case MANUAL:
-                //State to allow manual control of clibmer without the motors moving on their own
+                // State to allow manual control of clibmer without the motors moving on their own
                 break;
         }
         DogLog.log(getSubsystemKey() + "Flip Angle", flip_angle_);
         DogLog.log(getSubsystemKey() + "Stowed Angle", stowed_angle_);
     }
+
     // =============================================================================
     // PUBLIC HELPER METHODS
     // =============================================================================
@@ -163,8 +163,7 @@ public class ClimberSubsystem extends MwSubsystem<ClimberStates, ClimberConstant
                 CONSTANTS.DEPLOY_TOLERANCE_ANGLE));
     }
 
-
-    //methods for manualy tuning climber out side of tuning states
+    // methods for manualy tuning climber out side of tuning states
     public void rotateFlipClockwise() {
         stowed_angle_ = stowed_angle_ + Units.degreesToRadians(5);
     }

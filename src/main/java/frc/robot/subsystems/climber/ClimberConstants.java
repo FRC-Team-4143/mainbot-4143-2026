@@ -42,7 +42,7 @@ public class ClimberConstants extends MwConstants {
     // =============================================================================
 
     public final boolean DEPLOY_MOTOR_INVERTED = false;
-    public final double DEPLOY_GEAR_RATIO = 5.0;
+    public final double DEPLOY_GEAR_RATIO = 25.0;
     public final double DEPLOY_DEPLOYED_ANGLE = (1 * Math.PI) / 2; // angle of DEPLOY being out
     public final double DEPLOY_STOWED_ANGLE = 0; // angle of DEPLOY being stowed
     public final double DEPLOY_TOLERANCE_ANGLE = Units.degreesToRadians(0.5);

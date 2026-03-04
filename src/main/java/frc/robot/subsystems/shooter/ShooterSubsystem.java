@@ -57,6 +57,8 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
     private double flywheel_vel_tol_ = FieldTargets.Shooter.FLYWHEEL_SPEED_TOLERANCE;
     private double hood_pos_tol_ = FieldTargets.Shooter.HOOD_POSITION_TOLERANCE;
     private double rot_pos_tol_ = FieldTargets.Shooter.ROTATION_ANGLE_TOLERANCE;
+    private double hood_adj_ = 0.0;
+    private double flywheel_adj_ = 0.0;
 
     // Hood feedforward gain - made tunable for easy adjustment
     private double hood_kv_ = CONSTANTS.HOOD_KV;
@@ -172,11 +174,7 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
             heading_angle_ = launch_params_.heading_angle.getRadians();
 
             // Clamp hood angle to mechanical limits
-            hood_angle_ =
-                    MathUtil.clamp(
-                            launch_params_.hood_angle,
-                            CONSTANTS.HOOD_MIN_ANGLE,
-                            CONSTANTS.HOOD_MAX_ANGLE);
+            hood_angle_ = launch_params_.hood_angle;
 
             // Calculate hood feedforward once for use in all states
             hood_feedforward_ = launch_params_.hood_velocity * hood_kv_;
@@ -184,6 +182,10 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
             // Store heading feedforward velocity (rad/s) for use in all states
             heading_feedforward_ = launch_params_.heading_velocity;
         }
+        flywheel_omega_ += flywheel_adj_;
+        hood_angle_ += hood_adj_;
+        hood_angle_ =
+                MathUtil.clamp(hood_angle_, CONSTANTS.HOOD_MIN_ANGLE, CONSTANTS.HOOD_MAX_ANGLE);
 
         // Execute state-specific behavior
         switch (system_state_) {
@@ -235,15 +237,15 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
                 break;
             case MANUAL_HUB:
                 // Manual hub shooting mode - uses fixed setpoints for hub shots
-                flywheel_.setTargetVelocity(CONSTANTS.FLYWHEEL_MANUAL_HUB_VELOCITY);
+                flywheel_.setTargetVelocity(CONSTANTS.FLYWHEEL_MANUAL_HUB_VELOCITY + flywheel_adj_);
                 indexer_.setTargetDutyCycle(CONSTANTS.INDEXER_DUTY_CYCLE);
-                hood_.setTargetPosition(CONSTANTS.HOOD_MANUAL_HUB_ANGLE);
+                hood_.setTargetPosition(CONSTANTS.HOOD_MANUAL_HUB_ANGLE + hood_adj_);
                 break;
             case MANUAL_PASS:
                 // Manual pass mode - uses fixed setpoints for passing
-                flywheel_.setTargetVelocity(CONSTANTS.FLYWHEEL_MANUAL_PASS_VELOCITY);
+                flywheel_.setTargetVelocity(CONSTANTS.FLYWHEEL_MANUAL_PASS_VELOCITY + flywheel_adj_);
                 indexer_.setTargetDutyCycle(CONSTANTS.INDEXER_DUTY_CYCLE);
-                hood_.setTargetPosition(CONSTANTS.HOOD_MANUAL_PASS_ANGLE);
+                hood_.setTargetPosition(CONSTANTS.HOOD_MANUAL_PASS_ANGLE + hood_adj_);
                 break;
             case TUNING:
                 // code does NOTHING to allow for testing
@@ -406,6 +408,22 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
         rot_pos_tol_ = rot_pos_tol;
     }
 
+    /**
+     * adjustes flywheel speed in radians per second
+     * @param adj amount speed is changed by
+     */
+    public void adjustFlywheel(double adj) {
+        flywheel_adj_=+ adj;
+    }
+
+    /**
+     * adjusts hood angle in radians
+     * @param adj amount of offset
+     */
+    public void adjustHood(double adj) {
+        hood_adj_=+ adj;
+    }
+
     // =============================================================================
     // PRIVATE HELPER METHODS
     // =============================================================================
@@ -447,4 +465,5 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
                         rot_pos_tol_);
         return status;
     }
+
 }

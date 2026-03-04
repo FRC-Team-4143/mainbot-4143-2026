@@ -6,6 +6,7 @@ package frc.robot;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -59,10 +60,38 @@ public abstract class OI {
         // =============================================================================
         // OPERATOR CONTROLLER BINDINGS
         // =============================================================================
-        operator_controller_.a().onTrue(Commands.runOnce(() -> {ClimberSubsystem.getInstance().rotateDeployClockwise();}));
-        operator_controller_.b().onTrue(Commands.runOnce(() -> {ClimberSubsystem.getInstance().rotateDeployCounterClockwise();}));
-        operator_controller_.x().onTrue(Commands.runOnce(() -> {ClimberSubsystem.getInstance().rotateFlipClockwise();}));
-        operator_controller_.y().onTrue(Commands.runOnce(() -> {ClimberSubsystem.getInstance().rotateFlipCounterClockwise();}));
+        operator_controller_
+                .a()
+                .onTrue(
+                        Commands.runOnce(
+                                () -> {
+                                    ClimberSubsystem.getInstance().rotateDeployClockwise();
+                                }));
+        operator_controller_
+                .b()
+                .onTrue(
+                        Commands.runOnce(
+                                () -> {
+                                    ClimberSubsystem.getInstance().rotateDeployCounterClockwise();
+                                }));
+        operator_controller_
+                .x()
+                .onTrue(
+                        Commands.runOnce(
+                                () -> {
+                                    ClimberSubsystem.getInstance().rotateFlipClockwise();
+                                }));
+        operator_controller_
+                .y()
+                .onTrue(
+                        Commands.runOnce(
+                                () -> {
+                                    ClimberSubsystem.getInstance().rotateFlipCounterClockwise();
+                                }));
+        operator_controller_.povUp().onTrue(Commands.runOnce(() -> {ShooterSubsystem.getInstance().adjustFlywheel(2);}));
+        operator_controller_.povDown().onTrue(Commands.runOnce(() -> {ShooterSubsystem.getInstance().adjustFlywheel(-2);}));
+        operator_controller_.povRight().onTrue(Commands.runOnce(() -> {ShooterSubsystem.getInstance().adjustHood(Units.degreesToRadians(-2));}));
+        operator_controller_.povLeft().onTrue(Commands.runOnce(() -> {ShooterSubsystem.getInstance().adjustHood(Units.degreesToRadians(2));}));
         // =============================================================================
         // TESTING BINDINGS (THESE SHOULD BE REMOVED BEFORE COMPETITION)
         // =============================================================================
