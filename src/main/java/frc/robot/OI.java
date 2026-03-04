@@ -83,7 +83,7 @@ public abstract class OI {
         // operator_controller_.y().onTrue(Commands.runOnce(() -> ClimberSubsystem.getInstance().setWantedState(ClimberStates.GROUND)));
 
         // driver_controller_.x().onTrue(Commands.runOnce(
-        // () -> ClimberSubsystem.getInstance().setWantedState(ClimberStates.L1_CLIMB)));
+        // () -> ClimberSubsystem.getInstance().setWantedState(ClimberStates.L1)));
 
         operator_controller_
                 .povUp()
