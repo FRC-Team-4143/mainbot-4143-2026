@@ -9,6 +9,8 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.subsystems.climber.ClimberSubsystem;
+import frc.robot.subsystems.climber.ClimberConstants.ClimberStates;
 import frc.robot.subsystems.localization.LocalizationSubsystem;
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterStates;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
@@ -58,8 +60,15 @@ public abstract class OI {
         // OPERATOR CONTROLLER BINDINGS
         // =============================================================================
 
+        // operator_controller_.a().onTrue(ClimberSubsystem.getInstance().toggleDeployCommand());
+        // operator_controller_.b().onTrue(Commands.runOnce(() -> ClimberSubsystem.getInstance().setWantedState(ClimberStates.L1)));
+        // operator_controller_.x().whileTrue(ClimberSubsystem.getInstance().bumpUpCommand());
+        // operator_controller_.y().onTrue(Commands.runOnce(() -> ClimberSubsystem.getInstance().setWantedState(ClimberStates.GROUND)));
+
+
         // =============================================================================
         // TESTING BINDINGS (THESE SHOULD BE REMOVED BEFORE COMPETITION)
+
         // =============================================================================
 
         // // Used for testing chassis velocity control, should be removed before competition
