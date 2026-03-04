@@ -76,12 +76,12 @@ public class ShooterConstants extends MwConstants {
             new Slot1Configs().withKP(0.5).withKV(0.118).withKI(2);
 
     // Manual mode flywheel velocities (rad/s) - TUNE THESE!
-    public final double FLYWHEEL_MANUAL_HUB_VELOCITY = 330.0; // Flywheel speed for hub shots
-    public final double FLYWHEEL_MANUAL_PASS_VELOCITY = 250.0; // Flywheel speed for passing
+    public final double FLYWHEEL_MANUAL_HUB_VELOCITY = 260.0; // Flywheel speed for hub shots
+    public final double FLYWHEEL_MANUAL_PASS_VELOCITY = 320.0; // Flywheel speed for passing
 
     @Deprecated
     public final double FLYWHEEL_MANUAL_VELOCITY =
-            330.0; // Use FLYWHEEL_MANUAL_HUB_VELOCITY instead
+            260.0; // Use FLYWHEEL_MANUAL_HUB_VELOCITY instead
 
     // =============================================================================
     // MECHANICAL CONSTANTS - INDEXER
@@ -106,9 +106,9 @@ public class ShooterConstants extends MwConstants {
 
     // Manual mode hood angles (radians) - TUNE THESE!
     public final double HOOD_MANUAL_HUB_ANGLE =
-            Units.degreesToRadians(65.0); // Hood angle for hub shots
+            Units.degreesToRadians(77.35); // Hood angle for hub shots
     public final double HOOD_MANUAL_PASS_ANGLE =
-            Units.degreesToRadians(45.0); // Hood angle for passing
+            Units.degreesToRadians(65.89); // Hood angle for passing
 
     @Deprecated
     public final double HOOD_MANUAL_ANGLE =
