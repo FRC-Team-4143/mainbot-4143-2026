@@ -4,20 +4,13 @@ import com.marswars.mechanisms.ArmMech;
 import com.marswars.mechanisms.RollerMech;
 import com.marswars.subsystem.MwSubsystem;
 import com.marswars.subsystem.SubsystemIoBase;
-import dev.doglog.DogLog;
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.climber.ClimberConstants.ClimberStates;
 import java.util.Arrays;
 import java.util.List;
 
 public class ClimberSubsystem extends MwSubsystem<ClimberStates, ClimberConstants> {
     private static ClimberSubsystem instance_ = null;
-
-    private double stowed_angle_ = CONSTANTS.DEPLOY_STOWED_ANGLE;
-    private double flip_angle_ = CONSTANTS.FLIP_L0_POSITION;
 
     private RollerMech deploy_joint_;
     private ArmMech flip_joint_;
@@ -50,10 +43,7 @@ public class ClimberSubsystem extends MwSubsystem<ClimberStates, ClimberConstant
                         CONSTANTS.FLIP_MAX_ANGLE,
                         CONSTANTS.FLIP_MIN_ANGLE);
 
-        SmartDashboard.putData(
-                "Home Climber Position",
-                Commands.runOnce(() -> deploy_joint_.setCurrentPosition(CONSTANTS.CLIMBER_HOME_POSITION))
-                        .ignoringDisable(true));
+
     }
 
     // reset
@@ -105,8 +95,8 @@ public class ClimberSubsystem extends MwSubsystem<ClimberStates, ClimberConstant
     public void updateLogic(double timestamp) {
         switch (system_state_) {
             case STOWED:
-                deploy_joint_.setTargetPosition(stowed_angle_);
-                flip_joint_.setTargetPosition(flip_angle_);
+                deploy_joint_.setTargetPosition(CONSTANTS.DEPLOY_STOWED_ANGLE);
+                flip_joint_.setTargetPosition(CONSTANTS.FLIP_L0_POSITION);
                 break;
             case DEPLOY:
                 deploy_joint_.setTargetPosition(CONSTANTS.DEPLOY_DEPLOYED_ANGLE);
@@ -127,12 +117,7 @@ public class ClimberSubsystem extends MwSubsystem<ClimberStates, ClimberConstant
                 // allow manual control of both joints through the dashboard for testing and
                 // calibration
                 break;
-            case MANUAL:
-                // State to allow manual control of clibmer without the motors moving on their own
-                break;
         }
-        DogLog.log(getSubsystemKey() + "Flip Angle", flip_angle_);
-        DogLog.log(getSubsystemKey() + "Stowed Angle", stowed_angle_);
     }
 
     // =============================================================================
@@ -168,22 +153,5 @@ public class ClimberSubsystem extends MwSubsystem<ClimberStates, ClimberConstant
                 CONSTANTS.DEPLOY_DEPLOYED_ANGLE,
                 deploy_joint_.getCurrentPosition(),
                 CONSTANTS.DEPLOY_TOLERANCE_ANGLE));
-    }
-
-    // methods for manualy tuning climber out side of tuning states
-    public void rotateFlipClockwise() {
-        stowed_angle_ = stowed_angle_ + Units.degreesToRadians(5);
-    }
-
-    public void rotateFlipCounterClockwise() {
-        stowed_angle_ = stowed_angle_ - Units.degreesToRadians(5);
-    }
-
-    public void rotateDeployClockwise() {
-        flip_angle_ = flip_angle_ + Units.degreesToRadians(5);
-    }
-
-    public void rotateDeployCounterClockwise() {
-        flip_angle_ = flip_angle_ - Units.degreesToRadians(5);
     }
 }
