@@ -312,6 +312,5 @@
  },
  "events":[
    {"name":"Intake Out", "from":{"target":1, "targetTimestamp":0.79162, "offset":{"exp":"0.05 s", "val":0.05}}, "event":null},
-   {"name":"Intake In", "from":{"target":5, "targetTimestamp":8.08779, "offset":{"exp":"-0.25 s", "val":-0.25}}, "event":null},
-   {"name":"Shooting and Intake Out", "from":{"target":6, "targetTimestamp":8.70709, "offset":{"exp":"0.1 s", "val":0.1}}, "event":null}]
+   {"name":"Shooting", "from":{"target":6, "targetTimestamp":8.70709, "offset":{"exp":"0.1 s", "val":0.1}}, "event":null}]
 }

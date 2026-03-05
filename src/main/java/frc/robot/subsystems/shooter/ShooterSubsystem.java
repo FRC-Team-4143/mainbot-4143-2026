@@ -191,12 +191,12 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
         switch (system_state_) {
             case TRACKING:
                 flywheel_.setTargetVelocity(flywheel_omega_);
-                indexer_.setTargetDutyCycle(0);
+                indexer_.setTargetDutyCycle(CONSTANTS.IDLE_INDEXER_DUTY_CYCLE);
                 hood_.setTargetPositionWithFF(hood_angle_, hood_feedforward_);
                 break;
             case SHOOT_WAIT:
                 flywheel_.setTargetVelocity(flywheel_omega_);
-                indexer_.setTargetDutyCycle(0);
+                indexer_.setTargetDutyCycle(CONSTANTS.IDLE_INDEXER_DUTY_CYCLE);
                 hood_.setTargetPositionWithFF(hood_angle_, hood_feedforward_);
                 SwerveSubsystem.getInstance()
                         .setDesiredRotationLockCORWithFF(
@@ -208,7 +208,7 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
                 break;
             case AIMING:
                 flywheel_.setTargetVelocity(flywheel_omega_);
-                indexer_.setTargetDutyCycle(0);
+                indexer_.setTargetDutyCycle(CONSTANTS.IDLE_INDEXER_DUTY_CYCLE);
                 hood_.setTargetPositionWithFF(hood_angle_, hood_feedforward_);
                 SwerveSubsystem.getInstance()
                         .setDesiredRotationLockCORWithFF(

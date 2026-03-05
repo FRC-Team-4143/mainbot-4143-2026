@@ -97,9 +97,9 @@ public record ChoreoTraj(
 	public static final ChoreoTraj OutpostClimbRight = new ChoreoTraj(
 	    "OutpostClimbRight",
 	    OptionalInt.empty(),
-	    3.10545,
+	    3.30612,
 	    new Pose2d(3.005, 5.89, Rotation2d.fromRadians(-3.116)),
-	    new Pose2d(1.194, 5.044, Rotation2d.fromRadians(3.142))
+	    new Pose2d(0.981, 4.892, Rotation2d.fromRadians(3.142))
 	);
 	public static final ChoreoTraj RightStartNeutralDepot = new ChoreoTraj(
 	    "RightStartNeutralDepot",
