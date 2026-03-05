@@ -1,0 +1,266 @@
+{
+  "hubs": [
+    {
+      "x": 74,
+      "y": 43,
+      "width": 960,
+      "height": 1032,
+      "state": {
+        "sidebar": {
+          "width": 300,
+          "expanded": [
+            "/Robot/DogLog",
+            "/Robot/Subsystem",
+            "/Robot/Subsystem/Shooter/TrajectorySolver",
+            "/Tunable/Subsystem",
+            "/Robot/Subsystem/Localization/FieldPose",
+            "/Robot/FieldSimulation",
+            "/Robot/Subsystem/Localization/FieldPose/translation",
+            "/Tunable/Subsystem/Shooter",
+            "/Tunable/Subsystem/Shooter/Flywheel",
+            "/Tunable/Subsystem/Shooter/Flywheel/DutyCycle",
+            "/Tunable/Subsystem/Shooter/TopSpin",
+            "/Tunable/Subsystem/Shooter/TopSpin/DutyCycle",
+            "/Tunable/Subsystem/Shooter/Indexer",
+            "/Tunable/Subsystem/Shooter/Indexer/DutyCycle",
+            "/Tunable/Subsystem/Hopper",
+            "/Tunable/Subsystem/Hopper/Feeder",
+            "/Tunable/Subsystem/Hopper/Feeder/DutyCycle",
+            "/Tunable/Subsystem/Hopper/Hopper",
+            "/Tunable/Subsystem/Hopper/Hopper/DutyCycle",
+            "/Robot",
+            "/Robot/Subsystem/Climber/Elevator",
+            "/Robot/Subsystem/Climber/Elevator/control",
+            "/Robot/Subsystem/Climber/Elevator/motor0",
+            "/Robot/Subsystem/Climber/Elevator/control/position",
+            "/Robot/Subsystem/Climber/Elevator/control/velocity",
+            "/Robot/Subsystem/Climber/Extender/control/position",
+            "/Robot/Subsystem/Climber/Extender/control",
+            "/Robot/Subsystem/Climber/State",
+            "/Robot/Subsystem/GameStates/WantedState",
+            "/Robot/Subsystem/GameStates",
+            "/Robot/Subsystem/GameStates/State",
+            "/Regions"
+          ]
+        },
+        "tabs": {
+          "selected": 2,
+          "tabs": [
+            {
+              "type": 0,
+              "title": "",
+              "controller": null,
+              "controllerUUID": "wcquhuertvyjvxagn3a74ojho3dkk37y",
+              "renderer": "",
+              "controlsHeight": 0
+            },
+            {
+              "type": 1,
+              "title": "Line Graph",
+              "controller": {
+                "leftSources": [
+                  {
+                    "type": "stepped",
+                    "logKey": "NT:/Robot/Subsystem/Climber/Arm/control/position/target",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#e5b31b",
+                      "size": "normal"
+                    }
+                  }
+                ],
+                "rightSources": [
+                  {
+                    "type": "stepped",
+                    "logKey": "NT:/Robot/Subsystem/Climber/Extender/control/position/target",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#af2437",
+                      "size": "normal"
+                    }
+                  }
+                ],
+                "discreteSources": [
+                  {
+                    "type": "stripes",
+                    "logKey": "NT:/Robot/Subsystem/Climber/State/variant",
+                    "logType": "String",
+                    "visible": true,
+                    "options": {
+                      "color": "#2b66a2"
+                    }
+                  }
+                ],
+                "leftLockedRange": null,
+                "rightLockedRange": null,
+                "leftUnitConversion": {
+                  "autoTarget": null,
+                  "preset": null
+                },
+                "rightUnitConversion": {
+                  "autoTarget": null,
+                  "preset": null
+                },
+                "leftFilter": 0,
+                "rightFilter": 0
+              },
+              "controllerUUID": "58hdoik05ldcdwzviodo4lfx1ehbvrod",
+              "renderer": null,
+              "controlsHeight": 200
+            },
+            {
+              "type": 2,
+              "title": "2D Field",
+              "controller": {
+                "sources": [
+                  {
+                    "type": "robot",
+                    "logKey": "NT:/Robot/Subsystem/Localization/FieldPose",
+                    "logType": "Pose2d",
+                    "visible": true,
+                    "options": {
+                      "bumpers": ""
+                    }
+                  },
+                  {
+                    "type": "trajectory",
+                    "logKey": "NT:Regions/HOLD_ZONE",
+                    "logType": "Translation2d[]",
+                    "visible": true,
+                    "options": {
+                      "color": "#00ff00",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "trajectory",
+                    "logKey": "NT:Regions/ALLIANCE_ZONE",
+                    "logType": "Translation2d[]",
+                    "visible": true,
+                    "options": {
+                      "color": "#0000ff",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "trajectory",
+                    "logKey": "NT:Regions/HOLD_ZONE",
+                    "logType": "Translation2d[]",
+                    "visible": true,
+                    "options": {
+                      "color": "#ffff00",
+                      "size": "bold"
+                    }
+                  },
+                  {
+                    "type": "trajectory",
+                    "logKey": "NT:Regions/OPP_ALLIANCE_HOLD_ZONE",
+                    "logType": "Translation2d[]",
+                    "visible": true,
+                    "options": {
+                      "color": "#ffff00",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "trajectory",
+                    "logKey": "NT:Regions/RIGHT_PASS_REGION",
+                    "logType": "Translation2d[]",
+                    "visible": true,
+                    "options": {
+                      "color": "#00ffff",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "trajectory",
+                    "logKey": "NT:Regions/OPP_HOLD_ZONE",
+                    "logType": "Translation2d[]",
+                    "visible": true,
+                    "options": {
+                      "color": "#00ff00",
+                      "size": "bold"
+                    }
+                  },
+                  {
+                    "type": "trajectory",
+                    "logKey": "NT:Regions/LEFT_PASS_REGION",
+                    "logType": "Translation2d[]",
+                    "visible": true,
+                    "options": {
+                      "color": "#00ffff",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "trajectory",
+                    "logKey": "NT:Regions/NEUTRAL_ZONE",
+                    "logType": "Translation2d[]",
+                    "visible": true,
+                    "options": {
+                      "color": "#ff00ff",
+                      "size": "bold"
+                    }
+                  }
+                ],
+                "field": "FRC:2026 Field",
+                "orientation": 1,
+                "size": "large"
+              },
+              "controllerUUID": "m2fvf8svwbprnan27fw819idv0wet04p",
+              "renderer": null,
+              "controlsHeight": 200
+            },
+            {
+              "type": 3,
+              "title": "3D Field",
+              "controller": {
+                "sources": [
+                  {
+                    "type": "robot",
+                    "logKey": "NT:/Robot/Subsystem/Localization/FieldPose",
+                    "logType": "Pose2d",
+                    "visible": true,
+                    "options": {
+                      "model": "Crab Bot"
+                    }
+                  },
+                  {
+                    "type": "gamePiece",
+                    "logKey": "NT:/Robot/FieldSimulation/Fuel",
+                    "logType": "Pose3d[]",
+                    "visible": true,
+                    "options": {
+                      "variant": "Fuel"
+                    }
+                  }
+                ],
+                "game": "FRC:2026 Field"
+              },
+              "controllerUUID": "eci9nhoegwgv68gghd3z62cocb71q4as",
+              "renderer": {
+                "cameraIndex": -4,
+                "orbitFov": 50,
+                "cameraPosition": [
+                  -8.911993478955566,
+                  1.4891794671181087,
+                  -3.3158044089551226
+                ],
+                "cameraTarget": [
+                  0,
+                  0.5,
+                  0
+                ]
+              },
+              "controlsHeight": 200
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "satellites": [],
+  "version": "26.0.0"
+}

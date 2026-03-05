@@ -2,26 +2,94 @@
   "disabled_subsystems": [ ],
   "swerve": {
     "com": {
-      "center_offset_x": 18,
+      "base_length": 27.5,
+      "base_width": 27.5,
       "slip_current": 50,
       "speed_at_12v": 5.0,
       "couple_ratio": 3.5,
       "wheel_radius_inches": 1.8,
       "max_translation_rate": 5.0,
       "max_angular_rate": 10,
-      "steer_motor_reversed": true,
-      "drive_gains_p": 0.5,
-      "drive_gains_i": 0,
-      "drive_gains_d": 0,
-      "drive_gains_s": 0.18,
-      "drive_gains_v": 0.117,
-      "drive_gains_a": 0,
-      "steer_gains_p": 80,
-      "steer_gains_i": 0,
-      "steer_gains_d": 0,
-      "steer_gains_s": 0,
-      "steer_gains_v": 0,
-      "steer_gains_a": 0
+      "drive_motor": {
+        "bus_name": "CANivore",
+        "bus_id": 0,
+        "type": "X60",
+        "inverted": false,
+        "brake_mode": true,
+        "slot0": {
+          "ks": 0.0,
+          "kv": 0.0,
+          "ka": 0.0,
+          "kg": 0.0,
+          "kp": 0.0,
+          "ki": 0.0,
+          "kd": 0.0
+        },
+        "slot1": {
+          "ks": 0.2,
+          "kv": 0.1,
+          "ka": 0.02,
+          "kg": 0.3,
+          "kp": 8.0,
+          "ki": 0.0,
+          "kd": 0.0
+        },
+        "motion_magic": {
+          "enabled": false,
+          "cruise_velocity": 10000,
+          "acceleration": 6000,
+          "jerk": 0
+        },
+        "supply_limit": {
+          "enabled": true,
+          "current_limit": 40,
+          "trigger_time": 0.1
+        },
+        "stator_limit": {
+          "enabled": true,
+          "current_limit": 40
+        }
+      },
+      "steer_motor": {
+        "bus_name": "CANivore",
+        "bus_id": 0,
+        "type": "X44",
+        "inverted": false,
+        "brake_mode": true,
+        "slot0": {
+          "ks": 0.0,
+          "kv": 0.0,
+          "ka": 0.0,
+          "kg": 0.0,
+          "kp": 80.0,
+          "ki": 0.0,
+          "kd": 0.0
+        },
+        "slot1": {
+          "ks": 0.0,
+          "kv": 0.0,
+          "ka": 0.0,
+          "kg": 0.0,
+          "kp": 0.0,
+          "ki": 0.0,
+          "kd": 0.0
+        },
+        "motion_magic": {
+          "enabled": false,
+          "cruise_velocity": 10000,
+          "acceleration": 6000,
+          "jerk": 0
+        },
+        "supply_limit": {
+          "enabled": true,
+          "current_limit": 40,
+          "trigger_time": 0.1
+        },
+        "stator_limit": {
+          "enabled": true,
+          "current_limit": 40
+        }
+      }
     },
     "fl": {
       "drive_id": 1,
@@ -30,8 +98,8 @@
       "x_position": 7.5,
       "y_position": 7.5,
       "invert_drive": false,
-      "module_type": "MK4N",
-      "module_gearing": "L2+"
+      "module_type": "TSN",
+      "module_gearing": "P13-S18"
     },
     "fr": {
       "drive_id": 3,
@@ -40,8 +108,8 @@
       "x_position": 7.5,
       "y_position": -7.5,
       "invert_drive": false,
-      "module_type": "MK4I",
-      "module_gearing": "L2+"
+      "module_type": "TSN",
+      "module_gearing": "P13-S18"
     },
     "bl": {
       "drive_id": 5,
@@ -50,8 +118,8 @@
       "x_position": -7.5,
       "y_position": 7.5,
       "invert_drive": false,
-      "module_type": "MK4N",
-      "module_gearing": "L2+"
+      "module_type": "TSN",
+      "module_gearing": "P13-S18"
     },
     "br": {
       "drive_id": 7,
@@ -60,64 +128,24 @@
       "x_position": -7.5,
       "y_position": -7.5,
       "invert_drive": false,
-      "module_type": "MK4I",
-      "module_gearing": "L2+"
-    }
-  },
-  "superstructure": {
-    "elevator": {
-      "leader_id": 10,
-      "follower_id": 11,
-      "motion_ratio": 0.01,
-      "tolerance": 0.02,
-      "rescue_height": 0.1,
-      "min_height": 0.0,
-      "max_height": 1.5,
-      "stator_limit": 40.0,
-      "kp": 10.0,
-      "ki": 0.0,
-      "kd": 0.0,
-      "ks": 0.1,
-      "kv": 0.12,
-      "ka": 0.01,
-      "kg": 0.15
-    },
-    "arm": {
-      "motor_id": 12,
-      "encoder_id": 4,
-      "motion_ratio": 0.05,
-      "tolerance": 0.05,
-      "rescue_angle": 1.57,
-      "min_angle": -1.57,
-      "max_angle": 1.57,
-      "stator_limit": 40.0,
-      "kp": 8.0,
-      "ki": 0.0,
-      "kd": 0.0,
-      "ks": 0.2,
-      "kv": 0.1,
-      "ka": 0.02,
-      "kg": 0.3,
-      "encoder_inverted": false,
-      "encoder_discontinuity": 0.5
+      "module_type": "TSN",
+      "module_gearing": "P13-S18"
     }
   },
   "intake": {
-    "offset_y": 0.0,
-    "stator_current_limit": 40.0,
-    "tof": {
-      "id": 0,
-      "coral_distance": 100.0
+    "max_extension": 12.0
+  },
+  "shooter": {
+    "translation": {
+      "x": -6.3,
+      "y": -3.0,
+      "z": 23.0
     },
-    "intake": {
-      "id": 13,
-      "in_speed": 0.8,
-      "out_speed": -0.8
+    "rotation": {
+      "x": 0.0,
+      "y": 0.0,
+      "z": 180.0
     },
-    "pivot": {
-      "id": 14,
-      "mech_ratio": 1.0,
-      "kp": 10.0
-    }
+    "width": 19.75
   }
 }

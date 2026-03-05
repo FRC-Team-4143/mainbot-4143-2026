@@ -5,6 +5,14 @@
 package frc.robot;
 
 import com.marswars.subsystem.SubsystemManager;
+import edu.wpi.first.wpilibj.RobotBase;
+import frc.robot.subsystems.climber.ClimberSubsystem;
+import frc.robot.subsystems.gamestates.GameStatesSubsystem;
+import frc.robot.subsystems.hopper.HopperSubsystem;
+import frc.robot.subsystems.intake.IntakeSubsystem;
+import frc.robot.subsystems.localization.LocalizationSubsystem;
+import frc.robot.subsystems.shooter.ShooterSubsystem;
+import frc.robot.subsystems.simulation.SimulationSubsystem;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 
 public class RobotContainer extends SubsystemManager {
@@ -21,6 +29,17 @@ public class RobotContainer extends SubsystemManager {
         super(BuildConstants.class);
         // !!!!!! ALL SUBSYSTEMS MUST BE REGISTERED HERE TO RUN !!!!!!!
         registerSubsystem(SwerveSubsystem.getInstance());
+        registerSubsystem(LocalizationSubsystem.getInstance());
+        registerSubsystem(ShooterSubsystem.getInstance());
+        registerSubsystem(HopperSubsystem.getInstance());
+        registerSubsystem(IntakeSubsystem.getInstance());
+        registerSubsystem(ClimberSubsystem.getInstance());
+        registerSubsystem(GameStatesSubsystem.getInstance());
+
+        // Only enable the simulation subsystem if we are in simulation
+        if (RobotBase.isSimulation()) {
+            registerSubsystem(SimulationSubsystem.getInstance());
+        }
 
         // !!!!! LEAVE THESE LINES AS THE LAST LINE IN THE CONSTRUCTOR !!!!!!
         reset();
