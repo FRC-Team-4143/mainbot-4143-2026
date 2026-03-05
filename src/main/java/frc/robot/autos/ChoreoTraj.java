@@ -34,29 +34,29 @@ public record ChoreoTraj(
 	public static final ChoreoTraj CycleNeutralFirst = new ChoreoTraj(
 	    "CycleNeutralFirst",
 	    OptionalInt.empty(),
-	    3.21316,
-	    new Pose2d(3.476, 2.456, Rotation2d.fromRadians(0.935)),
-	    new Pose2d(3.615, 2.394, Rotation2d.fromRadians(-2.247))
+	    5.73432,
+	    new Pose2d(3.632, 2.475, Rotation2d.fromRadians(-0.017)),
+	    new Pose2d(3.262, 2.475, Rotation2d.fromRadians(3.119))
 	);
 	public static final ChoreoTraj CycleNeutralFirstLeft = new ChoreoTraj(
 	    "CycleNeutralFirstLeft",
 	    OptionalInt.empty(),
-	    5.59571,
-	    new Pose2d(3.32, 5.496, Rotation2d.fromRadians(0.032)),
+	    5.51441,
+	    new Pose2d(3.671, 5.555, Rotation2d.fromRadians(0.032)),
 	    new Pose2d(3.32, 5.477, Rotation2d.fromRadians(-3.095))
 	);
 	public static final ChoreoTraj CycleNeutralSecond = new ChoreoTraj(
 	    "CycleNeutralSecond",
 	    OptionalInt.empty(),
-	    3.45432,
-	    new Pose2d(3.456, 2.495, Rotation2d.fromRadians(-2.218)),
-	    new Pose2d(3.456, 2.495, Rotation2d.fromRadians(-2.242))
+	    5.8761,
+	    new Pose2d(3.203, 2.475, Rotation2d.fromRadians(3.113)),
+	    new Pose2d(3.047, 2.475, Rotation2d.fromRadians(3.079))
 	);
 	public static final ChoreoTraj CycleNeutralSecondLeft = new ChoreoTraj(
 	    "CycleNeutralSecondLeft",
 	    OptionalInt.empty(),
-	    5.90782,
-	    new Pose2d(3.203, 5.438, Rotation2d.fromRadians(0.016)),
+	    5.90708,
+	    new Pose2d(3.203, 5.438, Rotation2d.fromRadians(-3.142)),
 	    new Pose2d(2.93, 5.769, Rotation2d.fromRadians(3.141))
 	);
 	public static final ChoreoTraj CycleNeutralThird = new ChoreoTraj(
@@ -66,26 +66,12 @@ public record ChoreoTraj(
 	    new Pose2d(3.495, 2.534, Rotation2d.fromRadians(-2.313)),
 	    new Pose2d(3.476, 2.534, Rotation2d.fromRadians(-2.272))
 	);
-	public static final ChoreoTraj LeftBumpDepot = new ChoreoTraj(
-	    "LeftBumpDepot",
-	    OptionalInt.empty(),
-	    7.05771,
-	    new Pose2d(3.671, 5.555, Rotation2d.fromRadians(-3.136)),
-	    new Pose2d(2.852, 5.945, Rotation2d.fromRadians(-3.12))
-	);
 	public static final ChoreoTraj LeftStartNeutralOutpost = new ChoreoTraj(
 	    "LeftStartNeutralOutpost",
 	    OptionalInt.empty(),
 	    8.13676,
 	    new Pose2d(3.467, 5.603, Rotation2d.fromRadians(-0.928)),
 	    new Pose2d(0.293, 0.733, Rotation2d.fromRadians(3.142))
-	);
-	public static final ChoreoTraj LeftTrenchDepot = new ChoreoTraj(
-	    "LeftTrenchDepot",
-	    OptionalInt.empty(),
-	    7.29798,
-	    new Pose2d(3.69, 7.504, Rotation2d.fromRadians(-3.136)),
-	    new Pose2d(2.852, 5.945, Rotation2d.fromRadians(-3.12))
 	);
 	public static final ChoreoTraj OutpostClimb = new ChoreoTraj(
 	    "OutpostClimb",
@@ -129,6 +115,20 @@ public record ChoreoTraj(
 	    new Pose2d(2.5, 1, Rotation2d.fromRadians(0)),
 	    new Pose2d(2.5, 5, Rotation2d.fromRadians(0))
 	);
+	public static final ChoreoTraj LeftBumpDepot = new ChoreoTraj(
+	    "LeftBumpDepot",
+	    OptionalInt.empty(),
+	    7.05771,
+	    new Pose2d(3.671, 5.555, Rotation2d.fromRadians(-3.136)),
+	    new Pose2d(2.852, 5.945, Rotation2d.fromRadians(-3.12))
+	);
+	public static final ChoreoTraj LeftTrenchDepot = new ChoreoTraj(
+	    "LeftTrenchDepot",
+	    OptionalInt.empty(),
+	    7.29798,
+	    new Pose2d(3.69, 7.504, Rotation2d.fromRadians(-3.136)),
+	    new Pose2d(2.852, 5.945, Rotation2d.fromRadians(-3.12))
+	);
 
     /**
      * A map between trajectory names and their corresponding data.
@@ -141,15 +141,15 @@ public record ChoreoTraj(
 		Map.entry("CycleNeutralSecond", CycleNeutralSecond),
 		Map.entry("CycleNeutralSecondLeft", CycleNeutralSecondLeft),
 		Map.entry("CycleNeutralThird", CycleNeutralThird),
-		Map.entry("LeftBumpDepot", LeftBumpDepot),
 		Map.entry("LeftStartNeutralOutpost", LeftStartNeutralOutpost),
-		Map.entry("LeftTrenchDepot", LeftTrenchDepot),
 		Map.entry("OutpostClimb", OutpostClimb),
 		Map.entry("OutpostClimbNeutral", OutpostClimbNeutral),
 		Map.entry("OutpostClimbNeutralLeft", OutpostClimbNeutralLeft),
 		Map.entry("OutpostClimbRight", OutpostClimbRight),
 		Map.entry("RightStartNeutralDepot", RightStartNeutralDepot),
-		Map.entry("TestPath", TestPath)
+		Map.entry("TestPath", TestPath),
+		Map.entry("LeftBumpDepot", LeftBumpDepot),
+		Map.entry("LeftTrenchDepot", LeftTrenchDepot)
     );
 
     /**

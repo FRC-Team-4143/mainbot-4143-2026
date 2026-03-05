@@ -1,13 +1,11 @@
 package frc.robot.subsystems.climber;
 
-import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.configs.TalonFXSConfiguration;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.marswars.mechanisms.MotorConfig;
 import com.marswars.mechanisms.MotorConfig.TalonMotorType;
 import com.marswars.subsystem.MwConstants;
-
 import edu.wpi.first.math.util.Units;
 
 public class ClimberConstants extends MwConstants {
@@ -64,16 +62,19 @@ public class ClimberConstants extends MwConstants {
     public final double FLIP_MASS = 0.1; // KG
     public final double FLIP_MIN_ANGLE = -2.0 * Math.PI; // Radians, min rotation angle
     public final double FLIP_MAX_ANGLE = 2.0 * Math.PI; // Radians, max rotation angle
-    public final double FLIP_L1_CLIMB = Units.degreesToRadians(90); // Radians, auto climb climb angle
+    public final double FLIP_L1_CLIMB =
+            Units.degreesToRadians(90); // Radians, auto climb climb angle
     public final double FLIP_L2_CLIMB = Units.degreesToRadians(125); // Radians, L2 climb angle
-    public final double FLIP_L3_CLIMB_ANGLE = Units.degreesToRadians(180); // radians, teleop climb height
-    public final double FLIP_GROUND_ANGLE = Units.degreesToRadians(0); // angle for the flip to return to
-    public final double FLIP_CLIMB_UP_DUTY_CYCLE = 1.0; //percent power for moving up
+    public final double FLIP_L3_CLIMB_ANGLE =
+            Units.degreesToRadians(180); // radians, teleop climb height
+    public final double FLIP_GROUND_ANGLE =
+            Units.degreesToRadians(0); // angle for the flip to return to
+    public final double FLIP_CLIMB_UP_DUTY_CYCLE = 1.0; // percent power for moving up
     public final double FLIP_DOWN_UP_DUTY_CYCLE = -1.0; // percent power for moving down
     public final double FLIP_BUMP_DUTY_CYCLE = 1.0; // percent power for small bump adjustments
-    public final double FLIP_ADJUSTMENT_INCREMENT = Units.degreesToRadians(4); // radians to adjust per bump
+    public final double FLIP_ADJUSTMENT_INCREMENT =
+            Units.degreesToRadians(4); // radians to adjust per bump
     public final double FLIP_ANGLE_TOLERANCE = Units.degreesToRadians(2);
-
 
     // =============================================================================
     // MOTOR CONFIGURATION OBJECTS

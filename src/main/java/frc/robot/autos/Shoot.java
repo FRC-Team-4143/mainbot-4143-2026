@@ -3,12 +3,10 @@ package frc.robot.autos;
 import com.marswars.auto.Auto;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.lib2026.FieldTargets;
-import frc.robot.subsystems.shooter.ShooterConstants.ShooterStates;
-import frc.robot.subsystems.hopper.HopperSubsystem;
 import frc.robot.subsystems.hopper.HopperConstants.HopperStates;
+import frc.robot.subsystems.hopper.HopperSubsystem;
+import frc.robot.subsystems.shooter.ShooterConstants.ShooterStates;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
-import frc.robot.subsystems.swerve.SwerveConstants.SwerveStates;
-import frc.robot.subsystems.swerve.SwerveSubsystem;
 
 public class Shoot extends Auto {
 
@@ -21,12 +19,8 @@ public class Shoot extends Auto {
                 Commands.runOnce(
                         () -> ShooterSubsystem.getInstance().setTarget(FieldTargets.Shooter.HUB)),
                 Commands.runOnce(
-                        () ->
-                                ShooterSubsystem.getInstance()
-                                        .setWantedState(ShooterStates.SHOOT)),
+                        () -> ShooterSubsystem.getInstance().setWantedState(ShooterStates.SHOOT)),
                 Commands.runOnce(
-                        () ->
-                                HopperSubsystem.getInstance()
-                                        .setWantedState(HopperStates.SHOOTING)));
+                        () -> HopperSubsystem.getInstance().setWantedState(HopperStates.SHOOTING)));
     }
 }

@@ -87,8 +87,7 @@ public class Neutral_Cycles_Left extends Auto {
                 Commands.runOnce(
                         () -> {
                             ShooterSubsystem.getInstance().setWantedState(ShooterStates.SHOOT);
-                            HopperSubsystem.getInstance()
-                                            .setWantedState(HopperStates.SHOOTING);
+                            HopperSubsystem.getInstance().setWantedState(HopperStates.SHOOTING);
                             SwerveSubsystem.getInstance()
                                     .setWantedState(SwerveStates.FIELD_CENTRIC_ROTATION_LOCK);
                         }),
@@ -128,7 +127,8 @@ public class Neutral_Cycles_Left extends Auto {
                                                 .setWantedState(SwerveStates.CHOREO_PATH),
                                 () ->
                                         SwerveSubsystem.getInstance()
-                                                .setWantedState(SwerveStates.FIELD_CENTRIC_ROTATION_LOCK))
+                                                .setWantedState(
+                                                        SwerveStates.FIELD_CENTRIC_ROTATION_LOCK))
                         .until(
                                 () ->
                                         SwerveSubsystem.getInstance().isAtChoreoSetpoint()
@@ -138,10 +138,11 @@ public class Neutral_Cycles_Left extends Auto {
 
                 // Move to the climb position
                 Commands.runOnce(
-                        () -> {ShooterSubsystem.getInstance().setWantedState(ShooterStates.SHOOT);
-                        HopperSubsystem.getInstance()
-                                            .setWantedState(HopperStates.SHOOTING);})
-                
+                        () -> {
+                            ShooterSubsystem.getInstance().setWantedState(ShooterStates.SHOOT);
+                            HopperSubsystem.getInstance().setWantedState(HopperStates.SHOOTING);
+                        })
+
                 // SwerveSubsystem.getInstance()
                 //         .setDesiredChoreoTrajectoryCommand(
                 //                 getTrajectory(ChoreoTraj.OutpostClimbNeutralLeft.name())),
@@ -162,6 +163,6 @@ public class Neutral_Cycles_Left extends Auto {
                 //         () ->
                 //                 ShooterSubsystem.getInstance()
                 //                         .setWantedState(ShooterStates.TRACKING))
-                                        );
+                );
     }
 }

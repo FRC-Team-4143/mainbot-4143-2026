@@ -5,15 +5,12 @@
 package frc.robot;
 
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.subsystems.climber.ClimberSubsystem;
-import frc.robot.subsystems.climber.ClimberConstants.ClimberStates;
 import frc.robot.lib2026.HubMonitor;
 import frc.robot.subsystems.localization.LocalizationSubsystem;
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterStates;
@@ -27,7 +24,8 @@ public abstract class OI {
     private static final CommandXboxController driver_controller_ = new CommandXboxController(0);
     private static final CommandXboxController operator_controller_ = new CommandXboxController(1);
 
-    private static final SendableChooser<HubMonitor.ActiveAlliance> hub_first_alliance_chooser_ = new SendableChooser<>();
+    private static final SendableChooser<HubMonitor.ActiveAlliance> hub_first_alliance_chooser_ =
+            new SendableChooser<>();
 
     public static void configureBindings() {
         DriverStation.silenceJoystickConnectionWarning(true);
@@ -78,9 +76,11 @@ public abstract class OI {
         // =============================================================================
 
         // operator_controller_.a().onTrue(ClimberSubsystem.getInstance().toggleDeployCommand());
-        // operator_controller_.b().onTrue(Commands.runOnce(() -> ClimberSubsystem.getInstance().setWantedState(ClimberStates.L1)));
+        // operator_controller_.b().onTrue(Commands.runOnce(() ->
+        // ClimberSubsystem.getInstance().setWantedState(ClimberStates.L1)));
         // operator_controller_.x().whileTrue(ClimberSubsystem.getInstance().bumpUpCommand());
-        // operator_controller_.y().onTrue(Commands.runOnce(() -> ClimberSubsystem.getInstance().setWantedState(ClimberStates.GROUND)));
+        // operator_controller_.y().onTrue(Commands.runOnce(() ->
+        // ClimberSubsystem.getInstance().setWantedState(ClimberStates.GROUND)));
 
         // driver_controller_.x().onTrue(Commands.runOnce(
         // () -> ClimberSubsystem.getInstance().setWantedState(ClimberStates.L1)));
