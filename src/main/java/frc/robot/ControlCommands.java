@@ -64,14 +64,14 @@ public class ControlCommands {
                 ClimberSubsystem.getInstance().setWantedState(ClimberStates.DEPLOY);
             }
             else if(ClimberSubsystem.getInstance().getSystemState() == ClimberStates.DEPLOY){
-                ClimberSubsystem.getInstance().setWantedState(ClimberStates.L3);
+                ClimberSubsystem.getInstance().setWantedState(ClimberStates.L1);
             }
         });
     }
 
     static Command reverseClimbingStage(){
         return Commands.runOnce(() -> {
-            if(ClimberSubsystem.getInstance().getSystemState() == ClimberStates.L3){
+            if(ClimberSubsystem.getInstance().getSystemState() == ClimberStates.L1){
                 ClimberSubsystem.getInstance().setWantedState(ClimberStates.DEPLOY);
             }
             else if(ClimberSubsystem.getInstance().getSystemState() == ClimberStates.DEPLOY){

@@ -5,6 +5,8 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.lib2026.FieldTargets;
 import frc.robot.subsystems.hopper.HopperConstants.HopperStates;
+import frc.robot.subsystems.climber.ClimberSubsystem;
+import frc.robot.subsystems.climber.ClimberConstants.ClimberStates;
 import frc.robot.subsystems.hopper.HopperSubsystem;
 import frc.robot.subsystems.intake.IntakeConstants.IntakeStates;
 import frc.robot.subsystems.intake.IntakeSubsystem;
@@ -73,6 +75,13 @@ public class Right_Start_Neutral_Depot_Climb extends Auto {
                                     SwerveSubsystem.getInstance()
                                             .setWantedState(SwerveStates.CHOREO_PATH);
                                 }));
+        SwerveSubsystem.getInstance()
+                .getChoreoEventTimeTrigger("Deploy Climber")
+                .onTrue(
+                        Commands.runOnce(
+                                () -> {
+                                    ClimberSubsystem.getInstance().setWantedState(ClimberStates.DEPLOY);
+                                }));
         addCommands(
                 // Set the initial trajectory
                 Commands.runOnce(
@@ -91,7 +100,7 @@ public class Right_Start_Neutral_Depot_Climb extends Auto {
                                                 .setWantedState(SwerveStates.CHOREO_PATH),
                                 () ->
                                         SwerveSubsystem.getInstance()
-                                                .setWantedState(SwerveStates.FIELD_CENTRIC))
+                                                .setWantedState(SwerveStates.FIELD_CENTRIC_ROTATION_LOCK))
                         .until(SwerveSubsystem.getInstance()::isAtChoreoSetpoint),
                 Commands.runOnce(
                         () -> {
@@ -106,6 +115,7 @@ public class Right_Start_Neutral_Depot_Climb extends Auto {
                 // Commands.runOnce(
                 //         () ->
                 // ShooterSubsystem.getInstance().setWantedState(ShooterStates.SHOOT)),
+                
                 SwerveSubsystem.getInstance()
                         .setDesiredChoreoTrajectoryCommand(
                                 getTrajectory(ChoreoTraj.OutpostClimbRight.name())),
@@ -118,9 +128,10 @@ public class Right_Start_Neutral_Depot_Climb extends Auto {
                                         SwerveSubsystem.getInstance()
                                                 .setWantedState(SwerveStates.FIELD_CENTRIC))
                         .until(SwerveSubsystem.getInstance()::isAtChoreoSetpoint),
+                new WaitCommand(3),
                 Commands.runOnce(
-                        () ->
-                                ShooterSubsystem.getInstance()
-                                        .setWantedState(ShooterStates.TRACKING)));
+                        () -> {
+                            ClimberSubsystem.getInstance().setWantedState(ClimberStates.L1);
+                        }));
     }
 }
