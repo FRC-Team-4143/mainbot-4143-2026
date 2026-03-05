@@ -60,7 +60,7 @@ public class FieldTargets {
 
         // Strict tolerances for scoring (hub shots)
         public static final double FLYWHEEL_SPEED_TOLERANCE =
-                Units.rotationsPerMinuteToRadiansPerSecond(50);
+                Units.rotationsPerMinuteToRadiansPerSecond(100);
         public static final double HOOD_POSITION_TOLERANCE = Units.degreesToRadians(1.0);
         public static final double ROTATION_ANGLE_TOLERANCE = Units.degreesToRadians(3.0);
 

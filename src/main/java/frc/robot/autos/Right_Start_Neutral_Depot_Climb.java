@@ -109,7 +109,7 @@ public class Right_Start_Neutral_Depot_Climb extends Auto {
                             ShooterSubsystem.getInstance().setWantedState(ShooterStates.SHOOT);
                             HopperSubsystem.getInstance().setWantedState(HopperStates.SHOOTING);
                         }),
-                new WaitCommand(3),
+                new WaitCommand(5),
 
                 // Shoot here if needed
 

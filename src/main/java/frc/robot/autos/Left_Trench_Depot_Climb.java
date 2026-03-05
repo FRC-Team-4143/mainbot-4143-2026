@@ -89,7 +89,7 @@ public class Left_Trench_Depot_Climb extends Auto {
                             ShooterSubsystem.getInstance().setWantedState(ShooterStates.SHOOT);
                             HopperSubsystem.getInstance().setWantedState(HopperStates.SHOOTING);
                         }),
-                new WaitCommand(3),
+                new WaitCommand(5),
                 SwerveSubsystem.getInstance()
                         .setDesiredChoreoTrajectoryCommand(
                                 getTrajectory(ChoreoTraj.OutpostClimbRight.name())),
