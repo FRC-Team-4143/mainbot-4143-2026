@@ -62,9 +62,8 @@ public class ControlCommands {
         return Commands.runOnce(
                 () -> {
                     if(ClimberSubsystem.getInstance().getSystemState() == ClimberStates.STOWED && IntakeSubsystem.getInstance().getSystemState() != IntakeStates.STORE){
-                        IntakeSubsystem.getInstance().setWantedState(IntakeStates.STORE);
-                    }
-                    else if (ClimberSubsystem.getInstance().getSystemState() == ClimberStates.STOWED && IntakeSubsystem.getInstance().getSystemState() == IntakeStates.STORE) {
+                        //Intentional do nothing
+                    } else if (ClimberSubsystem.getInstance().getSystemState() == ClimberStates.STOWED && IntakeSubsystem.getInstance().getSystemState() == IntakeStates.STORE) {
                         ClimberSubsystem.getInstance().setWantedState(ClimberStates.DEPLOY);
                     } else if (ClimberSubsystem.getInstance().getSystemState()
                             == ClimberStates.DEPLOY) {

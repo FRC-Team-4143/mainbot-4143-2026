@@ -64,7 +64,7 @@ public class ClimberConstants extends MwConstants {
     public final double FLIP_MAX_ANGLE = 2.0 * Math.PI; // Radians, max rotation angle
     public final double FLIP_L1_CLIMB =
             Units.degreesToRadians(90); // Radians, auto climb climb angle
-    public final double FLIP_L2_CLIMB = Units.degreesToRadians(125); // Radians, L2 climb angle
+    public final double FLIP_L2_CLIMB = Units.degreesToRadians(145); // Radians, L2 climb angle
     public final double FLIP_L3_CLIMB_ANGLE =
             Units.degreesToRadians(180); // radians, teleop climb height
     public final double FLIP_GROUND_ANGLE =
