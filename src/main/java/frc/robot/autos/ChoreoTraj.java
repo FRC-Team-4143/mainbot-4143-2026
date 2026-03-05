@@ -104,7 +104,7 @@ public record ChoreoTraj(
 	public static final ChoreoTraj RightStartNeutralDepot = new ChoreoTraj(
 	    "RightStartNeutralDepot",
 	    OptionalInt.empty(),
-	    9.40164,
+	    9.43278,
 	    new Pose2d(3.632, 2.631, Rotation2d.fromRadians(-0.018)),
 	    new Pose2d(2.891, 5.867, Rotation2d.fromRadians(3.129))
 	);

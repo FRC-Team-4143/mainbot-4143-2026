@@ -144,6 +144,8 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
                 && !isShooterReady()
                 && wanted == ShooterStates.SHOOT) {
             // Nap time : Blocks deafult transition from occuring
+        } else if (system_state_ == ShooterStates.SHOOT && !isShooterReady()){
+            system_state_ = ShooterStates.SHOOT_WAIT;
         } else {
             system_state_ = wanted;
         }
