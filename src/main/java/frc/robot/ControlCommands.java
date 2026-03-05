@@ -74,7 +74,7 @@ public class ControlCommands {
         return Commands.runOnce(
                 () -> {
                     if (ClimberSubsystem.getInstance().getSystemState() == ClimberStates.L1) {
-                        ClimberSubsystem.getInstance().setWantedState(ClimberStates.DEPLOY);
+                        ClimberSubsystem.getInstance().setWantedState(ClimberStates.GROUND);
                     } else if (ClimberSubsystem.getInstance().getSystemState()
                             == ClimberStates.DEPLOY) {
                         ClimberSubsystem.getInstance().setWantedState(ClimberStates.STOWED);
