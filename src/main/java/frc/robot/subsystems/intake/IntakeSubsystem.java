@@ -16,6 +16,7 @@ public class IntakeSubsystem extends MwSubsystem<IntakeStates, IntakeConstants> 
 
     private RollerMech roller_;
     private ArmMech pivot_;
+    private int counter;
 
     // getInstance
     public static IntakeSubsystem getInstance() {
@@ -85,16 +86,22 @@ public class IntakeSubsystem extends MwSubsystem<IntakeStates, IntakeConstants> 
             }
         } else {
             system_state_ = wantedState;
+            counter = 0;
         }
     }
 
     // updateLogic
     @Override
     public void updateLogic(double timestamp) {
+        counter++;
         switch (system_state_) {
             case STORE:
-                roller_.setTargetDutyCycle(0.0);
+                if(counter > 25)
+                    roller_.setTargetDutyCycle(0.0);
+                else
+                    roller_.setTargetDutyCycle(CONSTANTS.INTAKE_DUTY_CYCLE);
                 pivot_.setTargetPosition(CONSTANTS.PIVOT_STORE_POSITION);
+                
                 break;
             case DEPLOYING:
                 roller_.setTargetDutyCycle(0.0);
