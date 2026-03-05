@@ -73,7 +73,7 @@ public class ControlCommands {
     static Command reverseClimbingStage() {
         return Commands.runOnce(
                 () -> {
-                    if (ClimberSubsystem.getInstance().getSystemState() == ClimberStates.L1) {
+                    if (ClimberSubsystem.getInstance().getSystemState() == ClimberStates.CLIMB_HOLD) {
                         ClimberSubsystem.getInstance().setWantedState(ClimberStates.GROUND);
                     } else if (ClimberSubsystem.getInstance().getSystemState()
                             == ClimberStates.DEPLOY) {
