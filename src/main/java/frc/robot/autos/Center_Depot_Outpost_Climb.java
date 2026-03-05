@@ -76,7 +76,7 @@ public class Center_Depot_Outpost_Climb extends Auto {
                                                 .setWantedState(SwerveStates.CHOREO_PATH),
                                 () ->
                                         SwerveSubsystem.getInstance()
-                                                .setWantedState(SwerveStates.FIELD_CENTRIC))
+                                                .setWantedState(SwerveStates.FIELD_CENTRIC_ROTATION_LOCK))
                         .until(SwerveSubsystem.getInstance()::isAtChoreoSetpoint),
                 // Shoot here if needed
                 // Move to the climb position
@@ -95,7 +95,7 @@ public class Center_Depot_Outpost_Climb extends Auto {
                                                         SwerveStates.CHOREO_PATH_ROTATION_LOCK),
                                 () ->
                                         SwerveSubsystem.getInstance()
-                                                .setWantedState(SwerveStates.FIELD_CENTRIC))
+                                                .setWantedState(SwerveStates.FIELD_CENTRIC_ROTATION_LOCK))
                         .until(SwerveSubsystem.getInstance()::isAtChoreoSetpoint));
     }
 }
