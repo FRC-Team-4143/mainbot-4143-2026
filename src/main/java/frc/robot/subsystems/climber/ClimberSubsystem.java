@@ -240,7 +240,7 @@ public class ClimberSubsystem extends MwSubsystem<ClimberStates, ClimberConstant
      * @return Command that bumps up while held, returns to CLIMB_HOLD when released
      */
     public Command bumpUpCommand() {
-        return Commands.run(
+        return Commands.runOnce(
                         () -> {
                             flip_adjustment_ += CONSTANTS.FLIP_ADJUSTMENT_INCREMENT;
                         })
@@ -254,7 +254,7 @@ public class ClimberSubsystem extends MwSubsystem<ClimberStates, ClimberConstant
      * @return Command that bumps down while held, returns to CLIMB_HOLD when released
      */
     public Command bumpDownCommand() {
-        return Commands.run(
+        return Commands.runOnce(
                         () -> {
                             flip_adjustment_ -= CONSTANTS.FLIP_ADJUSTMENT_INCREMENT;
                         })

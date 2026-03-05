@@ -102,7 +102,6 @@ public class Left_Bump_Depot_Climb extends Auto {
                                         SwerveSubsystem.getInstance()
                                                 .setWantedState(SwerveStates.FIELD_CENTRIC))
                         .until(SwerveSubsystem.getInstance()::isAtChoreoSetpoint),
-                new WaitCommand(3),
                 Commands.runOnce(
                         () -> {
                             ClimberSubsystem.getInstance().setWantedState(ClimberStates.L1);
