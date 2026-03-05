@@ -97,7 +97,7 @@ public class Center_Depot_Climb extends Auto {
                                 () ->
                                         SwerveSubsystem.getInstance()
                                                 .setWantedState(
-                                                        SwerveStates.CHOREO_PATH_ROTATION_LOCK),
+                                                        SwerveStates.CHOREO_PATH),
                                 () ->
                                         SwerveSubsystem.getInstance()
                                                 .setWantedState(SwerveStates.FIELD_CENTRIC))
