@@ -50,7 +50,7 @@ public class ClimberConstants extends MwConstants {
     public final double DEPLOY_MOI = 25.0; // kg*m^2, moment of inertia of the deploy mechanism
     public final double DEPLOY_DEPLOYED_ANGLE = (1 * Math.PI) / 2; // angle of DEPLOY being out
     public final double DEPLOY_STOWED_ANGLE = 0; // angle of DEPLOY being stowed
-    public final double DEPLOY_TOLERANCE_ANGLE = Units.degreesToRadians(5);
+    public final double DEPLOY_TOLERANCE_ANGLE = Units.degreesToRadians(30);
 
     // =============================================================================
     // MECHANICAL CONSTANTS - FLIP

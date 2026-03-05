@@ -268,6 +268,9 @@ public class ControlCommands {
     static Command storeIntakeCommand() {
         return Commands.runOnce(
                         () -> {
+                            if(IntakeSubsystem.getInstance().getSystemState() == IntakeStates.STORE)
+                            IntakeSubsystem.getInstance().setWantedState(IntakeStates.DEPLOYING);
+                            if(IntakeSubsystem.getInstance().getSystemState() == IntakeStates.DEPLOYED)
                             IntakeSubsystem.getInstance().setWantedState(IntakeStates.STORE);
                         })
                 .withName("Store Intake")
