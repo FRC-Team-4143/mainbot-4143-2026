@@ -15,11 +15,14 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.autos.Center_Depot_Outpost_Climb;
+import frc.robot.autos.Center_Depot_Climb;
+import frc.robot.autos.Left_Bump_Depot_Climb;
 import frc.robot.autos.Left_Start_Neutral_Outpost_Climb;
+import frc.robot.autos.Left_Trench_Depot_Climb;
 import frc.robot.autos.Neutral_Cycles;
 import frc.robot.autos.Neutral_Cycles_Left;
 import frc.robot.autos.Right_Start_Neutral_Depot_Climb;
+import frc.robot.autos.Shoot;
 import frc.robot.autos.TestAuto;
 import frc.robot.lib2026.FieldConstants;
 import frc.robot.lib2026.FieldRegions;
@@ -58,12 +61,16 @@ public class Robot extends TimedRobot {
         AutoManager.getInstance()
                 .registerAutos(
                         // Add your auto routines here as you create them
-                        new Left_Start_Neutral_Outpost_Climb(),
+                        //new Left_Start_Neutral_Outpost_Climb(),
                         new Right_Start_Neutral_Depot_Climb(),
-                        new Neutral_Cycles(),
+                        //new Neutral_Cycles(),
                         new Neutral_Cycles_Left(),
-                        new Center_Depot_Outpost_Climb(),
-                        new TestAuto());
+                        new Center_Depot_Climb(),
+                        new Left_Bump_Depot_Climb(),
+                        new Left_Trench_Depot_Climb(),
+                        new Shoot()
+                        //new TestAuto()
+                        );
 
         // Set the default target for the shooter to be the hub
         ShooterSubsystem.getInstance().setTarget(FieldTargets.Shooter.HUB);
