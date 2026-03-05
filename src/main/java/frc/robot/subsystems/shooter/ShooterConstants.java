@@ -75,6 +75,8 @@ public class ShooterConstants extends MwConstants {
     public final Slot1Configs FLYWHEEL_VELOCITY_GAINS =
             new Slot1Configs().withKP(0.5).withKV(0.118).withKI(2);
 
+    public final double FLYWHEEL_FILTER_TIME_CONSTANT = 0.15; // seconds for flywheel velocity smoothing
+
     // Manual mode flywheel velocities (rad/s) - TUNE THESE!
     public final double FLYWHEEL_MANUAL_HUB_VELOCITY = 260.0; // Flywheel speed for hub shots
     public final double FLYWHEEL_MANUAL_PASS_VELOCITY = 320.0; // Flywheel speed for passing

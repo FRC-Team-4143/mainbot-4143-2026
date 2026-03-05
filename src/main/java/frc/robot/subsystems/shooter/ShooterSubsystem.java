@@ -16,6 +16,7 @@ import dev.doglog.DogLog;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
+import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -53,12 +54,16 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
     private final Debouncer shooter_ready_debouncer =
             new Debouncer(CONSTANTS.SHOOTER_READY_DEBOUNCE_TIME, DebounceType.kRising);
 
+    private final LinearFilter flywheel_velocity_filter_ =
+            LinearFilter.singlePoleIIR(CONSTANTS.FLYWHEEL_FILTER_TIME_CONSTANT, 0.02);
+
     // Adjustable shooting tolerances - initialized to strict defaults
     private double flywheel_vel_tol_ = FieldTargets.Shooter.FLYWHEEL_SPEED_TOLERANCE;
     private double hood_pos_tol_ = FieldTargets.Shooter.HOOD_POSITION_TOLERANCE;
     private double rot_pos_tol_ = FieldTargets.Shooter.ROTATION_ANGLE_TOLERANCE;
     private double hood_adj_ = 0.0;
     private double flywheel_adj_ = 0.0;
+    private double filtered_flywheel_velocity_ = 0.0;
 
     // Hood feedforward gain - made tunable for easy adjustment
     private double hood_kv_ = CONSTANTS.HOOD_KV;
@@ -182,6 +187,11 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
             // Store heading feedforward velocity (rad/s) for use in all states
             heading_feedforward_ = launch_params_.heading_velocity;
         }
+
+        // Apply flywheel velocity filtering
+        filtered_flywheel_velocity_ =
+                flywheel_velocity_filter_.calculate(flywheel_.getCurrentVelocity());
+
         flywheel_omega_ += flywheel_adj_;
         hood_angle_ += hood_adj_;
         hood_angle_ =
@@ -300,6 +310,11 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
                 launch_params_.time_of_flight,
                 Seconds);
 
+        DogLog.log(
+                getSubsystemKey() + "Flywheel/FilteredVelocity",
+                filtered_flywheel_velocity_,
+                RadiansPerSecond);
+
         // Setpoint Logging
         DogLog.log(getSubsystemKey() + "Setpoint/FlywheelOmega", flywheel_omega_, RadiansPerSecond);
         DogLog.log(getSubsystemKey() + "Setpoint/HoodAngle", hood_angle_, Radians);
@@ -356,7 +371,7 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
      */
     public double getLaunchVelocity() {
         // angular speed * radius * eff_factor
-        return flywheel_.getCurrentVelocity() * CONSTANTS.FLYWHEEL_WHEEL_RADIUS_METERS * 0.5;
+        return filtered_flywheel_velocity_ * CONSTANTS.FLYWHEEL_WHEEL_RADIUS_METERS * 0.5;
     }
 
     /**
@@ -438,7 +453,7 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
      */
     private boolean isFlywheelAtSpeed() {
         boolean status =
-                MathUtil.isNear(flywheel_omega_, flywheel_.getCurrentVelocity(), flywheel_vel_tol_);
+                MathUtil.isNear(flywheel_omega_, filtered_flywheel_velocity_, flywheel_vel_tol_);
         return status;
     }
 
