@@ -65,7 +65,7 @@ public class ControlCommands {
                         ClimberSubsystem.getInstance().setWantedState(ClimberStates.DEPLOY);
                     } else if (ClimberSubsystem.getInstance().getSystemState()
                             == ClimberStates.DEPLOY) {
-                        ClimberSubsystem.getInstance().setWantedState(ClimberStates.L1);
+                        ClimberSubsystem.getInstance().setWantedState(ClimberStates.L2);
                     }
                 });
     }
