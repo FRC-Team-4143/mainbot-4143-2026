@@ -66,12 +66,26 @@ public record ChoreoTraj(
 	    new Pose2d(3.495, 2.534, Rotation2d.fromRadians(-2.313)),
 	    new Pose2d(3.476, 2.534, Rotation2d.fromRadians(-2.272))
 	);
+	public static final ChoreoTraj LeftBumpDepot = new ChoreoTraj(
+	    "LeftBumpDepot",
+	    OptionalInt.empty(),
+	    7.05771,
+	    new Pose2d(3.671, 5.555, Rotation2d.fromRadians(-3.136)),
+	    new Pose2d(2.852, 5.945, Rotation2d.fromRadians(-3.12))
+	);
 	public static final ChoreoTraj LeftStartNeutralOutpost = new ChoreoTraj(
 	    "LeftStartNeutralOutpost",
 	    OptionalInt.empty(),
 	    8.13676,
 	    new Pose2d(3.467, 5.603, Rotation2d.fromRadians(-0.928)),
 	    new Pose2d(0.293, 0.733, Rotation2d.fromRadians(3.142))
+	);
+	public static final ChoreoTraj LeftTrenchDepot = new ChoreoTraj(
+	    "LeftTrenchDepot",
+	    OptionalInt.empty(),
+	    7.29798,
+	    new Pose2d(3.69, 7.504, Rotation2d.fromRadians(-3.136)),
+	    new Pose2d(2.852, 5.945, Rotation2d.fromRadians(-3.12))
 	);
 	public static final ChoreoTraj OutpostClimb = new ChoreoTraj(
 	    "OutpostClimb",
@@ -115,20 +129,6 @@ public record ChoreoTraj(
 	    new Pose2d(2.5, 1, Rotation2d.fromRadians(0)),
 	    new Pose2d(2.5, 5, Rotation2d.fromRadians(0))
 	);
-	public static final ChoreoTraj LeftBumpDepot = new ChoreoTraj(
-	    "LeftBumpDepot",
-	    OptionalInt.empty(),
-	    7.05771,
-	    new Pose2d(3.671, 5.555, Rotation2d.fromRadians(-3.136)),
-	    new Pose2d(2.852, 5.945, Rotation2d.fromRadians(-3.12))
-	);
-	public static final ChoreoTraj LeftTrenchDepot = new ChoreoTraj(
-	    "LeftTrenchDepot",
-	    OptionalInt.empty(),
-	    7.29798,
-	    new Pose2d(3.69, 7.504, Rotation2d.fromRadians(-3.136)),
-	    new Pose2d(2.852, 5.945, Rotation2d.fromRadians(-3.12))
-	);
 
     /**
      * A map between trajectory names and their corresponding data.
@@ -141,15 +141,15 @@ public record ChoreoTraj(
 		Map.entry("CycleNeutralSecond", CycleNeutralSecond),
 		Map.entry("CycleNeutralSecondLeft", CycleNeutralSecondLeft),
 		Map.entry("CycleNeutralThird", CycleNeutralThird),
+		Map.entry("LeftBumpDepot", LeftBumpDepot),
 		Map.entry("LeftStartNeutralOutpost", LeftStartNeutralOutpost),
+		Map.entry("LeftTrenchDepot", LeftTrenchDepot),
 		Map.entry("OutpostClimb", OutpostClimb),
 		Map.entry("OutpostClimbNeutral", OutpostClimbNeutral),
 		Map.entry("OutpostClimbNeutralLeft", OutpostClimbNeutralLeft),
 		Map.entry("OutpostClimbRight", OutpostClimbRight),
 		Map.entry("RightStartNeutralDepot", RightStartNeutralDepot),
-		Map.entry("TestPath", TestPath),
-		Map.entry("LeftBumpDepot", LeftBumpDepot),
-		Map.entry("LeftTrenchDepot", LeftTrenchDepot)
+		Map.entry("TestPath", TestPath)
     );
 
     /**

@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.autos.Center_Depot_Climb;
+import frc.robot.autos.Center_Depot_No_Climb;
 import frc.robot.autos.Left_Bump_Depot_Climb;
 import frc.robot.autos.Left_Trench_Depot_Climb;
 import frc.robot.autos.Neutral_Cycles_Left;
@@ -65,6 +66,7 @@ public class Robot extends TimedRobot {
                         new Center_Depot_Climb(),
                         new Left_Bump_Depot_Climb(),
                         new Left_Trench_Depot_Climb(),
+                        new Center_Depot_No_Climb(),
                         new Shoot()
                         // new TestAuto()
                         );

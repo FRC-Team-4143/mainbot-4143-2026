@@ -432,7 +432,7 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
      * @param adj amount speed is changed by
      */
     public void adjustFlywheel(double adj) {
-        flywheel_adj_ = +adj;
+        flywheel_adj_ +=adj;
     }
 
     /**
@@ -441,7 +441,7 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
      * @param adj amount of offset
      */
     public void adjustHood(double adj) {
-        hood_adj_ = +adj;
+        hood_adj_ +=adj;
     }
 
     // =============================================================================

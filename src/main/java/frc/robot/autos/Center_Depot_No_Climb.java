@@ -15,13 +15,13 @@ import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.swerve.SwerveConstants.SwerveStates;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 
-public class Right_Start_Neutral_Depot_Climb extends Auto {
+public class Center_Depot_No_Climb extends Auto {
 
-    public Right_Start_Neutral_Depot_Climb() {
+    public Center_Depot_No_Climb() {
         // Register trajectories first
         // These should be loaded in the order they will be used to ensure correct start poses
-        loadTrajectory(ChoreoTraj.RightStartNeutralDepot.name());
-        loadTrajectory(ChoreoTraj.OutpostClimbRight.name());
+        loadTrajectory(ChoreoTraj.CenterDepot.name());
+        // loadTrajectory(ChoreoTraj.OutpostClimbRight.name());
 
         // Add commands here to execute during the auto
         SwerveSubsystem.getInstance()
@@ -51,20 +51,6 @@ public class Right_Start_Neutral_Depot_Climb extends Auto {
                                             .setWantedState(SwerveStates.CHOREO_PATH_ROTATION_LOCK);
                                 }));
         SwerveSubsystem.getInstance()
-                .getChoreoEventTimeTrigger("Shooting and Intake Out")
-                .onTrue(
-                        Commands.runOnce(
-                                () -> {
-                                    ShooterSubsystem.getInstance()
-                                            .setWantedState(ShooterStates.SHOOT);
-                                    HopperSubsystem.getInstance()
-                                            .setWantedState(HopperStates.SHOOTING);
-                                    SwerveSubsystem.getInstance()
-                                            .setWantedState(SwerveStates.CHOREO_PATH_ROTATION_LOCK);
-                                    IntakeSubsystem.getInstance()
-                                            .setWantedState(IntakeStates.INTAKE);
-                                }));
-        SwerveSubsystem.getInstance()
                 .getChoreoEventTimeTrigger("Stop Shooting")
                 .onTrue(
                         Commands.runOnce(
@@ -74,14 +60,6 @@ public class Right_Start_Neutral_Depot_Climb extends Auto {
                                     HopperSubsystem.getInstance().setWantedState(HopperStates.IDLE);
                                     SwerveSubsystem.getInstance()
                                             .setWantedState(SwerveStates.CHOREO_PATH);
-                                }));
-        SwerveSubsystem.getInstance()
-                .getChoreoEventTimeTrigger("Deploy Climber")
-                .onTrue(
-                        Commands.runOnce(
-                                () -> {
-                                    ClimberSubsystem.getInstance()
-                                            .setWantedState(ClimberStates.DEPLOY);
                                 }));
         addCommands(
                 // Set the initial trajectory
@@ -93,7 +71,7 @@ public class Right_Start_Neutral_Depot_Climb extends Auto {
                                         .setWantedState(ShooterStates.TRACKING)),
                 SwerveSubsystem.getInstance()
                         .setDesiredChoreoTrajectoryCommand(
-                                getTrajectory(ChoreoTraj.RightStartNeutralDepot.name())),
+                                getTrajectory(ChoreoTraj.CenterDepot.name())),
                 // Start Choreo following
                 Commands.startEnd(
                                 () ->
@@ -104,20 +82,14 @@ public class Right_Start_Neutral_Depot_Climb extends Auto {
                                                 .setWantedState(
                                                         SwerveStates.FIELD_CENTRIC_ROTATION_LOCK))
                         .until(SwerveSubsystem.getInstance()::isAtChoreoSetpoint),
+                // Shoot here if needed
+                // Move to the climb position
                 Commands.runOnce(
                         () -> {
                             ShooterSubsystem.getInstance().setWantedState(ShooterStates.SHOOT);
                             HopperSubsystem.getInstance().setWantedState(HopperStates.SHOOTING);
                         }),
                 new WaitCommand(5)
-
-                // Shoot here if needed
-
-                // Move to the climb position
-                // Commands.runOnce(
-                //         () ->
-                // ShooterSubsystem.getInstance().setWantedState(ShooterStates.SHOOT)),
-
                 // SwerveSubsystem.getInstance()
                 //         .setDesiredChoreoTrajectoryCommand(
                 //                 getTrajectory(ChoreoTraj.OutpostClimbRight.name())),
@@ -125,7 +97,7 @@ public class Right_Start_Neutral_Depot_Climb extends Auto {
                 //                 () ->
                 //                         SwerveSubsystem.getInstance()
                 //                                 .setWantedState(
-                //                                         SwerveStates.CHOREO_PATH_ROTATION_LOCK),
+                //                                         SwerveStates.CHOREO_PATH),
                 //                 () ->
                 //                         SwerveSubsystem.getInstance()
                 //                                 .setWantedState(SwerveStates.FIELD_CENTRIC))
