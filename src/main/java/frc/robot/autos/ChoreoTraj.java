@@ -34,29 +34,29 @@ public record ChoreoTraj(
 	public static final ChoreoTraj CycleNeutralFirst = new ChoreoTraj(
 	    "CycleNeutralFirst",
 	    OptionalInt.empty(),
-	    5.75901,
+	    5.89617,
 	    new Pose2d(3.632, 2.475, Rotation2d.fromRadians(-0.017)),
-	    new Pose2d(3.262, 2.475, Rotation2d.fromRadians(3.119))
+	    new Pose2d(2.987, 2.475, Rotation2d.fromRadians(3.119))
 	);
 	public static final ChoreoTraj CycleNeutralFirstLeft = new ChoreoTraj(
 	    "CycleNeutralFirstLeft",
 	    OptionalInt.empty(),
-	    5.63432,
+	    5.7586,
 	    new Pose2d(3.671, 5.555, Rotation2d.fromRadians(0.032)),
-	    new Pose2d(3.32, 5.477, Rotation2d.fromRadians(-3.095))
+	    new Pose2d(3.065, 5.544, Rotation2d.fromRadians(-3.095))
 	);
 	public static final ChoreoTraj CycleNeutralSecond = new ChoreoTraj(
 	    "CycleNeutralSecond",
 	    OptionalInt.empty(),
-	    6.55529,
-	    new Pose2d(3.203, 2.475, Rotation2d.fromRadians(3.113)),
+	    6.61219,
+	    new Pose2d(2.929, 2.456, Rotation2d.fromRadians(3.113)),
 	    new Pose2d(3.047, 2.475, Rotation2d.fromRadians(3.079))
 	);
 	public static final ChoreoTraj CycleNeutralSecondLeft = new ChoreoTraj(
 	    "CycleNeutralSecondLeft",
 	    OptionalInt.empty(),
-	    6.62056,
-	    new Pose2d(3.203, 5.438, Rotation2d.fromRadians(-3.142)),
+	    6.68215,
+	    new Pose2d(2.91, 5.563, Rotation2d.fromRadians(-3.142)),
 	    new Pose2d(2.93, 5.769, Rotation2d.fromRadians(3.141))
 	);
 	public static final ChoreoTraj CycleNeutralThird = new ChoreoTraj(
