@@ -48,9 +48,9 @@ public class FieldTargets {
     // =============================================================================
     public class Shooter {
         public static final Translation3d LEFT_PASS =
-                new Translation3d(1, 7.042, 0); // where to pass to on the left side
+                new Translation3d(1, 6.042, 0); // where to pass to on the left side
         public static final Translation3d RIGHT_PASS =
-                new Translation3d(1, 1, 0); // where to pass to on the left side
+                new Translation3d(1, 2, 0); // where to pass to on the left side
         public static final Translation3d HUB =
                 new Translation3d(4.611624, 4.021328, 1.397); // where the hub is
 
@@ -66,8 +66,8 @@ public class FieldTargets {
 
         // Lenient tolerances for passing
         public static final double FLYWHEEL_PASS_SPEED_TOLERANCE =
-                Units.rotationsPerMinuteToRadiansPerSecond(500);
+                Units.rotationsPerMinuteToRadiansPerSecond(800);
         public static final double HOOD_PASS_POSITION_TOLERANCE = Units.degreesToRadians(3.0);
-        public static final double ROTATION_PASS_ANGLE_TOLERANCE = Units.degreesToRadians(3.0);
+        public static final double ROTATION_PASS_ANGLE_TOLERANCE = Units.degreesToRadians(6.0);
     }
 }
