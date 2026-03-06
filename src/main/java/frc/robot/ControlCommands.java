@@ -250,7 +250,7 @@ public class ControlCommands {
                             IntakeSubsystem.getInstance().setWantedState(IntakeStates.INTAKE);
                         },
                         () -> {
-                            IntakeSubsystem.getInstance().setWantedState(IntakeStates.DEPLOYED);
+                            IntakeSubsystem.getInstance().setWantedState(IntakeStates.IDLE);
                         })
                 .withName("Intake Fuel")
                 .ignoringDisable(true);
@@ -265,15 +265,15 @@ public class ControlCommands {
      *   <li>Intake: STORE
      * </ul>
      */
-    static Command storeIntakeCommand() {
+    static Command toggleStoreIntakeCommand() {
         return Commands.runOnce(
                         () -> {
                             if(IntakeSubsystem.getInstance().getSystemState() == IntakeStates.STORE)
                             IntakeSubsystem.getInstance().setWantedState(IntakeStates.DEPLOYING);
-                            if(IntakeSubsystem.getInstance().getSystemState() == IntakeStates.DEPLOYED)
+                            else
                             IntakeSubsystem.getInstance().setWantedState(IntakeStates.STORE);
                         })
-                .withName("Store Intake")
+                .withName("Toggle Intake")
                 .ignoringDisable(true);
     }
 }

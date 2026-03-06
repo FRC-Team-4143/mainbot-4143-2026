@@ -67,7 +67,7 @@ public abstract class OI {
         driver_controller_.leftTrigger().whileTrue(ControlCommands.aimAtTargetCommand());
         driver_controller_.leftStick().whileTrue(ControlCommands.rotateForBumpCommand());
         driver_controller_.rightBumper().whileTrue(ControlCommands.intakeFuelCommand());
-        driver_controller_.leftBumper().onFalse(ControlCommands.storeIntakeCommand());
+        driver_controller_.leftBumper().onFalse(ControlCommands.toggleStoreIntakeCommand());
         driver_controller_.start().onTrue(ControlCommands.advanceClimbingStage());
         driver_controller_.back().onTrue(ControlCommands.reverseClimbingStage());
         driver_controller_.y().whileTrue(ControlCommands.manualShootFuelCommand());
