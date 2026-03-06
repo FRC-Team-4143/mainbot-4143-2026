@@ -433,6 +433,7 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
      */
     public void adjustFlywheel(double adj) {
         flywheel_adj_ +=adj;
+        DogLog.log(getSubsystemKey()+"Setpoint/flywheel adjust",flywheel_adj_);
     }
 
     /**
@@ -442,6 +443,7 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
      */
     public void adjustHood(double adj) {
         hood_adj_ +=adj;
+        DogLog.log(getSubsystemKey()+"Setpoint/hood adjust",hood_adj_);
     }
 
     // =============================================================================
