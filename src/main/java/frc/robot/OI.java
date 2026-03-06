@@ -106,7 +106,7 @@ public abstract class OI {
                         Commands.runOnce(
                                 () -> {
                                     ShooterSubsystem.getInstance()
-                                            .adjustHood(Units.degreesToRadians(-2));
+                                            .adjustHood(Units.degreesToRadians(-1));
                                 }));
         operator_controller_
                 .povLeft()
@@ -114,7 +114,7 @@ public abstract class OI {
                         Commands.runOnce(
                                 () -> {
                                     ShooterSubsystem.getInstance()
-                                            .adjustHood(Units.degreesToRadians(2));
+                                            .adjustHood(Units.degreesToRadians(1));
                                 }));
         operator_controller_.rightBumper().onTrue(ClimberSubsystem.getInstance().bumpUpCommand());
         operator_controller_.leftBumper().onTrue(ClimberSubsystem.getInstance().bumpDownCommand());
