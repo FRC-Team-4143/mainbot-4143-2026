@@ -61,9 +61,14 @@ public class ControlCommands {
     static Command advanceClimbingStage() {
         return Commands.runOnce(
                 () -> {
-                    if(ClimberSubsystem.getInstance().getSystemState() == ClimberStates.STOWED && IntakeSubsystem.getInstance().getSystemState() != IntakeStates.STORE){
-                        //Intentional do nothing
-                    } else if (ClimberSubsystem.getInstance().getSystemState() == ClimberStates.STOWED && IntakeSubsystem.getInstance().getSystemState() == IntakeStates.STORE) {
+                    if (ClimberSubsystem.getInstance().getSystemState() == ClimberStates.STOWED
+                            && IntakeSubsystem.getInstance().getSystemState()
+                                    != IntakeStates.STORE) {
+                        // Intentional do nothing
+                    } else if (ClimberSubsystem.getInstance().getSystemState()
+                                    == ClimberStates.STOWED
+                            && IntakeSubsystem.getInstance().getSystemState()
+                                    == IntakeStates.STORE) {
                         ClimberSubsystem.getInstance().setWantedState(ClimberStates.DEPLOY);
                     } else if (ClimberSubsystem.getInstance().getSystemState()
                             == ClimberStates.DEPLOY) {
@@ -75,7 +80,10 @@ public class ControlCommands {
     static Command reverseClimbingStage() {
         return Commands.runOnce(
                 () -> {
-                    if (ClimberSubsystem.getInstance().getSystemState() == ClimberStates.CLIMB_HOLD||ClimberSubsystem.getInstance().getSystemState() == ClimberStates.L1|| ClimberSubsystem.getInstance().getSystemState() == ClimberStates.L2) {
+                    if (ClimberSubsystem.getInstance().getSystemState() == ClimberStates.CLIMB_HOLD
+                            || ClimberSubsystem.getInstance().getSystemState() == ClimberStates.L1
+                            || ClimberSubsystem.getInstance().getSystemState()
+                                    == ClimberStates.L2) {
                         ClimberSubsystem.getInstance().setWantedState(ClimberStates.GROUND);
                     } else if (ClimberSubsystem.getInstance().getSystemState()
                             == ClimberStates.DEPLOY) {
@@ -268,10 +276,11 @@ public class ControlCommands {
     static Command toggleStoreIntakeCommand() {
         return Commands.runOnce(
                         () -> {
-                            if(IntakeSubsystem.getInstance().getSystemState() == IntakeStates.STORE)
-                            IntakeSubsystem.getInstance().setWantedState(IntakeStates.DEPLOYING);
-                            else
-                            IntakeSubsystem.getInstance().setWantedState(IntakeStates.STORE);
+                            if (IntakeSubsystem.getInstance().getSystemState()
+                                    == IntakeStates.STORE)
+                                IntakeSubsystem.getInstance()
+                                        .setWantedState(IntakeStates.DEPLOYING);
+                            else IntakeSubsystem.getInstance().setWantedState(IntakeStates.STORE);
                         })
                 .withName("Toggle Intake")
                 .ignoringDisable(true);

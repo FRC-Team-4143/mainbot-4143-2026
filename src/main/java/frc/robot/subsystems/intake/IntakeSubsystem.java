@@ -85,8 +85,7 @@ public class IntakeSubsystem extends MwSubsystem<IntakeStates, IntakeConstants> 
                 system_state_ = IntakeStates.DEPLOYED;
             }
         } else {
-            if(system_state_ != wantedState)
-                counter = 0;
+            if (system_state_ != wantedState) counter = 0;
             system_state_ = wantedState;
         }
     }
@@ -97,12 +96,10 @@ public class IntakeSubsystem extends MwSubsystem<IntakeStates, IntakeConstants> 
         counter++;
         switch (system_state_) {
             case STORE:
-                if(counter > 25)
-                    roller_.setTargetDutyCycle(0.0);
-                else
-                    roller_.setTargetDutyCycle(CONSTANTS.INTAKE_DUTY_CYCLE);
+                if (counter > 25) roller_.setTargetDutyCycle(0.0);
+                else roller_.setTargetDutyCycle(CONSTANTS.INTAKE_DUTY_CYCLE);
                 pivot_.setTargetPosition(CONSTANTS.PIVOT_STORE_POSITION);
-                
+
                 break;
             case DEPLOYING:
                 roller_.setTargetDutyCycle(0.0);

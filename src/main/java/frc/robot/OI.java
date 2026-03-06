@@ -116,16 +116,8 @@ public abstract class OI {
                                     ShooterSubsystem.getInstance()
                                             .adjustHood(Units.degreesToRadians(2));
                                 }));
-        operator_controller_
-                .rightBumper()
-                .onTrue(
-                        ClimberSubsystem.getInstance().bumpUpCommand()
-                );
-        operator_controller_
-                .leftBumper()
-                .onTrue(
-                        ClimberSubsystem.getInstance().bumpDownCommand()
-                );
+        operator_controller_.rightBumper().onTrue(ClimberSubsystem.getInstance().bumpUpCommand());
+        operator_controller_.leftBumper().onTrue(ClimberSubsystem.getInstance().bumpDownCommand());
         // =============================================================================
         // TESTING BINDINGS (THESE SHOULD BE REMOVED BEFORE COMPETITION)
 

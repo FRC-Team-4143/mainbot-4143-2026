@@ -144,7 +144,7 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
                 && !isShooterReady()
                 && wanted == ShooterStates.SHOOT) {
             // Nap time : Blocks deafult transition from occuring
-        } else if (system_state_ == ShooterStates.SHOOT && !isShooterReady()){
+        } else if (system_state_ == ShooterStates.SHOOT && !isShooterReady()) {
             system_state_ = ShooterStates.SHOOT_WAIT;
         } else {
             system_state_ = wanted;
@@ -432,8 +432,8 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
      * @param adj amount speed is changed by
      */
     public void adjustFlywheel(double adj) {
-        flywheel_adj_ +=adj;
-        DogLog.log(getSubsystemKey()+"Setpoint/flywheel adjust",flywheel_adj_);
+        flywheel_adj_ += adj;
+        DogLog.log(getSubsystemKey() + "Setpoint/flywheel adjust", flywheel_adj_);
     }
 
     /**
@@ -442,8 +442,8 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
      * @param adj amount of offset
      */
     public void adjustHood(double adj) {
-        hood_adj_ +=adj;
-        DogLog.log(getSubsystemKey()+"Setpoint/hood adjust",hood_adj_);
+        hood_adj_ += adj;
+        DogLog.log(getSubsystemKey() + "Setpoint/hood adjust", hood_adj_);
     }
 
     // =============================================================================

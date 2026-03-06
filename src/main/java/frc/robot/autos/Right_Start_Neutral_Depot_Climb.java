@@ -111,7 +111,7 @@ public class Right_Start_Neutral_Depot_Climb extends Auto {
                         }),
                 new WaitCommand(3),
                 Commands.runOnce(
-                () -> IntakeSubsystem.getInstance().setWantedState(IntakeStates.STORE)),
+                        () -> IntakeSubsystem.getInstance().setWantedState(IntakeStates.STORE)),
                 new WaitCommand(1),
                 SwerveSubsystem.getInstance()
                         .setDesiredChoreoTrajectoryCommand(
@@ -123,8 +123,7 @@ public class Right_Start_Neutral_Depot_Climb extends Auto {
                                                 .setWantedState(SwerveStates.CHOREO_PATH),
                                 () ->
                                         SwerveSubsystem.getInstance()
-                                                .setWantedState(
-                                                        SwerveStates.FIELD_CENTRIC))
+                                                .setWantedState(SwerveStates.FIELD_CENTRIC))
                         .until(SwerveSubsystem.getInstance()::isAtChoreoSetpoint)
 
                 // Shoot here if needed

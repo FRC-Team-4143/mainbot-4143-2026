@@ -4,8 +4,6 @@ import com.marswars.auto.Auto;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.lib2026.FieldTargets;
-import frc.robot.subsystems.climber.ClimberConstants.ClimberStates;
-import frc.robot.subsystems.climber.ClimberSubsystem;
 import frc.robot.subsystems.hopper.HopperConstants.HopperStates;
 import frc.robot.subsystems.hopper.HopperSubsystem;
 import frc.robot.subsystems.intake.IntakeConstants.IntakeStates;
