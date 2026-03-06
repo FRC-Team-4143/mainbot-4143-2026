@@ -21,7 +21,7 @@ public class Right_Start_Neutral_Depot_Climb extends Auto {
         // Register trajectories first
         // These should be loaded in the order they will be used to ensure correct start poses
         loadTrajectory(ChoreoTraj.RightStartNeutralDepot.name());
-        loadTrajectory(ChoreoTraj.OutpostClimbRight.name());
+        loadTrajectory(ChoreoTraj.LeftShootToMiddle.name());
 
         // Add commands here to execute during the auto
         SwerveSubsystem.getInstance()
@@ -109,7 +109,23 @@ public class Right_Start_Neutral_Depot_Climb extends Auto {
                             ShooterSubsystem.getInstance().setWantedState(ShooterStates.SHOOT);
                             HopperSubsystem.getInstance().setWantedState(HopperStates.SHOOTING);
                         }),
-                new WaitCommand(5)
+                new WaitCommand(3),
+                Commands.runOnce(
+                () -> IntakeSubsystem.getInstance().setWantedState(IntakeStates.STORE)),
+                new WaitCommand(1),
+                SwerveSubsystem.getInstance()
+                        .setDesiredChoreoTrajectoryCommand(
+                                getTrajectory(ChoreoTraj.LeftShootToMiddle.name())),
+                // Start Choreo following
+                Commands.startEnd(
+                                () ->
+                                        SwerveSubsystem.getInstance()
+                                                .setWantedState(SwerveStates.CHOREO_PATH),
+                                () ->
+                                        SwerveSubsystem.getInstance()
+                                                .setWantedState(
+                                                        SwerveStates.FIELD_CENTRIC))
+                        .until(SwerveSubsystem.getInstance()::isAtChoreoSetpoint)
 
                 // Shoot here if needed
 
