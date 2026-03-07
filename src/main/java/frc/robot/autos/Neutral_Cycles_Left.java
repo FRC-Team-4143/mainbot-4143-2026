@@ -91,7 +91,10 @@ public class Neutral_Cycles_Left extends Auto {
                             SwerveSubsystem.getInstance()
                                     .setWantedState(SwerveStates.FIELD_CENTRIC_ROTATION_LOCK);
                         }),
-                new WaitCommand(5),
+                new WaitCommand(3),
+                Commands.runOnce(
+                        () -> IntakeSubsystem.getInstance().setWantedState(IntakeStates.STORE)),
+                new WaitCommand(1),
                 Commands.runOnce(
                         () ->
                                 ShooterSubsystem.getInstance()
