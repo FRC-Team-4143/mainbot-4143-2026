@@ -489,7 +489,5 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
         return status;
     }
 
-    public void setTargetType(TargetType target){
-        
-    }
+    public void setTargetType(TargetType target) {}
 }

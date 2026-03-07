@@ -42,10 +42,12 @@ public class ShooterConstants extends MwConstants {
         /** Aiming at target with shooter spinning and robot rotating, with no intent to SHOOT */
         AIMING
     }
+
     public enum TargetType {
         HUB,
         PASS
     }
+
     // =============================================================================
     // CAN IDS AND HARDWARE CONFIGURATION
     // =============================================================================

@@ -18,6 +18,7 @@ import frc.robot.autos.Center_Depot_Climb;
 import frc.robot.autos.Center_Depot_No_Climb;
 import frc.robot.autos.Citrus_Left_Side;
 import frc.robot.autos.Citrus_Right_Side;
+import frc.robot.autos.Husky_Left_Side;
 import frc.robot.autos.Left_Bump_Depot_Climb;
 import frc.robot.autos.Left_Trench_Depot_Climb;
 import frc.robot.autos.Neutral_Cycles_Left;
@@ -71,6 +72,7 @@ public class Robot extends TimedRobot {
                         new Center_Depot_No_Climb(),
                         new Citrus_Left_Side(),
                         new Citrus_Right_Side(),
+                        new Husky_Left_Side(),
                         new Shoot()
                         // new TestAuto()
                         );
