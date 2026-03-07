@@ -48,14 +48,14 @@ public record ChoreoTraj(
 	public static final ChoreoTraj CycleNeutralSecond = new ChoreoTraj(
 	    "CycleNeutralSecond",
 	    OptionalInt.empty(),
-	    7.62656,
+	    7.62648,
 	    new Pose2d(2.929, 2.456, Rotation2d.fromRadians(-2.356)),
 	    new Pose2d(3.047, 2.475, Rotation2d.fromRadians(0.017))
 	);
 	public static final ChoreoTraj CycleNeutralSecondLeft = new ChoreoTraj(
 	    "CycleNeutralSecondLeft",
 	    OptionalInt.empty(),
-	    7.62385,
+	    7.62369,
 	    new Pose2d(2.91, 5.563, Rotation2d.fromRadians(2.378)),
 	    new Pose2d(2.93, 5.769, Rotation2d.fromRadians(-0.003))
 	);
