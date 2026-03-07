@@ -66,8 +66,8 @@ public class FieldTargets {
 
         // Lenient tolerances for passing
         public static final double FLYWHEEL_PASS_SPEED_TOLERANCE =
-                Units.rotationsPerMinuteToRadiansPerSecond(800);
-        public static final double HOOD_PASS_POSITION_TOLERANCE = Units.degreesToRadians(3.0);
+                Units.rotationsPerMinuteToRadiansPerSecond(5000);
+        public static final double HOOD_PASS_POSITION_TOLERANCE = Units.degreesToRadians(6.0);
         public static final double ROTATION_PASS_ANGLE_TOLERANCE = Units.degreesToRadians(6.0);
     }
 }

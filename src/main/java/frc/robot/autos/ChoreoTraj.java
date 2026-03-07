@@ -48,15 +48,15 @@ public record ChoreoTraj(
 	public static final ChoreoTraj CycleNeutralSecond = new ChoreoTraj(
 	    "CycleNeutralSecond",
 	    OptionalInt.empty(),
-	    7.59299,
-	    new Pose2d(2.929, 2.456, Rotation2d.fromRadians(0.004)),
+	    7.62656,
+	    new Pose2d(2.929, 2.456, Rotation2d.fromRadians(-2.356)),
 	    new Pose2d(3.047, 2.475, Rotation2d.fromRadians(0.017))
 	);
 	public static final ChoreoTraj CycleNeutralSecondLeft = new ChoreoTraj(
 	    "CycleNeutralSecondLeft",
 	    OptionalInt.empty(),
-	    7.5875,
-	    new Pose2d(2.91, 5.563, Rotation2d.fromRadians(0.009)),
+	    7.62385,
+	    new Pose2d(2.91, 5.563, Rotation2d.fromRadians(2.378)),
 	    new Pose2d(2.93, 5.769, Rotation2d.fromRadians(-0.003))
 	);
 	public static final ChoreoTraj CycleNeutralThird = new ChoreoTraj(
@@ -72,6 +72,13 @@ public record ChoreoTraj(
 	    7.05771,
 	    new Pose2d(3.671, 5.555, Rotation2d.fromRadians(-3.136)),
 	    new Pose2d(2.852, 5.945, Rotation2d.fromRadians(-3.12))
+	);
+	public static final ChoreoTraj LeftShootToMiddle = new ChoreoTraj(
+	    "LeftShootToMiddle",
+	    OptionalInt.empty(),
+	    4.63429,
+	    new Pose2d(2.657, 5.633, Rotation2d.fromRadians(-3.13)),
+	    new Pose2d(8.504, 5.652, Rotation2d.fromRadians(0))
 	);
 	public static final ChoreoTraj LeftStartNeutralOutpost = new ChoreoTraj(
 	    "LeftStartNeutralOutpost",
@@ -129,13 +136,6 @@ public record ChoreoTraj(
 	    new Pose2d(2.5, 1, Rotation2d.fromRadians(0)),
 	    new Pose2d(2.5, 5, Rotation2d.fromRadians(0))
 	);
-	public static final ChoreoTraj LeftShootToMiddle = new ChoreoTraj(
-	    "LeftShootToMiddle",
-	    OptionalInt.empty(),
-	    4.63429,
-	    new Pose2d(2.657, 5.633, Rotation2d.fromRadians(-3.13)),
-	    new Pose2d(8.504, 5.652, Rotation2d.fromRadians(0))
-	);
 
     /**
      * A map between trajectory names and their corresponding data.
@@ -149,6 +149,7 @@ public record ChoreoTraj(
 		Map.entry("CycleNeutralSecondLeft", CycleNeutralSecondLeft),
 		Map.entry("CycleNeutralThird", CycleNeutralThird),
 		Map.entry("LeftBumpDepot", LeftBumpDepot),
+		Map.entry("LeftShootToMiddle", LeftShootToMiddle),
 		Map.entry("LeftStartNeutralOutpost", LeftStartNeutralOutpost),
 		Map.entry("LeftTrenchDepot", LeftTrenchDepot),
 		Map.entry("OutpostClimb", OutpostClimb),
@@ -156,8 +157,7 @@ public record ChoreoTraj(
 		Map.entry("OutpostClimbNeutralLeft", OutpostClimbNeutralLeft),
 		Map.entry("OutpostClimbRight", OutpostClimbRight),
 		Map.entry("RightStartNeutralDepot", RightStartNeutralDepot),
-		Map.entry("TestPath", TestPath),
-		Map.entry("LeftShootToMiddle", LeftShootToMiddle)
+		Map.entry("TestPath", TestPath)
     );
 
     /**
