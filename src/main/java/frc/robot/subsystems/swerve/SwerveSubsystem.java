@@ -91,6 +91,7 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
     private ChassisRequest.RobotCentricFacingAngle robot_centric_rotation_lock_request_;
     private ChassisRequest.ApplyFieldSpeeds field_speeds_request_;
     private ChassisRequest.ApplyChassisSpeeds chassis_speeds_request_;
+    private ChassisRequest.SwerveDriveBrake brake_request_;
 
     // getInstance
     public static SwerveSubsystem getInstance() {
@@ -280,6 +281,7 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
                             SwerveStates.CRAWL_FIELD_CENTRIC_ROTATION_LOCK;
                     case CHASSIS_SPEEDS_ROTATION_LOCK -> SwerveStates.CHASSIS_SPEEDS_ROTATION_LOCK;
                     case TUNING -> SwerveStates.TUNING;
+                    case BRAKE -> SwerveStates.BRAKE;
                     default -> SwerveStates.IDLE;
                 };
     }
@@ -372,6 +374,9 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
             case TUNING:
                 swerve_mech_.setChassisRequest(
                         chassis_speeds_request_.withSpeeds(desired_chassis_speeds_));
+                break;
+            case BRAKE:
+                swerve_mech_.setChassisRequest(brake_request_);
                 break;
             case IDLE:
             default:
