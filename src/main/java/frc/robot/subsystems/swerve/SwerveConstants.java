@@ -45,6 +45,8 @@ public class SwerveConstants extends MwConstants {
         CRAWL_ROBOT_CENTRIC_ROTATION_LOCK,
         /** Slow precision movement relative to field with rotation locked to a target heading. */
         CRAWL_FIELD_CENTRIC_ROTATION_LOCK,
+        /** Brake mode locking the wheels in an x pattern */
+        BRAKE,
         /** Manual tuning mode for testing chassis speeds. */
         TUNING,
         /** Idle state with no movement commands. */
@@ -103,7 +105,8 @@ public class SwerveConstants extends MwConstants {
 
     public final double CONTROLLER_DEADBAND = 0.05;
     public final double MAX_TRANSLATION_RATE = getDoubleConstant("com", "max_translation_rate");
-    public final double MAX_TRANSLATION_ACCEL = 9.5; // Meters per second squared (Used for slew rate limiters)
+    public final double MAX_TRANSLATION_ACCEL =
+            9.5; // Meters per second squared (Used for slew rate limiters)
     public final double MAX_CRAWL_RATE = 0.5; // Meters per second, max speed during crawl mode
     public final double MAX_ANGULAR_RATE = getDoubleConstant("com", "max_angular_rate");
     public final PhoenixPIDController HEADING_CONTROLLER = new PhoenixPIDController(12, 0.0, 1);

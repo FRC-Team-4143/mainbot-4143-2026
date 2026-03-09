@@ -16,6 +16,7 @@ import com.marswars.swerve_lib.ChassisRequest.XPositiveReference;
 import com.marswars.swerve_lib.SwerveMech;
 import com.marswars.swerve_lib.module.Module.DriveControlMode;
 import com.marswars.swerve_lib.module.Module.SteerControlMode;
+import com.marswars.util.DynamicSlewRateLimiter;
 import com.marswars.util.TunablePid;
 import dev.doglog.DogLog;
 import edu.wpi.first.math.MathUtil;
@@ -78,7 +79,14 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
     private Translation2d desired_rotation_lock_cor_ = new Translation2d();
     private double desired_rotation_lock_feedforward_ = 0.0;
     private ChassisSpeeds desired_chassis_speeds_ = new ChassisSpeeds(0, 0, 0);
+
+    // Telop Smoothness controllers and scalars
     private double tele_op_velocity_scalar_ = 1.0;
+    private double tele_op_velocity_rl_scalar_ = 1.0;
+    private DynamicSlewRateLimiter x_tele_op_velocity_slew_limiter_ =
+            new DynamicSlewRateLimiter(CONSTANTS.MAX_TRANSLATION_RATE * 1.0);
+    private DynamicSlewRateLimiter y_tele_op_velocity_slew_limiter_ =
+            new DynamicSlewRateLimiter(CONSTANTS.MAX_TRANSLATION_RATE * 1.0);
 
     // IO Members
     private SwerveMech swerve_mech_;
@@ -174,6 +182,14 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
         TunablePid.create(
                 getSubsystemKey() + "RotationLock/Gains",
                 field_centric_rotation_lock_request_.HeadingController);
+        DogLog.tunable(
+                getSubsystemKey() + "VelocityScalar",
+                tele_op_velocity_rl_scalar_,
+                this::setTeleOpVelocityScalar);
+        DogLog.tunable(
+                getSubsystemKey() + "VelocityRLScalar",
+                tele_op_velocity_rl_scalar_,
+                this::setTeleOpVelocityRateLimitScalar);
     }
 
     // reset
@@ -537,7 +553,7 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
      * @param is_rotation_locked whether the rotation should be locked to a target heading
      */
     private void handleCrawlState(boolean is_rotation_locked) {
-        desired_chassis_speeds_ = calculateSpeedBasedonPOVInputs();
+        desired_chassis_speeds_ = calculateSpeedBasedOnPOVInputs();
         if (is_rotation_locked) {
             swerve_mech_.setChassisRequest(
                     robot_centric_rotation_lock_request_
@@ -562,7 +578,7 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
      * @param is_rotation_locked whether the rotation should be locked to a target heading
      */
     private void handleFieldCentricCrawlState(boolean is_rotation_locked) {
-        desired_chassis_speeds_ = calculateSpeedBasedonPOVInputs();
+        desired_chassis_speeds_ = calculateSpeedBasedOnPOVInputs();
         if (is_rotation_locked) {
             swerve_mech_.setChassisRequest(
                     field_centric_rotation_lock_request_
@@ -721,6 +737,13 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
         desired_rotation_lock_feedforward_ = feedforward;
     }
 
+    /**
+     * Command version of {@link #setDesiredChassisSpeed(ChassisSpeeds)} that sets the desired
+     * chassis speeds for tuning purposes.
+     *
+     * @param speeds desired chassis speeds (robot relative)
+     * @return a command that sets the desired chassis speeds
+     */
     public Command chassisTuningCommand(ChassisSpeeds speeds) {
         return Commands.startEnd(
                         () -> {
@@ -780,13 +803,21 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
         double angular_magnitude =
                 -MathUtil.applyDeadband(
                         OI.getDriverJoystickRightX(), CONSTANTS.CONTROLLER_DEADBAND);
+        DogLog.log(
+                getSubsystemKey() + "JoystickRaw",
+                new ChassisSpeeds(x_magnitude, y_magnitude, angular_magnitude));
 
-        ChassisSpeeds speeds =
-                new ChassisSpeeds(
-                        x_magnitude * CONSTANTS.MAX_TRANSLATION_RATE * tele_op_velocity_scalar_,
-                        y_magnitude * CONSTANTS.MAX_TRANSLATION_RATE * tele_op_velocity_scalar_,
-                        angular_magnitude * CONSTANTS.MAX_ANGULAR_RATE);
-        DogLog.log(getSubsystemKey() + "RequestedChassisSpeeds", speeds);
+        // Calculate base inputs as velocities (apply scalar)
+        x_magnitude = x_magnitude * CONSTANTS.MAX_TRANSLATION_RATE * tele_op_velocity_scalar_;
+        y_magnitude = y_magnitude * CONSTANTS.MAX_TRANSLATION_RATE * tele_op_velocity_scalar_;
+        angular_magnitude = angular_magnitude * CONSTANTS.MAX_ANGULAR_RATE;
+
+        // Apply slew rate limiters to smooth inputs
+        x_magnitude = x_tele_op_velocity_slew_limiter_.calculate(x_magnitude);
+        y_magnitude = y_tele_op_velocity_slew_limiter_.calculate(y_magnitude);
+
+        ChassisSpeeds speeds = new ChassisSpeeds(x_magnitude, y_magnitude, angular_magnitude);
+        DogLog.log(getSubsystemKey() + "JoystickFiltered", speeds);
         return speeds;
     }
 
@@ -797,7 +828,7 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
      * @return the controller inputs as a ChassisSpeeds object, where the x and y components
      *     represent the translation speeds and the omega component represents the angular speed
      */
-    private ChassisSpeeds calculateSpeedBasedonPOVInputs() {
+    private ChassisSpeeds calculateSpeedBasedOnPOVInputs() {
         Optional<Rotation2d> pov = OI.getDriverJoystickPOV();
         if (pov.isEmpty()) {
             return new ChassisSpeeds();
@@ -841,6 +872,21 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
      */
     public void setTeleOpVelocityScalar(double scalar) {
         tele_op_velocity_scalar_ = MathUtil.clamp(scalar, 0, 1);
+    }
+
+    /**
+     * Sets the teleop velocity rate limit scalar. This updates the slew rate limiters dynamically
+     * to control acceleration/deceleration smoothness.
+     *
+     * @param rate_limit_scalar the scalar to apply to the max translation rate for slew limiting
+     */
+    public void setTeleOpVelocityRateLimitScalar(double rate_limit_scalar) {
+        tele_op_velocity_rl_scalar_ = MathUtil.clamp(rate_limit_scalar, 0.0, 1.0);
+        // Update the rate limits dynamically without losing state
+        x_tele_op_velocity_slew_limiter_.setRateLimit(
+                CONSTANTS.MAX_TRANSLATION_ACCEL * tele_op_velocity_rl_scalar_);
+        y_tele_op_velocity_slew_limiter_.setRateLimit(
+                CONSTANTS.MAX_TRANSLATION_ACCEL * tele_op_velocity_rl_scalar_);
     }
 
     // ------------------------------------------------
