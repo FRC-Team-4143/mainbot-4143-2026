@@ -105,7 +105,7 @@ public class SwerveConstants extends MwConstants {
     public final double MAX_TRANSLATION_RATE = getDoubleConstant("com", "max_translation_rate");
     public final double MAX_CRAWL_RATE = 0.5; // Meters per second, max speed during crawl mode
     public final double MAX_ANGULAR_RATE = getDoubleConstant("com", "max_angular_rate");
-    public final PhoenixPIDController HEADING_CONTROLLER = new PhoenixPIDController(7.3, 0.0, 0.07);
+    public final PhoenixPIDController HEADING_CONTROLLER = new PhoenixPIDController(12, 0.0, 1);
 
     // =============================================================================
     // CHOREO PATH FOLLOWING CONSTANTS

@@ -4,6 +4,8 @@ import com.marswars.auto.Auto;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.lib2026.FieldTargets;
+import frc.robot.subsystems.climber.ClimberConstants.ClimberStates;
+import frc.robot.subsystems.climber.ClimberSubsystem;
 import frc.robot.subsystems.hopper.HopperConstants.HopperStates;
 import frc.robot.subsystems.hopper.HopperSubsystem;
 import frc.robot.subsystems.intake.IntakeConstants.IntakeStates;
@@ -13,15 +15,13 @@ import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.swerve.SwerveConstants.SwerveStates;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 
-public class Neutral_Cycles extends Auto {
+public class Left_Bump_Depot_Climb extends Auto {
 
-    public Neutral_Cycles() {
+    public Left_Bump_Depot_Climb() {
         // Register trajectories first
-        // These should be loaded in the order they will be used to ensure correct start poses\
-        loadTrajectory(ChoreoTraj.CycleNeutralFirst.name());
-        // loadTrajectory(ChoreoTraj.CycleNeutralSecond.name());
-        loadTrajectory(ChoreoTraj.CycleNeutralThird.name());
-        loadTrajectory(ChoreoTraj.OutpostClimbNeutral.name());
+        // These should be loaded in the order they will be used to ensure correct start poses
+        loadTrajectory(ChoreoTraj.LeftBumpDepot.name());
+        loadTrajectory(ChoreoTraj.OutpostClimbRight.name());
 
         // Add commands here to execute during the auto
         SwerveSubsystem.getInstance()
@@ -71,7 +71,7 @@ public class Neutral_Cycles extends Auto {
                                         .setWantedState(ShooterStates.TRACKING)),
                 SwerveSubsystem.getInstance()
                         .setDesiredChoreoTrajectoryCommand(
-                                getTrajectory(ChoreoTraj.CycleNeutralFirst.name())),
+                                getTrajectory(ChoreoTraj.LeftBumpDepot.name())),
                 // Start Choreo following
                 Commands.startEnd(
                                 () ->
@@ -79,69 +79,20 @@ public class Neutral_Cycles extends Auto {
                                                 .setWantedState(SwerveStates.CHOREO_PATH),
                                 () ->
                                         SwerveSubsystem.getInstance()
-                                                .setWantedState(SwerveStates.FIELD_CENTRIC))
-                        .until(
-                                () ->
-                                        SwerveSubsystem.getInstance().isAtChoreoSetpoint()
-                                                && SwerveSubsystem.getInstance()
-                                                        .hasChoreoTimeElapsed(1)),
+                                                .setWantedState(
+                                                        SwerveStates.FIELD_CENTRIC_ROTATION_LOCK))
+                        .until(SwerveSubsystem.getInstance()::isAtChoreoSetpoint),
                 // Shoot here if needed
+                // Move to the climb position
                 Commands.runOnce(
                         () -> {
                             ShooterSubsystem.getInstance().setWantedState(ShooterStates.SHOOT);
-                            SwerveSubsystem.getInstance()
-                                    .setWantedState(SwerveStates.FIELD_CENTRIC_ROTATION_LOCK);
+                            HopperSubsystem.getInstance().setWantedState(HopperStates.SHOOTING);
                         }),
-                new WaitCommand(3),
-                Commands.runOnce(
-                        () ->
-                                ShooterSubsystem.getInstance()
-                                        .setWantedState(ShooterStates.TRACKING)),
-                // SwerveSubsystem.getInstance()
-                //         .setDesiredChoreoTrajectoryCommand(
-                //                 getTrajectory(ChoreoTraj.CycleNeutralSecond.name())),
-                // // Start Choreo following
-                // Commands.startEnd(
-                //                 () ->
-                //                         SwerveSubsystem.getInstance()
-                //                                 .setWantedState(SwerveStates.CHOREO_PATH),
-                //                 () ->
-                //                         SwerveSubsystem.getInstance()
-                //                                 .setWantedState(SwerveStates.FIELD_CENTRIC))
-                //         .until(() -> SwerveSubsystem.getInstance().isAtChoreoSetpoint() &&
-                // SwerveSubsystem.getInstance().hasChoreoTimeElapsed(1)),
-                // // Shoot here if needed
-                // Commands.runOnce(
-                //         () ->
-                // ShooterSubsystem.getInstance().setWantedState(ShooterStates.SHOOT)),
-                // new WaitCommand(3),
-                // Commands.runOnce(
-                //         () ->
-                // ShooterSubsystem.getInstance().setWantedState(ShooterStates.TRACKING)),
+                new WaitCommand(5),
                 SwerveSubsystem.getInstance()
                         .setDesiredChoreoTrajectoryCommand(
-                                getTrajectory(ChoreoTraj.CycleNeutralThird.name())),
-                // Start Choreo following
-                Commands.startEnd(
-                                () ->
-                                        SwerveSubsystem.getInstance()
-                                                .setWantedState(SwerveStates.CHOREO_PATH),
-                                () ->
-                                        SwerveSubsystem.getInstance()
-                                                .setWantedState(SwerveStates.FIELD_CENTRIC))
-                        .until(
-                                () ->
-                                        SwerveSubsystem.getInstance().isAtChoreoSetpoint()
-                                                && SwerveSubsystem.getInstance()
-                                                        .hasChoreoTimeElapsed(1)),
-                // Shoot here if needed
-
-                // Move to the climb position
-                Commands.runOnce(
-                        () -> ShooterSubsystem.getInstance().setWantedState(ShooterStates.SHOOT)),
-                SwerveSubsystem.getInstance()
-                        .setDesiredChoreoTrajectoryCommand(
-                                getTrajectory(ChoreoTraj.OutpostClimbNeutral.name())),
+                                getTrajectory(ChoreoTraj.OutpostClimbRight.name())),
                 Commands.startEnd(
                                 () ->
                                         SwerveSubsystem.getInstance()
@@ -150,14 +101,10 @@ public class Neutral_Cycles extends Auto {
                                 () ->
                                         SwerveSubsystem.getInstance()
                                                 .setWantedState(SwerveStates.FIELD_CENTRIC))
-                        .until(
-                                () ->
-                                        SwerveSubsystem.getInstance().isAtChoreoSetpoint()
-                                                && SwerveSubsystem.getInstance()
-                                                        .hasChoreoTimeElapsed(1)),
+                        .until(SwerveSubsystem.getInstance()::isAtChoreoSetpoint),
                 Commands.runOnce(
-                        () ->
-                                ShooterSubsystem.getInstance()
-                                        .setWantedState(ShooterStates.TRACKING)));
+                        () -> {
+                            ClimberSubsystem.getInstance().setWantedState(ClimberStates.L1);
+                        }));
     }
 }
