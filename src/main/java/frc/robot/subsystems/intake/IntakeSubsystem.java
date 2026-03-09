@@ -4,6 +4,8 @@ import com.marswars.mechanisms.ArmMech;
 import com.marswars.mechanisms.RollerMech;
 import com.marswars.subsystem.MwSubsystem;
 import com.marswars.subsystem.SubsystemIoBase;
+
+import dev.doglog.DogLog;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -17,6 +19,7 @@ public class IntakeSubsystem extends MwSubsystem<IntakeStates, IntakeConstants> 
     private RollerMech roller_;
     private ArmMech pivot_;
     private int counter;
+    private double manual_roller_duty_cycle_ = 0.0;
 
     // getInstance
     public static IntakeSubsystem getInstance() {
@@ -52,6 +55,8 @@ public class IntakeSubsystem extends MwSubsystem<IntakeStates, IntakeConstants> 
                 "Home Pivot",
                 Commands.runOnce(() -> pivot_.setCurrentPosition(CONSTANTS.PIVOT_HOME_POSITION))
                         .ignoringDisable(true));
+
+        DogLog.tunable(getSubsystemKey() + "/Roller/TargetDutyCycle", CONSTANTS.INTAKE_DUTY_CYCLE, (v) -> manual_roller_duty_cycle_ = v);
     }
 
     // reset
@@ -97,7 +102,7 @@ public class IntakeSubsystem extends MwSubsystem<IntakeStates, IntakeConstants> 
         switch (system_state_) {
             case STORE:
                 if (counter > 25) roller_.setTargetDutyCycle(0.0);
-                else roller_.setTargetDutyCycle(CONSTANTS.INTAKE_DUTY_CYCLE);
+                else roller_.setTargetDutyCycle(manual_roller_duty_cycle_);
                 pivot_.setTargetPosition(CONSTANTS.PIVOT_STORE_POSITION);
 
                 break;
@@ -110,11 +115,11 @@ public class IntakeSubsystem extends MwSubsystem<IntakeStates, IntakeConstants> 
                 pivot_.setTargetDutyCycle(0.0);
                 break;
             case INTAKE:
-                roller_.setTargetDutyCycle(CONSTANTS.INTAKE_DUTY_CYCLE);
+                roller_.setTargetDutyCycle(manual_roller_duty_cycle_);
                 pivot_.setTargetDutyCycle(0.0);
                 break;
             case OUTTAKE:
-                roller_.setTargetDutyCycle(-CONSTANTS.INTAKE_DUTY_CYCLE);
+                roller_.setTargetDutyCycle(-manual_roller_duty_cycle_);
                 pivot_.setTargetDutyCycle(0.0);
                 break;
             case TUNING:
