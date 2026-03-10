@@ -69,6 +69,8 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
     // Hood feedforward gain - made tunable for easy adjustment
     private double hood_kv_ = CONSTANTS.HOOD_KV;
 
+    private double manual_indexer_velocity_ = CONSTANTS.INDEXER_VELOCITY;
+
     // getInstance
     public static ShooterSubsystem getInstance() {
         if (instance_ == null) {
@@ -111,6 +113,11 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
         // Setup tunable for hood feedforward gain
         DogLog.tunable(
                 getSubsystemKey() + "Hood/kV", CONSTANTS.HOOD_KV, (newKv) -> hood_kv_ = newKv);
+
+        DogLog.tunable(
+                getSubsystemKey() + "/Indexer/TargetVelocity",
+                manual_indexer_velocity_,
+                (v) -> manual_indexer_velocity_ = v);
 
         SmartDashboard.putData(
                 "Home Hood Position",
@@ -233,12 +240,12 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
                 break;
             case DUMP:
                 flywheel_.setTargetVelocity(flywheel_omega_);
-                indexer_.setTargetDutyCycle(-CONSTANTS.INDEXER_DUTY_CYCLE);
+                indexer_.setTargetVelocity(-manual_indexer_velocity_);
                 hood_.setTargetPosition(CONSTANTS.HOOD_MAX_ANGLE);
                 break;
             case SHOOT:
                 flywheel_.setTargetVelocity(flywheel_omega_);
-                indexer_.setTargetDutyCycle(CONSTANTS.INDEXER_DUTY_CYCLE);
+                indexer_.setTargetVelocity(manual_indexer_velocity_);
                 hood_.setTargetPositionWithFF(hood_angle_, hood_feedforward_);
                 SwerveSubsystem.getInstance()
                         .setDesiredRotationLockCORWithFF(
@@ -251,14 +258,14 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
             case MANUAL_HUB:
                 // Manual hub shooting mode - uses fixed setpoints for hub shots
                 flywheel_.setTargetVelocity(CONSTANTS.FLYWHEEL_MANUAL_HUB_VELOCITY + flywheel_adj_);
-                indexer_.setTargetDutyCycle(CONSTANTS.INDEXER_DUTY_CYCLE);
+                indexer_.setTargetVelocity(manual_indexer_velocity_);
                 hood_.setTargetPosition(CONSTANTS.HOOD_MANUAL_HUB_ANGLE + hood_adj_);
                 break;
             case MANUAL_PASS:
                 // Manual pass mode - uses fixed setpoints for passing
                 flywheel_.setTargetVelocity(
                         CONSTANTS.FLYWHEEL_MANUAL_PASS_VELOCITY + flywheel_adj_);
-                indexer_.setTargetDutyCycle(CONSTANTS.INDEXER_DUTY_CYCLE);
+                indexer_.setTargetVelocity(manual_indexer_velocity_);
                 hood_.setTargetPosition(CONSTANTS.HOOD_MANUAL_PASS_ANGLE + hood_adj_);
                 break;
             case TUNING:
