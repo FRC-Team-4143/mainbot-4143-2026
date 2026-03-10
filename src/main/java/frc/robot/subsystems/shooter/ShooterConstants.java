@@ -43,6 +43,11 @@ public class ShooterConstants extends MwConstants {
         AIMING
     }
 
+    public enum TargetType {
+        HUB,
+        PASS
+    }
+
     // =============================================================================
     // CAN IDS AND HARDWARE CONFIGURATION
     // =============================================================================
@@ -75,9 +80,13 @@ public class ShooterConstants extends MwConstants {
     public final Slot1Configs FLYWHEEL_VELOCITY_GAINS =
             new Slot1Configs().withKP(0.5).withKV(0.118).withKI(2);
 
+    public final double FLYWHEEL_FILTER_TIME_CONSTANT =
+            0.15; // seconds for flywheel velocity smoothing
+
     // Manual mode flywheel velocities (rad/s) - TUNE THESE!
-    public final double FLYWHEEL_MANUAL_HUB_VELOCITY = 260.0; // Flywheel speed for hub shots
-    public final double FLYWHEEL_MANUAL_PASS_VELOCITY = 320.0; // Flywheel speed for passing
+    public final double FLYWHEEL_MANUAL_HUB_VELOCITY =
+            (295.0 * 1.1) + 2.0; // Flywheel speed for hub shots
+    public final double FLYWHEEL_MANUAL_PASS_VELOCITY = 375.0; // Flywheel speed for passing
 
     @Deprecated
     public final double FLYWHEEL_MANUAL_VELOCITY =
@@ -106,9 +115,9 @@ public class ShooterConstants extends MwConstants {
 
     // Manual mode hood angles (radians) - TUNE THESE!
     public final double HOOD_MANUAL_HUB_ANGLE =
-            Units.degreesToRadians(77.35); // Hood angle for hub shots
+            Units.degreesToRadians(72.76 - 1.0); // Hood angle for hub shots
     public final double HOOD_MANUAL_PASS_ANGLE =
-            Units.degreesToRadians(65.89); // Hood angle for passing
+            Units.degreesToRadians(51.57); // Hood angle for passing
 
     @Deprecated
     public final double HOOD_MANUAL_ANGLE =
@@ -165,29 +174,29 @@ public class ShooterConstants extends MwConstants {
 
         // Populate hood angle map (distance in meters -> angle in radians)
         // Empirically determined values from testing
-        HUB_LAUNCH_CALCULATOR.addHoodAnglePoint(0.75, Units.degreesToRadians(81.17));
-        HUB_LAUNCH_CALCULATOR.addHoodAnglePoint(1.34, Units.degreesToRadians(77.35));
-        HUB_LAUNCH_CALCULATOR.addHoodAnglePoint(1.78, Units.degreesToRadians(77.35));
+        HUB_LAUNCH_CALCULATOR.addHoodAnglePoint(0.75, Units.degreesToRadians(80.17));
+        HUB_LAUNCH_CALCULATOR.addHoodAnglePoint(1.34, Units.degreesToRadians(76.35));
+        HUB_LAUNCH_CALCULATOR.addHoodAnglePoint(1.78, Units.degreesToRadians(76.00));
         HUB_LAUNCH_CALCULATOR.addHoodAnglePoint(2.17, Units.degreesToRadians(74.48));
-        HUB_LAUNCH_CALCULATOR.addHoodAnglePoint(2.81, Units.degreesToRadians(72.76));
-        HUB_LAUNCH_CALCULATOR.addHoodAnglePoint(3.82, Units.degreesToRadians(69.90));
-        HUB_LAUNCH_CALCULATOR.addHoodAnglePoint(4.40, Units.degreesToRadians(65.89));
-        HUB_LAUNCH_CALCULATOR.addHoodAnglePoint(4.77, Units.degreesToRadians(65.89));
-        HUB_LAUNCH_CALCULATOR.addHoodAnglePoint(5.60, Units.degreesToRadians(65.89));
-        HUB_LAUNCH_CALCULATOR.addHoodAnglePoint(6.50, Units.degreesToRadians(65.89));
+        HUB_LAUNCH_CALCULATOR.addHoodAnglePoint(2.81, Units.degreesToRadians(73.76));
+        HUB_LAUNCH_CALCULATOR.addHoodAnglePoint(3.82, Units.degreesToRadians(67.90));
+        HUB_LAUNCH_CALCULATOR.addHoodAnglePoint(4.40, Units.degreesToRadians(63.89));
+        HUB_LAUNCH_CALCULATOR.addHoodAnglePoint(4.77, Units.degreesToRadians(63.89));
+        HUB_LAUNCH_CALCULATOR.addHoodAnglePoint(5.60, Units.degreesToRadians(63.89));
+        HUB_LAUNCH_CALCULATOR.addHoodAnglePoint(6.50, Units.degreesToRadians(63.89));
 
         // Populate flywheel speed map (distance in meters -> speed in rad/s)
         // Empirically determined values from testing
-        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(0.75, 260.0 * 1.15);
-        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(1.34, 260.0 * 1.15);
-        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(1.78, 265.0 * 1.15);
-        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(2.17, 275.0 * 1.15);
-        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(2.81, 295.0 * 1.15);
-        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(3.82, 295.0 * 1.15);
-        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(4.40, 305.0 * 1.15);
-        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(4.77, 320.0 * 1.15);
-        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(5.60, 375.0 * 1.15);
-        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(6.50, 420.0 * 1.15);
+        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(0.75, (260.0 * 1.05) + 2.0);
+        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(1.34, (260.0 * 1.075) + 2.0);
+        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(1.78, (265.0 * 1.1) + 2.0);
+        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(2.17, (275.0 * 1.1) + 2.0);
+        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(2.81, (295.0 * 1.1) + 2.0);
+        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(3.82, (295.0 * 1.1) + 2.0);
+        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(4.40, (305.0 * 1.1) + 2.0);
+        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(4.77, (320.0 * 1.1) + 2.0);
+        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(5.60, (375.0 * 1.15) + 2.0);
+        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(6.50, (420.0 * 1.2) + 2.0);
 
         // Populate time of flight map (distance in meters -> time in seconds)
         // Empirically determined values from testing

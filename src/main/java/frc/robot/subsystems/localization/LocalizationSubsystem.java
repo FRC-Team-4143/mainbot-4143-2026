@@ -22,7 +22,6 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -155,17 +154,17 @@ public class LocalizationSubsystem extends MwSubsystem<LocalizationStates, Local
         // If the robot is disabled and there is a client connection with valid vision data,
         // periodically update the gyro yaw to correct for drift. This is done AFTER all
         // measurements are applied to prevent feedback loops.
-        if (RobotState.isDisabled()
-                && ProxyServerThread.getInstance().hasClientConnection()
-                && !vision_measurements.isEmpty()
-                && disabled_gyro_update_timer_.hasElapsed(1.0)) {
-            SwerveSubsystem.getInstance()
-                    .setGyroYaw(field_pose_estimator_.getEstimatedPosition().getRotation());
-            disabled_gyro_update_timer_.restart();
-        } else if (!RobotState.isDisabled()) {
-            // Reset timer when robot is enabled
-            disabled_gyro_update_timer_.restart();
-        }
+        // if (RobotState.isDisabled()
+        //         && ProxyServerThread.getInstance().hasClientConnection()
+        //         && !vision_measurements.isEmpty()
+        //         && disabled_gyro_update_timer_.hasElapsed(1.0)) {
+        //     SwerveSubsystem.getInstance()
+        //             .setGyroYaw(field_pose_estimator_.getEstimatedPosition().getRotation());
+        //     disabled_gyro_update_timer_.restart();
+        // } else if (!RobotState.isDisabled()) {
+        //     // Reset timer when robot is enabled
+        //     disabled_gyro_update_timer_.restart();
+        // }
 
         // Log the pose estimates
         DogLog.log(getSubsystemKey() + "SmoothPose", getSmoothPose());

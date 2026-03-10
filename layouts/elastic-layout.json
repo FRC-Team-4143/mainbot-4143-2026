@@ -354,6 +354,20 @@
               "topic": "/SmartDashboard/Hub - First Alliance",
               "period": 0.06
             }
+          },
+          {
+            "title": "Target Distance",
+            "x": 896.0,
+            "y": 512.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/Robot/Subsystem/Shooter/LaunchCalculator/Distance/Raw",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": false
+            }
           }
         ]
       }

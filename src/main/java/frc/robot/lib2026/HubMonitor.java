@@ -117,10 +117,10 @@ public class HubMonitor {
         DogLog.log(
                 "HubMonitor/Active", status ? HubMonitor.ACTIVE_COLOR : HubMonitor.INACTIVE_COLOR);
         DogLog.log("HubMonitor/Alliance", getActiveColor(active));
-        
+
         // Log countdown timer for current stage
         logStageCountdown(match_time);
-        
+
         return status;
     }
 

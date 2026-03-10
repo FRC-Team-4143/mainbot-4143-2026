@@ -18,7 +18,7 @@ public class ClimberSubsystem extends MwSubsystem<ClimberStates, ClimberConstant
 
     private RollerMech deploy_joint_;
     private ArmMech flip_joint_;
-    
+
     // Adjustment factor for fine-tuning positions (in radians)
     private double flip_adjustment_ = 0.0;
 
@@ -38,7 +38,8 @@ public class ClimberSubsystem extends MwSubsystem<ClimberStates, ClimberConstant
                         getSubsystemKey(),
                         "Extender",
                         List.of(CONSTANTS.DEPLOY_MOTOR_CONFIG),
-                        CONSTANTS.DEPLOY_GEAR_RATIO, CONSTANTS.DEPLOY_MOI);
+                        CONSTANTS.DEPLOY_GEAR_RATIO,
+                        CONSTANTS.DEPLOY_MOI);
         flip_joint_ =
                 new ArmMech(
                         getSubsystemKey(),
@@ -50,9 +51,17 @@ public class ClimberSubsystem extends MwSubsystem<ClimberStates, ClimberConstant
                         CONSTANTS.FLIP_MAX_ANGLE,
                         CONSTANTS.FLIP_MIN_ANGLE);
 
-        SmartDashboard.putData("Zero Climber Flip", Commands.runOnce(() -> flip_joint_.setCurrentPosition(CONSTANTS.FLIP_GROUND_ANGLE)).withName("Zero Climber"));
-        SmartDashboard.putData("Zero Climber Deploy", Commands.runOnce(() -> deploy_joint_.setCurrentPosition(CONSTANTS.DEPLOY_STOWED_ANGLE)).withName("Zero Climber"));
-
+        SmartDashboard.putData(
+                "Zero Climber Flip",
+                Commands.runOnce(() -> flip_joint_.setCurrentPosition(CONSTANTS.FLIP_GROUND_ANGLE))
+                        .withName("Zero Climber"));
+        SmartDashboard.putData(
+                "Zero Climber Deploy",
+                Commands.runOnce(
+                                () ->
+                                        deploy_joint_.setCurrentPosition(
+                                                CONSTANTS.DEPLOY_STOWED_ANGLE))
+                        .withName("Zero Climber"));
     }
 
     // reset
@@ -75,33 +84,52 @@ public class ClimberSubsystem extends MwSubsystem<ClimberStates, ClimberConstant
             flip_adjustment_ = 0.0; // Reset adjustment on state change
             return;
         }
-        
-        if((wanted_state == ClimberStates.L1 || wanted_state == ClimberStates.L2 || wanted_state == ClimberStates.L3) && !isDeployed()){
+
+        if ((wanted_state == ClimberStates.L1
+                        || wanted_state == ClimberStates.L2
+                        || wanted_state == ClimberStates.L3)
+                && !isDeployed()) {
             DataLogManager.log("Cannot Climb while Climber is not Deployed");
             return;
         }
 
         // Stop Climbing for L1 Target and Hold Position
-        if (wanted_state == ClimberStates.L1 && MathUtil.isNear(CONSTANTS.FLIP_L1_CLIMB + flip_adjustment_, getFlipAngle(), CONSTANTS.FLIP_ANGLE_TOLERANCE)){
+        if (wanted_state == ClimberStates.L1
+                && MathUtil.isNear(
+                        CONSTANTS.FLIP_L1_CLIMB + flip_adjustment_,
+                        getFlipAngle(),
+                        CONSTANTS.FLIP_ANGLE_TOLERANCE)) {
             system_state_ = ClimberStates.CLIMB_HOLD;
             return;
         }
         // Stop Climbing for L2 Target and Hold Position
-        if (wanted_state == ClimberStates.L2 && MathUtil.isNear(CONSTANTS.FLIP_L2_CLIMB + flip_adjustment_, getFlipAngle(), CONSTANTS.FLIP_ANGLE_TOLERANCE)){
+        if (wanted_state == ClimberStates.L2
+                && MathUtil.isNear(
+                        CONSTANTS.FLIP_L2_CLIMB + flip_adjustment_,
+                        getFlipAngle(),
+                        CONSTANTS.FLIP_ANGLE_TOLERANCE)) {
             system_state_ = ClimberStates.CLIMB_HOLD;
             return;
         }
         // Stop Climbing for L3 Target and Hold Position
-        if (wanted_state == ClimberStates.L3 && MathUtil.isNear(CONSTANTS.FLIP_L3_CLIMB_ANGLE + flip_adjustment_, getFlipAngle(), CONSTANTS.FLIP_ANGLE_TOLERANCE)){
+        if (wanted_state == ClimberStates.L3
+                && MathUtil.isNear(
+                        CONSTANTS.FLIP_L3_CLIMB_ANGLE + flip_adjustment_,
+                        getFlipAngle(),
+                        CONSTANTS.FLIP_ANGLE_TOLERANCE)) {
             system_state_ = ClimberStates.CLIMB_HOLD;
             return;
         }
         // Stop Climbing for GROUND Target and Hold Position
-        if (wanted_state == ClimberStates.GROUND && MathUtil.isNear(CONSTANTS.FLIP_GROUND_ANGLE + flip_adjustment_, getFlipAngle(), CONSTANTS.FLIP_ANGLE_TOLERANCE)){
+        if (wanted_state == ClimberStates.GROUND
+                && MathUtil.isNear(
+                        CONSTANTS.FLIP_GROUND_ANGLE + flip_adjustment_,
+                        getFlipAngle(),
+                        CONSTANTS.FLIP_ANGLE_TOLERANCE)) {
             system_state_ = ClimberStates.DEPLOY;
             return;
         }
-        
+
         system_state_ = wanted_state;
     }
 
@@ -110,34 +138,40 @@ public class ClimberSubsystem extends MwSubsystem<ClimberStates, ClimberConstant
     public void updateLogic(double timestamp) {
         switch (system_state_) {
             case STOWED:
-                flip_joint_.setTargetDutyCycle(calculateClimbDutyCycle(CONSTANTS.FLIP_GROUND_ANGLE));
+                flip_joint_.setTargetDutyCycle(
+                        calculateClimbDutyCycle(CONSTANTS.FLIP_GROUND_ANGLE));
                 deploy_joint_.setTargetPosition(CONSTANTS.DEPLOY_STOWED_ANGLE);
                 flip_adjustment_ = 0;
                 break;
             case DEPLOY:
-                flip_joint_.setTargetDutyCycle(calculateClimbDutyCycle(CONSTANTS.FLIP_GROUND_ANGLE + flip_adjustment_));
+                flip_joint_.setTargetDutyCycle(
+                        calculateClimbDutyCycle(CONSTANTS.FLIP_GROUND_ANGLE + flip_adjustment_));
                 deploy_joint_.setTargetPosition(CONSTANTS.DEPLOY_DEPLOYED_ANGLE);
                 break;
             case L1:
-                flip_joint_.setTargetDutyCycle(calculateClimbDutyCycle(CONSTANTS.FLIP_L1_CLIMB + flip_adjustment_));
+                flip_joint_.setTargetDutyCycle(
+                        calculateClimbDutyCycle(CONSTANTS.FLIP_L1_CLIMB + flip_adjustment_));
                 deploy_joint_.setTargetPosition(CONSTANTS.DEPLOY_DEPLOYED_ANGLE);
                 break;
             case L2:
-                flip_joint_.setTargetDutyCycle(calculateClimbDutyCycle(CONSTANTS.FLIP_L2_CLIMB + flip_adjustment_));
+                flip_joint_.setTargetDutyCycle(
+                        calculateClimbDutyCycle(CONSTANTS.FLIP_L2_CLIMB + flip_adjustment_));
                 deploy_joint_.setTargetPosition(CONSTANTS.DEPLOY_DEPLOYED_ANGLE);
                 break;
             case GROUND:
-                flip_joint_.setTargetDutyCycle(calculateClimbDutyCycle(CONSTANTS.FLIP_GROUND_ANGLE + flip_adjustment_));
+                flip_joint_.setTargetDutyCycle(
+                        calculateClimbDutyCycle(CONSTANTS.FLIP_GROUND_ANGLE + flip_adjustment_));
                 deploy_joint_.setTargetPosition(CONSTANTS.DEPLOY_DEPLOYED_ANGLE);
                 break;
             case L3:
-                flip_joint_.setTargetDutyCycle(calculateClimbDutyCycle(CONSTANTS.FLIP_L3_CLIMB_ANGLE + flip_adjustment_));
+                flip_joint_.setTargetDutyCycle(
+                        calculateClimbDutyCycle(CONSTANTS.FLIP_L3_CLIMB_ANGLE + flip_adjustment_));
                 deploy_joint_.setTargetPosition(CONSTANTS.DEPLOY_DEPLOYED_ANGLE);
                 break;
             case CLIMB_HOLD:
                 flip_joint_.setTargetDutyCycle(0);
                 deploy_joint_.setTargetPosition(CONSTANTS.DEPLOY_DEPLOYED_ANGLE);
-            break;
+                break;
             case TUNNING:
                 // allow manual control of both joints through the dashboard for testing and
                 // calibration
@@ -173,56 +207,72 @@ public class ClimberSubsystem extends MwSubsystem<ClimberStates, ClimberConstant
      * Toggles the deploy state between DEPLOY and STOWED. Does nothing if the current state is not
      * DEPLOY or STOWED.
      */
-    public Command toggleDeployCommand(){
-        String to_state_string = (system_state_ == ClimberStates.DEPLOY) ? "STOWED" : (system_state_ == ClimberStates.STOWED) ? "DEPLOY" : "OTHER";
-        return Commands.runOnce(() -> {
-            if(system_state_ != ClimberStates.DEPLOY && system_state_ != ClimberStates.STOWED && system_state_ != ClimberStates.TUNNING) {
-                DataLogManager.log("Can not Toggle Deploy/Stowed state from: " + system_state_);
-                return; // if we're not in a state where deploy can be toggled, do nothing
-            }
+    public Command toggleDeployCommand() {
+        String to_state_string =
+                (system_state_ == ClimberStates.DEPLOY)
+                        ? "STOWED"
+                        : (system_state_ == ClimberStates.STOWED) ? "DEPLOY" : "OTHER";
+        return Commands.runOnce(
+                        () -> {
+                            if (system_state_ != ClimberStates.DEPLOY
+                                    && system_state_ != ClimberStates.STOWED
+                                    && system_state_ != ClimberStates.TUNNING) {
+                                DataLogManager.log(
+                                        "Can not Toggle Deploy/Stowed state from: "
+                                                + system_state_);
+                                return; // if we're not in a state where deploy can be toggled, do
+                                // nothing
+                            }
 
-            if(isDeployed()){
-                setWantedState(ClimberStates.STOWED);
-            } else {
-                setWantedState(ClimberStates.DEPLOY);
-            }
-        }).withName("Toggle Deploy: " + to_state_string);
+                            if (isDeployed()) {
+                                setWantedState(ClimberStates.STOWED);
+                            } else {
+                                setWantedState(ClimberStates.DEPLOY);
+                            }
+                        })
+                .withName("Toggle Deploy: " + to_state_string);
     }
 
     /**
-     * Command to bump the climber up slightly. Only works from CLIMB_HOLD state.
-     * Hold the button/trigger to continue bumping up.
-     * 
+     * Command to bump the climber up slightly. Only works from CLIMB_HOLD state. Hold the
+     * button/trigger to continue bumping up.
+     *
      * @return Command that bumps up while held, returns to CLIMB_HOLD when released
      */
     public Command bumpUpCommand() {
-        return Commands.run(() -> {
-            flip_adjustment_ += CONSTANTS.FLIP_ADJUSTMENT_INCREMENT;
-        }).withName("Bump Up");
+        return Commands.runOnce(
+                        () -> {
+                            flip_adjustment_ += CONSTANTS.FLIP_ADJUSTMENT_INCREMENT;
+                        })
+                .withName("Bump Up");
     }
 
     /**
-     * Command to bump the climber down slightly. Only works from CLIMB_HOLD state.
-     * Hold the button/trigger to continue bumping down.
-     * 
+     * Command to bump the climber down slightly. Only works from CLIMB_HOLD state. Hold the
+     * button/trigger to continue bumping down.
+     *
      * @return Command that bumps down while held, returns to CLIMB_HOLD when released
      */
     public Command bumpDownCommand() {
-        return Commands.run(() -> {
-            flip_adjustment_ -= CONSTANTS.FLIP_ADJUSTMENT_INCREMENT;
-        }).withName("Bump Down");
+        return Commands.runOnce(
+                        () -> {
+                            flip_adjustment_ -= CONSTANTS.FLIP_ADJUSTMENT_INCREMENT;
+                        })
+                .withName("Bump Down");
     }
 
     /**
      * Resets the flip adjustment to zero.
-     * 
+     *
      * @return Command that resets the adjustment
      */
     public Command resetAdjustmentCommand() {
-        return Commands.runOnce(() -> {
-            flip_adjustment_ = 0.0;
-            DataLogManager.log("Flip adjustment reset to 0");
-        }).withName("Reset Adjustment");
+        return Commands.runOnce(
+                        () -> {
+                            flip_adjustment_ = 0.0;
+                            DataLogManager.log("Flip adjustment reset to 0");
+                        })
+                .withName("Reset Adjustment");
     }
 
     // =============================================================================
@@ -231,21 +281,20 @@ public class ClimberSubsystem extends MwSubsystem<ClimberStates, ClimberConstant
 
     /**
      * Calculates the needed duty cycle to move towards the target angle for climbing states.
-     * Returns positive duty cycle if current angle is below target (climbing up),
-     * negative duty cycle if current angle is above target (moving down),
-     * or 0.0 if at target within tolerance.
+     * Returns positive duty cycle if current angle is below target (climbing up), negative duty
+     * cycle if current angle is above target (moving down), or 0.0 if at target within tolerance.
      *
      * @param target_angle The target angle in radians for the current state
      * @return The duty cycle to apply (-1.0 to 1.0)
      */
     private double calculateClimbDutyCycle(double target_angle) {
         double current_angle = getFlipAngle();
-        
+
         // If we're within tolerance of the target, return 0
         if (MathUtil.isNear(target_angle, current_angle, CONSTANTS.FLIP_ANGLE_TOLERANCE)) {
             return 0.0;
         }
-        
+
         // If current angle is less than target, we need to climb up (positive duty cycle)
         if (current_angle < target_angle) {
             return CONSTANTS.FLIP_CLIMB_UP_DUTY_CYCLE;
@@ -257,8 +306,10 @@ public class ClimberSubsystem extends MwSubsystem<ClimberStates, ClimberConstant
     }
 
     /**
-     * Checks if the climber is currently deployed by comparing the deploy joint's current angle to the deployed angle within a certain tolerance.
-     * @return true if the climber is deployed, false otherwise     
+     * Checks if the climber is currently deployed by comparing the deploy joint's current angle to
+     * the deployed angle within a certain tolerance.
+     *
+     * @return true if the climber is deployed, false otherwise
      */
     private boolean isDeployed() {
         return (MathUtil.isNear(
