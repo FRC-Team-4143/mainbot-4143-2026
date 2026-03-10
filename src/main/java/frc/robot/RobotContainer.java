@@ -34,7 +34,7 @@ public class RobotContainer extends SubsystemManager {
         registerSubsystem(HopperSubsystem.getInstance());
         registerSubsystem(IntakeSubsystem.getInstance());
         registerSubsystem(ClimberSubsystem.getInstance());
-        registerSubsystem(GameStatesSubsystem.getInstance());
+        //registerSubsystem(GameStatesSubsystem.getInstance());
 
         // Only enable the simulation subsystem if we are in simulation
         if (RobotBase.isSimulation()) {

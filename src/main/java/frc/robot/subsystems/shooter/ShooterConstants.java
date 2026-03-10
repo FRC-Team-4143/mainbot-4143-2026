@@ -136,7 +136,7 @@ public class ShooterConstants extends MwConstants {
     // =============================================================================
     public final double INDEXER_DUTY_CYCLE = 0.5; // 30% power for indexing
     public final double IDLE_INDEXER_DUTY_CYCLE = -.1;
-    public final double INDEXER_VELOCITY = 220; 
+    public final double INDEXER_VELOCITY = 250; 
     public final double SHOOTER_IDLE_SPEED = 300.0;
     public final double HOOD_IDLE_POSITION = Units.degreesToRadians(80);
     public final Transform2d SHOOTER_CENTER =
