@@ -4,7 +4,6 @@ import com.marswars.mechanisms.ArmMech;
 import com.marswars.mechanisms.RollerMech;
 import com.marswars.subsystem.MwSubsystem;
 import com.marswars.subsystem.SubsystemIoBase;
-
 import dev.doglog.DogLog;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -56,7 +55,10 @@ public class IntakeSubsystem extends MwSubsystem<IntakeStates, IntakeConstants> 
                 Commands.runOnce(() -> pivot_.setCurrentPosition(CONSTANTS.PIVOT_HOME_POSITION))
                         .ignoringDisable(true));
 
-        DogLog.tunable(getSubsystemKey() + "/Roller/TargetDutyCycle", CONSTANTS.INTAKE_DUTY_CYCLE, (v) -> manual_roller_duty_cycle_ = v);
+        DogLog.tunable(
+                getSubsystemKey() + "/Roller/TargetDutyCycle",
+                CONSTANTS.INTAKE_DUTY_CYCLE,
+                (v) -> manual_roller_duty_cycle_ = v);
     }
 
     // reset
