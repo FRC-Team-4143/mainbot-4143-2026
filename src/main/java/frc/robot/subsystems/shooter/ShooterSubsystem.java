@@ -112,7 +112,7 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
 
         // Setup tunable for hood feedforward gain
         DogLog.tunable(
-                getSubsystemKey() + "Hood/kV", CONSTANTS.HOOD_KV, (newKv) -> hood_kv_ = newKv);manual_hopper_velocity_
+                getSubsystemKey() + "Hood/kV", CONSTANTS.HOOD_KV, (newKv) -> hood_kv_ = newKv);
 
         DogLog.tunable(
                 getSubsystemKey() + "/Indexer/TargetVelocity",
