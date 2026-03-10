@@ -15,6 +15,7 @@ public class HopperSubsystem extends MwSubsystem<HopperStates, HopperConstants> 
 
     // private RollerMech feeder_;
     private RollerMech hopper_;
+    private double manual_hopper_velocity_ = CONSTANTS.HOPPER_VELOCITY_TARGET;
     private final Timer hopper_timer_ = new Timer();
     private Debouncer debouncer_ =
             new Debouncer(CONSTANTS.DEBOUNCE_TIME, Debouncer.DebounceType.kBoth);
@@ -36,6 +37,12 @@ public class HopperSubsystem extends MwSubsystem<HopperStates, HopperConstants> 
                         "Hopper",
                         List.of(CONSTANTS.HOPPER_MOTOR_CONFIG),
                         CONSTANTS.HOPPER_GEAR_RATIO);
+
+
+        DogLog.tunable(
+                getSubsystemKey() + "/Hopper/TargetVelocity",
+                manual_hopper_velocity_,
+                (v) -> manual_hopper_velocity_ = v);
     }
 
     // reset
@@ -84,13 +91,13 @@ public class HopperSubsystem extends MwSubsystem<HopperStates, HopperConstants> 
         switch (system_state_) {
             case INTAKE:
             case SHOOTING:
-                hopper_.setTargetVelocity(CONSTANTS.HOPPER_VELOCITY_TARGET);
+                hopper_.setTargetVelocity(manual_hopper_velocity_);
                 break;
             case UNJAM_REVERSE:
-                hopper_.setTargetVelocity(-CONSTANTS.HOPPER_VELOCITY_TARGET);
+                hopper_.setTargetVelocity(-manual_hopper_velocity_);
                 break;
             case UNJAM_FORWARD:
-                hopper_.setTargetVelocity(CONSTANTS.HOPPER_VELOCITY_TARGET);
+                hopper_.setTargetVelocity(manual_hopper_velocity_);
                 break;
             case TUNING:
                 break;

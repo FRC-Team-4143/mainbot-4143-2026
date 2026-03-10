@@ -18,7 +18,7 @@ public class IntakeSubsystem extends MwSubsystem<IntakeStates, IntakeConstants> 
     private RollerMech roller_;
     private ArmMech pivot_;
     private int counter;
-    private double manual_roller_duty_cycle_ = 0.0;
+    private double manual_roller_duty_cycle_ = CONSTANTS.INTAKE_DUTY_CYCLE;
 
     // getInstance
     public static IntakeSubsystem getInstance() {
@@ -57,7 +57,7 @@ public class IntakeSubsystem extends MwSubsystem<IntakeStates, IntakeConstants> 
 
         DogLog.tunable(
                 getSubsystemKey() + "/Roller/TargetDutyCycle",
-                CONSTANTS.INTAKE_DUTY_CYCLE,
+                manual_roller_duty_cycle_,
                 (v) -> manual_roller_duty_cycle_ = v);
     }
 
