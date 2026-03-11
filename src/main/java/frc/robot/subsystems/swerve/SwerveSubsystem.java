@@ -1098,6 +1098,36 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
         return choreo_event_tracker_.hasEventBeenPassed(event_name);
     }
 
+    /**
+     * Gets the chassis translation velocity in meters per second by calculating the magnitude of the current chassis speeds.
+     *
+     * @return the chassis translation velocity in meters per second
+     */
+    private double getChassisTranslationVelocity() {
+        ChassisSpeeds current_speeds = swerve_mech_.getCurrentChassisSpeeds();
+        return Math.hypot(current_speeds.vxMetersPerSecond, current_speeds.vyMetersPerSecond);
+    }
+
+    /**
+     * Gets the chassis angular velocity in radians per second from the current chassis speeds.
+     *
+     * @return the chassis angular velocity in radians per second
+     */
+    private double getChassisAngularVelocity() {
+        return swerve_mech_.getCurrentChassisSpeeds().omegaRadiansPerSecond;
+    }
+
+    /**
+     * Checks if the chassis is stationary by comparing the translation and angular velocities to predefined thresholds.
+     *
+     * @return true if the chassis is stationary, false otherwise
+     */
+    public boolean isChassisStationary() {
+        return getChassisTranslationVelocity() < CONSTANTS.STATIONARY_TRANSLATION_VELOCITY_THRESHOLD
+                && Math.abs(getChassisAngularVelocity())
+                        < CONSTANTS.STATIONARY_ANGULAR_VELOCITY_THRESHOLD;
+    }
+
     // ------------------------------------------------
     // Chassis Property Methods
     // ------------------------------------------------
