@@ -344,6 +344,12 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
         DogLog.log(getSubsystemKey() + "ShooterIsReady/Hood", isHoodAtPosition());
         DogLog.log(getSubsystemKey() + "ShooterIsReady/Flywheel", isFlywheelAtSpeed());
         DogLog.log(getSubsystemKey() + "ShooterIsReady/Rotation", isRotationAtPosition());
+        DogLog.log(getSubsystemKey() + "ShooterIsReady/Full", isShooterReady());
+
+        // Active Tolerances
+        DogLog.log(getSubsystemKey() + "Tolerance/FlywheelVelocity", flywheel_vel_tol_, RadiansPerSecond);
+        DogLog.log(getSubsystemKey() + "Tolerance/HoodAngle", hood_pos_tol_, Radians);
+        DogLog.log(getSubsystemKey() + "Tolerance/HeadingAngle", rot_pos_tol_, Radians);
     }
 
     // =============================================================================
@@ -441,7 +447,7 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
      */
     public void adjustFlywheel(double adj) {
         flywheel_adj_ += adj;
-        DogLog.log(getSubsystemKey() + "Setpoint/flywheel adjust", flywheel_adj_);
+        DogLog.log(getSubsystemKey() + "Setpoint/Flywheel Adjust", flywheel_adj_);
     }
 
     /**
@@ -451,7 +457,7 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
      */
     public void adjustHood(double adj) {
         hood_adj_ += adj;
-        DogLog.log(getSubsystemKey() + "Setpoint/hood adjust", hood_adj_);
+        DogLog.log(getSubsystemKey() + "Setpoint/Hood Adjust", hood_adj_);
     }
 
     // =============================================================================
@@ -485,16 +491,16 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
      * @return true if the robot rotation is within tolerance, false otherwise
      */
     private boolean isRotationAtPosition() {
-        boolean status =
-                MathUtil.isNear(
-                        heading_angle_,
-                        LocalizationSubsystem.getInstance()
-                                .getFieldPose()
-                                .getRotation()
-                                .getRadians(),
-                        rot_pos_tol_);
+        // Calculate the angular error with proper wraparound handling
+        // angleModulus normalizes to [-pi, pi], ensuring 0 and 2π are treated as equivalent
+        double angle_error =
+                MathUtil.angleModulus(
+                        heading_angle_
+                                - LocalizationSubsystem.getInstance()
+                                        .getFieldPose()
+                                        .getRotation()
+                                        .getRadians());
+        boolean status = Math.abs(angle_error) <= rot_pos_tol_;
         return status;
     }
-
-    public void setTargetType(TargetType target) {}
 }
