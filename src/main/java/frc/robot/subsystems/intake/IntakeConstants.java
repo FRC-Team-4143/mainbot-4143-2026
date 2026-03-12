@@ -46,7 +46,7 @@ public class IntakeConstants extends MwConstants {
     // =============================================================================
 
     public final boolean ROLLER_MOTOR_INVERTED = false;
-    public final boolean ROLLER_FOLLOWER_MOTOR_INVERTED = false;
+    public final boolean ROLLER_FOLLOWER_MOTOR_INVERTED = true;
     public final double ROLLER_GEAR_RATIO = 1.0;
     public final double INTAKE_DUTY_CYCLE = 1.0;
     // =============================================================================
@@ -94,14 +94,14 @@ public class IntakeConstants extends MwConstants {
         ROLLER_MOTOR_CONFIG.apply(roller_config);
 
         // Configure Roller Follower Motor
-        MotorConfig roller_follower_config = new MotorConfig();
-        roller_follower_config.can_id = ROLLER_FOLLOWER_MOTOR_ID;
-        roller_follower_config.motor_type = TalonMotorType.X60;
-        roller_follower_config.canbus_name = "rio";
+        ROLLER_FOLLOWER_MOTOR_CONFIG.can_id = ROLLER_FOLLOWER_MOTOR_ID;
+        ROLLER_FOLLOWER_MOTOR_CONFIG.motor_type = TalonMotorType.X60;
+        ROLLER_FOLLOWER_MOTOR_CONFIG.canbus_name = "rio";
         TalonFXConfiguration roller_follower_fx_config = new TalonFXConfiguration();
-        roller_follower_fx_config.MotorOutput.Inverted = PhoenixUtil.toInvertedValue(ROLLER_FOLLOWER_MOTOR_INVERTED);
+        roller_follower_fx_config.MotorOutput.Inverted =
+                PhoenixUtil.toInvertedValue(ROLLER_FOLLOWER_MOTOR_INVERTED);
         roller_follower_fx_config.CurrentLimits.StatorCurrentLimitEnable = false;
-        roller_follower_config.apply(roller_follower_fx_config);
+        ROLLER_FOLLOWER_MOTOR_CONFIG.apply(roller_follower_fx_config);
 
         // Configure Pivot Motor
         PIVOT_MOTOR_CONFIG.can_id = PIVOT_MOTOR_ID;
