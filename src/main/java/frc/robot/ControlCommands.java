@@ -1,7 +1,9 @@
 package frc.robot;
 
+import edu.wpi.first.wpilibj.drive.RobotDriveBase;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import frc.robot.lib2026.FieldTargets;
 import frc.robot.subsystems.climber.ClimberConstants.ClimberStates;
 import frc.robot.subsystems.climber.ClimberSubsystem;
@@ -46,6 +48,7 @@ public class ControlCommands {
                                     .setWantedState(SwerveStates.FIELD_CENTRIC_ROTATION_LOCK);
                             LocalizationSubsystem.getInstance()
                                     .setWantedState(LocalizationStates.SHOOTING_FOCUS);
+                            
                         },
                         () -> {
                             ShooterSubsystem.getInstance().setWantedState(ShooterStates.TRACKING);
@@ -149,17 +152,20 @@ public class ControlCommands {
      * </ul>
      */
     static Command shootFuelCommand() {
-        return Commands.startEnd(
+        return new FunctionalCommand(
                         () -> {
                             ShooterSubsystem.getInstance().setWantedState(ShooterStates.SHOOT);
                             HopperSubsystem.getInstance().setWantedState(HopperStates.SHOOTING);
                             SwerveSubsystem.getInstance().setTeleOpVelocityScalar(0.25);
-                            SwerveSubsystem.getInstance()
-                                    .setWantedState(SwerveStates.FIELD_CENTRIC_ROTATION_LOCK);
-                            LocalizationSubsystem.getInstance()
-                                    .setWantedState(LocalizationStates.SHOOTING_FOCUS);
+                            LocalizationSubsystem.getInstance().setWantedState(LocalizationStates.SHOOTING_FOCUS);
                         },
                         () -> {
+                            if (SwerveSubsystem.getInstance().isChassisStationary() && ShooterSubsystem.getInstance().isShooterReady())
+                            {SwerveSubsystem.getInstance().setWantedState(SwerveStates.BRAKE);
+                            } else {SwerveSubsystem.getInstance().setWantedState(SwerveStates.FIELD_CENTRIC_ROTATION_LOCK);
+                            }
+                        },
+                        (interrupted) -> {
                             ShooterSubsystem.getInstance().setWantedState(ShooterStates.TRACKING);
                             HopperSubsystem.getInstance().setWantedState(HopperStates.IDLE);
                             SwerveSubsystem.getInstance().setTeleOpVelocityScalar(1.0);
@@ -167,7 +173,8 @@ public class ControlCommands {
                                     .setWantedState(SwerveStates.FIELD_CENTRIC);
                             LocalizationSubsystem.getInstance()
                                     .setWantedState(LocalizationStates.FULL);
-                        })
+                        },
+                        () -> false)
                 .withName("Shoot Fuel")
                 .ignoringDisable(true);
     }
