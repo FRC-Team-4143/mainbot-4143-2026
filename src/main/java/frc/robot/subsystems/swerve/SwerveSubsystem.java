@@ -84,9 +84,9 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
     private double tele_op_velocity_scalar_ = 1.0;
     private double tele_op_velocity_rl_scalar_ = 1.0;
     private DynamicSlewRateLimiter x_tele_op_velocity_slew_limiter_ =
-            new DynamicSlewRateLimiter(CONSTANTS.MAX_TRANSLATION_RATE * 1.0);
+            new DynamicSlewRateLimiter(CONSTANTS.MAX_TRANSLATION_ACCEL * 1.0);
     private DynamicSlewRateLimiter y_tele_op_velocity_slew_limiter_ =
-            new DynamicSlewRateLimiter(CONSTANTS.MAX_TRANSLATION_RATE * 1.0);
+            new DynamicSlewRateLimiter(CONSTANTS.MAX_TRANSLATION_ACCEL * 1.0);
 
     // IO Members
     private SwerveMech swerve_mech_;
@@ -171,6 +171,7 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
                 new ChassisRequest.ApplyChassisSpeeds()
                         .withDriveRequestType(DriveControlMode.CLOSED_LOOP)
                         .withSteerRequestType(SteerControlMode.CLOSED_LOOP);
+        brake_request_ = new ChassisRequest.SwerveDriveBrake();
 
         TunablePid.create(getSubsystemKey() + "TractorBeam/Gains", tractor_beam_controller_);
         TunablePid.create(
@@ -393,6 +394,7 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
                 break;
             case BRAKE:
                 swerve_mech_.setChassisRequest(brake_request_);
+                desired_chassis_speeds_ = removeOperatorPerspective(controller_inputs);
                 break;
             case IDLE:
             default:
@@ -1096,6 +1098,36 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
      */
     public boolean hasChoreoEventBeenPassed(String event_name) {
         return choreo_event_tracker_.hasEventBeenPassed(event_name);
+    }
+
+    /**
+     * Gets the chassis translation velocity in meters per second by calculating the magnitude of the current chassis speeds.
+     *
+     * @return the chassis translation velocity in meters per second
+     */
+    private double getChassisTranslationVelocity() {
+        ChassisSpeeds current_speeds  = getDesiredChassisSpeeds();
+        return Math.hypot(current_speeds.vxMetersPerSecond, current_speeds.vyMetersPerSecond);
+    }
+
+    /**
+     * Gets the chassis angular velocity in radians per second from the current chassis speeds.
+     *
+     * @return the chassis angular velocity in radians per second
+     */
+    private double getChassisAngularVelocity() {
+        return swerve_mech_.getCurrentChassisSpeeds().omegaRadiansPerSecond;
+    }
+
+    /**
+     * Checks if the chassis is stationary by comparing the translation and angular velocities to predefined thresholds.
+     *
+     * @return true if the chassis is stationary, false otherwise
+     */
+    public boolean isChassisStationary() {
+        return getChassisTranslationVelocity() < CONSTANTS.STATIONARY_TRANSLATION_VELOCITY_THRESHOLD
+                && Math.abs(getChassisAngularVelocity())
+                        < CONSTANTS.STATIONARY_ANGULAR_VELOCITY_THRESHOLD;
     }
 
     // ------------------------------------------------
