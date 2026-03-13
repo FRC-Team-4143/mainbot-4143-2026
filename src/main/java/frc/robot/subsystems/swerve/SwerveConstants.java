@@ -106,7 +106,7 @@ public class SwerveConstants extends MwConstants {
     public final double CONTROLLER_DEADBAND = 0.05;
     public final double MAX_TRANSLATION_RATE = getDoubleConstant("com", "max_translation_rate");
     public final double MAX_TRANSLATION_ACCEL =
-            9.5; // Meters per second squared (Used for slew rate limiters)
+            40.0; // Meters per second squared (Used for slew rate limiters)
     public final double MAX_CRAWL_RATE = 0.5; // Meters per second, max speed during crawl mode
     public final double MAX_ANGULAR_RATE = getDoubleConstant("com", "max_angular_rate");
     public final PhoenixPIDController HEADING_CONTROLLER = new PhoenixPIDController(12, 0.0, 1);
@@ -115,7 +115,8 @@ public class SwerveConstants extends MwConstants {
     public final double STATIONARY_TRANSLATION_VELOCITY_THRESHOLD =
             0.1; // Meters per second, max translation velocity to be considered stationary
     public final double STATIONARY_ANGULAR_VELOCITY_THRESHOLD =
-            0.1; // Radians per second, max angular velocity to be considered stationary
+            0.2; // Radians per second, max angular velocity to be considered stationary
+
 
     // =============================================================================
     // CHOREO PATH FOLLOWING CONSTANTS

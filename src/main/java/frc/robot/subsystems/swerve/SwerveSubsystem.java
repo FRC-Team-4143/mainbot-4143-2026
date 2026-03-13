@@ -84,9 +84,9 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
     private double tele_op_velocity_scalar_ = 1.0;
     private double tele_op_velocity_rl_scalar_ = 1.0;
     private DynamicSlewRateLimiter x_tele_op_velocity_slew_limiter_ =
-            new DynamicSlewRateLimiter(CONSTANTS.MAX_TRANSLATION_RATE * 1.0);
+            new DynamicSlewRateLimiter(CONSTANTS.MAX_TRANSLATION_ACCEL * 1.0);
     private DynamicSlewRateLimiter y_tele_op_velocity_slew_limiter_ =
-            new DynamicSlewRateLimiter(CONSTANTS.MAX_TRANSLATION_RATE * 1.0);
+            new DynamicSlewRateLimiter(CONSTANTS.MAX_TRANSLATION_ACCEL * 1.0);
 
     // IO Members
     private SwerveMech swerve_mech_;
@@ -171,6 +171,7 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
                 new ChassisRequest.ApplyChassisSpeeds()
                         .withDriveRequestType(DriveControlMode.CLOSED_LOOP)
                         .withSteerRequestType(SteerControlMode.CLOSED_LOOP);
+        brake_request_ = new ChassisRequest.SwerveDriveBrake();
 
         TunablePid.create(getSubsystemKey() + "TractorBeam/Gains", tractor_beam_controller_);
         TunablePid.create(
@@ -393,6 +394,7 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
                 break;
             case BRAKE:
                 swerve_mech_.setChassisRequest(brake_request_);
+                desired_chassis_speeds_ = removeOperatorPerspective(controller_inputs);
                 break;
             case IDLE:
             default:
@@ -1104,7 +1106,7 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
      * @return the chassis translation velocity in meters per second
      */
     private double getChassisTranslationVelocity() {
-        ChassisSpeeds current_speeds = swerve_mech_.getCurrentChassisSpeeds();
+        ChassisSpeeds current_speeds  = getDesiredChassisSpeeds();
         return Math.hypot(current_speeds.vxMetersPerSecond, current_speeds.vyMetersPerSecond);
     }
 
