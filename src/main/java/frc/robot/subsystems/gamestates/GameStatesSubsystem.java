@@ -7,8 +7,15 @@ import edu.wpi.first.wpilibj.RobotState;
 import frc.robot.lib2026.FieldRegions;
 import frc.robot.lib2026.FieldTargets;
 import frc.robot.subsystems.gamestates.GameStatesConstants.GameStates;
+import frc.robot.subsystems.hopper.HopperConstants.HopperStates;
+import frc.robot.subsystems.hopper.HopperSubsystem;
+import frc.robot.subsystems.localization.LocalizationConstants.LocalizationStates;
 import frc.robot.subsystems.localization.LocalizationSubsystem;
+import frc.robot.subsystems.shooter.ShooterConstants.ShooterStates;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
+import frc.robot.subsystems.swerve.SwerveConstants.SwerveStates;
+import frc.robot.subsystems.swerve.SwerveSubsystem;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -132,45 +139,39 @@ public class GameStatesSubsystem extends MwSubsystem<GameStates, GameStatesConst
                 LocalizationSubsystem.getInstance().getFieldPose())) {
             ShooterSubsystem.getInstance().setTarget(FieldTargets.Shooter.HUB);
         }
-        //  else if (FieldRegions.HOLD_REGIONS.contains(
-        //         LocalizationSubsystem.getInstance().getFieldPose())) {
-        //     ShooterSubsystem.getInstance().setWantedState(ShooterStates.SHOOT_WAIT);
-        // }
-        // switch (system_state_) {
-        //     case HOLD:
-        //         ShooterSubsystem.getInstance().setWantedState(ShooterStates.IDLE);
-        //         IntakeSubsystem.getInstance().setWantedState(IntakeStates.INTAKE);
-        //         HopperSubsystem.getInstance().setWantedState(HopperStates.SHOOTING);
-        //         ClimberSubsystem.getInstance().setWantedState(ClimberStates.STOWED);
-        //         break;
-        //     case SCORE:
-        //         ShooterSubsystem.getInstance().setWantedState(ShooterStates.SHOOT_WAIT);
-        //         IntakeSubsystem.getInstance().setWantedState(IntakeStates.INTAKE);
-        //         HopperSubsystem.getInstance().setWantedState(HopperStates.SHOOTING);
-        //         ClimberSubsystem.getInstance().setWantedState(ClimberStates.STOWED);
-        //         break;
-        //     case PASS:
-        //         ShooterSubsystem.getInstance().setWantedState(ShooterStates.SHOOT_WAIT);
-        //         IntakeSubsystem.getInstance().setWantedState(IntakeStates.INTAKE);
-        //         HopperSubsystem.getInstance().setWantedState(HopperStates.SHOOTING);
-        //         ClimberSubsystem.getInstance().setWantedState(ClimberStates.STOWED);
-        //         break;
-        //     case TELEOP_CLIMB:
-        //         ShooterSubsystem.getInstance().setWantedState(ShooterStates.IDLE);
-        //         HopperSubsystem.getInstance().setWantedState(HopperStates.IDLE);
-        //         IntakeSubsystem.getInstance().setWantedState(IntakeStates.STORE);
-        //         ClimberSubsystem.getInstance().setWantedState(ClimberStates.L3_CLIMB);
-        //         break;
-        //     case DOWN_CLIMB:
-        //         ShooterSubsystem.getInstance().setWantedState(ShooterStates.IDLE);
-        //         HopperSubsystem.getInstance().setWantedState(HopperStates.IDLE);
-        //         IntakeSubsystem.getInstance().setWantedState(IntakeStates.STORE);
-        //         ClimberSubsystem.getInstance().setWantedState(ClimberStates.L1_DOWN);
-        //         break;
-        //     case AUTO:
-        //         // GSM does nothing in auto mode
-        //         break;
-        // }
+
+
+
+    //States
+    switch (system_state_) {
+        case HOLD:
+            ShooterSubsystem.getInstance().setWantedState(ShooterStates.TRACKING);
+            HopperSubsystem.getInstance().setWantedState(HopperStates.IDLE);
+            SwerveSubsystem.getInstance().setTeleOpVelocityScalar(1.0);
+            SwerveSubsystem.getInstance().setWantedState(SwerveStates.FIELD_CENTRIC);
+            LocalizationSubsystem.getInstance().setWantedState(LocalizationStates.FULL);
+            break;
+        case SCORE:
+            ShooterSubsystem.getInstance().setWantedState(ShooterStates.SHOOT);
+            HopperSubsystem.getInstance().setWantedState(HopperStates.SHOOTING);
+            SwerveSubsystem.getInstance().setTeleOpVelocityScalar(0.25);
+            LocalizationSubsystem.getInstance().setWantedState(LocalizationStates.SHOOTING_FOCUS);
+            if (SwerveSubsystem.getInstance().isChassisStationary() && ShooterSubsystem.getInstance().isShooterReady())
+            {SwerveSubsystem.getInstance().setWantedState(SwerveStates.BRAKE);
+            } else {SwerveSubsystem.getInstance().setWantedState(SwerveStates.FIELD_CENTRIC_ROTATION_LOCK);
+            }
+            break;
+        case PASS:
+            ShooterSubsystem.getInstance().setWantedState(ShooterStates.SHOOT);
+            HopperSubsystem.getInstance().setWantedState(HopperStates.SHOOTING);
+            SwerveSubsystem.getInstance().setTeleOpVelocityScalar(0.25);
+            LocalizationSubsystem.getInstance().setWantedState(LocalizationStates.SHOOTING_FOCUS);
+            if (SwerveSubsystem.getInstance().isChassisStationary() && ShooterSubsystem.getInstance().isShooterReady())
+            {SwerveSubsystem.getInstance().setWantedState(SwerveStates.BRAKE);
+            } else {SwerveSubsystem.getInstance().setWantedState(SwerveStates.FIELD_CENTRIC_ROTATION_LOCK);
+            }
+            break;
+    }
     }
 
     // =============================================================================
