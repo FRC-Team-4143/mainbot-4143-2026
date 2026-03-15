@@ -103,7 +103,7 @@ public class SwerveConstants extends MwConstants {
     // CONTROL AND OPERATIONAL CONSTANTS
     // =============================================================================
 
-    public final double CONTROLLER_DEADBAND = 0.05;
+    public final double CONTROLLER_DEADBAND = 0.1; // Deadband for joystick inputs to prevent drift
     public final double MAX_TRANSLATION_RATE = getDoubleConstant("com", "max_translation_rate");
     public final double MAX_TRANSLATION_ACCEL =
             40.0; // Meters per second squared (Used for slew rate limiters)
