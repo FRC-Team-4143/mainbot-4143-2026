@@ -71,6 +71,12 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
 
     private double manual_indexer_velocity_ = CONSTANTS.INDEXER_VELOCITY;
 
+    // Homing state variables
+    private double hood_homing_start_time_ = 0.0;
+    private double hood_homing_last_pos_ = 0.0;
+    private double hood_homing_stable_since_ = 0.0;
+    private double last_update_timestamp_ = -1.0;
+
     // getInstance
     public static ShooterSubsystem getInstance() {
         if (instance_ == null) {
@@ -119,10 +125,15 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
                 manual_indexer_velocity_,
                 (v) -> manual_indexer_velocity_ = v);
 
-        SmartDashboard.putData(
-                "Home Hood Position",
-                Commands.runOnce(() -> hood_.setCurrentPosition(CONSTANTS.HOOD_HOME_POSITION))
-                        .ignoringDisable(true));
+    SmartDashboard.putData(
+        "Home Hood Position",
+        Commands.runOnce(() -> hood_.setCurrentPosition(CONSTANTS.HOOD_HOME_POSITION))
+            .ignoringDisable(true));
+
+    SmartDashboard.putData(
+        "Auto Home Hood",
+        Commands.runOnce(() -> setWantedState(ShooterStates.HOOD_HOMING))
+            .ignoringDisable(true));
     }
 
     // reset
@@ -170,6 +181,13 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
         // Use field-relative version to ensure motion compensation works correctly on both
         // blue and red alliances (LaunchCalculator needs global coordinate system velocities)
         ChassisSpeeds robot_velocity = SwerveSubsystem.getInstance().getDesiredChassisSpeeds();
+
+        // Compute loop dt for homing/velocity checks
+        double dt = 0.02;
+        if (last_update_timestamp_ > 0.0) {
+            dt = Math.max(1e-6, timestamp - last_update_timestamp_);
+        }
+        last_update_timestamp_ = timestamp;
 
         // Calculate launch parameters using the LaunchCalculator
         launch_params_ =
@@ -267,6 +285,57 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
                         CONSTANTS.FLYWHEEL_MANUAL_PASS_VELOCITY + flywheel_adj_);
                 indexer_.setTargetVelocity(manual_indexer_velocity_);
                 hood_.setTargetPosition(CONSTANTS.HOOD_MANUAL_PASS_ANGLE + hood_adj_);
+                break;
+            case HOOD_HOMING:
+                // Initialize homing sequence on first cycle
+                if (hood_homing_start_time_ <= 0.0) {
+                    hood_homing_start_time_ = timestamp;
+                    hood_homing_last_pos_ = hood_.getCurrentPosition();
+                    hood_homing_stable_since_ = -1.0;
+                }
+
+                double currentPos = hood_.getCurrentPosition();
+                // Determine direction to move toward the configured home position
+                double dir = Math.signum(CONSTANTS.HOOD_HOME_POSITION - currentPos);
+                if (dir == 0.0) {
+                    // fallback to negative motion if already at same numeric value
+                    dir = -1.0;
+                }
+
+                // Apply duty cycle to drive toward the mechanical stop
+                hood_.setTargetDutyCycle(dir * CONSTANTS.HOOD_HOMING_DUTY);
+
+                // Check for stall by seeing if hood position has stopped changing
+                double vel = Math.abs((currentPos - hood_homing_last_pos_) / Math.max(dt, 1e-6));
+                if (vel <= CONSTANTS.HOOD_HOMING_VEL_THRESHOLD) {
+                    if (hood_homing_stable_since_ < 0.0) {
+                        hood_homing_stable_since_ = timestamp;
+                    }
+                    // If we've been stalled for long enough, consider homing complete
+                    if (timestamp - hood_homing_stable_since_ >= CONSTANTS.HOOD_HOMING_STABLE_TIME) {
+                        hood_.setTargetDutyCycle(0.0);
+                        hood_.setCurrentPosition(CONSTANTS.HOOD_HOME_POSITION);
+                        // Reset homing state
+                        hood_homing_start_time_ = 0.0;
+                        hood_homing_last_pos_ = 0.0;
+                        hood_homing_stable_since_ = 0.0;
+                        setWantedState(ShooterStates.IDLE);
+                    }
+                } else {
+                    // Still moving - clear stable timer
+                    hood_homing_stable_since_ = -1.0;
+                }
+
+                // Timeout guard
+                if (timestamp - hood_homing_start_time_ > CONSTANTS.HOOD_HOMING_MAX_TIME) {
+                    hood_.setTargetDutyCycle(0.0);
+                    hood_homing_start_time_ = 0.0;
+                    hood_homing_last_pos_ = 0.0;
+                    hood_homing_stable_since_ = 0.0;
+                    setWantedState(ShooterStates.IDLE);
+                }
+
+                hood_homing_last_pos_ = currentPos;
                 break;
             case TUNING:
                 // code does NOTHING to allow for testing

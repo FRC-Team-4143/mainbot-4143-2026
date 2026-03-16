@@ -39,8 +39,10 @@ public class ShooterConstants extends MwConstants {
         MANUAL_PASS,
         /** Smooth return to zero velocity for clean disable */
         SPIN_DOWN,
-        /** Aiming at target with shooter spinning and robot rotating, with no intent to SHOOT */
-        AIMING
+                /** Aiming at target with shooter spinning and robot rotating, with no intent to SHOOT */
+                AIMING,
+                /** Homing sequence for the hood: drive until mechanical stop detected and set home */
+                HOOD_HOMING
     }
 
     public enum TargetType {
@@ -146,6 +148,22 @@ public class ShooterConstants extends MwConstants {
                             Units.inchesToMeters(getDoubleConstant("translation", "y"))),
                     Rotation2d.fromDegrees(getDoubleConstant("rotation", "z")));
     public final double SHOOTER_READY_DEBOUNCE_TIME = 0.2; // seconds
+
+        // =============================================================================
+        // HOOD HOMING CONSTANTS
+        // =============================================================================
+
+        /** Duty cycle to apply during hood homing (signed will be chosen at runtime) */
+        public final double HOOD_HOMING_DUTY = 0.25;
+
+        /** Minimum hood motion (rad/s) below which we consider the hood stalled against the stop */
+        public final double HOOD_HOMING_VEL_THRESHOLD = Units.degreesToRadians(2.0); // rad/s
+
+        /** Time the hood must remain below the velocity threshold to be considered homed (seconds) */
+        public final double HOOD_HOMING_STABLE_TIME = 0.12;
+
+        /** Maximum allowed homing time before abort (seconds) */
+        public final double HOOD_HOMING_MAX_TIME = 3.0;
 
     // =============================================================================
     // MOTOR CONFIGURATION OBJECTS
