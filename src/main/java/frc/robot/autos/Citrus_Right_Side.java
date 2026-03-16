@@ -113,6 +113,11 @@ public class Citrus_Right_Side extends Auto {
                 Commands.runOnce(
                         () -> IntakeSubsystem.getInstance().setWantedState(IntakeStates.STORE)),
                 new WaitCommand(1),
+                Commands.runOnce(
+                        () -> {
+                            ShooterSubsystem.getInstance().setWantedState(ShooterStates.SHOOT);
+                            HopperSubsystem.getInstance().setWantedState(HopperStates.SHOOTING);
+                        }),
                 SwerveSubsystem.getInstance()
                         .setDesiredChoreoTrajectoryCommand(
                                 getTrajectory(ChoreoTraj.CitrusRightSideSecondCycle.name())),

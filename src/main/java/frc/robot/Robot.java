@@ -85,6 +85,7 @@ public class Robot extends TimedRobot {
     public void robotInit() {
         Elastic.selectTab("Autonomous");
         SmartDashboard.putData(CommandScheduler.getInstance());
+        
     }
 
     @Override
@@ -141,6 +142,9 @@ public class Robot extends TimedRobot {
         CommandScheduler.getInstance().cancelAll();
         SwerveSubsystem.getInstance().setWantedState(SwerveStates.FIELD_CENTRIC);
         Elastic.selectTab("Teleoperated");
+        HopperSubsystem.getInstance().setWantedState(HopperStates.IDLE);
+        ClimberSubsystem.getInstance().setWantedState(ClimberStates.STOWED);
+        ShooterSubsystem.getInstance().setWantedState(ShooterStates.TRACKING);
     }
 
     @Override
