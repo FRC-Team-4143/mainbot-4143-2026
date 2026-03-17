@@ -24,7 +24,7 @@ public class Citrus_Left_Side extends Auto {
         // Register trajectories first
         // These should be loaded in the order they will be used to ensure correct start poses
         loadTrajectory(ChoreoTraj.CitrusLeftSide.name());
-        loadTrajectory(ChoreoTraj.CitrusLeftSideSecondPass.name());
+        loadTrajectory(ChoreoTraj.CitrusLeftSideSecondPassNew.name());
 
         // Add commands here to execute during the auto
         SwerveSubsystem.getInstance()
@@ -125,7 +125,7 @@ public class Citrus_Left_Side extends Auto {
                         }),
                 SwerveSubsystem.getInstance()
                         .setDesiredChoreoTrajectoryCommand(
-                                getTrajectory(ChoreoTraj.CitrusLeftSideSecondPass.name())),
+                                getTrajectory(ChoreoTraj.CitrusLeftSideSecondPassNew.name())),
                 // Start Choreo following
                 Commands.startEnd(
                                 () ->
@@ -133,8 +133,9 @@ public class Citrus_Left_Side extends Auto {
                                                 .setWantedState(SwerveStates.CHOREO_PATH),
                                 () ->
                                         SwerveSubsystem.getInstance()
-                                                .setWantedState(SwerveStates.FIELD_CENTRIC))
-                        .until(SwerveSubsystem.getInstance()::isAtChoreoSetpoint),
+                                                .setWantedState(SwerveStates.FIELD_CENTRIC_ROTATION_LOCK))
+                        .until(() -> SwerveSubsystem.getInstance().isAtChoreoSetpoint() && SwerveSubsystem.getInstance()
+                                                        .hasChoreoTimeElapsed(1)),
                 Commands.runOnce(
                 () -> {
                     ShooterSubsystem.getInstance().setWantedState(ShooterStates.SHOOT);

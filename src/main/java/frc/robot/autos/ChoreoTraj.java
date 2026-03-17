@@ -34,14 +34,14 @@ public record ChoreoTraj(
 	public static final ChoreoTraj CitrusLeftSide = new ChoreoTraj(
 	    "CitrusLeftSide",
 	    OptionalInt.empty(),
-	    4.15812,
+	    4.27108,
 	    new Pose2d(5.62, 5.574, Rotation2d.fromRadians(-0.018)),
 	    new Pose2d(2.872, 5.535, Rotation2d.fromRadians(2.503))
 	);
 	public static final ChoreoTraj CitrusLeftSideSecondPass = new ChoreoTraj(
 	    "CitrusLeftSideSecondPass",
 	    OptionalInt.empty(),
-	    5.51236,
+	    5.58474,
 	    new Pose2d(2.93, 5.516, Rotation2d.fromRadians(-3.123)),
 	    new Pose2d(2.872, 5.535, Rotation2d.fromRadians(2.494))
 	);
@@ -178,6 +178,13 @@ public record ChoreoTraj(
 	    new Pose2d(2.5, 1, Rotation2d.fromRadians(0)),
 	    new Pose2d(2.5, 5, Rotation2d.fromRadians(0))
 	);
+	public static final ChoreoTraj CitrusLeftSideSecondPassNew = new ChoreoTraj(
+	    "CitrusLeftSideSecondPassNew",
+	    OptionalInt.empty(),
+	    4.29813,
+	    new Pose2d(2.93, 5.516, Rotation2d.fromRadians(-3.123)),
+	    new Pose2d(2.872, 5.535, Rotation2d.fromRadians(2.494))
+	);
 
     /**
      * A map between trajectory names and their corresponding data.
@@ -205,7 +212,8 @@ public record ChoreoTraj(
 		Map.entry("OutpostClimbRight", OutpostClimbRight),
 		Map.entry("RightShootToMiddle", RightShootToMiddle),
 		Map.entry("RightStartNeutralDepot", RightStartNeutralDepot),
-		Map.entry("TestPath", TestPath)
+		Map.entry("TestPath", TestPath),
+		Map.entry("CitrusLeftSideSecondPassNew", CitrusLeftSideSecondPassNew)
     );
 
     /**
