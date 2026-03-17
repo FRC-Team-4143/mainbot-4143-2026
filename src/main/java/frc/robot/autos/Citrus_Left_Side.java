@@ -21,12 +21,16 @@ import frc.robot.subsystems.swerve.SwerveSubsystem;
 public class Citrus_Left_Side extends Auto {
 
     public Citrus_Left_Side() {
-        // Register trajectories first
+        // =============================================================================
+        // TRAJECTORY LOADING
         // These should be loaded in the order they will be used to ensure correct start poses
+        // =============================================================================
         loadTrajectory(ChoreoTraj.CitrusLeftSide.name());
         loadTrajectory(ChoreoTraj.CitrusLeftSideSecondPassNew.name());
 
-        // Add commands here to execute during the auto
+        // =============================================================================
+        // EVENT TRIGGER BINDING
+        // =============================================================================
         SwerveSubsystem.getInstance()
                 .getChoreoEventTimeTrigger("Intake Out")
                 .onTrue(
@@ -86,8 +90,12 @@ public class Citrus_Left_Side extends Auto {
                                     ClimberSubsystem.getInstance()
                                             .setWantedState(ClimberStates.DEPLOY);
                                 }));
+
+        // =============================================================================
+        // AUTO COMMAND SEQUENCE
+        // =============================================================================
         addCommands(
-                // Set the initial trajectory
+                // Drive over the bump at a set speed
                 Commands.startEnd(
                         () -> {SwerveSubsystem.getInstance().setDesiredChassisSpeed(new ChassisSpeeds(5,0,0));
                         SwerveSubsystem.getInstance().setWantedState(SwerveStates.CHASSIS_SPEEDS);},
@@ -96,6 +104,7 @@ public class Citrus_Left_Side extends Auto {
                                 ShooterSubsystem.getInstance()
                                         .setWantedState(ShooterStates.TRACKING);
                         }).withTimeout(1.7 ),
+                // Set the initial trajectory
                 SwerveSubsystem.getInstance()
                         .setDesiredChoreoTrajectoryCommand(
                                 getTrajectory(ChoreoTraj.CitrusLeftSide.name())),
@@ -109,20 +118,26 @@ public class Citrus_Left_Side extends Auto {
                                                 .setWantedState(
                                                         SwerveStates.FIELD_CENTRIC_ROTATION_LOCK))
                         .until(SwerveSubsystem.getInstance()::isAtChoreoSetpoint),
+                // Start shooting here
                 Commands.runOnce(
                         () -> {
                             ShooterSubsystem.getInstance().setWantedState(ShooterStates.SHOOT);
                             HopperSubsystem.getInstance().setWantedState(HopperStates.SHOOTING);
                         }),
+                // Shoot for 3 seconds
                 new WaitCommand(3),
+                // Pull the intake in while we shoot to help index more balls
                 Commands.runOnce(
                         () -> IntakeSubsystem.getInstance().setWantedState(IntakeStates.STORE)),
+                // Continue to shoot for 3 more seconds
                 new WaitCommand(3),
+                // Stop shooting
                 Commands.runOnce(
                         () -> {
                             ShooterSubsystem.getInstance().setWantedState(ShooterStates.TRACKING);
                             HopperSubsystem.getInstance().setWantedState(HopperStates.IDLE);
                         }),
+                // Set the second trajectory for the second pass
                 SwerveSubsystem.getInstance()
                         .setDesiredChoreoTrajectoryCommand(
                                 getTrajectory(ChoreoTraj.CitrusLeftSideSecondPassNew.name())),
@@ -136,38 +151,17 @@ public class Citrus_Left_Side extends Auto {
                                                 .setWantedState(SwerveStates.FIELD_CENTRIC_ROTATION_LOCK))
                         .until(() -> SwerveSubsystem.getInstance().isAtChoreoSetpoint() && SwerveSubsystem.getInstance()
                                                         .hasChoreoTimeElapsed(1)),
+                // Start shooting here
                 Commands.runOnce(
                 () -> {
                     ShooterSubsystem.getInstance().setWantedState(ShooterStates.SHOOT);
                     HopperSubsystem.getInstance().setWantedState(HopperStates.SHOOTING);
                 }),
+                // Shoot for 3 seconds
                 new WaitCommand(3),
+                // Pull the intake in while we shoot to help index more balls
                 Commands.runOnce(
                         () -> IntakeSubsystem.getInstance().setWantedState(IntakeStates.STORE))
-
-                // Shoot here if needed
-
-                // Move to the climb position
-                // Commands.runOnce(
-                //         () ->
-                // ShooterSubsystem.getInstance().setWantedState(ShooterStates.SHOOT)),
-
-                // SwerveSubsystem.getInstance()
-                //         .setDesiredChoreoTrajectoryCommand(
-                //                 getTrajectory(ChoreoTraj.OutpostClimbRight.name())),
-                // Commands.startEnd(
-                //                 () ->
-                //                         SwerveSubsystem.getInstance()
-                //                                 .setWantedState(
-                //                                         SwerveStates.CHOREO_PATH_ROTATION_LOCK),
-                //                 () ->
-                //                         SwerveSubsystem.getInstance()
-                //                                 .setWantedState(SwerveStates.FIELD_CENTRIC))
-                //         .until(SwerveSubsystem.getInstance()::isAtChoreoSetpoint),
-                // Commands.runOnce(
-                //         () -> {
-                //             ClimberSubsystem.getInstance().setWantedState(ClimberStates.L1);
-                //         })
                 );
     }
 }

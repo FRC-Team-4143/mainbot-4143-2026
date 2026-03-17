@@ -18,12 +18,16 @@ import frc.robot.subsystems.swerve.SwerveSubsystem;
 public class Husky_Left_Side extends Auto {
 
     public Husky_Left_Side() {
-        // Register trajectories first
+        // =============================================================================
+        // TRAJECTORY LOADING
         // These should be loaded in the order they will be used to ensure correct start poses
+        // =============================================================================
         loadTrajectory(ChoreoTraj.HuskyLeftSide.name());
         loadTrajectory(ChoreoTraj.LeftShootToMiddle.name());
 
-        // Add commands here to execute during the auto
+        // =============================================================================
+        // EVENT TRIGGER BINDING
+        // =============================================================================
         SwerveSubsystem.getInstance()
                 .getChoreoEventTimeTrigger("Intake Out")
                 .onTrue(
@@ -83,8 +87,11 @@ public class Husky_Left_Side extends Auto {
                                     ClimberSubsystem.getInstance()
                                             .setWantedState(ClimberStates.DEPLOY);
                                 }));
+
+        // =============================================================================
+        // AUTO COMMAND SEQUENCE
+        // =============================================================================
         addCommands(
-                // Set the initial trajectory
                 Commands.runOnce(
                         () -> ShooterSubsystem.getInstance().setTarget(FieldTargets.Shooter.HUB)),
                 Commands.runOnce(
@@ -94,7 +101,6 @@ public class Husky_Left_Side extends Auto {
                 SwerveSubsystem.getInstance()
                         .setDesiredChoreoTrajectoryCommand(
                                 getTrajectory(ChoreoTraj.HuskyLeftSide.name())),
-                // Start Choreo following
                 Commands.startEnd(
                                 () ->
                                         SwerveSubsystem.getInstance()
@@ -116,7 +122,6 @@ public class Husky_Left_Side extends Auto {
                 SwerveSubsystem.getInstance()
                         .setDesiredChoreoTrajectoryCommand(
                                 getTrajectory(ChoreoTraj.LeftShootToMiddle.name())),
-                // Start Choreo following
                 Commands.startEnd(
                                 () ->
                                         SwerveSubsystem.getInstance()
@@ -125,30 +130,6 @@ public class Husky_Left_Side extends Auto {
                                         SwerveSubsystem.getInstance()
                                                 .setWantedState(SwerveStates.FIELD_CENTRIC))
                         .until(SwerveSubsystem.getInstance()::isAtChoreoSetpoint)
-
-                // Shoot here if needed
-
-                // Move to the climb position
-                // Commands.runOnce(
-                //         () ->
-                // ShooterSubsystem.getInstance().setWantedState(ShooterStates.SHOOT)),
-
-                // SwerveSubsystem.getInstance()
-                //         .setDesiredChoreoTrajectoryCommand(
-                //                 getTrajectory(ChoreoTraj.OutpostClimbRight.name())),
-                // Commands.startEnd(
-                //                 () ->
-                //                         SwerveSubsystem.getInstance()
-                //                                 .setWantedState(
-                //                                         SwerveStates.CHOREO_PATH_ROTATION_LOCK),
-                //                 () ->
-                //                         SwerveSubsystem.getInstance()
-                //                                 .setWantedState(SwerveStates.FIELD_CENTRIC))
-                //         .until(SwerveSubsystem.getInstance()::isAtChoreoSetpoint),
-                // Commands.runOnce(
-                //         () -> {
-                //             ClimberSubsystem.getInstance().setWantedState(ClimberStates.L1);
-                //         })
                 );
     }
 }
