@@ -181,7 +181,7 @@ public record ChoreoTraj(
 	public static final ChoreoTraj CitrusLeftSideSecondPassNew = new ChoreoTraj(
 	    "CitrusLeftSideSecondPassNew",
 	    OptionalInt.empty(),
-	    4.29813,
+	    6.23498,
 	    new Pose2d(2.93, 5.516, Rotation2d.fromRadians(-3.123)),
 	    new Pose2d(2.872, 5.535, Rotation2d.fromRadians(2.494))
 	);

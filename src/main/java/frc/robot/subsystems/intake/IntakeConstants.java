@@ -61,12 +61,12 @@ public class IntakeConstants extends MwConstants {
     public final double PIVOT_MIN = Units.degreesToRadians(11);
     public final double PIVOT_MAX = Units.degreesToRadians(98);
     public final double PIVOT_HOME_POSITION = Units.degreesToRadians(11);
-    public final double PIVOT_STATOR_CURRENT_LIMIT = 80;
+    public final double PIVOT_STATOR_CURRENT_LIMIT = 90;
     public final double PIVOT_DEPLOY_POSITION = Units.degreesToRadians(11);
     public final double PIVOT_RACKING_POSITION = Units.degreesToRadians(60);
     public final double PIVOT_STORE_POSITION = Units.degreesToRadians(98);
     public final double DEPLOY_PIVOT_TOLERANCE = Units.degreesToRadians(20);
-    public final Slot0Configs PIVOT_POSITION_GAINS = new Slot0Configs().withKG(2).withKP(45);
+    public final Slot0Configs PIVOT_POSITION_GAINS = new Slot0Configs().withKG(3).withKP(200);
 
     // Time to wait between cycling SHOOTING and RACKING modes (seconds)
     public final double SHOOTING_CYCLE_TIME = 1.0;

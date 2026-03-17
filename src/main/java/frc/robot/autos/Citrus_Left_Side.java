@@ -117,7 +117,7 @@ public class Citrus_Left_Side extends Auto {
                 new WaitCommand(3),
                 Commands.runOnce(
                         () -> IntakeSubsystem.getInstance().setWantedState(IntakeStates.STORE)),
-                new WaitCommand(1),
+                new WaitCommand(3),
                 Commands.runOnce(
                         () -> {
                             ShooterSubsystem.getInstance().setWantedState(ShooterStates.TRACKING);
