@@ -34,7 +34,7 @@ public record ChoreoTraj(
 	public static final ChoreoTraj CitrusLeftSide = new ChoreoTraj(
 	    "CitrusLeftSide",
 	    OptionalInt.empty(),
-	    4.27108,
+	    5.56231,
 	    new Pose2d(5.62, 5.574, Rotation2d.fromRadians(-0.018)),
 	    new Pose2d(2.872, 5.535, Rotation2d.fromRadians(2.503))
 	);
@@ -48,16 +48,16 @@ public record ChoreoTraj(
 	public static final ChoreoTraj CitrusRightSide = new ChoreoTraj(
 	    "CitrusRightSide",
 	    OptionalInt.empty(),
-	    4.80701,
-	    new Pose2d(3.632, 2.631, Rotation2d.fromRadians(-0.018)),
-	    new Pose2d(2.755, 2.534, Rotation2d.fromRadians(3.129))
+	    5.59517,
+	    new Pose2d(5.665, 2.412, Rotation2d.fromRadians(0)),
+	    new Pose2d(2.755, 2.534, Rotation2d.fromRadians(-2.467))
 	);
 	public static final ChoreoTraj CitrusRightSideSecondCycle = new ChoreoTraj(
 	    "CitrusRightSideSecondCycle",
 	    OptionalInt.empty(),
-	    5.64268,
-	    new Pose2d(3.632, 2.631, Rotation2d.fromRadians(-0.018)),
-	    new Pose2d(2.755, 2.534, Rotation2d.fromRadians(3.129))
+	    5.51568,
+	    new Pose2d(2.755, 2.574, Rotation2d.fromRadians(3.142)),
+	    new Pose2d(2.755, 2.534, Rotation2d.fromRadians(-2.483))
 	);
 	public static final ChoreoTraj CycleNeutralFirst = new ChoreoTraj(
 	    "CycleNeutralFirst",
@@ -181,9 +181,16 @@ public record ChoreoTraj(
 	public static final ChoreoTraj CitrusLeftSideSecondPassNew = new ChoreoTraj(
 	    "CitrusLeftSideSecondPassNew",
 	    OptionalInt.empty(),
-	    6.23498,
+	    7.82997,
 	    new Pose2d(2.93, 5.516, Rotation2d.fromRadians(-3.123)),
 	    new Pose2d(2.872, 5.535, Rotation2d.fromRadians(2.494))
+	);
+	public static final ChoreoTraj CitrusRightSideSecondPassNew = new ChoreoTraj(
+	    "CitrusRightSideSecondPassNew",
+	    OptionalInt.empty(),
+	    8.63351,
+	    new Pose2d(2.845, 2.502, Rotation2d.fromRadians(-3.123)),
+	    new Pose2d(2.845, 2.502, Rotation2d.fromRadians(-2.457))
 	);
 
     /**
@@ -213,7 +220,8 @@ public record ChoreoTraj(
 		Map.entry("RightShootToMiddle", RightShootToMiddle),
 		Map.entry("RightStartNeutralDepot", RightStartNeutralDepot),
 		Map.entry("TestPath", TestPath),
-		Map.entry("CitrusLeftSideSecondPassNew", CitrusLeftSideSecondPassNew)
+		Map.entry("CitrusLeftSideSecondPassNew", CitrusLeftSideSecondPassNew),
+		Map.entry("CitrusRightSideSecondPassNew", CitrusRightSideSecondPassNew)
     );
 
     /**
