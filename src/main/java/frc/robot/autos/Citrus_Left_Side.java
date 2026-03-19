@@ -1,7 +1,6 @@
 package frc.robot.autos;
 
 import com.marswars.auto.Auto;
-
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -97,13 +96,20 @@ public class Citrus_Left_Side extends Auto {
         addCommands(
                 // Drive over the bump at a set speed
                 Commands.startEnd(
-                        () -> {SwerveSubsystem.getInstance().setDesiredChassisSpeed(new ChassisSpeeds(5,0,0));
-                        SwerveSubsystem.getInstance().setWantedState(SwerveStates.CHASSIS_SPEEDS);},
-                        () -> {ShooterSubsystem.getInstance().setTarget(FieldTargets.Shooter.HUB);
-                                LocalizationSubsystem.getInstance().resetPoseEstimatorAuto();
-                                ShooterSubsystem.getInstance()
-                                        .setWantedState(ShooterStates.TRACKING);
-                        }).withTimeout(1.7 ),
+                                () -> {
+                                    SwerveSubsystem.getInstance()
+                                            .setDesiredChassisSpeed(new ChassisSpeeds(5, 0, 0));
+                                    SwerveSubsystem.getInstance()
+                                            .setWantedState(SwerveStates.CHASSIS_SPEEDS);
+                                },
+                                () -> {
+                                    ShooterSubsystem.getInstance()
+                                            .setTarget(FieldTargets.Shooter.HUB);
+                                    LocalizationSubsystem.getInstance().resetPoseEstimatorAuto();
+                                    ShooterSubsystem.getInstance()
+                                            .setWantedState(ShooterStates.TRACKING);
+                                })
+                        .withTimeout(1.7),
                 // Set the initial trajectory
                 SwerveSubsystem.getInstance()
                         .setDesiredChoreoTrajectoryCommand(
@@ -148,20 +154,23 @@ public class Citrus_Left_Side extends Auto {
                                                 .setWantedState(SwerveStates.CHOREO_PATH),
                                 () ->
                                         SwerveSubsystem.getInstance()
-                                                .setWantedState(SwerveStates.FIELD_CENTRIC_ROTATION_LOCK))
-                        .until(() -> SwerveSubsystem.getInstance().isAtChoreoSetpoint() && SwerveSubsystem.getInstance()
+                                                .setWantedState(
+                                                        SwerveStates.FIELD_CENTRIC_ROTATION_LOCK))
+                        .until(
+                                () ->
+                                        SwerveSubsystem.getInstance().isAtChoreoSetpoint()
+                                                && SwerveSubsystem.getInstance()
                                                         .hasChoreoTimeElapsed(1)),
                 // Start shooting here
                 Commands.runOnce(
-                () -> {
-                    ShooterSubsystem.getInstance().setWantedState(ShooterStates.SHOOT);
-                    HopperSubsystem.getInstance().setWantedState(HopperStates.SHOOTING);
-                }),
+                        () -> {
+                            ShooterSubsystem.getInstance().setWantedState(ShooterStates.SHOOT);
+                            HopperSubsystem.getInstance().setWantedState(HopperStates.SHOOTING);
+                        }),
                 // Shoot for 3 seconds
                 new WaitCommand(3),
                 // Pull the intake in while we shoot to help index more balls
                 Commands.runOnce(
-                        () -> IntakeSubsystem.getInstance().setWantedState(IntakeStates.STORE))
-                );
+                        () -> IntakeSubsystem.getInstance().setWantedState(IntakeStates.STORE)));
     }
 }

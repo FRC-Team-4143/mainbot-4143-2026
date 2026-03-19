@@ -47,7 +47,6 @@ public class ControlCommands {
                                     .setWantedState(SwerveStates.FIELD_CENTRIC_ROTATION_LOCK);
                             LocalizationSubsystem.getInstance()
                                     .setWantedState(LocalizationStates.SHOOTING_FOCUS);
-                            
                         },
                         () -> {
                             ShooterSubsystem.getInstance().setWantedState(ShooterStates.TRACKING);
@@ -156,12 +155,16 @@ public class ControlCommands {
                             ShooterSubsystem.getInstance().setWantedState(ShooterStates.SHOOT);
                             HopperSubsystem.getInstance().setWantedState(HopperStates.SHOOTING);
                             SwerveSubsystem.getInstance().setTeleOpVelocityScalar(0.25);
-                            LocalizationSubsystem.getInstance().setWantedState(LocalizationStates.SHOOTING_FOCUS);
+                            LocalizationSubsystem.getInstance()
+                                    .setWantedState(LocalizationStates.SHOOTING_FOCUS);
                         },
                         () -> {
-                            if (SwerveSubsystem.getInstance().isChassisStationary() && ShooterSubsystem.getInstance().isShooterReady())
-                            {SwerveSubsystem.getInstance().setWantedState(SwerveStates.BRAKE);
-                            } else {SwerveSubsystem.getInstance().setWantedState(SwerveStates.FIELD_CENTRIC_ROTATION_LOCK);
+                            if (SwerveSubsystem.getInstance().isChassisStationary()
+                                    && ShooterSubsystem.getInstance().isShooterReady()) {
+                                SwerveSubsystem.getInstance().setWantedState(SwerveStates.BRAKE);
+                            } else {
+                                SwerveSubsystem.getInstance()
+                                        .setWantedState(SwerveStates.FIELD_CENTRIC_ROTATION_LOCK);
                             }
                         },
                         (interrupted) -> {

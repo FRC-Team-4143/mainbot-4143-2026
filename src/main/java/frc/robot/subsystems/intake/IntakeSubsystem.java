@@ -35,7 +35,9 @@ public class IntakeSubsystem extends MwSubsystem<IntakeStates, IntakeConstants> 
                 new RollerMech(
                         getSubsystemKey(),
                         "Roller",
-                        List.of(CONSTANTS.ROLLER_MOTOR_CONFIG, CONSTANTS.ROLLER_FOLLOWER_MOTOR_CONFIG),
+                        List.of(
+                                CONSTANTS.ROLLER_MOTOR_CONFIG,
+                                CONSTANTS.ROLLER_FOLLOWER_MOTOR_CONFIG),
                         CONSTANTS.ROLLER_GEAR_RATIO);
 
         pivot_ =

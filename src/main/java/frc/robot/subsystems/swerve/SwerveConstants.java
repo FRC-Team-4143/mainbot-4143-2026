@@ -117,7 +117,6 @@ public class SwerveConstants extends MwConstants {
     public final double STATIONARY_ANGULAR_VELOCITY_THRESHOLD =
             0.2; // Radians per second, max angular velocity to be considered stationary
 
-
     // =============================================================================
     // CHOREO PATH FOLLOWING CONSTANTS
     // =============================================================================
@@ -128,9 +127,9 @@ public class SwerveConstants extends MwConstants {
     public final double CHOREO_TRANSLATION_CONTROLLER_KP = 7.0;
     public final double CHOREO_TRANSLATION_CONTROLLER_KI = 0.0;
     public final double CHOREO_TRANSLATION_CONTROLLER_KD = 0.0;
-    public final double CHOREO_THETA_CONTROLLER_KP =  12.0; //7.3;
+    public final double CHOREO_THETA_CONTROLLER_KP = 12.0; // 7.3;
     public final double CHOREO_THETA_CONTROLLER_KI = 0.0;
-    public final double CHOREO_THETA_CONTROLLER_KD = 1.0; //0.07;
+    public final double CHOREO_THETA_CONTROLLER_KD = 1.0; // 0.07;
 
     // =============================================================================
     // TRACTOR BEAM CONSTANTS

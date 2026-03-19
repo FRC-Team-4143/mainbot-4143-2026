@@ -99,7 +99,8 @@ public class ShooterConstants extends MwConstants {
     public final boolean INDEXER_LEADER_INVERTED = false;
     public final boolean INDEXER_FOLLOWER_INVERTED = false;
     public final double INDEXER_GEAR_RATIO = 24.0 / 18.0;
-    public final Slot1Configs INDEXER_VELOCITY_GAINS = new Slot1Configs().withKD(0.01).withKI(1).withKP(0.5).withKV(0.129);
+    public final Slot1Configs INDEXER_VELOCITY_GAINS =
+            new Slot1Configs().withKD(0.01).withKI(1).withKP(0.5).withKV(0.129);
 
     // =============================================================================
     // MECHANICAL CONSTANTS - HOOD
@@ -132,7 +133,7 @@ public class ShooterConstants extends MwConstants {
     // =============================================================================
     public final double INDEXER_DUTY_CYCLE = 0.5; // 30% power for indexing
     public final double IDLE_INDEXER_DUTY_CYCLE = -.1;
-    public final double INDEXER_VELOCITY = 250; 
+    public final double INDEXER_VELOCITY = 250;
     public final double SHOOTER_IDLE_SPEED = 300.0;
     public final double HOOD_IDLE_POSITION = Units.degreesToRadians(80);
     public final Transform2d SHOOTER_CENTER =

@@ -29,7 +29,6 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.lib2026.FieldTargets;
 import frc.robot.subsystems.localization.LocalizationSubsystem;
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterStates;
-import frc.robot.subsystems.shooter.ShooterConstants.TargetType;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 import java.util.Arrays;
 import java.util.List;
@@ -347,7 +346,10 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
         DogLog.log(getSubsystemKey() + "ShooterIsReady/Full", isShooterReady());
 
         // Active Tolerances
-        DogLog.log(getSubsystemKey() + "Tolerance/FlywheelVelocity", flywheel_vel_tol_, RadiansPerSecond);
+        DogLog.log(
+                getSubsystemKey() + "Tolerance/FlywheelVelocity",
+                flywheel_vel_tol_,
+                RadiansPerSecond);
         DogLog.log(getSubsystemKey() + "Tolerance/HoodAngle", hood_pos_tol_, Radians);
         DogLog.log(getSubsystemKey() + "Tolerance/HeadingAngle", rot_pos_tol_, Radians);
     }

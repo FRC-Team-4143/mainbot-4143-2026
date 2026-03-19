@@ -85,7 +85,6 @@ public class Robot extends TimedRobot {
     public void robotInit() {
         Elastic.selectTab("Autonomous");
         SmartDashboard.putData(CommandScheduler.getInstance());
-        
     }
 
     @Override

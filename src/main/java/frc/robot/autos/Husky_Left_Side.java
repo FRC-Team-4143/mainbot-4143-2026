@@ -129,7 +129,6 @@ public class Husky_Left_Side extends Auto {
                                 () ->
                                         SwerveSubsystem.getInstance()
                                                 .setWantedState(SwerveStates.FIELD_CENTRIC))
-                        .until(SwerveSubsystem.getInstance()::isAtChoreoSetpoint)
-                );
+                        .until(SwerveSubsystem.getInstance()::isAtChoreoSetpoint));
     }
 }

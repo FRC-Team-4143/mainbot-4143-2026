@@ -38,7 +38,6 @@ public class HopperSubsystem extends MwSubsystem<HopperStates, HopperConstants> 
                         List.of(CONSTANTS.HOPPER_MOTOR_CONFIG),
                         CONSTANTS.HOPPER_GEAR_RATIO);
 
-
         DogLog.tunable(
                 getSubsystemKey() + "/Hopper/TargetVelocity",
                 manual_hopper_velocity_,
