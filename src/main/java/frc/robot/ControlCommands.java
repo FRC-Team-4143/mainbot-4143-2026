@@ -168,7 +168,7 @@ public class ControlCommands {
                             }
                         },
                         (interrupted) -> {
-                            ShooterSubsystem.getInstance().setWantedState(ShooterStates.TRACKING);
+                            ShooterSubsystem.getInstance().setWantedState(ShooterStates.IDLE);
                             HopperSubsystem.getInstance().setWantedState(HopperStates.IDLE);
                             SwerveSubsystem.getInstance().setTeleOpVelocityScalar(1.0);
                             SwerveSubsystem.getInstance()
