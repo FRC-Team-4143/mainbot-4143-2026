@@ -16,12 +16,16 @@ import frc.robot.subsystems.swerve.SwerveSubsystem;
 public class Left_Start_Neutral_Outpost_Climb extends Auto {
 
     public Left_Start_Neutral_Outpost_Climb() {
-        // Register trajectories first
+        // =============================================================================
+        // TRAJECTORY LOADING
         // These should be loaded in the order they will be used to ensure correct start poses
+        // =============================================================================
         loadTrajectory(ChoreoTraj.LeftStartNeutralOutpost.name());
         loadTrajectory(ChoreoTraj.OutpostClimb.name());
 
-        // Add commands here to execute during the auto
+        // =============================================================================
+        // EVENT TRIGGER BINDING
+        // =============================================================================
         SwerveSubsystem.getInstance()
                 .getChoreoEventTimeTrigger("Intake Out")
                 .onTrue(
@@ -59,8 +63,11 @@ public class Left_Start_Neutral_Outpost_Climb extends Auto {
                                     SwerveSubsystem.getInstance()
                                             .setWantedState(SwerveStates.CHOREO_PATH);
                                 }));
+
+        // =============================================================================
+        // AUTO COMMAND SEQUENCE
+        // =============================================================================
         addCommands(
-                // Set the initial trajectory
                 Commands.runOnce(
                         () -> ShooterSubsystem.getInstance().setTarget(FieldTargets.Shooter.HUB)),
                 Commands.runOnce(
@@ -70,7 +77,6 @@ public class Left_Start_Neutral_Outpost_Climb extends Auto {
                 SwerveSubsystem.getInstance()
                         .setDesiredChoreoTrajectoryCommand(
                                 getTrajectory(ChoreoTraj.LeftStartNeutralOutpost.name())),
-                // Start Choreo following
                 Commands.startEnd(
                                 () ->
                                         SwerveSubsystem.getInstance()
@@ -79,9 +85,7 @@ public class Left_Start_Neutral_Outpost_Climb extends Auto {
                                         SwerveSubsystem.getInstance()
                                                 .setWantedState(SwerveStates.FIELD_CENTRIC))
                         .until(SwerveSubsystem.getInstance()::isAtChoreoSetpoint),
-                // Shoot here if needed
                 new WaitCommand(3),
-                // Move to the climb position
                 Commands.runOnce(
                         () -> ShooterSubsystem.getInstance().setWantedState(ShooterStates.SHOOT)),
                 SwerveSubsystem.getInstance()

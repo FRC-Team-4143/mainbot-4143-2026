@@ -15,6 +15,7 @@ import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -25,6 +26,8 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.lib2026.FieldConstants;
+import frc.robot.lib2026.FieldRegions;
 import frc.robot.subsystems.localization.LocalizationConstants.LocalizationStates;
 import frc.robot.subsystems.simulation.SimulationSubsystem;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
@@ -316,9 +319,30 @@ public class LocalizationSubsystem extends MwSubsystem<LocalizationStates, Local
 
         for (TagSolutionData vision_data : vision_measurements) {
             // Skip measurement with no detected tags
-            if (vision_data.detectedIds.size() < CONSTANTS.MIN_TAG_COUNT_FOR_VISION_UPDATE) {
+
+            if (!DriverStation.isDisabled())
+                if (FieldRegions.ALLIANCE_ZONE.contains(getFieldPose()))
+                    if (vision_data.detectedIds.size() < CONSTANTS.MIN_TAG_COUNT_FOR_VISION_UPDATE)
+                        continue;
+                        
+            if (vision_data.pose.getX()<0 || vision_data.pose.getX() > FieldConstants.FIELD_LENGTH
+                || vision_data.pose.getY()<0 || vision_data.pose.getY() > FieldConstants.FIELD_WIDTH){
                 continue;
             }
+
+            double distance_difference =
+                            getFieldPose()
+                                    .getTranslation()
+                                    .getDistance(vision_data.pose.getTranslation());
+
+            Translation2d difference_vector = getFieldPose().getTranslation().minus(vision_data.pose.getTranslation());
+
+            SmartDashboard.putNumber("distance difference", distance_difference);
+            SmartDashboard.putNumber("vector difference x", difference_vector.getX());
+            SmartDashboard.putNumber("vector difference y", difference_vector.getY());
+
+            double maxdistance = 1.0;
+            double ratio = maxdistance / distance_difference;
 
             // Skip measurement if rotation difference is too large
             double rotation_difference =
@@ -352,7 +376,13 @@ public class LocalizationSubsystem extends MwSubsystem<LocalizationStates, Local
                 Optional<Pose3d> tag_layout_pose = CONSTANTS.APRIL_TAG_LAYOUT.getTagPose(tag_id);
                 if (tag_layout_pose.isPresent()) detected_tag_poses_.add(tag_layout_pose.get());
             }
-            estimated_vision_poses_.add(vision_data.pose);
+
+            if( distance_difference > maxdistance){
+                Translation2d new_vector = new Translation2d(getFieldPose().getX() + difference_vector.getX() * ratio, getFieldPose().getY() + difference_vector.getY() * ratio);
+                Pose2d new_pose = new Pose2d(new_vector, vision_data.pose.getRotation());
+                estimated_vision_poses_.add(new_pose);
+            } else
+                estimated_vision_poses_.add(vision_data.pose);
         }
     }
 
