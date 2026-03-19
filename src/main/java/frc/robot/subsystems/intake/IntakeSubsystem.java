@@ -116,16 +116,16 @@ public class IntakeSubsystem extends MwSubsystem<IntakeStates, IntakeConstants> 
                 pivot_.setTargetPosition(CONSTANTS.PIVOT_DEPLOY_POSITION);
                 break;
             case DEPLOYED:
-                roller_.setTargetDutyCycle(0.0);
-                pivot_.setTargetDutyCycle(0.0);
-                break;
-            case INTAKE:
                 if(OI.getDriverControllerA()){
                     roller_.setTargetDutyCycle(-manual_roller_duty_cycle_);
                 }
                 else{
-                    roller_.setTargetDutyCycle(manual_roller_duty_cycle_);
+                    roller_.setTargetDutyCycle(0.0);
                 }
+                pivot_.setTargetDutyCycle(0.0);
+                break;
+            case INTAKE:
+                roller_.setTargetDutyCycle(manual_roller_duty_cycle_);
                 pivot_.setTargetDutyCycle(0.0);
                 break;
             case OUTTAKE:
