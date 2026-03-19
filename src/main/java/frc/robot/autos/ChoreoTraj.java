@@ -31,6 +31,34 @@ public record ChoreoTraj(
 	    new Pose2d(3.723, 4.018, Rotation2d.fromRadians(-3.136)),
 	    new Pose2d(2.852, 5.945, Rotation2d.fromRadians(-3.12))
 	);
+	public static final ChoreoTraj CitrusLeftSide = new ChoreoTraj(
+	    "CitrusLeftSide",
+	    OptionalInt.empty(),
+	    5.56231,
+	    new Pose2d(5.62, 5.574, Rotation2d.fromRadians(-0.018)),
+	    new Pose2d(2.872, 5.535, Rotation2d.fromRadians(2.503))
+	);
+	public static final ChoreoTraj CitrusLeftSideSecondPass = new ChoreoTraj(
+	    "CitrusLeftSideSecondPass",
+	    OptionalInt.empty(),
+	    5.58474,
+	    new Pose2d(2.93, 5.516, Rotation2d.fromRadians(-3.123)),
+	    new Pose2d(2.872, 5.535, Rotation2d.fromRadians(2.494))
+	);
+	public static final ChoreoTraj CitrusRightSide = new ChoreoTraj(
+	    "CitrusRightSide",
+	    OptionalInt.empty(),
+	    5.59517,
+	    new Pose2d(5.665, 2.412, Rotation2d.fromRadians(0)),
+	    new Pose2d(2.755, 2.534, Rotation2d.fromRadians(-2.467))
+	);
+	public static final ChoreoTraj CitrusRightSideSecondCycle = new ChoreoTraj(
+	    "CitrusRightSideSecondCycle",
+	    OptionalInt.empty(),
+	    5.51568,
+	    new Pose2d(2.755, 2.574, Rotation2d.fromRadians(3.142)),
+	    new Pose2d(2.755, 2.534, Rotation2d.fromRadians(-2.483))
+	);
 	public static final ChoreoTraj CycleNeutralFirst = new ChoreoTraj(
 	    "CycleNeutralFirst",
 	    OptionalInt.empty(),
@@ -65,6 +93,13 @@ public record ChoreoTraj(
 	    3.67202,
 	    new Pose2d(3.495, 2.534, Rotation2d.fromRadians(-2.313)),
 	    new Pose2d(3.476, 2.534, Rotation2d.fromRadians(-2.272))
+	);
+	public static final ChoreoTraj HuskyLeftSide = new ChoreoTraj(
+	    "HuskyLeftSide",
+	    OptionalInt.empty(),
+	    13.40315,
+	    new Pose2d(3.632, 5.477, Rotation2d.fromRadians(-0.018)),
+	    new Pose2d(2.872, 5.535, Rotation2d.fromRadians(3.129))
 	);
 	public static final ChoreoTraj LeftBumpDepot = new ChoreoTraj(
 	    "LeftBumpDepot",
@@ -122,6 +157,13 @@ public record ChoreoTraj(
 	    new Pose2d(2.95, 5.828, Rotation2d.fromRadians(-3.116)),
 	    new Pose2d(0.872, 4.743, Rotation2d.fromRadians(3.142))
 	);
+	public static final ChoreoTraj RightShootToMiddle = new ChoreoTraj(
+	    "RightShootToMiddle",
+	    OptionalInt.empty(),
+	    4.52411,
+	    new Pose2d(2.774, 2.495, Rotation2d.fromRadians(-3.13)),
+	    new Pose2d(8.426, 2.495, Rotation2d.fromRadians(0))
+	);
 	public static final ChoreoTraj RightStartNeutralDepot = new ChoreoTraj(
 	    "RightStartNeutralDepot",
 	    OptionalInt.empty(),
@@ -136,33 +178,19 @@ public record ChoreoTraj(
 	    new Pose2d(2.5, 1, Rotation2d.fromRadians(0)),
 	    new Pose2d(2.5, 5, Rotation2d.fromRadians(0))
 	);
-	public static final ChoreoTraj CitrusRightSide = new ChoreoTraj(
-	    "CitrusRightSide",
+	public static final ChoreoTraj CitrusLeftSideSecondPassNew = new ChoreoTraj(
+	    "CitrusLeftSideSecondPassNew",
 	    OptionalInt.empty(),
-	    8.93957,
-	    new Pose2d(3.632, 2.631, Rotation2d.fromRadians(-0.018)),
-	    new Pose2d(2.755, 2.534, Rotation2d.fromRadians(3.129))
+	    7.82997,
+	    new Pose2d(2.93, 5.516, Rotation2d.fromRadians(-3.123)),
+	    new Pose2d(2.872, 5.535, Rotation2d.fromRadians(2.494))
 	);
-	public static final ChoreoTraj RightShootToMiddle = new ChoreoTraj(
-	    "RightShootToMiddle",
+	public static final ChoreoTraj CitrusRightSideSecondPassNew = new ChoreoTraj(
+	    "CitrusRightSideSecondPassNew",
 	    OptionalInt.empty(),
-	    4.52411,
-	    new Pose2d(2.774, 2.495, Rotation2d.fromRadians(-3.13)),
-	    new Pose2d(8.426, 2.495, Rotation2d.fromRadians(0))
-	);
-	public static final ChoreoTraj CitrusLeftSide = new ChoreoTraj(
-	    "CitrusLeftSide",
-	    OptionalInt.empty(),
-	    8.77821,
-	    new Pose2d(3.632, 5.477, Rotation2d.fromRadians(-0.018)),
-	    new Pose2d(2.872, 5.535, Rotation2d.fromRadians(3.129))
-	);
-	public static final ChoreoTraj HuskyLeftSide = new ChoreoTraj(
-	    "HuskyLeftSide",
-	    OptionalInt.empty(),
-	    13.40315,
-	    new Pose2d(3.632, 5.477, Rotation2d.fromRadians(-0.018)),
-	    new Pose2d(2.872, 5.535, Rotation2d.fromRadians(3.129))
+	    8.63351,
+	    new Pose2d(2.845, 2.502, Rotation2d.fromRadians(-3.123)),
+	    new Pose2d(2.845, 2.502, Rotation2d.fromRadians(-2.457))
 	);
 
     /**
@@ -171,11 +199,16 @@ public record ChoreoTraj(
      */
     public static final Map<String, ChoreoTraj> ALL_TRAJECTORIES = Map.ofEntries(
     	Map.entry("CenterDepot", CenterDepot),
+		Map.entry("CitrusLeftSide", CitrusLeftSide),
+		Map.entry("CitrusLeftSideSecondPass", CitrusLeftSideSecondPass),
+		Map.entry("CitrusRightSide", CitrusRightSide),
+		Map.entry("CitrusRightSideSecondCycle", CitrusRightSideSecondCycle),
 		Map.entry("CycleNeutralFirst", CycleNeutralFirst),
 		Map.entry("CycleNeutralFirstLeft", CycleNeutralFirstLeft),
 		Map.entry("CycleNeutralSecond", CycleNeutralSecond),
 		Map.entry("CycleNeutralSecondLeft", CycleNeutralSecondLeft),
 		Map.entry("CycleNeutralThird", CycleNeutralThird),
+		Map.entry("HuskyLeftSide", HuskyLeftSide),
 		Map.entry("LeftBumpDepot", LeftBumpDepot),
 		Map.entry("LeftShootToMiddle", LeftShootToMiddle),
 		Map.entry("LeftStartNeutralOutpost", LeftStartNeutralOutpost),
@@ -184,12 +217,11 @@ public record ChoreoTraj(
 		Map.entry("OutpostClimbNeutral", OutpostClimbNeutral),
 		Map.entry("OutpostClimbNeutralLeft", OutpostClimbNeutralLeft),
 		Map.entry("OutpostClimbRight", OutpostClimbRight),
+		Map.entry("RightShootToMiddle", RightShootToMiddle),
 		Map.entry("RightStartNeutralDepot", RightStartNeutralDepot),
 		Map.entry("TestPath", TestPath),
-		Map.entry("CitrusRightSide", CitrusRightSide),
-		Map.entry("RightShootToMiddle", RightShootToMiddle),
-		Map.entry("CitrusLeftSide", CitrusLeftSide),
-		Map.entry("HuskyLeftSide", HuskyLeftSide)
+		Map.entry("CitrusLeftSideSecondPassNew", CitrusLeftSideSecondPassNew),
+		Map.entry("CitrusRightSideSecondPassNew", CitrusRightSideSecondPassNew)
     );
 
     /**
