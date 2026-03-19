@@ -132,7 +132,7 @@ public class ShooterConstants extends MwConstants {
     // CONTROL AND OPERATIONAL CONSTANTS
     // =============================================================================
     public final double INDEXER_DUTY_CYCLE = 0.5; // 30% power for indexing
-    public final double IDLE_INDEXER_DUTY_CYCLE = -.1;
+    public final double IDLE_INDEXER_DUTY_CYCLE = 0;
     public final double INDEXER_VELOCITY = 250;
     public final double SHOOTER_IDLE_SPEED = 300.0;
     public final double HOOD_IDLE_POSITION = Units.degreesToRadians(80);
@@ -244,8 +244,10 @@ public class ShooterConstants extends MwConstants {
         TalonFXConfiguration indexer_leader_config = new TalonFXConfiguration();
         indexer_leader_config.MotorOutput.Inverted =
                 PhoenixUtil.toInvertedValue(INDEXER_LEADER_INVERTED);
+        indexer_leader_config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
         indexer_leader_config.Slot1 = INDEXER_VELOCITY_GAINS;
         INDEXER_LEADER_MOTOR_CONFIG.apply(indexer_leader_config);
+        
 
         // Configure Indexer FOLLOWER Motor
         INDEXER_FOLLOWER_MOTOR_CONFIG.can_id = INDEXER_FOLLOWER_ID;
@@ -254,6 +256,7 @@ public class ShooterConstants extends MwConstants {
         TalonFXConfiguration indexer_follower_config = new TalonFXConfiguration();
         indexer_follower_config.MotorOutput.Inverted =
                 PhoenixUtil.toInvertedValue(INDEXER_FOLLOWER_INVERTED);
+        indexer_follower_config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
         INDEXER_FOLLOWER_MOTOR_CONFIG.apply(indexer_follower_config);
 
         // Configure Shooter Leader Motor

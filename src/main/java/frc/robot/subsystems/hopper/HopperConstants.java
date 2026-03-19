@@ -70,7 +70,7 @@ public class HopperConstants extends MwConstants {
         HOPPER_MOTOR_CONFIG.canbus_name = "rio";
         TalonFXConfiguration hopper_config = new TalonFXConfiguration();
         hopper_config.Slot1 = HOPPER_VELOCITY_GAINS;
-        hopper_config.CurrentLimits.StatorCurrentLimit = 50;
+        //hopper_config.CurrentLimits.StatorCurrentLimit = 50;
         HOPPER_MOTOR_CONFIG.apply(hopper_config);
     }
 }

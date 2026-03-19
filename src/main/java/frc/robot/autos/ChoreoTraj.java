@@ -34,7 +34,7 @@ public record ChoreoTraj(
 	public static final ChoreoTraj CitrusLeftSide = new ChoreoTraj(
 	    "CitrusLeftSide",
 	    OptionalInt.empty(),
-	    5.56231,
+	    5.62689,
 	    new Pose2d(5.62, 5.574, Rotation2d.fromRadians(-0.018)),
 	    new Pose2d(2.872, 5.535, Rotation2d.fromRadians(2.503))
 	);
@@ -55,7 +55,7 @@ public record ChoreoTraj(
 	public static final ChoreoTraj CitrusRightSide = new ChoreoTraj(
 	    "CitrusRightSide",
 	    OptionalInt.empty(),
-	    5.59517,
+	    5.60372,
 	    new Pose2d(5.665, 2.412, Rotation2d.fromRadians(0)),
 	    new Pose2d(2.755, 2.534, Rotation2d.fromRadians(-2.467))
 	);
