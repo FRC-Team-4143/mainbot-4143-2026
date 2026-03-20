@@ -134,7 +134,7 @@ public class Citrus_Right_Side extends Auto {
                 new WaitCommand(3),
                 // Pull the intake in while we shoot to help index more balls
                 Commands.runOnce(
-                        () -> IntakeSubsystem.getInstance().setWantedState(IntakeStates.STORE)),
+                        () -> IntakeSubsystem.getInstance().setWantedState(IntakeStates.INTAKE)),
                 // Continue to shoot for 3 more seconds
                 new WaitCommand(3),
                 // Stop shooting
@@ -142,6 +142,7 @@ public class Citrus_Right_Side extends Auto {
                         () -> {
                             ShooterSubsystem.getInstance().setWantedState(ShooterStates.TRACKING);
                             HopperSubsystem.getInstance().setWantedState(HopperStates.IDLE);
+                            IntakeSubsystem.getInstance().setWantedState(IntakeStates.STORE);
                         }),
                 // Set the second trajectory for the second pass
                 SwerveSubsystem.getInstance()
