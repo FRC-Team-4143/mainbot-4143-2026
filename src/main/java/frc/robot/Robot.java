@@ -143,7 +143,7 @@ public class Robot extends TimedRobot {
         Elastic.selectTab("Teleoperated");
         HopperSubsystem.getInstance().setWantedState(HopperStates.IDLE);
         ClimberSubsystem.getInstance().setWantedState(ClimberStates.STOWED);
-        ShooterSubsystem.getInstance().setWantedState(ShooterStates.TRACKING);
+        ShooterSubsystem.getInstance().setWantedState(ShooterStates.IDLE);
     }
 
     @Override

@@ -34,7 +34,7 @@ public record ChoreoTraj(
 	public static final ChoreoTraj CitrusLeftSide = new ChoreoTraj(
 	    "CitrusLeftSide",
 	    OptionalInt.empty(),
-	    5.62689,
+	    5.27542,
 	    new Pose2d(5.62, 5.574, Rotation2d.fromRadians(-0.018)),
 	    new Pose2d(2.872, 5.535, Rotation2d.fromRadians(2.503))
 	);
@@ -55,7 +55,7 @@ public record ChoreoTraj(
 	public static final ChoreoTraj CitrusRightSide = new ChoreoTraj(
 	    "CitrusRightSide",
 	    OptionalInt.empty(),
-	    5.60372,
+	    5.254,
 	    new Pose2d(5.665, 2.412, Rotation2d.fromRadians(0)),
 	    new Pose2d(2.755, 2.534, Rotation2d.fromRadians(-2.467))
 	);
@@ -65,6 +65,13 @@ public record ChoreoTraj(
 	    5.51568,
 	    new Pose2d(2.755, 2.574, Rotation2d.fromRadians(3.142)),
 	    new Pose2d(2.755, 2.534, Rotation2d.fromRadians(-2.483))
+	);
+	public static final ChoreoTraj CitrusRightSideSecondPassNew = new ChoreoTraj(
+	    "CitrusRightSideSecondPassNew",
+	    OptionalInt.empty(),
+	    8.19474,
+	    new Pose2d(2.95, 2.475, Rotation2d.fromRadians(-3.123)),
+	    new Pose2d(2.95, 2.514, Rotation2d.fromRadians(-2.427))
 	);
 	public static final ChoreoTraj CitrusRightSideSecondPassOldSecond = new ChoreoTraj(
 	    "CitrusRightSideSecondPassOldSecond",
@@ -192,13 +199,6 @@ public record ChoreoTraj(
 	    new Pose2d(2.5, 1, Rotation2d.fromRadians(0)),
 	    new Pose2d(2.5, 5, Rotation2d.fromRadians(0))
 	);
-	public static final ChoreoTraj CitrusRightSideSecondPassNew = new ChoreoTraj(
-	    "CitrusRightSideSecondPassNew",
-	    OptionalInt.empty(),
-	    8.19474,
-	    new Pose2d(2.95, 2.475, Rotation2d.fromRadians(-3.123)),
-	    new Pose2d(2.95, 2.514, Rotation2d.fromRadians(-2.427))
-	);
 
     /**
      * A map between trajectory names and their corresponding data.
@@ -211,6 +211,7 @@ public record ChoreoTraj(
 		Map.entry("CitrusLeftSideSecondPassNew", CitrusLeftSideSecondPassNew),
 		Map.entry("CitrusRightSide", CitrusRightSide),
 		Map.entry("CitrusRightSideSecondCycle", CitrusRightSideSecondCycle),
+		Map.entry("CitrusRightSideSecondPassNew", CitrusRightSideSecondPassNew),
 		Map.entry("CitrusRightSideSecondPassOldSecond", CitrusRightSideSecondPassOldSecond),
 		Map.entry("CycleNeutralFirst", CycleNeutralFirst),
 		Map.entry("CycleNeutralFirstLeft", CycleNeutralFirstLeft),
@@ -228,8 +229,7 @@ public record ChoreoTraj(
 		Map.entry("OutpostClimbRight", OutpostClimbRight),
 		Map.entry("RightShootToMiddle", RightShootToMiddle),
 		Map.entry("RightStartNeutralDepot", RightStartNeutralDepot),
-		Map.entry("TestPath", TestPath),
-		Map.entry("CitrusRightSideSecondPassNew", CitrusRightSideSecondPassNew)
+		Map.entry("TestPath", TestPath)
     );
 
     /**
