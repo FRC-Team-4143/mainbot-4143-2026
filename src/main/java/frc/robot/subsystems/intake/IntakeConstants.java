@@ -49,7 +49,7 @@ public class IntakeConstants extends MwConstants {
     public final boolean ROLLER_FOLLOWER_MOTOR_INVERTED = true;
     public final double ROLLER_GEAR_RATIO = 1.0;
     public final double INTAKE_DUTY_CYCLE = 1.0;
-    public final double ROLLER_STATOR_CURRENT_LIMIT = 40;
+    public final double ROLLER_STATOR_CURRENT_LIMIT = 60;
     // =============================================================================
     // MECHANICAL CONSTANTS - PIVOT
     // =============================================================================
