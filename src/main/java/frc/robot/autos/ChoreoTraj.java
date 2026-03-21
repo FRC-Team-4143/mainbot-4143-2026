@@ -24,7 +24,35 @@ public record ChoreoTraj(
     Pose2d initialPoseBlue,
     Pose2d endPoseBlue
 ) {
-    public static final ChoreoTraj CenterDepot = new ChoreoTraj(
+    public static final ChoreoTraj BaymaxDestroyLeft = new ChoreoTraj(
+	    "BaymaxDestroyLeft",
+	    OptionalInt.empty(),
+	    9.62735,
+	    new Pose2d(5.6, 5.516, Rotation2d.fromRadians(3.142)),
+	    new Pose2d(2.93, 5.516, Rotation2d.fromRadians(2.374))
+	);
+	public static final ChoreoTraj BaymaxDestroyRight = new ChoreoTraj(
+	    "BaymaxDestroyRight",
+	    OptionalInt.empty(),
+	    9.71991,
+	    new Pose2d(5.62, 2.475, Rotation2d.fromRadians(3.142)),
+	    new Pose2d(2.852, 2.514, Rotation2d.fromRadians(-2.382))
+	);
+	public static final ChoreoTraj BaymaxDestroySameSideLeft = new ChoreoTraj(
+	    "BaymaxDestroySameSideLeft",
+	    OptionalInt.empty(),
+	    9.955,
+	    new Pose2d(5.581, 5.594, Rotation2d.fromRadians(-3.123)),
+	    new Pose2d(2.911, 5.613, Rotation2d.fromRadians(2.356))
+	);
+	public static final ChoreoTraj BaymaxDestroySameSideRight = new ChoreoTraj(
+	    "BaymaxDestroySameSideRight",
+	    OptionalInt.empty(),
+	    10.0872,
+	    new Pose2d(5.6, 2.495, Rotation2d.fromRadians(-3.123)),
+	    new Pose2d(2.969, 2.475, Rotation2d.fromRadians(-2.381))
+	);
+	public static final ChoreoTraj CenterDepot = new ChoreoTraj(
 	    "CenterDepot",
 	    OptionalInt.empty(),
 	    4.42261,
@@ -199,41 +227,17 @@ public record ChoreoTraj(
 	    new Pose2d(2.5, 1, Rotation2d.fromRadians(0)),
 	    new Pose2d(2.5, 5, Rotation2d.fromRadians(0))
 	);
-	public static final ChoreoTraj BaymaxDestroyLeft = new ChoreoTraj(
-	    "BaymaxDestroyLeft",
-	    OptionalInt.empty(),
-	    9.62735,
-	    new Pose2d(5.6, 5.516, Rotation2d.fromRadians(3.142)),
-	    new Pose2d(2.93, 5.516, Rotation2d.fromRadians(2.374))
-	);
-	public static final ChoreoTraj BaymaxDestroyRight = new ChoreoTraj(
-	    "BaymaxDestroyRight",
-	    OptionalInt.empty(),
-	    9.71991,
-	    new Pose2d(5.62, 2.475, Rotation2d.fromRadians(3.142)),
-	    new Pose2d(2.852, 2.514, Rotation2d.fromRadians(-2.382))
-	);
-	public static final ChoreoTraj BaymaxDestroySameSideLeft = new ChoreoTraj(
-	    "BaymaxDestroySameSideLeft",
-	    OptionalInt.empty(),
-	    9.955,
-	    new Pose2d(5.581, 5.594, Rotation2d.fromRadians(-3.123)),
-	    new Pose2d(2.911, 5.613, Rotation2d.fromRadians(2.356))
-	);
-	public static final ChoreoTraj BaymaxDestroySameSideRight = new ChoreoTraj(
-	    "BaymaxDestroySameSideRight",
-	    OptionalInt.empty(),
-	    10.0872,
-	    new Pose2d(5.6, 2.495, Rotation2d.fromRadians(-3.123)),
-	    new Pose2d(2.969, 2.475, Rotation2d.fromRadians(-2.381))
-	);
 
     /**
      * A map between trajectory names and their corresponding data.
      * This allows for trajectory data to be looked up with strings during runtime.
      */
     public static final Map<String, ChoreoTraj> ALL_TRAJECTORIES = Map.ofEntries(
-    	Map.entry("CenterDepot", CenterDepot),
+    	Map.entry("BaymaxDestroyLeft", BaymaxDestroyLeft),
+		Map.entry("BaymaxDestroyRight", BaymaxDestroyRight),
+		Map.entry("BaymaxDestroySameSideLeft", BaymaxDestroySameSideLeft),
+		Map.entry("BaymaxDestroySameSideRight", BaymaxDestroySameSideRight),
+		Map.entry("CenterDepot", CenterDepot),
 		Map.entry("CitrusLeftSide", CitrusLeftSide),
 		Map.entry("CitrusLeftSideSecondPass", CitrusLeftSideSecondPass),
 		Map.entry("CitrusLeftSideSecondPassNew", CitrusLeftSideSecondPassNew),
@@ -257,11 +261,7 @@ public record ChoreoTraj(
 		Map.entry("OutpostClimbRight", OutpostClimbRight),
 		Map.entry("RightShootToMiddle", RightShootToMiddle),
 		Map.entry("RightStartNeutralDepot", RightStartNeutralDepot),
-		Map.entry("TestPath", TestPath),
-		Map.entry("BaymaxDestroyLeft", BaymaxDestroyLeft),
-		Map.entry("BaymaxDestroyRight", BaymaxDestroyRight),
-		Map.entry("BaymaxDestroySameSideLeft", BaymaxDestroySameSideLeft),
-		Map.entry("BaymaxDestroySameSideRight", BaymaxDestroySameSideRight)
+		Map.entry("TestPath", TestPath)
     );
 
     /**

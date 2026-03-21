@@ -25,7 +25,7 @@ public class Baymax_Destroy_Same_Side_Right extends Auto {
         // These should be loaded in the order they will be used to ensure correct start poses
         // =============================================================================
         loadTrajectory(ChoreoTraj.BaymaxDestroySameSideRight.name());
-        loadTrajectory(ChoreoTraj.CitrusLeftSideSecondPassNew.name());
+        loadTrajectory(ChoreoTraj.CitrusRightSideSecondPassNew.name());
 
         // =============================================================================
         // EVENT TRIGGER BINDING
