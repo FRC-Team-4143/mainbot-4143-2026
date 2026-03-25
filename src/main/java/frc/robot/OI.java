@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.lib2026.HubMonitor;
 import frc.robot.subsystems.climber.ClimberSubsystem;
@@ -66,7 +67,11 @@ public abstract class OI {
         driver_controller_.rightTrigger().whileTrue(ControlCommands.shootFuelCommand());
         driver_controller_.leftTrigger().whileTrue(ControlCommands.aimAtTargetCommand());
         driver_controller_.leftStick().whileTrue(ControlCommands.rotateForBumpCommand());
-        driver_controller_.rightBumper().whileTrue(ControlCommands.intakeFuelCommand());
+        // Allow intake button presses that happen while the robot is disabled to
+        // actually begin when teleop enables by marking the command to ignore
+        // the disabled state. This decorator keeps wiring localized here in OI.
+        driver_controller_.rightBumper()
+                .whileTrue(allowRunWhileDisabled(ControlCommands.intakeFuelCommand()));
         driver_controller_.leftBumper().onFalse(ControlCommands.toggleStoreIntakeCommand());
         driver_controller_.start().onTrue(ControlCommands.advanceClimbingStage());
         driver_controller_.back().onTrue(ControlCommands.reverseClimbingStage());
@@ -123,6 +128,19 @@ public abstract class OI {
 
         // =============================================================================
     }
+
+        /**
+         * Decorator that marks a command to run while the robot is disabled. Use this on
+         * bindings where drivers may press buttons during the disabled period between auto
+         * and teleop and you want the command to be scheduled and wait until the robot is
+         * enabled.
+         *
+         * @param cmd the command to allow while disabled
+         * @return the same command configured to ignore the disabled state
+         */
+        public static Command allowRunWhileDisabled(Command cmd) {
+                return cmd.ignoringDisable(true);
+        }
 
     /**
      * @return driver controller left joystick x axis
