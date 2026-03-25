@@ -125,7 +125,6 @@ public class Neutral_Cycles_Right extends Auto {
                         () -> {
                             ShooterSubsystem.getInstance().setWantedState(ShooterStates.SHOOT);
                             HopperSubsystem.getInstance().setWantedState(HopperStates.SHOOTING);
-                        })
-                );
+                        }));
     }
 }

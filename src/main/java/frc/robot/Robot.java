@@ -14,6 +14,10 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.autos.Baymax_Destroy_Left;
+import frc.robot.autos.Baymax_Destroy_Right;
+import frc.robot.autos.Baymax_Destroy_Same_Side_Left;
+import frc.robot.autos.Baymax_Destroy_Same_Side_Right;
 import frc.robot.autos.Center_Depot_Climb;
 import frc.robot.autos.Center_Depot_No_Climb;
 import frc.robot.autos.Citrus_Left_Side;
@@ -72,6 +76,10 @@ public class Robot extends TimedRobot {
                         new Center_Depot_No_Climb(),
                         new Citrus_Left_Side(),
                         new Citrus_Right_Side(),
+                        new Baymax_Destroy_Left(),
+                        new Baymax_Destroy_Right(),
+                        new Baymax_Destroy_Same_Side_Left(),
+                        new Baymax_Destroy_Same_Side_Right(),
                         new Husky_Left_Side(),
                         new Shoot()
                         // new TestAuto()
@@ -85,7 +93,6 @@ public class Robot extends TimedRobot {
     public void robotInit() {
         Elastic.selectTab("Autonomous");
         SmartDashboard.putData(CommandScheduler.getInstance());
-        
     }
 
     @Override
@@ -144,7 +151,7 @@ public class Robot extends TimedRobot {
         Elastic.selectTab("Teleoperated");
         HopperSubsystem.getInstance().setWantedState(HopperStates.IDLE);
         ClimberSubsystem.getInstance().setWantedState(ClimberStates.STOWED);
-        ShooterSubsystem.getInstance().setWantedState(ShooterStates.TRACKING);
+        ShooterSubsystem.getInstance().setWantedState(ShooterStates.IDLE);
     }
 
     @Override

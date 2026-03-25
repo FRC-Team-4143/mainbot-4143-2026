@@ -92,7 +92,6 @@ public class Center_Depot_No_Climb extends Auto {
                             ShooterSubsystem.getInstance().setWantedState(ShooterStates.SHOOT);
                             HopperSubsystem.getInstance().setWantedState(HopperStates.SHOOTING);
                         }),
-                new WaitCommand(5)
-                );
+                new WaitCommand(5));
     }
 }

@@ -29,7 +29,6 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.lib2026.FieldTargets;
 import frc.robot.subsystems.localization.LocalizationSubsystem;
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterStates;
-import frc.robot.subsystems.shooter.ShooterConstants.TargetType;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 import java.util.Arrays;
 import java.util.List;
@@ -240,12 +239,12 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
                 break;
             case DUMP:
                 flywheel_.setTargetVelocity(flywheel_omega_);
-                indexer_.setTargetVelocity(-manual_indexer_velocity_);
+                indexer_.setTargetDutyCycle(-CONSTANTS.INDEXER_DUTY_CYCLE);
                 hood_.setTargetPosition(CONSTANTS.HOOD_MAX_ANGLE);
                 break;
             case SHOOT:
                 flywheel_.setTargetVelocity(flywheel_omega_);
-                indexer_.setTargetVelocity(manual_indexer_velocity_);
+                indexer_.setTargetDutyCycle(CONSTANTS.INDEXER_DUTY_CYCLE);
                 hood_.setTargetPositionWithFF(hood_angle_, hood_feedforward_);
                 SwerveSubsystem.getInstance()
                         .setDesiredRotationLockCORWithFF(
@@ -258,14 +257,14 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
             case MANUAL_HUB:
                 // Manual hub shooting mode - uses fixed setpoints for hub shots
                 flywheel_.setTargetVelocity(CONSTANTS.FLYWHEEL_MANUAL_HUB_VELOCITY + flywheel_adj_);
-                indexer_.setTargetVelocity(manual_indexer_velocity_);
+                indexer_.setTargetDutyCycle(CONSTANTS.INDEXER_DUTY_CYCLE);
                 hood_.setTargetPosition(CONSTANTS.HOOD_MANUAL_HUB_ANGLE + hood_adj_);
                 break;
             case MANUAL_PASS:
                 // Manual pass mode - uses fixed setpoints for passing
                 flywheel_.setTargetVelocity(
                         CONSTANTS.FLYWHEEL_MANUAL_PASS_VELOCITY + flywheel_adj_);
-                indexer_.setTargetVelocity(manual_indexer_velocity_);
+                indexer_.setTargetDutyCycle(CONSTANTS.INDEXER_DUTY_CYCLE);
                 hood_.setTargetPosition(CONSTANTS.HOOD_MANUAL_PASS_ANGLE + hood_adj_);
                 break;
             case TUNING:
@@ -347,7 +346,10 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
         DogLog.log(getSubsystemKey() + "ShooterIsReady/Full", isShooterReady());
 
         // Active Tolerances
-        DogLog.log(getSubsystemKey() + "Tolerance/FlywheelVelocity", flywheel_vel_tol_, RadiansPerSecond);
+        DogLog.log(
+                getSubsystemKey() + "Tolerance/FlywheelVelocity",
+                flywheel_vel_tol_,
+                RadiansPerSecond);
         DogLog.log(getSubsystemKey() + "Tolerance/HoodAngle", hood_pos_tol_, Radians);
         DogLog.log(getSubsystemKey() + "Tolerance/HeadingAngle", rot_pos_tol_, Radians);
     }
