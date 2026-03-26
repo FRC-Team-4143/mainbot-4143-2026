@@ -320,8 +320,8 @@ public class LocalizationSubsystem extends MwSubsystem<LocalizationStates, Local
         for (TagSolutionData vision_data : vision_measurements) {
             // Skip measurement with no detected tags
 
-            if (!DriverStation.isDisabled())
-                if (FieldRegions.ALLIANCE_ZONE.contains(getFieldPose()))
+            // if (!DriverStation.isDisabled())
+            //     if (FieldRegions.ALLIANCE_ZONE.contains(getFieldPose()))
                     if (vision_data.detectedIds.size() < CONSTANTS.MIN_TAG_COUNT_FOR_VISION_UPDATE)
                         continue;
 
