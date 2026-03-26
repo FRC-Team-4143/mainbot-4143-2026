@@ -17,15 +17,15 @@ import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.swerve.SwerveConstants.SwerveStates;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 
-public class Citrus_Left_Side extends Auto {
+public class Baymax_Destroy_Right extends Auto {
 
-    public Citrus_Left_Side() {
+    public Baymax_Destroy_Right() {
         // =============================================================================
         // TRAJECTORY LOADING
         // These should be loaded in the order they will be used to ensure correct start poses
         // =============================================================================
-        loadTrajectory(ChoreoTraj.CitrusLeftSide.name());
-        loadTrajectory(ChoreoTraj.CitrusLeftSideSecondPassNew.name());
+        loadTrajectory(ChoreoTraj.BaymaxDestroyRight.name());
+        loadTrajectory(ChoreoTraj.CitrusRightSideSecondPassNew.name());
 
         // =============================================================================
         // EVENT TRIGGER BINDING
@@ -98,7 +98,7 @@ public class Citrus_Left_Side extends Auto {
                 Commands.startEnd(
                                 () -> {
                                     SwerveSubsystem.getInstance()
-                                            .setDesiredChassisSpeed(new ChassisSpeeds(5, 0, 0));
+                                            .setDesiredChassisSpeed(new ChassisSpeeds(-5, 0, 0));
                                     SwerveSubsystem.getInstance()
                                             .setWantedState(SwerveStates.CHASSIS_SPEEDS);
                                 },
@@ -113,7 +113,7 @@ public class Citrus_Left_Side extends Auto {
                 // Set the initial trajectory
                 SwerveSubsystem.getInstance()
                         .setDesiredChoreoTrajectoryCommand(
-                                getTrajectory(ChoreoTraj.CitrusLeftSide.name())),
+                                getTrajectory(ChoreoTraj.BaymaxDestroyRight.name())),
                 // Start Choreo following
                 Commands.startEnd(
                                 () ->
@@ -147,7 +147,7 @@ public class Citrus_Left_Side extends Auto {
                 // Set the second trajectory for the second pass
                 SwerveSubsystem.getInstance()
                         .setDesiredChoreoTrajectoryCommand(
-                                getTrajectory(ChoreoTraj.CitrusLeftSideSecondPassNew.name())),
+                                getTrajectory(ChoreoTraj.CitrusRightSideSecondPassNew.name())),
                 // Start Choreo following
                 Commands.startEnd(
                                 () ->

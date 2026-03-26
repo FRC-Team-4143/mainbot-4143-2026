@@ -324,18 +324,19 @@ public class LocalizationSubsystem extends MwSubsystem<LocalizationStates, Local
                 if (FieldRegions.ALLIANCE_ZONE.contains(getFieldPose()))
                     if (vision_data.detectedIds.size() < CONSTANTS.MIN_TAG_COUNT_FOR_VISION_UPDATE)
                         continue;
-                        
-            if (vision_data.pose.getX()<0 || vision_data.pose.getX() > FieldConstants.FIELD_LENGTH
-                || vision_data.pose.getY()<0 || vision_data.pose.getY() > FieldConstants.FIELD_WIDTH){
+
+            if (vision_data.pose.getX() < 0
+                    || vision_data.pose.getX() > FieldConstants.FIELD_LENGTH
+                    || vision_data.pose.getY() < 0
+                    || vision_data.pose.getY() > FieldConstants.FIELD_WIDTH) {
                 continue;
             }
 
             double distance_difference =
-                            getFieldPose()
-                                    .getTranslation()
-                                    .getDistance(vision_data.pose.getTranslation());
+                    getFieldPose().getTranslation().getDistance(vision_data.pose.getTranslation());
 
-            Translation2d difference_vector = getFieldPose().getTranslation().minus(vision_data.pose.getTranslation());
+            Translation2d difference_vector =
+                    getFieldPose().getTranslation().minus(vision_data.pose.getTranslation());
 
             SmartDashboard.putNumber("distance difference", distance_difference);
             SmartDashboard.putNumber("vector difference x", difference_vector.getX());
@@ -377,12 +378,14 @@ public class LocalizationSubsystem extends MwSubsystem<LocalizationStates, Local
                 if (tag_layout_pose.isPresent()) detected_tag_poses_.add(tag_layout_pose.get());
             }
 
-            if( distance_difference > maxdistance){
-                Translation2d new_vector = new Translation2d(getFieldPose().getX() + difference_vector.getX() * ratio, getFieldPose().getY() + difference_vector.getY() * ratio);
+            if (distance_difference > maxdistance) {
+                Translation2d new_vector =
+                        new Translation2d(
+                                getFieldPose().getX() + difference_vector.getX() * ratio,
+                                getFieldPose().getY() + difference_vector.getY() * ratio);
                 Pose2d new_pose = new Pose2d(new_vector, vision_data.pose.getRotation());
                 estimated_vision_poses_.add(new_pose);
-            } else
-                estimated_vision_poses_.add(vision_data.pose);
+            } else estimated_vision_poses_.add(vision_data.pose);
         }
     }
 

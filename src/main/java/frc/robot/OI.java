@@ -145,6 +145,13 @@ public abstract class OI {
         return driver_controller_.getRightX();
     }
 
+    public static boolean getDriverControllerX() {
+        return driver_controller_.x().getAsBoolean();
+    }
+
+    public static boolean getDriverControllerA() {
+        return driver_controller_.a().getAsBoolean();
+    }
     /**
      * @return operator controller right joystick x axis
      */

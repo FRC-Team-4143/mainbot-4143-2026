@@ -17,14 +17,14 @@ import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.swerve.SwerveConstants.SwerveStates;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 
-public class Citrus_Left_Side extends Auto {
+public class Baymax_Destroy_Left extends Auto {
 
-    public Citrus_Left_Side() {
+    public Baymax_Destroy_Left() {
         // =============================================================================
         // TRAJECTORY LOADING
         // These should be loaded in the order they will be used to ensure correct start poses
         // =============================================================================
-        loadTrajectory(ChoreoTraj.CitrusLeftSide.name());
+        loadTrajectory(ChoreoTraj.BaymaxDestroyLeft.name());
         loadTrajectory(ChoreoTraj.CitrusLeftSideSecondPassNew.name());
 
         // =============================================================================
@@ -98,7 +98,7 @@ public class Citrus_Left_Side extends Auto {
                 Commands.startEnd(
                                 () -> {
                                     SwerveSubsystem.getInstance()
-                                            .setDesiredChassisSpeed(new ChassisSpeeds(5, 0, 0));
+                                            .setDesiredChassisSpeed(new ChassisSpeeds(-5, 0, 0));
                                     SwerveSubsystem.getInstance()
                                             .setWantedState(SwerveStates.CHASSIS_SPEEDS);
                                 },
@@ -113,7 +113,7 @@ public class Citrus_Left_Side extends Auto {
                 // Set the initial trajectory
                 SwerveSubsystem.getInstance()
                         .setDesiredChoreoTrajectoryCommand(
-                                getTrajectory(ChoreoTraj.CitrusLeftSide.name())),
+                                getTrajectory(ChoreoTraj.BaymaxDestroyLeft.name())),
                 // Start Choreo following
                 Commands.startEnd(
                                 () ->

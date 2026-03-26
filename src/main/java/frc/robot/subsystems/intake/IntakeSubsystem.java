@@ -8,6 +8,7 @@ import dev.doglog.DogLog;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.OI;
 import frc.robot.subsystems.intake.IntakeConstants.IntakeStates;
 import java.util.Arrays;
 import java.util.List;
@@ -35,7 +36,9 @@ public class IntakeSubsystem extends MwSubsystem<IntakeStates, IntakeConstants> 
                 new RollerMech(
                         getSubsystemKey(),
                         "Roller",
-                        List.of(CONSTANTS.ROLLER_MOTOR_CONFIG, CONSTANTS.ROLLER_FOLLOWER_MOTOR_CONFIG),
+                        List.of(
+                                CONSTANTS.ROLLER_MOTOR_CONFIG,
+                                CONSTANTS.ROLLER_FOLLOWER_MOTOR_CONFIG),
                         CONSTANTS.ROLLER_GEAR_RATIO);
 
         pivot_ =
@@ -113,7 +116,12 @@ public class IntakeSubsystem extends MwSubsystem<IntakeStates, IntakeConstants> 
                 pivot_.setTargetPosition(CONSTANTS.PIVOT_DEPLOY_POSITION);
                 break;
             case DEPLOYED:
-                roller_.setTargetDutyCycle(0.0);
+                if(OI.getDriverControllerA()){
+                    roller_.setTargetDutyCycle(-manual_roller_duty_cycle_);
+                }
+                else{
+                    roller_.setTargetDutyCycle(0.0);
+                }
                 pivot_.setTargetDutyCycle(0.0);
                 break;
             case INTAKE:

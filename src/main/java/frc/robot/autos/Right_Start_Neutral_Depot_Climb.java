@@ -129,7 +129,6 @@ public class Right_Start_Neutral_Depot_Climb extends Auto {
                                 () ->
                                         SwerveSubsystem.getInstance()
                                                 .setWantedState(SwerveStates.FIELD_CENTRIC))
-                        .until(SwerveSubsystem.getInstance()::isAtChoreoSetpoint)
-                );
+                        .until(SwerveSubsystem.getInstance()::isAtChoreoSetpoint));
     }
 }
