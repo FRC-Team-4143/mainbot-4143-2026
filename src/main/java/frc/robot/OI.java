@@ -123,24 +123,6 @@ public abstract class OI {
                                 }));
         operator_controller_.rightBumper().onTrue(ClimberSubsystem.getInstance().bumpUpCommand());
         operator_controller_.leftBumper().onTrue(ClimberSubsystem.getInstance().bumpDownCommand());
-        // =============================================================================
-        // TESTING BINDINGS (THESE SHOULD BE REMOVED BEFORE COMPETITION)
-
-        // =============================================================================
-    }
-
-        /**
-         * Decorator that marks a command to run while the robot is disabled. Use this on
-         * bindings where drivers may press buttons during the disabled period between auto
-         * and teleop and you want the command to be scheduled and wait until the robot is
-         * enabled.
-         *
-         * @param cmd the command to allow while disabled
-         * @return the same command configured to ignore the disabled state
-         */
-        public static Command allowRunWhileDisabled(Command cmd) {
-                return cmd.ignoringDisable(true);
-        }
 
     /**
      * @return driver controller left joystick x axis
