@@ -198,8 +198,8 @@ public class ShooterConstants extends MwConstants {
         HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(3.82, 315);
         HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(4.40, 330);
         HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(4.77, 340);
-        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(5.60, 445);//needs updating
-        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(6.50, 518);//needs updating
+        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(5.60, 445); // needs updating
+        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(6.50, 518); // needs updating
 
         // Populate time of flight map (distance in meters -> time in seconds)
         // Empirically determined values from testing
@@ -247,7 +247,6 @@ public class ShooterConstants extends MwConstants {
         indexer_leader_config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
         indexer_leader_config.Slot1 = INDEXER_VELOCITY_GAINS;
         INDEXER_LEADER_MOTOR_CONFIG.apply(indexer_leader_config);
-        
 
         // Configure Indexer FOLLOWER Motor
         INDEXER_FOLLOWER_MOTOR_CONFIG.can_id = INDEXER_FOLLOWER_ID;

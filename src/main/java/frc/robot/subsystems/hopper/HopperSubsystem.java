@@ -11,8 +11,6 @@ import frc.robot.subsystems.hopper.HopperConstants.HopperStates;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.lang.model.util.ElementScanner14;
-
 public class HopperSubsystem extends MwSubsystem<HopperStates, HopperConstants> {
     private static HopperSubsystem instance_ = null;
 
@@ -92,11 +90,9 @@ public class HopperSubsystem extends MwSubsystem<HopperStates, HopperConstants> 
     public void updateLogic(double timestamp) {
         switch (system_state_) {
             case INTAKE:
-            case SHOOTING: 
-                if(OI.getDriverControllerX())
-                hopper_.setTargetVelocity(-manual_hopper_velocity_);
-                else
-                hopper_.setTargetVelocity(manual_hopper_velocity_);
+            case SHOOTING:
+                if (OI.getDriverControllerX()) hopper_.setTargetVelocity(-manual_hopper_velocity_);
+                else hopper_.setTargetVelocity(manual_hopper_velocity_);
                 break;
             case UNJAM_REVERSE:
                 hopper_.setTargetVelocity(-manual_hopper_velocity_);
@@ -108,10 +104,8 @@ public class HopperSubsystem extends MwSubsystem<HopperStates, HopperConstants> 
                 break;
             default:
             case IDLE:
-                if(OI.getDriverControllerA())
-                hopper_.setTargetVelocity(-manual_hopper_velocity_);
-                else
-                hopper_.setTargetDutyCycle(0.0);
+                if (OI.getDriverControllerA()) hopper_.setTargetVelocity(-manual_hopper_velocity_);
+                else hopper_.setTargetDutyCycle(0.0);
                 break;
         }
     }
