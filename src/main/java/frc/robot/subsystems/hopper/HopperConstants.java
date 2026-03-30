@@ -19,6 +19,10 @@ public class HopperConstants extends MwConstants {
         INTAKE,
         /** Actively feeding game pieces to shooter */
         SHOOTING,
+        /** Hopper running forward as primary feed state (explicit state for button binding) */
+        HOPPER_FORWARD,
+        /** Hopper running in reverse as explicit state for button binding */
+        HOPPER_REVERSE,
         /** Unjamming by reversing hopper */
         UNJAM_REVERSE,
         /** Unjamming by running hopper forward */

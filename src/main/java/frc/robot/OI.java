@@ -17,6 +17,8 @@ import frc.robot.subsystems.localization.LocalizationSubsystem;
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterStates;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
+import frc.robot.subsystems.hopper.HopperSubsystem;
+import frc.robot.subsystems.hopper.HopperConstants.HopperStates;
 import java.util.Optional;
 
 public abstract class OI {
@@ -67,7 +69,24 @@ public abstract class OI {
         driver_controller_.leftTrigger().whileTrue(ControlCommands.aimAtTargetCommand());
         driver_controller_.leftStick().whileTrue(ControlCommands.rotateForBumpCommand());
         driver_controller_.rightBumper().whileTrue(ControlCommands.intakeFuelCommand());
+    // A button runs outtake while held
+    driver_controller_.a().whileTrue(ControlCommands.outtakeFuelCommand());
         driver_controller_.leftBumper().onFalse(ControlCommands.toggleStoreIntakeCommand());
+    // X button controls explicit hopper forward/reverse states
+    driver_controller_.x()
+        .onTrue(
+            Commands.runOnce(
+                () ->
+                    HopperSubsystem.getInstance()
+                        .setWantedState(HopperStates.HOPPER_REVERSE))
+                .ignoringDisable(true));
+    driver_controller_.x()
+        .onFalse(
+            Commands.runOnce(
+                () ->
+                    HopperSubsystem.getInstance()
+                        .setWantedState(HopperStates.HOPPER_FORWARD))
+                .ignoringDisable(true));
         driver_controller_.start().onTrue(ControlCommands.advanceClimbingStage());
         driver_controller_.back().onTrue(ControlCommands.reverseClimbingStage());
         driver_controller_.y().whileTrue(ControlCommands.manualShootFuelCommand());
@@ -143,14 +162,6 @@ public abstract class OI {
      */
     public static double getDriverJoystickRightX() {
         return driver_controller_.getRightX();
-    }
-
-    public static boolean getDriverControllerX() {
-        return driver_controller_.x().getAsBoolean();
-    }
-
-    public static boolean getDriverControllerA() {
-        return driver_controller_.a().getAsBoolean();
     }
     /**
      * @return operator controller right joystick x axis

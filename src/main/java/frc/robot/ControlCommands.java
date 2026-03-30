@@ -274,6 +274,27 @@ public class ControlCommands {
     }
 
     /**
+     * This command runs the outtake behavior while held.
+     *
+     * <p>On Initialize:
+     *  - Intake: OUTTAKE
+     *
+     * <p>On End:
+     *  - Intake: IDLE
+     */
+    static Command outtakeFuelCommand() {
+        return Commands.startEnd(
+                        () -> {
+                            IntakeSubsystem.getInstance().setWantedState(IntakeStates.OUTTAKE);
+                        },
+                        () -> {
+                            IntakeSubsystem.getInstance().setWantedState(IntakeStates.IDLE);
+                        })
+                .withName("Outtake Fuel")
+                .ignoringDisable(true);
+    }
+
+    /**
      * This command stores the intake mechanism.
      *
      * <p>On Execute:

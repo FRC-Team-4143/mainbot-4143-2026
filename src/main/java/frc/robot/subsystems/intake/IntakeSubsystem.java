@@ -8,7 +8,6 @@ import dev.doglog.DogLog;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Commands;
-import frc.robot.OI;
 import frc.robot.subsystems.intake.IntakeConstants.IntakeStates;
 import java.util.Arrays;
 import java.util.List;
@@ -116,12 +115,8 @@ public class IntakeSubsystem extends MwSubsystem<IntakeStates, IntakeConstants> 
                 pivot_.setTargetPosition(CONSTANTS.PIVOT_DEPLOY_POSITION);
                 break;
             case DEPLOYED:
-                if(OI.getDriverControllerA()){
-                    roller_.setTargetDutyCycle(-manual_roller_duty_cycle_);
-                }
-                else{
-                    roller_.setTargetDutyCycle(0.0);
-                }
+                // Roller stays stopped while deployed unless in OUTTAKE state
+                roller_.setTargetDutyCycle(0.0);
                 pivot_.setTargetDutyCycle(0.0);
                 break;
             case INTAKE:

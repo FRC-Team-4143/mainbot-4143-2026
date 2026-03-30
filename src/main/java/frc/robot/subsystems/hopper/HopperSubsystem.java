@@ -92,11 +92,14 @@ public class HopperSubsystem extends MwSubsystem<HopperStates, HopperConstants> 
     public void updateLogic(double timestamp) {
         switch (system_state_) {
             case INTAKE:
-            case SHOOTING: 
-                if(OI.getDriverControllerX())
-                hopper_.setTargetVelocity(-manual_hopper_velocity_);
-                else
+            case SHOOTING:
+            case HOPPER_FORWARD:
+                // Normal forward feeding behavior
                 hopper_.setTargetVelocity(manual_hopper_velocity_);
+                break;
+            case HOPPER_REVERSE:
+                // Explicit reverse state driven by a button binding
+                hopper_.setTargetVelocity(-manual_hopper_velocity_);
                 break;
             case UNJAM_REVERSE:
                 hopper_.setTargetVelocity(-manual_hopper_velocity_);
