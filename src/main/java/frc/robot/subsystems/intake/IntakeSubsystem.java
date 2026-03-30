@@ -70,6 +70,19 @@ public class IntakeSubsystem extends MwSubsystem<IntakeStates, IntakeConstants> 
         system_state_ = IntakeStates.IDLE;
     }
 
+    /**
+     * Returns true if the intake pivot is considered deployed (out). This helper centralizes
+     * the deploy detection logic so other code can rely on a single definition.
+     *
+     * @return true if deployed (within DEPLOY_PIVOT_TOLERANCE of deploy position)
+     */
+    public boolean isDeployed() {
+        return MathUtil.isNear(
+                CONSTANTS.PIVOT_DEPLOY_POSITION,
+                pivot_.getCurrentPosition(),
+                CONSTANTS.DEPLOY_PIVOT_TOLERANCE);
+    }
+
     // getIos
     @Override
     public List<SubsystemIoBase> getIos() {
@@ -79,20 +92,15 @@ public class IntakeSubsystem extends MwSubsystem<IntakeStates, IntakeConstants> 
     // handleStateTransition
     @Override
     protected void handleStateTransition(IntakeStates wantedState) {
-        if (!MathUtil.isNear(
-                        CONSTANTS.PIVOT_DEPLOY_POSITION,
-                        pivot_.getCurrentPosition(),
-                        CONSTANTS.DEPLOY_PIVOT_TOLERANCE)
-                && wantedState == IntakeStates.INTAKE) {
+        if (!isDeployed() && wantedState == IntakeStates.INTAKE) {
+            // Not yet deployed but commanded to intake -> move to DEPLOYING
             system_state_ = IntakeStates.DEPLOYING;
         } else if (system_state_ == IntakeStates.STORE && wantedState == IntakeStates.OUTTAKE) {
             system_state_ = IntakeStates.DEPLOYING;
         } else if (system_state_ == IntakeStates.DEPLOYING) {
-            if (MathUtil.isNear(
-                    CONSTANTS.PIVOT_DEPLOY_POSITION,
-                    pivot_.getCurrentPosition(),
-                    CONSTANTS.DEPLOY_PIVOT_TOLERANCE)) {
+            if (isDeployed()) {
                 system_state_ = IntakeStates.DEPLOYED;
+                dev.doglog.DogLog.log(getSubsystemKey() + "State", "DEPLOYED");
             }
         } else {
             if (system_state_ != wantedState) counter = 0;

@@ -66,7 +66,13 @@ public class IntakeConstants extends MwConstants {
     public final double PIVOT_DEPLOY_POSITION = Units.degreesToRadians(11);
     public final double PIVOT_RACKING_POSITION = Units.degreesToRadians(60);
     public final double PIVOT_STORE_POSITION = Units.degreesToRadians(98);
-    public final double DEPLOY_PIVOT_TOLERANCE = Units.degreesToRadians(20);
+    // Tolerance when considering the intake pivot to be "deployed". The value here
+    // controls the automated checks that consider the intake out (used to stop
+    // applying power to the pivot when it is resting on the bumper). The previous
+    // value (20 degrees) was too large and could incorrectly report the intake as
+    // deployed when it was still moving. Reduce to a tighter tolerance (5 deg)
+    // to avoid false positives.
+    public final double DEPLOY_PIVOT_TOLERANCE = Units.degreesToRadians(5);
     public final Slot0Configs PIVOT_POSITION_GAINS = new Slot0Configs().withKG(3).withKP(200);
 
     // Time to wait between cycling SHOOTING and RACKING modes (seconds)
