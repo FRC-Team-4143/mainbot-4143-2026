@@ -318,20 +318,26 @@ public class LocalizationSubsystem extends MwSubsystem<LocalizationStates, Local
         }
 
         for (TagSolutionData vision_data : vision_measurements) {
-            // Skip measurement with no detected tags
-
-            if (!DriverStation.isDisabled())
-                if (FieldRegions.ALLIANCE_ZONE.contains(getFieldPose()))
-                    if (vision_data.detectedIds.size() < CONSTANTS.MIN_TAG_COUNT_FOR_VISION_UPDATE)
-                        continue;
+            // -----------------------------------------------------------------
+            // Step 1: basic sanity checks
+            //   - ignore empty detections
+            //   - ignore poses that are clearly off the field
+            // -----------------------------------------------------------------
+            int tagCount = vision_data.detectedIds.size();
+            if (tagCount == 0) {
+                continue;
+            }
 
             if (vision_data.pose.getX() < 0
                     || vision_data.pose.getX() > FieldConstants.FIELD_LENGTH
                     || vision_data.pose.getY() < 0
                     || vision_data.pose.getY() > FieldConstants.FIELD_WIDTH) {
+                // Vision solution outside field bounds -> discard
                 continue;
             }
 
+            // Compute distance and difference vector between odometry and vision poses.
+            // These are used for single-tag acceptance heuristics and for logging.
             double distance_difference =
                     getFieldPose().getTranslation().getDistance(vision_data.pose.getTranslation());
 
@@ -342,10 +348,18 @@ public class LocalizationSubsystem extends MwSubsystem<LocalizationStates, Local
             SmartDashboard.putNumber("vector difference x", difference_vector.getX());
             SmartDashboard.putNumber("vector difference y", difference_vector.getY());
 
+            // Maximum distance used to clamp large vision-odometry differences when
+            // creating an estimated pose for visualization. This prevents plotting
+            // wildly distant single measurements as absolute jumps in the field
+            // visualizer. Keep as a small local clamp (original default 1.0m).
             double maxdistance = 1.0;
-            double ratio = maxdistance / distance_difference;
+            double ratio = (distance_difference > 0.0) ? (maxdistance / distance_difference) : 1.0;
 
-            // Skip measurement if rotation difference is too large
+            // -----------------------------------------------------------------
+            // Step 2: rotation difference check
+            //   If the rotation difference is very large and we're enabled, discard
+            //   the measurement to avoid bad vision corrections during operation.
+            // -----------------------------------------------------------------
             double rotation_difference =
                     Math.abs(
                             getFieldPose()
@@ -355,6 +369,37 @@ public class LocalizationSubsystem extends MwSubsystem<LocalizationStates, Local
             if (rotation_difference > CONSTANTS.MAX_ROTATION_DIFFERENCE
                     && DriverStation.isEnabled()) {
                 continue;
+            }
+
+            // -----------------------------------------------------------------
+            // Step 3: tag count enforcement (configurable)
+            //   The previous quick patch enforced MIN_TAG_COUNT only when the robot
+            //   was enabled and inside the alliance zone. That behavior is preserved
+            //   but made explicit and configurable below.
+            // -----------------------------------------------------------------
+            boolean inAllianceZone = FieldRegions.ALLIANCE_ZONE.contains(getFieldPose());
+            boolean enforceMinTags =
+                    CONSTANTS.ENFORCE_MIN_TAGS_IN_ALLIANCE_ZONE_WHEN_ENABLED
+                            && !DriverStation.isDisabled()
+                            && inAllianceZone;
+
+            if (enforceMinTags && tagCount < CONSTANTS.MIN_TAG_COUNT_FOR_VISION_UPDATE) {
+                // Allow a single-tag measurement only if configured and quality checks
+                // pass (e.g. close to odometry pose and optionally only while disabled).
+                if (tagCount == 1 && CONSTANTS.ALLOW_SINGLE_TAG_UPDATES) {
+                    if (CONSTANTS.SINGLE_TAG_ONLY_WHILE_DISABLED && !DriverStation.isDisabled()) {
+                        // single-tag updates only allowed while disabled
+                        continue;
+                    }
+                    if (distance_difference > CONSTANTS.SINGLE_TAG_MAX_ACCEPT_DISTANCE_METERS) {
+                        // single-tag solution too far from odometry -> reject
+                        continue;
+                    }
+                    // otherwise, accept single-tag (with higher covariance applied later)
+                } else {
+                    // Not enough tags and single-tag updates not allowed -> discard
+                    continue;
+                }
             }
 
             // Check if any detected tag ID is in the filtered set (O(1) lookup)

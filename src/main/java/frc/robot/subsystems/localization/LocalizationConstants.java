@@ -60,6 +60,34 @@ public class LocalizationConstants extends MwConstants {
     // Minimum number of visible tags required to perform a vision update
     public final int MIN_TAG_COUNT_FOR_VISION_UPDATE = 2;
 
+    // -------------------------------------------------------------------------
+    // Single-tag detection configuration
+    // -------------------------------------------------------------------------
+    // The codebase was recently updated to allow single-tag vision updates in some
+    // circumstances. The following flags and thresholds make that behavior
+    // configurable so it can be tuned or disabled without changing logic.
+
+    // Allow using a single detected AprilTag as a vision update when other
+    // quality checks (distance, field zone, disabled-state) pass.
+    public boolean ALLOW_SINGLE_TAG_UPDATES = false;
+
+    // If true, single-tag updates are only allowed while the robot is disabled
+    // (useful for seeding state before matches without influencing enabled
+    // operation). If false, single-tag updates may be allowed while enabled
+    // subject to other checks.
+    public boolean SINGLE_TAG_ONLY_WHILE_DISABLED = true;
+
+    // Maximum allowed distance (meters) between the odometry pose and the
+    // vision-derived pose for accepting a single-tag measurement. This avoids
+    // large jumps caused by ambiguous single-tag solutions.
+    public final double SINGLE_TAG_MAX_ACCEPT_DISTANCE_METERS = 1.0;
+
+    // If true, enforce the MIN_TAG_COUNT_FOR_VISION_UPDATE check only when the robot
+    // is enabled and inside the alliance-specific zone. This replicates the prior
+    // behavior but makes it configurable for future tuning. Set to true to require
+    // multiple tags for most enabled operation inside the alliance zone.
+    public boolean ENFORCE_MIN_TAGS_IN_ALLIANCE_ZONE_WHEN_ENABLED = true;
+
     // =============================================================================
     // CONSTRUCTOR
     // =============================================================================
