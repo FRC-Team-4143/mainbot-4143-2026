@@ -41,30 +41,23 @@ public record ChoreoTraj(
 	public static final ChoreoTraj CitrusRightSide = new ChoreoTraj(
 	    "CitrusRightSide",
 	    OptionalInt.empty(),
-	    5.254,
-	    new Pose2d(5.665, 2.412, Rotation2d.fromRadians(0)),
+	    6.23673,
+	    new Pose2d(4.47, 0.64, Rotation2d.fromRadians(1.571)),
 	    new Pose2d(2.755, 2.534, Rotation2d.fromRadians(-2.467))
 	);
-	public static final ChoreoTraj CitrusRightSideSecondPassNew = new ChoreoTraj(
-	    "CitrusRightSideSecondPassNew",
+	public static final ChoreoTraj CitrusRightSideSecondPass = new ChoreoTraj(
+	    "CitrusRightSideSecondPass",
 	    OptionalInt.empty(),
-	    8.19474,
-	    new Pose2d(2.95, 2.475, Rotation2d.fromRadians(-3.123)),
-	    new Pose2d(2.95, 2.514, Rotation2d.fromRadians(-2.427))
+	    5.85297,
+	    new Pose2d(2.911, 2.329, Rotation2d.fromRadians(-1.772)),
+	    new Pose2d(2.779, 2.585, Rotation2d.fromRadians(-1.545))
 	);
-	public static final ChoreoTraj CitrusSynergyPt1 = new ChoreoTraj(
-	    "CitrusSynergyPt1",
+	public static final ChoreoTraj CitrusSynergyP1 = new ChoreoTraj(
+	    "CitrusSynergyP1",
 	    OptionalInt.empty(),
-	    2.35982,
-	    new Pose2d(3.495, 5.924, Rotation2d.fromRadians(3.142)),
-	    new Pose2d(1.698, 6.725, Rotation2d.fromRadians(-3.13))
-	);
-	public static final ChoreoTraj CitrusSynergyPt2 = new ChoreoTraj(
-	    "CitrusSynergyPt2",
-	    OptionalInt.empty(),
-	    5.81007,
-	    new Pose2d(1.698, 6.725, Rotation2d.fromRadians(-3.13)),
-	    new Pose2d(2.651, 3.91, Rotation2d.fromRadians(3.128))
+	    1.50605,
+	    new Pose2d(3.548, 7.404, Rotation2d.fromRadians(-1.571)),
+	    new Pose2d(8.262, 7.404, Rotation2d.fromRadians(-1.571))
 	);
 	public static final ChoreoTraj TestPath = new ChoreoTraj(
 	    "TestPath",
@@ -72,6 +65,41 @@ public record ChoreoTraj(
 	    4.1157,
 	    new Pose2d(2.5, 1, Rotation2d.fromRadians(0)),
 	    new Pose2d(2.5, 5, Rotation2d.fromRadians(0))
+	);
+	public static final ChoreoTraj CitrusSynergyP2 = new ChoreoTraj(
+	    "CitrusSynergyP2",
+	    OptionalInt.empty(),
+	    2.51111,
+	    new Pose2d(8.24, 7.404, Rotation2d.fromRadians(-1.571)),
+	    new Pose2d(6.215, 5.368, Rotation2d.fromRadians(3.142))
+	);
+	public static final ChoreoTraj CitrusSynergyP3 = new ChoreoTraj(
+	    "CitrusSynergyP3",
+	    OptionalInt.empty(),
+	    1.50074,
+	    new Pose2d(6.215, 5.368, Rotation2d.fromRadians(3.142)),
+	    new Pose2d(1.532, 5.406, Rotation2d.fromRadians(2.678))
+	);
+	public static final ChoreoTraj CitrusSynergyP4 = new ChoreoTraj(
+	    "CitrusSynergyP4",
+	    OptionalInt.empty(),
+	    2.49784,
+	    new Pose2d(1.532, 5.406, Rotation2d.fromRadians(2.678)),
+	    new Pose2d(0.87, 5.724, Rotation2d.fromRadians(2.678))
+	);
+	public static final ChoreoTraj CitrusSynergyFarBumpP2 = new ChoreoTraj(
+	    "CitrusSynergyFarBumpP2",
+	    OptionalInt.empty(),
+	    2.02015,
+	    new Pose2d(8.24, 7.404, Rotation2d.fromRadians(-1.571)),
+	    new Pose2d(6.062, 2.517, Rotation2d.fromRadians(3.142))
+	);
+	public static final ChoreoTraj CitrusSynergyFarBumpP3 = new ChoreoTraj(
+	    "CitrusSynergyFarBumpP3",
+	    OptionalInt.empty(),
+	    2.31949,
+	    new Pose2d(6.062, 2.517, Rotation2d.fromRadians(-3.142)),
+	    new Pose2d(1.532, 5.406, Rotation2d.fromRadians(2.678))
 	);
 
     /**
@@ -82,10 +110,14 @@ public record ChoreoTraj(
     	Map.entry("CitrusLeftSide", CitrusLeftSide),
 		Map.entry("CitrusLeftSideSecondPass", CitrusLeftSideSecondPass),
 		Map.entry("CitrusRightSide", CitrusRightSide),
-		Map.entry("CitrusRightSideSecondPassNew", CitrusRightSideSecondPassNew),
-		Map.entry("CitrusSynergyPt1", CitrusSynergyPt1),
-		Map.entry("CitrusSynergyPt2", CitrusSynergyPt2),
-		Map.entry("TestPath", TestPath)
+		Map.entry("CitrusRightSideSecondPass", CitrusRightSideSecondPass),
+		Map.entry("CitrusSynergyP1", CitrusSynergyP1),
+		Map.entry("TestPath", TestPath),
+		Map.entry("CitrusSynergyP2", CitrusSynergyP2),
+		Map.entry("CitrusSynergyP3", CitrusSynergyP3),
+		Map.entry("CitrusSynergyP4", CitrusSynergyP4),
+		Map.entry("CitrusSynergyFarBumpP2", CitrusSynergyFarBumpP2),
+		Map.entry("CitrusSynergyFarBumpP3", CitrusSynergyFarBumpP3)
     );
 
     /**
