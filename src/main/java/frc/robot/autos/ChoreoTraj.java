@@ -38,6 +38,13 @@ public record ChoreoTraj(
 	    new Pose2d(2.887, 5.604, Rotation2d.fromRadians(2.165)),
 	    new Pose2d(2.872, 5.535, Rotation2d.fromRadians(1.584))
 	);
+	public static final ChoreoTraj CitrusLeftTrench1 = new ChoreoTraj(
+	    "CitrusLeftTrench1",
+	    OptionalInt.empty(),
+	    4.99499,
+	    new Pose2d(4.405, 7.451, Rotation2d.fromRadians(0)),
+	    new Pose2d(5.336, 6.606, Rotation2d.fromRadians(0))
+	);
 	public static final ChoreoTraj CitrusRightSide = new ChoreoTraj(
 	    "CitrusRightSide",
 	    OptionalInt.empty(),
@@ -81,6 +88,7 @@ public record ChoreoTraj(
     public static final Map<String, ChoreoTraj> ALL_TRAJECTORIES = Map.ofEntries(
     	Map.entry("CitrusLeftSide", CitrusLeftSide),
 		Map.entry("CitrusLeftSideSecondPass", CitrusLeftSideSecondPass),
+		Map.entry("CitrusLeftTrench1", CitrusLeftTrench1),
 		Map.entry("CitrusRightSide", CitrusRightSide),
 		Map.entry("CitrusRightSideSecondPassNew", CitrusRightSideSecondPassNew),
 		Map.entry("CitrusSynergyPt1", CitrusSynergyPt1),

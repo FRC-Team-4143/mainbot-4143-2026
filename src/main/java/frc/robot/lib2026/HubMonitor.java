@@ -180,32 +180,78 @@ public class HubMonitor {
      */
     private static void logStageCountdown(double match_time) {
         String stageName;
-        double timeRemaining;
 
         if (match_time > TRANSITION) {
             stageName = "TRANSITION";
-            timeRemaining = match_time - TRANSITION;
         } else if (match_time > SHIFT_1) {
             stageName = "SHIFT 1";
-            timeRemaining = match_time - SHIFT_1;
         } else if (match_time > SHIFT_2) {
             stageName = "SHIFT 2";
-            timeRemaining = match_time - SHIFT_2;
         } else if (match_time > SHIFT_3) {
             stageName = "SHIFT 3";
-            timeRemaining = match_time - SHIFT_3;
         } else if (match_time > SHIFT_4) {
             stageName = "SHIFT 4";
-            timeRemaining = match_time - SHIFT_4;
         } else if (match_time > END_GAME) {
             stageName = "END GAME";
-            timeRemaining = match_time - END_GAME;
         } else {
             stageName = "INVALID";
-            timeRemaining = 0;
         }
 
         DogLog.log("HubMonitor/CurrentShift", stageName);
-        DogLog.log("HubMonitor/ShiftTimeRemaining", timeRemaining);
+        // Log time until this alliance becomes inactive. Previously this value
+        // represented only time since the stage threshold; that caused confusion
+        // for back-to-back shifts where the alliance would immediately change.
+        // We now compute time until inactive (seconds remaining until the hub is
+        // no longer active for the driver's alliance) and log it to the same
+        // topic so dashboards update without further changes.
+        double timeUntilInactive = computeTimeUntilInactiveForAlliance(match_time);
+        DogLog.log("HubMonitor/ShiftTimeRemaining", timeUntilInactive);
+    }
+
+    /**
+     * Returns true if the specified alliance would be considered active at the
+     * provided match_time.
+     */
+    private static boolean isAllianceActiveAtTime(Alliance alliance, double match_time) {
+        ActiveAlliance active = getActiveAlliance(match_time);
+        if (active == ActiveAlliance.BOTH_ACTIVE) return true;
+        if (alliance == Alliance.Blue) return active == ActiveAlliance.BLUE_ACTIVE;
+        return active == ActiveAlliance.RED_ACTIVE;
+    }
+
+    /**
+     * Compute seconds until the hub becomes inactive for the driver's alliance.
+     * If the hub is not currently active for the alliance, returns 0.
+     *
+     * @param match_time current match time
+     * @return seconds until inactive (>= 0)
+     */
+    private static double computeTimeUntilInactiveForAlliance(double match_time) {
+        Optional<Alliance> allianceOpt = DriverStation.getAlliance();
+        if (allianceOpt.isEmpty()) return 0;
+        Alliance alliance = allianceOpt.get();
+
+        // If not currently active for this alliance, return 0
+        if (!isAllianceActiveAtTime(alliance, match_time)) return 0;
+
+        // Candidate breakpoints (times remaining) where active-alliance can change.
+        double[] breakpoints = new double[] {TRANSITION, SHIFT_1, SHIFT_2, SHIFT_3, SHIFT_4, END_GAME, AUTO, 0.0};
+
+        // Find the earliest future time (i.e., smaller match_time) when the alliance
+        // is no longer active. Since match_time counts down, we look for the largest
+        // breakpoint less than current match_time where the alliance becomes inactive
+        for (double bp : breakpoints) {
+            if (bp >= match_time) continue; // only consider future times (smaller remaining time)
+
+            // Check just below the breakpoint to determine the active mapping after the transition
+            double check_time = bp - 1e-6;
+            if (!isAllianceActiveAtTime(alliance, check_time)) {
+                // Hub becomes inactive at this breakpoint (or immediately after)
+                return match_time - bp;
+            }
+        }
+
+        // If none of the breakpoints cause inactivity, then hub remains active until time 0
+        return match_time;
     }
 }
