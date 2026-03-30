@@ -209,8 +209,7 @@ public class HubMonitor {
     }
 
     /**
-     * Returns true if the specified alliance would be considered active at the
-     * provided match_time.
+     * Returns true if the specified alliance would be considered active at the provided match_time.
      */
     private static boolean isAllianceActiveAtTime(Alliance alliance, double match_time) {
         ActiveAlliance active = getActiveAlliance(match_time);
@@ -220,8 +219,8 @@ public class HubMonitor {
     }
 
     /**
-     * Compute seconds until the hub becomes inactive for the driver's alliance.
-     * If the hub is not currently active for the alliance, returns 0.
+     * Compute seconds until the hub becomes inactive for the driver's alliance. If the hub is not
+     * currently active for the alliance, returns 0.
      *
      * @param match_time current match time
      * @return seconds until inactive (>= 0)
@@ -235,7 +234,8 @@ public class HubMonitor {
         if (!isAllianceActiveAtTime(alliance, match_time)) return 0;
 
         // Candidate breakpoints (times remaining) where active-alliance can change.
-        double[] breakpoints = new double[] {TRANSITION, SHIFT_1, SHIFT_2, SHIFT_3, SHIFT_4, END_GAME, AUTO, 0.0};
+        double[] breakpoints =
+                new double[] {TRANSITION, SHIFT_1, SHIFT_2, SHIFT_3, SHIFT_4, END_GAME, AUTO, 0.0};
 
         // Find the earliest future time (i.e., smaller match_time) when the alliance
         // is no longer active. Since match_time counts down, we look for the largest
@@ -253,5 +253,16 @@ public class HubMonitor {
 
         // If none of the breakpoints cause inactivity, then hub remains active until time 0
         return match_time;
+    }
+
+    /**
+     * Public accessor for time until the hub becomes inactive for the driver's alliance. Returns 0
+     * if the hub is not currently active for the alliance.
+     *
+     * @param match_time current match time
+     * @return seconds until inactive (>= 0)
+     */
+    public static double getTimeUntilInactiveForAlliance(double match_time) {
+        return computeTimeUntilInactiveForAlliance(match_time);
     }
 }

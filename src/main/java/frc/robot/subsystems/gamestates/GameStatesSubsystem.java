@@ -3,9 +3,11 @@ package frc.robot.subsystems.gamestates;
 import com.marswars.subsystem.MwSubsystem;
 import com.marswars.subsystem.SubsystemIoBase;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotState;
 import frc.robot.lib2026.FieldRegions;
 import frc.robot.lib2026.FieldTargets;
+import frc.robot.lib2026.HubMonitor;
 import frc.robot.subsystems.gamestates.GameStatesConstants.GameStates;
 import frc.robot.subsystems.localization.LocalizationSubsystem;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
@@ -53,6 +55,32 @@ public class GameStatesSubsystem extends MwSubsystem<GameStates, GameStatesConst
 
         if (RobotState.isAutonomous()) {
             system_state_ = GameStates.AUTO;
+            return;
+        }
+
+        // Update goal active status from HubMonitor each loop
+        goal_active_ = HubMonitor.isHubActive(DriverStation.getMatchTime());
+
+        // If the hub for our alliance is about to become inactive and we're in our
+        // alliance zone, allow a pass (dump/pass from alliance zone) so we don't
+        // have to drive into the neutral zone to pass when time is running out.
+        final double ALLIANCE_PASS_THRESHOLD_SECONDS =
+                3.0; // seconds until inactive to trigger pass
+        double timeUntilInactive =
+                HubMonitor.getTimeUntilInactiveForAlliance(DriverStation.getMatchTime());
+        Pose2d robotpose_pre = LocalizationSubsystem.getInstance().getFieldPose();
+        if (timeUntilInactive > 0
+                && timeUntilInactive <= ALLIANCE_PASS_THRESHOLD_SECONDS
+                && isInAllianceZone(robotpose_pre)
+                && system_state_ == GameStates.HOLD
+                && !pass_overide_) {
+            system_state_ = GameStates.PASS;
+            // Set tolerances appropriate for passing
+            ShooterSubsystem.getInstance()
+                    .setShootingTolerances(
+                            FieldTargets.Shooter.FLYWHEEL_SPEED_TOLERANCE,
+                            FieldTargets.Shooter.HOOD_POSITION_TOLERANCE,
+                            FieldTargets.Shooter.ROTATION_ANGLE_TOLERANCE);
             return;
         }
 
