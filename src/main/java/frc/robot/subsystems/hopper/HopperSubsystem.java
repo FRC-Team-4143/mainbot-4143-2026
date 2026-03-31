@@ -91,7 +91,7 @@ public class HopperSubsystem extends MwSubsystem<HopperStates, HopperConstants> 
     public void updateLogic(double timestamp) {
         switch (system_state_) {
             case INTAKE:
-            case SHOOTING: 
+            case SHOOTING:
                 hopper_.setTargetVelocity(manual_hopper_velocity_);
                 break;
             case UNJAM_REVERSE:
@@ -116,19 +116,25 @@ public class HopperSubsystem extends MwSubsystem<HopperStates, HopperConstants> 
     // PUBLIC HELPER METHODS
     // =============================================================================
     /**
-     *  Command to reverse the hopper for a short duration to attempt to clear jams, then return to idle
+     * Command to reverse the hopper for a short duration to attempt to clear jams, then return to
+     * idle
      */
-    public Command reverseHopperIdle(){
-        return Commands.startEnd(() -> setWantedState(HopperStates.REVERSE),
-        () -> setWantedState(HopperStates.IDLE));
+    public Command reverseHopperIdle() {
+        return Commands.startEnd(
+                () -> setWantedState(HopperStates.REVERSE),
+                () -> setWantedState(HopperStates.IDLE));
     }
+
     /**
-     * Command to reverse the hopper for a short duration to attempt to clear jams, then return to shooting mode
+     * Command to reverse the hopper for a short duration to attempt to clear jams, then return to
+     * shooting mode
      */
-    public Command reverseHopperShooting(){
-        return Commands.startEnd(() -> setWantedState(HopperStates.REVERSE),
-        () -> setWantedState(HopperStates.SHOOTING));
+    public Command reverseHopperShooting() {
+        return Commands.startEnd(
+                () -> setWantedState(HopperStates.REVERSE),
+                () -> setWantedState(HopperStates.SHOOTING));
     }
+
     /**
      * @return true if jammed, false otherwise
      */

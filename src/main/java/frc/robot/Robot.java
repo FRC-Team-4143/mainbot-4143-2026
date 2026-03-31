@@ -56,7 +56,11 @@ public class Robot extends TimedRobot {
         AutoManager.getInstance()
                 .registerAutos(
                         // Add your auto routines here as you create them
-                        new Citrus_Left_Side(), new Citrus_Right_Side(), new Shoot(), new CitrusSynergy(), new CitrusSynergyFarBump()
+                        new Citrus_Left_Side(),
+                        new Citrus_Right_Side(),
+                        new Shoot(),
+                        new CitrusSynergy(),
+                        new CitrusSynergyFarBump()
                         // new TestAuto()
                         );
 
