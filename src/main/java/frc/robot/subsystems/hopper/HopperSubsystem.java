@@ -6,7 +6,8 @@ import com.marswars.subsystem.SubsystemIoBase;
 import dev.doglog.DogLog;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.wpilibj.Timer;
-import frc.robot.OI;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.hopper.HopperConstants.HopperStates;
 import java.util.Arrays;
 import java.util.List;
@@ -93,9 +94,6 @@ public class HopperSubsystem extends MwSubsystem<HopperStates, HopperConstants> 
         switch (system_state_) {
             case INTAKE:
             case SHOOTING: 
-                if(OI.getDriverControllerX())
-                hopper_.setTargetVelocity(-manual_hopper_velocity_);
-                else
                 hopper_.setTargetVelocity(manual_hopper_velocity_);
                 break;
             case UNJAM_REVERSE:
@@ -104,13 +102,13 @@ public class HopperSubsystem extends MwSubsystem<HopperStates, HopperConstants> 
             case UNJAM_FORWARD:
                 hopper_.setTargetVelocity(manual_hopper_velocity_);
                 break;
+            case REVERSE:
+                hopper_.setTargetVelocity(-manual_hopper_velocity_);
+                break;
             case TUNING:
                 break;
             default:
             case IDLE:
-                if(OI.getDriverControllerA())
-                hopper_.setTargetVelocity(-manual_hopper_velocity_);
-                else
                 hopper_.setTargetDutyCycle(0.0);
                 break;
         }
@@ -119,7 +117,20 @@ public class HopperSubsystem extends MwSubsystem<HopperStates, HopperConstants> 
     // =============================================================================
     // PUBLIC HELPER METHODS
     // =============================================================================
-
+    /**
+     *  Command to reverse the hopper for a short duration to attempt to clear jams, then return to idle
+     */
+    public Command reverseHopperIdle(){
+        return Commands.startEnd(() -> setWantedState(HopperStates.REVERSE),
+        () -> setWantedState(HopperStates.IDLE));
+    }
+    /**
+     * Command to reverse the hopper for a short duration to attempt to clear jams, then return to shooting mode
+     */
+    public Command reverseHopperShooting(){
+        return Commands.startEnd(() -> setWantedState(HopperStates.REVERSE),
+        () -> setWantedState(HopperStates.SHOOTING));
+    }
     /**
      * @return true if jammed, false otherwise
      */

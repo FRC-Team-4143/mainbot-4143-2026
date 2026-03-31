@@ -7,8 +7,8 @@ import com.marswars.subsystem.SubsystemIoBase;
 import dev.doglog.DogLog;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import frc.robot.OI;
 import frc.robot.subsystems.intake.IntakeConstants.IntakeStates;
 import java.util.Arrays;
 import java.util.List;
@@ -116,12 +116,7 @@ public class IntakeSubsystem extends MwSubsystem<IntakeStates, IntakeConstants> 
                 pivot_.setTargetPosition(CONSTANTS.PIVOT_DEPLOY_POSITION);
                 break;
             case DEPLOYED:
-                if(OI.getDriverControllerA()){
-                    roller_.setTargetDutyCycle(-manual_roller_duty_cycle_);
-                }
-                else{
-                    roller_.setTargetDutyCycle(0.0);
-                }
+                roller_.setTargetDutyCycle(0.0);
                 pivot_.setTargetDutyCycle(0.0);
                 break;
             case INTAKE:
@@ -129,6 +124,10 @@ public class IntakeSubsystem extends MwSubsystem<IntakeStates, IntakeConstants> 
                 pivot_.setTargetDutyCycle(0.0);
                 break;
             case OUTTAKE:
+                roller_.setTargetDutyCycle(-manual_roller_duty_cycle_);
+                pivot_.setTargetDutyCycle(0.0);
+                break;
+            case REVERSE:
                 roller_.setTargetDutyCycle(-manual_roller_duty_cycle_);
                 pivot_.setTargetDutyCycle(0.0);
                 break;
@@ -147,6 +146,9 @@ public class IntakeSubsystem extends MwSubsystem<IntakeStates, IntakeConstants> 
     // PUBLIC HELPER METHODS
     // =============================================================================
 
+    public Command reverseIntake(){
+        return Commands.startEnd(() -> setWantedState(IntakeStates.REVERSE), () -> setWantedState(IntakeStates.DEPLOYED));
+    }
     /**
      * Returns the current angle of the pivot joint in radians. (Used for testing and visualization
      * purposes)

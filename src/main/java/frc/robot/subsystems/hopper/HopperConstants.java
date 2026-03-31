@@ -23,6 +23,8 @@ public class HopperConstants extends MwConstants {
         UNJAM_REVERSE,
         /** Unjamming by running hopper forward */
         UNJAM_FORWARD,
+        /** Running hopper in reverse */
+        REVERSE,
         /** Manual tuning mode for testing and calibration */
         TUNING,
     }
