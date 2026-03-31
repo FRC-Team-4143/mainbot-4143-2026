@@ -25,7 +25,7 @@ public class Citrus_Right_Side extends Auto {
         // These should be loaded in the order they will be used to ensure correct start poses
         // =============================================================================
         loadTrajectory(ChoreoTraj.CitrusRightSide.name());
-        loadTrajectory(ChoreoTraj.CitrusRightSideSecondPassNew.name());
+        loadTrajectory(ChoreoTraj.CitrusRightSideSecondPass.name());
 
         // =============================================================================
         // EVENT TRIGGER BINDING
@@ -44,72 +44,21 @@ public class Citrus_Right_Side extends Auto {
                                 () ->
                                         IntakeSubsystem.getInstance()
                                                 .setWantedState(IntakeStates.STORE)));
-        SwerveSubsystem.getInstance()
-                .getChoreoEventTimeTrigger("Shooting")
-                .onTrue(
-                        Commands.runOnce(
-                                () -> {
-                                    ShooterSubsystem.getInstance()
-                                            .setWantedState(ShooterStates.SHOOT);
-                                    HopperSubsystem.getInstance()
-                                            .setWantedState(HopperStates.SHOOTING);
-                                    SwerveSubsystem.getInstance()
-                                            .setWantedState(SwerveStates.CHOREO_PATH_ROTATION_LOCK);
-                                }));
-        SwerveSubsystem.getInstance()
-                .getChoreoEventTimeTrigger("Shooting and Intake Out")
-                .onTrue(
-                        Commands.runOnce(
-                                () -> {
-                                    ShooterSubsystem.getInstance()
-                                            .setWantedState(ShooterStates.SHOOT);
-                                    HopperSubsystem.getInstance()
-                                            .setWantedState(HopperStates.SHOOTING);
-                                    SwerveSubsystem.getInstance()
-                                            .setWantedState(SwerveStates.CHOREO_PATH_ROTATION_LOCK);
-                                    IntakeSubsystem.getInstance()
-                                            .setWantedState(IntakeStates.INTAKE);
-                                }));
-        SwerveSubsystem.getInstance()
-                .getChoreoEventTimeTrigger("Stop Shooting")
-                .onTrue(
-                        Commands.runOnce(
-                                () -> {
-                                    ShooterSubsystem.getInstance()
-                                            .setWantedState(ShooterStates.TRACKING);
-                                    HopperSubsystem.getInstance().setWantedState(HopperStates.IDLE);
-                                    SwerveSubsystem.getInstance()
-                                            .setWantedState(SwerveStates.CHOREO_PATH);
-                                }));
-        SwerveSubsystem.getInstance()
-                .getChoreoEventTimeTrigger("Deploy Climber")
-                .onTrue(
-                        Commands.runOnce(
-                                () -> {
-                                    ClimberSubsystem.getInstance()
-                                            .setWantedState(ClimberStates.DEPLOY);
-                                }));
+       
 
         // =============================================================================
         // AUTO COMMAND SEQUENCE
         // =============================================================================
         addCommands(
                 // Drive over the bump at a set speed
-                Commands.startEnd(
-                                () -> {
-                                    SwerveSubsystem.getInstance()
-                                            .setDesiredChassisSpeed(new ChassisSpeeds(5, 0, 0));
-                                    SwerveSubsystem.getInstance()
-                                            .setWantedState(SwerveStates.CHASSIS_SPEEDS);
-                                },
+                Commands.runOnce(
                                 () -> {
                                     ShooterSubsystem.getInstance()
                                             .setTarget(FieldTargets.Shooter.HUB);
-                                    LocalizationSubsystem.getInstance().resetPoseEstimatorAuto();
                                     ShooterSubsystem.getInstance()
                                             .setWantedState(ShooterStates.TRACKING);
-                                })
-                        .withTimeout(1.7),
+                                }),
+                       
                 // Set the initial trajectory
                 SwerveSubsystem.getInstance()
                         .setDesiredChoreoTrajectoryCommand(
@@ -147,7 +96,7 @@ public class Citrus_Right_Side extends Auto {
                 // Set the second trajectory for the second pass
                 SwerveSubsystem.getInstance()
                         .setDesiredChoreoTrajectoryCommand(
-                                getTrajectory(ChoreoTraj.CitrusRightSideSecondPassNew.name())),
+                                getTrajectory(ChoreoTraj.CitrusRightSideSecondPass.name())),
                 // Start Choreo following
                 Commands.startEnd(
                                 () ->

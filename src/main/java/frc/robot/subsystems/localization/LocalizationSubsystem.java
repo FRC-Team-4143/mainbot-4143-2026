@@ -27,7 +27,6 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.lib2026.FieldConstants;
-import frc.robot.lib2026.FieldRegions;
 import frc.robot.subsystems.localization.LocalizationConstants.LocalizationStates;
 import frc.robot.subsystems.simulation.SimulationSubsystem;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
@@ -320,10 +319,10 @@ public class LocalizationSubsystem extends MwSubsystem<LocalizationStates, Local
         for (TagSolutionData vision_data : vision_measurements) {
             // Skip measurement with no detected tags
 
-            if (!DriverStation.isDisabled())
-                if (FieldRegions.ALLIANCE_ZONE.contains(getFieldPose()))
-                    if (vision_data.detectedIds.size() < CONSTANTS.MIN_TAG_COUNT_FOR_VISION_UPDATE)
-                        continue;
+            // if (!DriverStation.isDisabled())
+            //     if (FieldRegions.ALLIANCE_ZONE.contains(getFieldPose()))
+            if (vision_data.detectedIds.size() < CONSTANTS.MIN_TAG_COUNT_FOR_VISION_UPDATE)
+                continue;
 
             if (vision_data.pose.getX() < 0
                     || vision_data.pose.getX() > FieldConstants.FIELD_LENGTH

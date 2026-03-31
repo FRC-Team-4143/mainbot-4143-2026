@@ -178,10 +178,10 @@ public class ShooterConstants extends MwConstants {
         // Populate hood angle map (distance in meters -> angle in radians)
         // Empirically determined values from testing
         HUB_LAUNCH_CALCULATOR.addHoodAnglePoint(0.75, 1.399);
-        HUB_LAUNCH_CALCULATOR.addHoodAnglePoint(1.34, 1.35);
-        HUB_LAUNCH_CALCULATOR.addHoodAnglePoint(1.78, 1.326);
-        HUB_LAUNCH_CALCULATOR.addHoodAnglePoint(2.17, 1.3);
-        HUB_LAUNCH_CALCULATOR.addHoodAnglePoint(2.81, 1.25);
+        HUB_LAUNCH_CALCULATOR.addHoodAnglePoint(1.34, 1.330);
+        HUB_LAUNCH_CALCULATOR.addHoodAnglePoint(1.78, 1.325);
+        HUB_LAUNCH_CALCULATOR.addHoodAnglePoint(2.17, 1.275);
+        HUB_LAUNCH_CALCULATOR.addHoodAnglePoint(2.81, 1.225);
         HUB_LAUNCH_CALCULATOR.addHoodAnglePoint(3.82, 1.175);
         HUB_LAUNCH_CALCULATOR.addHoodAnglePoint(4.40, 1.114);
         HUB_LAUNCH_CALCULATOR.addHoodAnglePoint(4.77, 1.114);
@@ -190,16 +190,16 @@ public class ShooterConstants extends MwConstants {
 
         // Populate flywheel speed map (distance in meters -> speed in rad/s)
         // Empirically determined values from testing
-        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(0.75, 262);
-        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(1.34, 291);
-        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(1.78, 297);
-        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(2.17, 307);
-        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(2.81, 327);
-        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(3.82, 342);
-        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(4.40, 349.5);
-        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(4.77, 366);
-        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(5.60, 445);
-        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(6.50, 518);
+        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(0.75, 230);
+        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(1.34, 240);
+        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(1.78, 280);
+        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(2.17, 285.66);
+        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(2.81, 290);
+        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(3.82, 315);
+        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(4.40, 330);
+        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(4.77, 340);
+        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(5.60, 445); // needs updating
+        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(6.50, 518); // needs updating
 
         // Populate time of flight map (distance in meters -> time in seconds)
         // Empirically determined values from testing
@@ -247,7 +247,6 @@ public class ShooterConstants extends MwConstants {
         indexer_leader_config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
         indexer_leader_config.Slot1 = INDEXER_VELOCITY_GAINS;
         INDEXER_LEADER_MOTOR_CONFIG.apply(indexer_leader_config);
-        
 
         // Configure Indexer FOLLOWER Motor
         INDEXER_FOLLOWER_MOTOR_CONFIG.can_id = INDEXER_FOLLOWER_ID;
