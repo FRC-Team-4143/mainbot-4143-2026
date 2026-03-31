@@ -27,6 +27,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.lib2026.FieldConstants;
+import frc.robot.lib2026.FieldRegions;
 import frc.robot.subsystems.localization.LocalizationConstants.LocalizationStates;
 import frc.robot.subsystems.simulation.SimulationSubsystem;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
@@ -318,17 +319,15 @@ public class LocalizationSubsystem extends MwSubsystem<LocalizationStates, Local
 
         for (TagSolutionData vision_data : vision_measurements) {
             // Skip measurement with no detected tags
+            // Additionally, if the robot is enabled and in the alliance zone, checks the required minimum number of detected tags to prevent bad vision updates from partial detections while moving through the alliance zone
+            if (!DriverStation.isDisabled() && 
+            FieldRegions.ALLIANCE_ZONE.contains(getFieldPose()) && 
+            vision_data.detectedIds.size() < CONSTANTS.MIN_TAG_COUNT_FOR_VISION_UPDATE)
+                        continue;
 
-            // if (!DriverStation.isDisabled())
-            //     if (FieldRegions.ALLIANCE_ZONE.contains(getFieldPose()))
-            if (vision_data.detectedIds.size() < CONSTANTS.MIN_TAG_COUNT_FOR_VISION_UPDATE)
+            if(!isVisionMeasurementValid(vision_data)){
                 continue;
 
-            if (vision_data.pose.getX() < 0
-                    || vision_data.pose.getX() > FieldConstants.FIELD_LENGTH
-                    || vision_data.pose.getY() < 0
-                    || vision_data.pose.getY() > FieldConstants.FIELD_WIDTH) {
-                continue;
             }
 
             double distance_difference =
@@ -407,6 +406,20 @@ public class LocalizationSubsystem extends MwSubsystem<LocalizationStates, Local
             pose_estimator.updateWithTime(
                     measurement.timestamp, measurement.gyro_yaw, measurement.module_positions);
         }
+    }
+    /**
+     * Checks if a vision measurement is valid based if the pose is within the field boundaries.
+     * */ 
+    private boolean isVisionMeasurementValid(TagSolutionData vision_data) {
+        // Check for valid pose
+        if (vision_data.pose.getX() < 0
+                || vision_data.pose.getX() > FieldConstants.FIELD_LENGTH
+                || vision_data.pose.getY() < 0
+                || vision_data.pose.getY() > FieldConstants.FIELD_WIDTH) {
+            return false;
+        }
+
+        return true;
     }
     ;
 }
