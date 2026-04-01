@@ -124,7 +124,8 @@ public class ShooterConstants extends MwConstants {
             Units.degreesToRadians(51.57); // Hood angle for passing
 
     public final double HOOD_HOMING_DUTY_CYCLE = 0.15;
-    public final double HOOD_HOMMING_CURRENT_THRESHOLD = 5.0; // Amps, threshold for detecting stall during homing
+    public final double HOOD_HOMMING_CURRENT_THRESHOLD =
+            5.0; // Amps, threshold for detecting stall during homing
 
     @Deprecated
     public final double HOOD_MANUAL_ANGLE =
