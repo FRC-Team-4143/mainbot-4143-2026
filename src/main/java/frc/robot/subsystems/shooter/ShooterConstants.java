@@ -40,7 +40,9 @@ public class ShooterConstants extends MwConstants {
         /** Smooth return to zero velocity for clean disable */
         SPIN_DOWN,
         /** Aiming at target with shooter spinning and robot rotating, with no intent to SHOOT */
-        AIMING
+        AIMING,
+        /** Homing the hood to its home position */
+        HOOD_HOMING
     }
 
     public enum TargetType {
@@ -120,6 +122,9 @@ public class ShooterConstants extends MwConstants {
             Units.degreesToRadians(72.76 - 1.0); // Hood angle for hub shots
     public final double HOOD_MANUAL_PASS_ANGLE =
             Units.degreesToRadians(51.57); // Hood angle for passing
+
+    public final double HOOD_HOMING_DUTY_CYCLE = 0.15;
+    public final double HOOD_HOMMING_CURRENT_THRESHOLD = 5.0; // Amps, threshold for detecting stall during homing
 
     @Deprecated
     public final double HOOD_MANUAL_ANGLE =

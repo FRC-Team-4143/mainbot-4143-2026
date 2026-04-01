@@ -122,6 +122,7 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
                 "Home Hood Position",
                 Commands.runOnce(() -> hood_.setCurrentPosition(CONSTANTS.HOOD_HOME_POSITION))
                         .ignoringDisable(true));
+        SmartDashboard.putData("Auto Home Hood", Commands.runOnce(() -> setWantedState(ShooterStates.HOOD_HOMING)));
     }
 
     // reset
@@ -139,7 +140,11 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
     // handleStateTransition
     @Override
     public void handleStateTransition(ShooterStates wanted) {
-        if (wanted == ShooterStates.SHOOT
+        if(hood_.getLeaderCurrent()> CONSTANTS.HOOD_HOMMING_CURRENT_THRESHOLD && system_state_ == ShooterStates.HOOD_HOMING){
+            hood_.setCurrentPosition(CONSTANTS.HOOD_HOME_POSITION);
+            setWantedState(ShooterStates.IDLE);
+            system_state_ = ShooterStates.IDLE;
+        } else if (wanted == ShooterStates.SHOOT
                 && system_state_ != ShooterStates.SHOOT_WAIT
                 && system_state_ != ShooterStates.SHOOT) {
             system_state_ = ShooterStates.SHOOT_WAIT;
@@ -280,6 +285,9 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
                 flywheel_.setTargetVelocityMotionProfile(0);
                 indexer_.setTargetDutyCycle(0);
                 hood_.setTargetPosition(CONSTANTS.HOOD_IDLE_POSITION);
+                break;
+            case HOOD_HOMING:
+                hood_.setTargetDutyCycle(CONSTANTS.HOOD_HOMING_DUTY_CYCLE);
                 break;
         }
 
