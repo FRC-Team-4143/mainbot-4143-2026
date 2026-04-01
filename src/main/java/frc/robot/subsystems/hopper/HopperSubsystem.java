@@ -6,7 +6,8 @@ import com.marswars.subsystem.SubsystemIoBase;
 import dev.doglog.DogLog;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.wpilibj.Timer;
-import frc.robot.OI;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.hopper.HopperConstants.HopperStates;
 import java.util.Arrays;
 import java.util.List;
@@ -91,8 +92,7 @@ public class HopperSubsystem extends MwSubsystem<HopperStates, HopperConstants> 
         switch (system_state_) {
             case INTAKE:
             case SHOOTING:
-                if (OI.getDriverControllerX()) hopper_.setTargetVelocity(-manual_hopper_velocity_);
-                else hopper_.setTargetVelocity(manual_hopper_velocity_);
+                hopper_.setTargetVelocity(manual_hopper_velocity_);
                 break;
             case UNJAM_REVERSE:
                 hopper_.setTargetVelocity(-manual_hopper_velocity_);
@@ -100,12 +100,14 @@ public class HopperSubsystem extends MwSubsystem<HopperStates, HopperConstants> 
             case UNJAM_FORWARD:
                 hopper_.setTargetVelocity(manual_hopper_velocity_);
                 break;
+            case REVERSE:
+                hopper_.setTargetVelocity(-manual_hopper_velocity_);
+                break;
             case TUNING:
                 break;
             default:
             case IDLE:
-                if (OI.getDriverControllerA()) hopper_.setTargetVelocity(-manual_hopper_velocity_);
-                else hopper_.setTargetDutyCycle(0.0);
+                hopper_.setTargetDutyCycle(0.0);
                 break;
         }
     }
@@ -113,6 +115,7 @@ public class HopperSubsystem extends MwSubsystem<HopperStates, HopperConstants> 
     // =============================================================================
     // PUBLIC HELPER METHODS
     // =============================================================================
+
 
     /**
      * @return true if jammed, false otherwise

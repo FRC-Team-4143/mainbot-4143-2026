@@ -1,17 +1,13 @@
 package frc.robot.autos;
 
 import com.marswars.auto.Auto;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.lib2026.FieldTargets;
-import frc.robot.subsystems.climber.ClimberConstants.ClimberStates;
-import frc.robot.subsystems.climber.ClimberSubsystem;
 import frc.robot.subsystems.hopper.HopperConstants.HopperStates;
 import frc.robot.subsystems.hopper.HopperSubsystem;
 import frc.robot.subsystems.intake.IntakeConstants.IntakeStates;
 import frc.robot.subsystems.intake.IntakeSubsystem;
-import frc.robot.subsystems.localization.LocalizationSubsystem;
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterStates;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.swerve.SwerveConstants.SwerveStates;
@@ -44,7 +40,6 @@ public class Citrus_Right_Side extends Auto {
                                 () ->
                                         IntakeSubsystem.getInstance()
                                                 .setWantedState(IntakeStates.STORE)));
-       
 
         // =============================================================================
         // AUTO COMMAND SEQUENCE
@@ -52,13 +47,11 @@ public class Citrus_Right_Side extends Auto {
         addCommands(
                 // Drive over the bump at a set speed
                 Commands.runOnce(
-                                () -> {
-                                    ShooterSubsystem.getInstance()
-                                            .setTarget(FieldTargets.Shooter.HUB);
-                                    ShooterSubsystem.getInstance()
-                                            .setWantedState(ShooterStates.TRACKING);
-                                }),
-                       
+                        () -> {
+                            ShooterSubsystem.getInstance().setTarget(FieldTargets.Shooter.HUB);
+                            ShooterSubsystem.getInstance().setWantedState(ShooterStates.TRACKING);
+                        }),
+
                 // Set the initial trajectory
                 SwerveSubsystem.getInstance()
                         .setDesiredChoreoTrajectoryCommand(

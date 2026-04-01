@@ -13,6 +13,10 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.lib2026.HubMonitor;
 import frc.robot.subsystems.climber.ClimberSubsystem;
+import frc.robot.subsystems.hopper.HopperConstants.HopperStates;
+import frc.robot.subsystems.hopper.HopperSubsystem;
+import frc.robot.subsystems.intake.IntakeConstants.IntakeStates;
+import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.localization.LocalizationSubsystem;
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterStates;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
@@ -72,6 +76,15 @@ public abstract class OI {
         driver_controller_.back().onTrue(ControlCommands.reverseClimbingStage());
         driver_controller_.y().whileTrue(ControlCommands.manualShootFuelCommand());
         driver_controller_.b().whileTrue(ControlCommands.manualPassFuelCommand());
+        driver_controller_.x().whileTrue(Commands.startEnd(
+                () -> HopperSubsystem.getInstance().setWantedState(HopperStates.REVERSE),
+                () -> HopperSubsystem.getInstance().setWantedState(HopperStates.SHOOTING)));
+        driver_controller_.a().whileTrue(Commands.startEnd(
+                () -> HopperSubsystem.getInstance().setWantedState(HopperStates.REVERSE),
+                () -> HopperSubsystem.getInstance().setWantedState(HopperStates.IDLE)));
+        driver_controller_.a().whileTrue(Commands.startEnd(
+                () -> IntakeSubsystem.getInstance().setWantedState(IntakeStates.REVERSE),
+                () -> IntakeSubsystem.getInstance().setWantedState(IntakeStates.IDLE)));
         // =============================================================================
         // OPERATOR CONTROLLER BINDINGS
         // =============================================================================
@@ -143,14 +156,6 @@ public abstract class OI {
      */
     public static double getDriverJoystickRightX() {
         return driver_controller_.getRightX();
-    }
-
-    public static boolean getDriverControllerX() {
-        return driver_controller_.x().getAsBoolean();
-    }
-
-    public static boolean getDriverControllerA() {
-        return driver_controller_.a().getAsBoolean();
     }
 
     /**
