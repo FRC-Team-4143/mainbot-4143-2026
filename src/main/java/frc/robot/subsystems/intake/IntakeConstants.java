@@ -28,6 +28,8 @@ public class IntakeConstants extends MwConstants {
         OUTTAKE,
         /** Idle state with intake mechanisms stopped */
         IDLE,
+        /** Running intake in reverse to unjam */
+        REVERSE,
         /** Manual tuning mode for testing and calibration */
         TUNING
     }
@@ -49,6 +51,7 @@ public class IntakeConstants extends MwConstants {
     public final boolean ROLLER_FOLLOWER_MOTOR_INVERTED = true;
     public final double ROLLER_GEAR_RATIO = 1.0;
     public final double INTAKE_DUTY_CYCLE = 1.0;
+    public final double ROLLER_STATOR_CURRENT_LIMIT = 60;
     // =============================================================================
     // MECHANICAL CONSTANTS - PIVOT
     // =============================================================================
@@ -90,7 +93,8 @@ public class IntakeConstants extends MwConstants {
         ROLLER_MOTOR_CONFIG.canbus_name = "rio";
         TalonFXConfiguration roller_config = new TalonFXConfiguration();
         roller_config.MotorOutput.Inverted = PhoenixUtil.toInvertedValue(ROLLER_MOTOR_INVERTED);
-        roller_config.CurrentLimits.StatorCurrentLimitEnable = false;
+        roller_config.CurrentLimits.StatorCurrentLimit = ROLLER_STATOR_CURRENT_LIMIT;
+        roller_config.CurrentLimits.StatorCurrentLimitEnable = true;
         ROLLER_MOTOR_CONFIG.apply(roller_config);
 
         // Configure Roller Follower Motor
@@ -100,7 +104,8 @@ public class IntakeConstants extends MwConstants {
         TalonFXConfiguration roller_follower_fx_config = new TalonFXConfiguration();
         roller_follower_fx_config.MotorOutput.Inverted =
                 PhoenixUtil.toInvertedValue(ROLLER_FOLLOWER_MOTOR_INVERTED);
-        roller_follower_fx_config.CurrentLimits.StatorCurrentLimitEnable = false;
+        roller_follower_fx_config.CurrentLimits.StatorCurrentLimit = ROLLER_STATOR_CURRENT_LIMIT;
+        roller_follower_fx_config.CurrentLimits.StatorCurrentLimitEnable = true;
         ROLLER_FOLLOWER_MOTOR_CONFIG.apply(roller_follower_fx_config);
 
         // Configure Pivot Motor

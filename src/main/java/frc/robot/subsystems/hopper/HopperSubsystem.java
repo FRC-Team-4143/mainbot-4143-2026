@@ -6,6 +6,8 @@ import com.marswars.subsystem.SubsystemIoBase;
 import dev.doglog.DogLog;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.hopper.HopperConstants.HopperStates;
 import java.util.Arrays;
 import java.util.List;
@@ -37,7 +39,6 @@ public class HopperSubsystem extends MwSubsystem<HopperStates, HopperConstants> 
                         "Hopper",
                         List.of(CONSTANTS.HOPPER_MOTOR_CONFIG),
                         CONSTANTS.HOPPER_GEAR_RATIO);
-
 
         DogLog.tunable(
                 getSubsystemKey() + "/Hopper/TargetVelocity",
@@ -99,6 +100,9 @@ public class HopperSubsystem extends MwSubsystem<HopperStates, HopperConstants> 
             case UNJAM_FORWARD:
                 hopper_.setTargetVelocity(manual_hopper_velocity_);
                 break;
+            case REVERSE:
+                hopper_.setTargetVelocity(-manual_hopper_velocity_);
+                break;
             case TUNING:
                 break;
             default:
@@ -111,6 +115,7 @@ public class HopperSubsystem extends MwSubsystem<HopperStates, HopperConstants> 
     // =============================================================================
     // PUBLIC HELPER METHODS
     // =============================================================================
+
 
     /**
      * @return true if jammed, false otherwise

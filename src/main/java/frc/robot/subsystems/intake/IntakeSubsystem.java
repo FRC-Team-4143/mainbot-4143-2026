@@ -7,6 +7,7 @@ import com.marswars.subsystem.SubsystemIoBase;
 import dev.doglog.DogLog;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.intake.IntakeConstants.IntakeStates;
 import java.util.Arrays;
@@ -35,7 +36,9 @@ public class IntakeSubsystem extends MwSubsystem<IntakeStates, IntakeConstants> 
                 new RollerMech(
                         getSubsystemKey(),
                         "Roller",
-                        List.of(CONSTANTS.ROLLER_MOTOR_CONFIG, CONSTANTS.ROLLER_FOLLOWER_MOTOR_CONFIG),
+                        List.of(
+                                CONSTANTS.ROLLER_MOTOR_CONFIG,
+                                CONSTANTS.ROLLER_FOLLOWER_MOTOR_CONFIG),
                         CONSTANTS.ROLLER_GEAR_RATIO);
 
         pivot_ =
@@ -121,6 +124,10 @@ public class IntakeSubsystem extends MwSubsystem<IntakeStates, IntakeConstants> 
                 pivot_.setTargetDutyCycle(0.0);
                 break;
             case OUTTAKE:
+                roller_.setTargetDutyCycle(-manual_roller_duty_cycle_);
+                pivot_.setTargetDutyCycle(0.0);
+                break;
+            case REVERSE:
                 roller_.setTargetDutyCycle(-manual_roller_duty_cycle_);
                 pivot_.setTargetDutyCycle(0.0);
                 break;

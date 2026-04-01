@@ -23,6 +23,8 @@ public class HopperConstants extends MwConstants {
         UNJAM_REVERSE,
         /** Unjamming by running hopper forward */
         UNJAM_FORWARD,
+        /** Running hopper in reverse */
+        REVERSE,
         /** Manual tuning mode for testing and calibration */
         TUNING,
     }
@@ -70,6 +72,7 @@ public class HopperConstants extends MwConstants {
         HOPPER_MOTOR_CONFIG.canbus_name = "rio";
         TalonFXConfiguration hopper_config = new TalonFXConfiguration();
         hopper_config.Slot1 = HOPPER_VELOCITY_GAINS;
+        // hopper_config.CurrentLimits.StatorCurrentLimit = 50;
         HOPPER_MOTOR_CONFIG.apply(hopper_config);
     }
 }
