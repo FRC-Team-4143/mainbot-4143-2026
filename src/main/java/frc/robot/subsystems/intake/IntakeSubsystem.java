@@ -146,12 +146,6 @@ public class IntakeSubsystem extends MwSubsystem<IntakeStates, IntakeConstants> 
     // PUBLIC HELPER METHODS
     // =============================================================================
 
-    public Command reverseIntake() {
-        return Commands.startEnd(
-                () -> setWantedState(IntakeStates.REVERSE),
-                () -> setWantedState(IntakeStates.DEPLOYED));
-    }
-
     /**
      * Returns the current angle of the pivot joint in radians. (Used for testing and visualization
      * purposes)
