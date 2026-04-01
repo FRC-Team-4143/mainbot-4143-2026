@@ -14,8 +14,6 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.lib2026.HubMonitor;
 import frc.robot.subsystems.hopper.HopperConstants.HopperStates;
 import frc.robot.subsystems.hopper.HopperSubsystem;
-import frc.robot.subsystems.intake.IntakeConstants.IntakeStates;
-import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.localization.LocalizationSubsystem;
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterStates;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
@@ -66,19 +64,37 @@ public abstract class OI {
         driver_controller_
                 .rightStick()
                 .onTrue(SwerveSubsystem.getInstance().toggleFieldCentric().ignoringDisable(true));
-        driver_controller_.rightTrigger().whileTrue(ControlCommands.shootFuelCommand().ignoringDisable(true));
+        driver_controller_
+                .rightTrigger()
+                .whileTrue(ControlCommands.shootFuelCommand().ignoringDisable(true));
         driver_controller_.leftTrigger().whileTrue(ControlCommands.aimAtTargetCommand());
-        driver_controller_.rightBumper().whileTrue(ControlCommands.intakeFuelCommand().ignoringDisable(true));
+        driver_controller_
+                .rightBumper()
+                .whileTrue(ControlCommands.intakeFuelCommand().ignoringDisable(true));
         driver_controller_.leftBumper().onFalse(ControlCommands.toggleStoreIntakeCommand());
         driver_controller_.y().whileTrue(ControlCommands.manualShootFuelCommand());
         driver_controller_.b().whileTrue(ControlCommands.manualPassFuelCommand());
-        driver_controller_.x().whileTrue(Commands.startEnd(
-                () -> HopperSubsystem.getInstance().setWantedState(HopperStates.REVERSE),
-                () -> HopperSubsystem.getInstance().setWantedState(HopperStates.SHOOTING)));
-        driver_controller_.a().whileTrue(Commands.startEnd(
-                () -> HopperSubsystem.getInstance().setWantedState(HopperStates.REVERSE),
-                () -> HopperSubsystem.getInstance().setWantedState(HopperStates.IDLE)));
-      
+        driver_controller_
+                .x()
+                .whileTrue(
+                        Commands.startEnd(
+                                () ->
+                                        HopperSubsystem.getInstance()
+                                                .setWantedState(HopperStates.REVERSE),
+                                () ->
+                                        HopperSubsystem.getInstance()
+                                                .setWantedState(HopperStates.SHOOTING)));
+        driver_controller_
+                .a()
+                .whileTrue(
+                        Commands.startEnd(
+                                () ->
+                                        HopperSubsystem.getInstance()
+                                                .setWantedState(HopperStates.REVERSE),
+                                () ->
+                                        HopperSubsystem.getInstance()
+                                                .setWantedState(HopperStates.IDLE)));
+
         // =============================================================================
         // OPERATOR CONTROLLER BINDINGS
         // =============================================================================
@@ -112,6 +128,7 @@ public abstract class OI {
                                     ShooterSubsystem.getInstance()
                                             .adjustHood(Units.degreesToRadians(1));
                                 }));
+    }
 
     /**
      * @return driver controller left joystick x axis
