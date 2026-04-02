@@ -262,22 +262,6 @@
             }
           },
           {
-            "title": "Hub - Shift Time Remaining",
-            "x": 1152.0,
-            "y": 0.0,
-            "width": 256.0,
-            "height": 256.0,
-            "type": "Match Time",
-            "properties": {
-              "topic": "/Robot/HubMonitor/ShiftTimeRemaining",
-              "period": 0.06,
-              "data_type": "double",
-              "time_display_mode": "Minutes and Seconds",
-              "red_start_time": 3,
-              "yellow_start_time": 10
-            }
-          },
-          {
             "title": "Hub - Current Shift",
             "x": 1152.0,
             "y": 256.0,
@@ -356,17 +340,19 @@
             }
           },
           {
-            "title": "Target Distance",
-            "x": 896.0,
-            "y": 512.0,
+            "title": "Hub - Status Time Remaining",
+            "x": 1152.0,
+            "y": 0.0,
             "width": 256.0,
-            "height": 128.0,
-            "type": "Text Display",
+            "height": 256.0,
+            "type": "Match Time",
             "properties": {
-              "topic": "/Robot/Subsystem/Shooter/LaunchCalculator/Distance/Raw",
+              "topic": "/Robot/HubMonitor/StatusTimeRemaining",
               "period": 0.06,
               "data_type": "double",
-              "show_submit_button": false
+              "time_display_mode": "Minutes and Seconds",
+              "red_start_time": 5,
+              "yellow_start_time": 10
             }
           }
         ]
@@ -871,7 +857,7 @@
             "x": 896.0,
             "y": 0.0,
             "width": 256.0,
-            "height": 512.0,
+            "height": 640.0,
             "type": "List Layout",
             "properties": {
               "label_position": "HIDDEN"
@@ -892,14 +878,14 @@
                 }
               },
               {
-                "title": "Home Pivot",
+                "title": "Auto Home Hood",
                 "x": 896.0,
-                "y": 512.0,
+                "y": 384.0,
                 "width": 256.0,
                 "height": 128.0,
                 "type": "Command",
                 "properties": {
-                  "topic": "/SmartDashboard/Home Pivot",
+                  "topic": "/SmartDashboard/Auto Home Hood",
                   "period": 0.06,
                   "show_type": false,
                   "maximize_button_space": true
@@ -956,6 +942,20 @@
                 "type": "Command",
                 "properties": {
                   "topic": "/SmartDashboard/Spin Down Flywheel",
+                  "period": 0.06,
+                  "show_type": false,
+                  "maximize_button_space": true
+                }
+              },
+              {
+                "title": "Home Pivot",
+                "x": 896.0,
+                "y": 512.0,
+                "width": 256.0,
+                "height": 128.0,
+                "type": "Command",
+                "properties": {
+                  "topic": "/SmartDashboard/Home Pivot",
                   "period": 0.06,
                   "show_type": false,
                   "maximize_button_space": true

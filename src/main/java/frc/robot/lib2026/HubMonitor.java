@@ -179,6 +179,7 @@ public class HubMonitor {
      * @param match_time current match time
      */
     private static void logStageCountdown(double match_time) {
+        // Determine current stage name and default time remaining
         String stageName;
         double timeRemaining;
 
@@ -205,7 +206,28 @@ public class HubMonitor {
             timeRemaining = 0;
         }
 
+        // Check if we're first active (our alliance matches first active alliance)
+        Optional<Alliance> currentAlliance = DriverStation.getAlliance();
+        if (currentAlliance.isPresent() && first_active_alliance_ != ActiveAlliance.INVALID) {
+            boolean isFirstActive =
+                    (currentAlliance.get() == Alliance.Red
+                                    && first_active_alliance_ == ActiveAlliance.RED_ACTIVE)
+                            || (currentAlliance.get() == Alliance.Blue
+                                    && first_active_alliance_ == ActiveAlliance.BLUE_ACTIVE);
+
+            // Combine shifts: TRANSITION+SHIFT1 if first active, SHIFT4+ENDGAME if second active
+            if (isFirstActive && match_time > SHIFT_1) {
+                // First active: combine TRANSITION and SHIFT 1
+                // Count from end of SHIFT_1 through both periods
+                timeRemaining = match_time - SHIFT_1;
+            } else if (!isFirstActive && match_time <= SHIFT_3) {
+                // Second active: combine SHIFT 4 and END GAME
+                // Count from end of END_GAME (0) through both periods
+                timeRemaining = match_time;
+            }
+        }
+
         DogLog.log("HubMonitor/CurrentShift", stageName);
-        DogLog.log("HubMonitor/ShiftTimeRemaining", timeRemaining);
+        DogLog.log("HubMonitor/StatusTimeRemaining", timeRemaining);
     }
 }
