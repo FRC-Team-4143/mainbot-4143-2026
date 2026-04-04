@@ -4,8 +4,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import frc.robot.lib2026.FieldTargets;
-import frc.robot.subsystems.climber.ClimberConstants.ClimberStates;
-import frc.robot.subsystems.climber.ClimberSubsystem;
 import frc.robot.subsystems.hopper.HopperConstants.HopperStates;
 import frc.robot.subsystems.hopper.HopperSubsystem;
 import frc.robot.subsystems.intake.IntakeConstants.IntakeStates;
@@ -59,39 +57,6 @@ public class ControlCommands {
                 .ignoringDisable(true);
     }
 
-    static Command advanceClimbingStage() {
-        return Commands.runOnce(
-                () -> {
-                    if (ClimberSubsystem.getInstance().getSystemState() == ClimberStates.STOWED
-                            && IntakeSubsystem.getInstance().getSystemState()
-                                    != IntakeStates.STORE) {
-                        // Intentional do nothing
-                    } else if (ClimberSubsystem.getInstance().getSystemState()
-                                    == ClimberStates.STOWED
-                            && IntakeSubsystem.getInstance().getSystemState()
-                                    == IntakeStates.STORE) {
-                        ClimberSubsystem.getInstance().setWantedState(ClimberStates.DEPLOY);
-                    } else if (ClimberSubsystem.getInstance().getSystemState()
-                            == ClimberStates.DEPLOY) {
-                        ClimberSubsystem.getInstance().setWantedState(ClimberStates.L2);
-                    }
-                });
-    }
-
-    static Command reverseClimbingStage() {
-        return Commands.runOnce(
-                () -> {
-                    if (ClimberSubsystem.getInstance().getSystemState() == ClimberStates.CLIMB_HOLD
-                            || ClimberSubsystem.getInstance().getSystemState() == ClimberStates.L1
-                            || ClimberSubsystem.getInstance().getSystemState()
-                                    == ClimberStates.L2) {
-                        ClimberSubsystem.getInstance().setWantedState(ClimberStates.GROUND);
-                    } else if (ClimberSubsystem.getInstance().getSystemState()
-                            == ClimberStates.DEPLOY) {
-                        ClimberSubsystem.getInstance().setWantedState(ClimberStates.STOWED);
-                    }
-                });
-    }
 
     /**
      * This command snaps robot to nearest bump crossing angle while held, returns to normal field
