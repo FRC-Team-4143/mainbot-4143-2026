@@ -24,6 +24,7 @@ import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.lib2026.FieldTargets;
@@ -69,6 +70,16 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
     private double hood_kv_ = CONSTANTS.HOOD_KV;
 
     private double manual_indexer_velocity_ = CONSTANTS.INDEXER_VELOCITY;
+
+    // Ball detection: track recent flywheel velocity samples to detect the brief
+    // velocity dip when a ball is fired. We expose a simple "likely empty"
+    // predicate which returns true when we've not observed a ball for a
+    // configurable timeout while in the SHOOT state.
+    private double last_ball_seen_time_ = 0.0;
+    private double last_filtered_velocity_sample_ = 0.0;
+    private double no_ball_timeout_seconds_ = 0.75; // tunable
+    private double ball_velocity_drop_threshold_ = 40.0; // tunable (rad/s)
+    private ShooterStates prev_state_ = system_state_;
 
     // getInstance
     public static ShooterSubsystem getInstance() {
@@ -118,6 +129,16 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
                 manual_indexer_velocity_,
                 (v) -> manual_indexer_velocity_ = v);
 
+        // Tunables for ball-detection (flywheel velocity drop detection)
+        DogLog.tunable(
+                getSubsystemKey() + "Shooter/NoBallTimeout",
+                no_ball_timeout_seconds_,
+                (v) -> no_ball_timeout_seconds_ = v);
+        DogLog.tunable(
+                getSubsystemKey() + "Shooter/BallVelocityDropThreshold",
+                ball_velocity_drop_threshold_,
+                (v) -> ball_velocity_drop_threshold_ = v);
+
         SmartDashboard.putData(
                 "Home Hood Position",
                 Commands.runOnce(() -> hood_.setCurrentPosition(CONSTANTS.HOOD_HOME_POSITION))
@@ -131,6 +152,9 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
     @Override
     public void reset() {
         system_state_ = ShooterStates.IDLE;
+        prev_state_ = system_state_;
+        last_ball_seen_time_ = 0.0;
+        last_filtered_velocity_sample_ = 0.0;
     }
 
     // getIos
@@ -208,6 +232,21 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
         // Apply flywheel velocity filtering
         filtered_flywheel_velocity_ =
                 flywheel_velocity_filter_.calculate(flywheel_.getCurrentVelocity());
+
+        // Detect ball firing by observing a brief velocity drop in the filtered flywheel
+        // signal while actively shooting. Update the "last ball seen" timestamp when we
+        // observe a downward spike larger than the configured threshold.
+        double vel_drop = last_filtered_velocity_sample_ - filtered_flywheel_velocity_;
+        if ((system_state_ == ShooterStates.SHOOT || system_state_ == ShooterStates.SHOOT_WAIT)
+                && vel_drop > ball_velocity_drop_threshold_) {
+            last_ball_seen_time_ = timestamp;
+        }
+
+        // If we just entered the SHOOT state, assume we have at least one ball to start
+        // (avoid immediate early-stop). Reset the last-seen time to now on entry.
+        if (prev_state_ != system_state_ && system_state_ == ShooterStates.SHOOT) {
+            last_ball_seen_time_ = timestamp;
+        }
 
         flywheel_omega_ += flywheel_adj_;
         hood_angle_ += hood_adj_;
@@ -363,6 +402,18 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
                 RadiansPerSecond);
         DogLog.log(getSubsystemKey() + "Tolerance/HoodAngle", hood_pos_tol_, Radians);
         DogLog.log(getSubsystemKey() + "Tolerance/HeadingAngle", rot_pos_tol_, Radians);
+
+        // Ball detection telemetry
+        DogLog.log(getSubsystemKey() + "Shooter/LastBallSeenTime", last_ball_seen_time_, Seconds);
+        DogLog.log(
+                getSubsystemKey() + "Shooter/VelDrop",
+                last_filtered_velocity_sample_ - filtered_flywheel_velocity_,
+                RadiansPerSecond);
+        DogLog.log(getSubsystemKey() + "Shooter/IsLikelyEmpty", isLikelyEmpty() ? 1.0 : 0.0);
+
+        // Update prev state and last sample for next iteration
+        prev_state_ = system_state_;
+        last_filtered_velocity_sample_ = filtered_flywheel_velocity_;
     }
 
     // =============================================================================
@@ -401,6 +452,20 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
     public double getLaunchVelocity() {
         // angular speed * radius * eff_factor
         return filtered_flywheel_velocity_ * CONSTANTS.FLYWHEEL_WHEEL_RADIUS_METERS * 0.5;
+    }
+
+    /**
+     * Heuristic: return true if we are in the SHOOT state and we have not observed a ball (a
+     * flywheel velocity dip) for longer than the configured timeout.
+     *
+     * @return true if shooting and likely empty
+     */
+    public boolean isLikelyEmpty() {
+        if (system_state_ != ShooterStates.SHOOT && system_state_ != ShooterStates.SHOOT_WAIT) {
+            return false;
+        }
+        double now = Timer.getFPGATimestamp();
+        return (now - last_ball_seen_time_) > no_ball_timeout_seconds_;
     }
 
     /**
