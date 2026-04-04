@@ -55,9 +55,6 @@ public class SimulationSubsystem extends MwSubsystem<SimulationStates, Simulatio
                     ProxyServerThread.getInstance()
                             .initializeVisionSimulation(
                                     LocalizationSubsystem.getInstance().getAprilTagLayout());
-            vision_sim_.addCamera("Back-Camera", CONSTANTS.BACK_CAMERA_TRANSFORM);
-            vision_sim_.addCamera("Left-Camera", CONSTANTS.LEFT_CAMERA_TRANSFORM);
-            vision_sim_.addCamera("Right-Camera", CONSTANTS.RIGHT_CAMERA_TRANSFORM);
             LocalizationSubsystem.getInstance().enableSwerveMeasurementNoise();
         }
 

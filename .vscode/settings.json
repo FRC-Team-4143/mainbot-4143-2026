@@ -59,11 +59,6 @@
   ],
   "java.dependency.enableDependencyCheckup": false,
   "cSpell.words": [
-    "ARMMOTOR",
-    "canbus",
-    "INTAKEMOTOR",
-    "intaker",
-    "Nivore"
   ],
   "wpilib.autoStartRioLog": false,
   "java.jdt.ls.vmargs": "-XX:+UseParallelGC -XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90 -Dsun.zip.disableMemoryMapping=true -Xmx2G -Xms100m -Xlog:disable"

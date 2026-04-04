@@ -17,8 +17,6 @@ public class LocalizationConstants extends MwConstants {
     // =============================================================================
 
     public enum LocalizationStates {
-        SHOOTING_FOCUS,
-        CLIMBING_FOCUS,
         FULL
     }
 
