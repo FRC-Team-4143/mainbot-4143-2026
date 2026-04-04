@@ -36,6 +36,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.OI;
 import frc.robot.subsystems.localization.LocalizationSubsystem;
+import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.swerve.SwerveConstants.OperatorPerspective;
 import frc.robot.subsystems.swerve.SwerveConstants.SwerveStates;
 import java.util.Arrays;
@@ -78,6 +79,12 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
     private Rotation2d desired_rotation_lock_rot_ = new Rotation2d();
     private Translation2d desired_rotation_lock_cor_ = new Translation2d();
     private double desired_rotation_lock_feedforward_ = 0.0;
+    // Rotation lock temporary boost parameters (for faster alignment when shooter is active)
+    private double rotation_lock_boost_factor_ = 1.5;
+    private boolean rotation_lock_boost_enabled_ = true;
+    private double rotation_lock_orig_kp_ = 0.0;
+    private double rotation_lock_orig_ki_ = 0.0;
+    private double rotation_lock_orig_kd_ = 0.0;
     private ChassisSpeeds desired_chassis_speeds_ = new ChassisSpeeds(0, 0, 0);
 
     // Telop Smoothness controllers and scalars
@@ -183,6 +190,19 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
         TunablePid.create(
                 getSubsystemKey() + "RotationLock/Gains",
                 field_centric_rotation_lock_request_.HeadingController);
+        // Remember original gains so we can temporarily boost them while aiming
+        rotation_lock_orig_kp_ = field_centric_rotation_lock_request_.HeadingController.getP();
+        rotation_lock_orig_ki_ = field_centric_rotation_lock_request_.HeadingController.getI();
+        rotation_lock_orig_kd_ = field_centric_rotation_lock_request_.HeadingController.getD();
+
+        DogLog.tunable(
+                getSubsystemKey() + "RotationLock/BoostFactor",
+                rotation_lock_boost_factor_,
+                (v) -> rotation_lock_boost_factor_ = v);
+        DogLog.tunable(
+                getSubsystemKey() + "RotationLock/BoostEnabled",
+                rotation_lock_boost_enabled_,
+                (b) -> rotation_lock_boost_enabled_ = b);
         DogLog.tunable(
                 getSubsystemKey() + "VelocityScalar",
                 tele_op_velocity_rl_scalar_,
@@ -350,6 +370,42 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
                 DogLog.log(getSubsystemKey() + "RotationLock/COR", desired_rotation_lock_cor_);
                 break;
             case FIELD_CENTRIC_ROTATION_LOCK:
+                // If shooter is actively aiming, temporarily boost the rotation lock gains
+                try {
+                    frc.robot.subsystems.shooter.ShooterConstants.ShooterStates shooterState =
+                            ShooterSubsystem.getInstance().getSystemState();
+                    boolean shooterAiming =
+                            (shooterState
+                                            == frc.robot.subsystems.shooter.ShooterConstants
+                                                    .ShooterStates.TRACKING)
+                                    || (shooterState
+                                            == frc.robot.subsystems.shooter.ShooterConstants
+                                                    .ShooterStates.SHOOT_WAIT)
+                                    || (shooterState
+                                            == frc.robot.subsystems.shooter.ShooterConstants
+                                                    .ShooterStates.AIMING)
+                                    || (shooterState
+                                            == frc.robot.subsystems.shooter.ShooterConstants
+                                                    .ShooterStates.SHOOT);
+                    if (rotation_lock_boost_enabled_ && shooterAiming) {
+                        field_centric_rotation_lock_request_.HeadingController.setP(
+                                rotation_lock_orig_kp_ * rotation_lock_boost_factor_);
+                        field_centric_rotation_lock_request_.HeadingController.setI(
+                                rotation_lock_orig_ki_ * rotation_lock_boost_factor_);
+                        field_centric_rotation_lock_request_.HeadingController.setD(
+                                rotation_lock_orig_kd_ * rotation_lock_boost_factor_);
+                    } else {
+                        // Restore original gains
+                        field_centric_rotation_lock_request_.HeadingController.setP(
+                                rotation_lock_orig_kp_);
+                        field_centric_rotation_lock_request_.HeadingController.setI(
+                                rotation_lock_orig_ki_);
+                        field_centric_rotation_lock_request_.HeadingController.setD(
+                                rotation_lock_orig_kd_);
+                    }
+                } catch (Exception e) {
+                    // Defensive: if shooter subsystem not available yet, skip boosting
+                }
                 swerve_mech_.setChassisRequest(
                         field_centric_rotation_lock_request_
                                 .withTargetHeading(desired_rotation_lock_rot_)
