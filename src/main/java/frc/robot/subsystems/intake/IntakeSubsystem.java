@@ -82,9 +82,7 @@ public class IntakeSubsystem extends MwSubsystem<IntakeStates, IntakeConstants> 
                         CONSTANTS.PIVOT_DEPLOY_POSITION,
                         pivot_.getCurrentPosition(),
                         CONSTANTS.DEPLOY_PIVOT_TOLERANCE)
-                && wantedState == IntakeStates.INTAKE) {
-            system_state_ = IntakeStates.DEPLOYING;
-        } else if (system_state_ == IntakeStates.STORE && wantedState == IntakeStates.OUTTAKE) {
+                && (wantedState == IntakeStates.INTAKE ||wantedState == IntakeStates.OUTTAKE || wantedState == IntakeStates.DEPLOYED)) {
             system_state_ = IntakeStates.DEPLOYING;
         } else if (system_state_ == IntakeStates.DEPLOYING) {
             if (MathUtil.isNear(
@@ -123,10 +121,6 @@ public class IntakeSubsystem extends MwSubsystem<IntakeStates, IntakeConstants> 
                 pivot_.setTargetDutyCycle(0.0);
                 break;
             case OUTTAKE:
-                roller_.setTargetDutyCycle(-manual_roller_duty_cycle_);
-                pivot_.setTargetDutyCycle(0.0);
-                break;
-            case REVERSE:
                 roller_.setTargetDutyCycle(-manual_roller_duty_cycle_);
                 pivot_.setTargetDutyCycle(0.0);
                 break;

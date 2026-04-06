@@ -28,8 +28,6 @@ public class IntakeConstants extends MwConstants {
         OUTTAKE,
         /** Idle state with intake mechanisms stopped */
         IDLE,
-        /** Running intake in reverse to unjam */
-        REVERSE,
         /** Manual tuning mode for testing and calibration */
         TUNING
     }
