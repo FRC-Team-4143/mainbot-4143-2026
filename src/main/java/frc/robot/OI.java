@@ -16,6 +16,8 @@ import frc.robot.subsystems.hopper.HopperConstants.HopperStates;
 import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.intake.IntakeConstants.IntakeStates;
 import frc.robot.subsystems.hopper.HopperSubsystem;
+import frc.robot.subsystems.intake.IntakeConstants.IntakeStates;
+import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.localization.LocalizationSubsystem;
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterStates;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
@@ -113,6 +115,16 @@ public abstract class OI {
                                     ShooterSubsystem.getInstance()
                                             .adjustHood(Units.degreesToRadians(1));
                                 }));
+
+        // Operator X button: run pivot homing/auto-home intake
+        operator_controller_
+                .x()
+                .onTrue(
+                        Commands.runOnce(
+                                        () ->
+                                                IntakeSubsystem.getInstance()
+                                                        .setWantedState(IntakeStates.PIVOT_HOMING))
+                                .ignoringDisable(true));
     }
 
     /**
