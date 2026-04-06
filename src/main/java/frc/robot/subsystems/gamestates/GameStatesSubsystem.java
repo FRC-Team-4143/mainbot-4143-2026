@@ -122,15 +122,26 @@ public class GameStatesSubsystem extends MwSubsystem<GameStates, GameStatesConst
             return;
         }
 
-        if (FieldRegions.LEFT_PASS_REGION.contains(
-                LocalizationSubsystem.getInstance().getFieldPose())) {
+        Pose2d pose = LocalizationSubsystem.getInstance().getFieldPose();
+
+        if (FieldRegions.LEFT_PASS_REGION.contains(pose)) {
             ShooterSubsystem.getInstance().setTarget(FieldTargets.Shooter.LEFT_PASS);
-        } else if (FieldRegions.RIGHT_PASS_REGION.contains(
-                LocalizationSubsystem.getInstance().getFieldPose())) {
+        } else if (FieldRegions.RIGHT_PASS_REGION.contains(pose)) {
             ShooterSubsystem.getInstance().setTarget(FieldTargets.Shooter.RIGHT_PASS);
-        } else if (FieldRegions.ALLIANCE_ZONE.contains(
-                LocalizationSubsystem.getInstance().getFieldPose())) {
-            ShooterSubsystem.getInstance().setTarget(FieldTargets.Shooter.HUB);
+        } else if (FieldRegions.ALLIANCE_ZONE.contains(pose)) {
+            // If operator is holding the dead-man pass override, allow selecting a pass
+            // target even while inside the alliance zone. Choose left/right pass by Y
+            // position (field is split roughly at y=4.021). Otherwise default to HUB.
+            if (pass_overide_) {
+                double passSplitY = 4.021; // matches FieldRegions pass region split
+                if (pose.getY() > passSplitY) {
+                    ShooterSubsystem.getInstance().setTarget(FieldTargets.Shooter.LEFT_PASS);
+                } else {
+                    ShooterSubsystem.getInstance().setTarget(FieldTargets.Shooter.RIGHT_PASS);
+                }
+            } else {
+                ShooterSubsystem.getInstance().setTarget(FieldTargets.Shooter.HUB);
+            }
         }
         //  else if (FieldRegions.HOLD_REGIONS.contains(
         //         LocalizationSubsystem.getInstance().getFieldPose())) {
@@ -196,5 +207,14 @@ public class GameStatesSubsystem extends MwSubsystem<GameStates, GameStatesConst
 
     private boolean isDownClimbFinished() {
         return false;
+    }
+
+    // Public API for pass override (dead-man switch)
+    public void setPassOverride(boolean active) {
+        pass_overide_ = active;
+    }
+
+    public boolean getPassOverride() {
+        return pass_overide_;
     }
 }
