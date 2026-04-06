@@ -217,7 +217,7 @@ public class ShooterConstants extends MwConstants {
                 new LaunchCalculator("Subsystem/Shooter/PassLaunchCalculator/", SHOOTER_CENTER);
 
         // Configure range limits
-        PASS_LAUNCH_CALCULATOR.setMinDistance(4.0); // Minimum passing distance in meters
+        PASS_LAUNCH_CALCULATOR.setMinDistance(0.5); // Minimum passing distance in meters
         PASS_LAUNCH_CALCULATOR.setMaxDistance(18.0); // Maximum passing distance in meters
         PASS_LAUNCH_CALCULATOR.setPhaseDelay(0.03); // Processing and actuator delay in seconds
 
