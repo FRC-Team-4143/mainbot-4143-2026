@@ -72,7 +72,7 @@ public class IntakeConstants extends MwConstants {
     public final Slot0Configs PIVOT_POSITION_GAINS = new Slot0Configs().withKG(3).withKP(200);
 
     // Homing for pivot - drive with a small duty cycle until the motor current spikes
-    public final double PIVOT_HOMING_DUTY_CYCLE = 0.15;
+    public final double PIVOT_HOMING_DUTY_CYCLE = -0.15;
     public final double PIVOT_HOMMING_CURRENT_THRESHOLD =
             5.0; // Amps, threshold for detecting stall during homing
 

@@ -59,7 +59,7 @@ public class IntakeSubsystem extends MwSubsystem<IntakeStates, IntakeConstants> 
 
         // SmartDashboard button to run a pivot zeroing/homing sequence
         SmartDashboard.putData(
-                "Zero Pivot",
+                "Auto Home Pivot",
                 Commands.runOnce(() -> setWantedState(IntakeStates.PIVOT_HOMING))
                         .ignoringDisable(true));
 
@@ -90,9 +90,7 @@ public class IntakeSubsystem extends MwSubsystem<IntakeStates, IntakeConstants> 
             pivot_.setCurrentPosition(CONSTANTS.PIVOT_HOME_POSITION);
             setWantedState(IntakeStates.STORE);
             system_state_ = IntakeStates.STORE;
-            return;
-        }
-        if (!MathUtil.isNear(
+        }else if (!MathUtil.isNear(
                         CONSTANTS.PIVOT_DEPLOY_POSITION,
                         pivot_.getCurrentPosition(),
                         CONSTANTS.DEPLOY_PIVOT_TOLERANCE)
