@@ -76,10 +76,17 @@ public abstract class OI {
                                     GameStatesSubsystem.getInstance()
                                             .setWantedState(GameStates.HOLD);
                                 }));
-        driver_controller_.leftTrigger().whileTrue(ControlCommands.aimAtTargetCommand());
-        driver_controller_
-                .rightBumper()
-                .whileTrue(ControlCommands.intakeFuelCommand().ignoringDisable(true));
+        driver_controller_.leftTrigger().whileTrue(Commands.startEnd(
+                                () -> {
+                                    GameStatesSubsystem.getInstance()
+                                            .setWantedState(GameStates.AIM);
+                                },
+                                () -> {
+                                    GameStatesSubsystem.getInstance()
+                                            .setWantedState(GameStates.HOLD);
+                                }));
+        driver_controller_.leftStick().whileTrue(ControlCommands.rotateForBumpCommand());
+        driver_controller_.rightBumper().whileTrue(ControlCommands.intakeFuelCommand());
         driver_controller_.leftBumper().onFalse(ControlCommands.toggleStoreIntakeCommand());
         driver_controller_.y().whileTrue(ControlCommands.manualShootFuelCommand());
         driver_controller_.b().whileTrue(ControlCommands.manualPassFuelCommand());

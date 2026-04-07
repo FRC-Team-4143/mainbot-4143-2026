@@ -79,6 +79,8 @@ public class GameStatesSubsystem extends MwSubsystem<GameStates, GameStatesConst
             system_state_ = GameStates.HOLD;
         } else if (wanted == GameStates.SHOOT) {
             system_state_ = GameStates.SHOOT;
+        } else if (wanted == GameStates.AIM){
+            system_state_ = GameStates.AIM;
         } else {
             // empty to not interfere with rest of state machine
         }
@@ -135,6 +137,13 @@ public class GameStatesSubsystem extends MwSubsystem<GameStates, GameStatesConst
                 SwerveSubsystem.getInstance().setTeleOpVelocityScalar(1.0);
                 SwerveSubsystem.getInstance().setWantedState(SwerveStates.FIELD_CENTRIC);
                 LocalizationSubsystem.getInstance().setWantedState(LocalizationStates.FULL);
+                break;
+            case AIM:
+                ShooterSubsystem.getInstance().setWantedState(ShooterStates.AIMING);
+                            SwerveSubsystem.getInstance()
+                                    .setWantedState(SwerveStates.FIELD_CENTRIC_ROTATION_LOCK);
+                            LocalizationSubsystem.getInstance()
+                                    .setWantedState(LocalizationStates.SHOOTING_FOCUS);
                 break;
             case SCORE:
                 ShooterSubsystem.getInstance().setWantedState(ShooterStates.SHOOT);
