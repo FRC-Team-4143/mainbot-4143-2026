@@ -11,6 +11,8 @@ public class GameStatesConstants extends MwConstants {
     public enum GameStates {
         /** Holding game pieces, not actively scoring */
         HOLD,
+        /** When trigger is pulled this is the first state the robot goes into */
+        SHOOT,
         /** Actively scoring game pieces */
         SCORE,
         /** Passing game pieces to another robot */

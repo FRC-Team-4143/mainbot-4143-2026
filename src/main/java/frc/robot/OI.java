@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.lib2026.HubMonitor;
+import frc.robot.subsystems.gamestates.GameStatesConstants.GameStates;
 import frc.robot.subsystems.gamestates.GameStatesSubsystem;
 import frc.robot.subsystems.localization.LocalizationSubsystem;
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterStates;
@@ -65,7 +66,16 @@ public abstract class OI {
                 .onTrue(SwerveSubsystem.getInstance().toggleFieldCentric().ignoringDisable(true));
         driver_controller_
                 .rightTrigger()
-                .whileTrue(ControlCommands.shootFuelCommand().ignoringDisable(true));
+                .whileTrue(
+                        Commands.startEnd(
+                                () -> {
+                                    GameStatesSubsystem.getInstance()
+                                            .setWantedState(GameStates.SHOOT);
+                                },
+                                () -> {
+                                    GameStatesSubsystem.getInstance()
+                                            .setWantedState(GameStates.HOLD);
+                                }));
         driver_controller_.leftTrigger().whileTrue(ControlCommands.aimAtTargetCommand());
         driver_controller_
                 .rightBumper()

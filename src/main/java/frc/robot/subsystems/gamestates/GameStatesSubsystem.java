@@ -75,44 +75,21 @@ public class GameStatesSubsystem extends MwSubsystem<GameStates, GameStatesConst
             return;
         }
         // HOLD transitions
-        if (system_state_ == GameStates.HOLD && isInAllianceZone(robotpose) && goal_active_) {
+        if (wanted == GameStates.HOLD) {
+            system_state_ = GameStates.HOLD;
+        } else if (wanted == GameStates.SHOOT) {
+            system_state_ = GameStates.SHOOT;
+        } else {
+            // empty to not interfere with rest of state machine
+        }
+        // SHOOT transition
+        if (system_state_ == GameStates.SHOOT && isInAllianceZone(robotpose)) {
             system_state_ = GameStates.SCORE;
-        } else if (system_state_ == GameStates.HOLD
-                && isPassZone(robotpose)
-                && !pass_overide_
-                && !isInHoldZone(robotpose)) {
+        } else if (system_state_ == GameStates.SHOOT && isPassZone(robotpose)) {
             system_state_ = GameStates.PASS;
-            // Set strict tolerances for scoring
-            ShooterSubsystem.getInstance()
-                    .setShootingTolerances(
-                            FieldTargets.Shooter.FLYWHEEL_SPEED_TOLERANCE,
-                            FieldTargets.Shooter.HOOD_POSITION_TOLERANCE,
-                            FieldTargets.Shooter.ROTATION_ANGLE_TOLERANCE);
-        } else if (system_state_ == GameStates.HOLD && (isPassZone(robotpose) || pass_overide_)) {
-            system_state_ = GameStates.PASS;
-        } else if (system_state_ == GameStates.HOLD && operator_presses_climb_button_) {
-            system_state_ = GameStates.TELEOP_CLIMB;
         } else {
-        } // empty to not interfere with rest of state machine
-        // SCORE transistions
-        if (system_state_ == GameStates.SCORE && (isPassZone(robotpose) || !goal_active_)) {
-            system_state_ = GameStates.HOLD;
-        } else if (system_state_ == GameStates.SCORE && operator_presses_climb_button_) {
-            system_state_ = GameStates.TELEOP_CLIMB;
-        } else {
-        } // empty to not interfere with rest of state machine
-        // PASS transistions
-        if (system_state_ == GameStates.PASS
-                && (isInHoldZone(robotpose) || isInAllianceZone(robotpose) || pass_overide_)) {
-            system_state_ = GameStates.HOLD;
-            // Return to strict tolerances when leaving PASS state
-            ShooterSubsystem.getInstance()
-                    .setShootingTolerances(
-                            FieldTargets.Shooter.FLYWHEEL_SPEED_TOLERANCE,
-                            FieldTargets.Shooter.HOOD_POSITION_TOLERANCE,
-                            FieldTargets.Shooter.ROTATION_ANGLE_TOLERANCE);
-        } else {
-        } // empty to not interfere with rest of state machine
+            // empty to not interfere with rest of state machine
+        }
         // DOWN_CLIMB transistions
         if (system_state_ == GameStates.DOWN_CLIMB && isDownClimbFinished()) {
             system_state_ = GameStates.HOLD;
