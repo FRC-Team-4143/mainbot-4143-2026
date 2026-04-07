@@ -4,6 +4,7 @@ import com.marswars.subsystem.MwSubsystem;
 import com.marswars.subsystem.SubsystemIoBase;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.RobotState;
+import frc.robot.lib2026.FieldConstants;
 import frc.robot.lib2026.FieldRegions;
 import frc.robot.lib2026.FieldTargets;
 import frc.robot.subsystems.gamestates.GameStatesConstants.GameStates;
@@ -122,55 +123,26 @@ public class GameStatesSubsystem extends MwSubsystem<GameStates, GameStatesConst
             return;
         }
 
-        if (FieldRegions.LEFT_PASS_REGION.contains(
-                LocalizationSubsystem.getInstance().getFieldPose())) {
+        Pose2d pose = LocalizationSubsystem.getInstance().getFieldPose();
+
+        if (FieldRegions.LEFT_PASS_REGION.contains(pose)) {
             ShooterSubsystem.getInstance().setTarget(FieldTargets.Shooter.LEFT_PASS);
-        } else if (FieldRegions.RIGHT_PASS_REGION.contains(
-                LocalizationSubsystem.getInstance().getFieldPose())) {
+        } else if (FieldRegions.RIGHT_PASS_REGION.contains(pose)) {
             ShooterSubsystem.getInstance().setTarget(FieldTargets.Shooter.RIGHT_PASS);
-        } else if (FieldRegions.ALLIANCE_ZONE.contains(
-                LocalizationSubsystem.getInstance().getFieldPose())) {
-            ShooterSubsystem.getInstance().setTarget(FieldTargets.Shooter.HUB);
+        } else if (FieldRegions.ALLIANCE_ZONE.contains(pose)) {
+            // If operator is holding the dead-man pass override, allow selecting a pass
+            // target even while inside the alliance zone. Choose left/right pass by Y
+            // position (field is split roughly at y=4.021). Otherwise default to HUB.
+            if (pass_overide_) {
+                if (pose.getY() > FieldConstants.FIELD_CENTER.getY()) {
+                    ShooterSubsystem.getInstance().setTarget(FieldTargets.Shooter.RIGHT_PASS);
+                } else {
+                    ShooterSubsystem.getInstance().setTarget(FieldTargets.Shooter.LEFT_PASS);
+                }
+            } else {
+                ShooterSubsystem.getInstance().setTarget(FieldTargets.Shooter.HUB);
+            }
         }
-        //  else if (FieldRegions.HOLD_REGIONS.contains(
-        //         LocalizationSubsystem.getInstance().getFieldPose())) {
-        //     ShooterSubsystem.getInstance().setWantedState(ShooterStates.SHOOT_WAIT);
-        // }
-        // switch (system_state_) {
-        //     case HOLD:
-        //         ShooterSubsystem.getInstance().setWantedState(ShooterStates.IDLE);
-        //         IntakeSubsystem.getInstance().setWantedState(IntakeStates.INTAKE);
-        //         HopperSubsystem.getInstance().setWantedState(HopperStates.SHOOTING);
-        //         ClimberSubsystem.getInstance().setWantedState(ClimberStates.STOWED);
-        //         break;
-        //     case SCORE:
-        //         ShooterSubsystem.getInstance().setWantedState(ShooterStates.SHOOT_WAIT);
-        //         IntakeSubsystem.getInstance().setWantedState(IntakeStates.INTAKE);
-        //         HopperSubsystem.getInstance().setWantedState(HopperStates.SHOOTING);
-        //         ClimberSubsystem.getInstance().setWantedState(ClimberStates.STOWED);
-        //         break;
-        //     case PASS:
-        //         ShooterSubsystem.getInstance().setWantedState(ShooterStates.SHOOT_WAIT);
-        //         IntakeSubsystem.getInstance().setWantedState(IntakeStates.INTAKE);
-        //         HopperSubsystem.getInstance().setWantedState(HopperStates.SHOOTING);
-        //         ClimberSubsystem.getInstance().setWantedState(ClimberStates.STOWED);
-        //         break;
-        //     case TELEOP_CLIMB:
-        //         ShooterSubsystem.getInstance().setWantedState(ShooterStates.IDLE);
-        //         HopperSubsystem.getInstance().setWantedState(HopperStates.IDLE);
-        //         IntakeSubsystem.getInstance().setWantedState(IntakeStates.STORE);
-        //         ClimberSubsystem.getInstance().setWantedState(ClimberStates.L3_CLIMB);
-        //         break;
-        //     case DOWN_CLIMB:
-        //         ShooterSubsystem.getInstance().setWantedState(ShooterStates.IDLE);
-        //         HopperSubsystem.getInstance().setWantedState(HopperStates.IDLE);
-        //         IntakeSubsystem.getInstance().setWantedState(IntakeStates.STORE);
-        //         ClimberSubsystem.getInstance().setWantedState(ClimberStates.L1_DOWN);
-        //         break;
-        //     case AUTO:
-        //         // GSM does nothing in auto mode
-        //         break;
-        // }
     }
 
     // =============================================================================
@@ -196,5 +168,14 @@ public class GameStatesSubsystem extends MwSubsystem<GameStates, GameStatesConst
 
     private boolean isDownClimbFinished() {
         return false;
+    }
+
+    // Public API for pass override (dead-man switch)
+    public void setPassOverride(boolean active) {
+        pass_overide_ = active;
+    }
+
+    public boolean getPassOverride() {
+        return pass_overide_;
     }
 }

@@ -12,6 +12,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.lib2026.HubMonitor;
+import frc.robot.subsystems.gamestates.GameStatesSubsystem;
+import frc.robot.subsystems.hopper.HopperConstants.HopperStates;
+import frc.robot.subsystems.hopper.HopperSubsystem;
 import frc.robot.subsystems.intake.IntakeConstants.IntakeStates;
 import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.localization.LocalizationSubsystem;
@@ -79,6 +82,19 @@ public abstract class OI {
         // =============================================================================
         // OPERATOR CONTROLLER BINDINGS
         // =============================================================================
+        // Dead-man force-pass override: hold to force GSM to choose a PASS target
+        // while inside the alliance zone (left bumper acts as the dead-man).
+        operator_controller_
+                .leftBumper()
+                .whileTrue(
+                        Commands.startEnd(
+                                        () ->
+                                                GameStatesSubsystem.getInstance()
+                                                        .setPassOverride(true),
+                                        () ->
+                                                GameStatesSubsystem.getInstance()
+                                                        .setPassOverride(false))
+                                .ignoringDisable(true));
         operator_controller_
                 .povUp()
                 .onTrue(
