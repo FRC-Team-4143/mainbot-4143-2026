@@ -76,7 +76,10 @@ public abstract class OI {
                                     GameStatesSubsystem.getInstance()
                                             .setWantedState(GameStates.HOLD);
                                 }));
-        driver_controller_.leftTrigger().whileTrue(Commands.startEnd(
+        driver_controller_
+                .leftTrigger()
+                .whileTrue(
+                        Commands.startEnd(
                                 () -> {
                                     GameStatesSubsystem.getInstance()
                                             .setWantedState(GameStates.AIM);
