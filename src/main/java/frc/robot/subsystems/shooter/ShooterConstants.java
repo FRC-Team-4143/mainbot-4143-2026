@@ -166,7 +166,13 @@ public class ShooterConstants extends MwConstants {
     // =============================================================================
     public final LaunchCalculator HUB_LAUNCH_CALCULATOR;
     public final LaunchCalculator PASS_LAUNCH_CALCULATOR;
+    
+    // =============================================================================
+    // Hopper empty - Map-based shooting with motion compensation
+    // =============================================================================
 
+        public final double SHOOTING_VELOCITY_FACTOR = 0.95; // needs tuning
+        public final double SHOOTING_DOWN_TIME = 0.25; // seconds to run shooter at reduced velocity after shooting to clear balls, needs tuning
     // =============================================================================
     // CONSTRUCTOR - MOTOR CONFIGURATION INITIALIZATION
     // =============================================================================
