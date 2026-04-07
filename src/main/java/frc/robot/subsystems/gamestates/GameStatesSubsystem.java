@@ -4,6 +4,7 @@ import com.marswars.subsystem.MwSubsystem;
 import com.marswars.subsystem.SubsystemIoBase;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.RobotState;
+import frc.robot.lib2026.FieldConstants;
 import frc.robot.lib2026.FieldRegions;
 import frc.robot.lib2026.FieldTargets;
 import frc.robot.subsystems.gamestates.GameStatesConstants.GameStates;
@@ -133,8 +134,7 @@ public class GameStatesSubsystem extends MwSubsystem<GameStates, GameStatesConst
             // target even while inside the alliance zone. Choose left/right pass by Y
             // position (field is split roughly at y=4.021). Otherwise default to HUB.
             if (pass_overide_) {
-                double passSplitY = 4.021; // matches FieldRegions pass region split
-                if (pose.getY() > passSplitY) {
+                if (pose.getY() > FieldConstants.FIELD_CENTER.getY()) {
                     ShooterSubsystem.getInstance().setTarget(FieldTargets.Shooter.RIGHT_PASS);
                 } else {
                     ShooterSubsystem.getInstance().setTarget(FieldTargets.Shooter.LEFT_PASS);
