@@ -19,10 +19,6 @@ public class GameStatesConstants extends MwConstants {
         SCORE,
         /** Passing game pieces to another robot */
         PASS,
-        /** Climbing during teleop period */
-        TELEOP_CLIMB,
-        /** Moving down from climb position */
-        DOWN_CLIMB,
         /** Autonomous mode state - This prevents GSM from interfering */
         AUTO
     }

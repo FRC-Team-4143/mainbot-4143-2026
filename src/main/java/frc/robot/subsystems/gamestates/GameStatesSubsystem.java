@@ -69,11 +69,7 @@ public class GameStatesSubsystem extends MwSubsystem<GameStates, GameStatesConst
         }
 
         Pose2d robotpose = LocalizationSubsystem.getInstance().getFieldPose();
-        // transtions out of TELEOP_CLIMB, no transtions
-        if (system_state_ == GameStates.TELEOP_CLIMB) {
-            system_state_ = GameStates.TELEOP_CLIMB;
-            return;
-        }
+
         // HOLD transitions
         if (wanted == GameStates.HOLD) {
             system_state_ = GameStates.HOLD;
@@ -92,11 +88,6 @@ public class GameStatesSubsystem extends MwSubsystem<GameStates, GameStatesConst
         } else {
             // empty to not interfere with rest of state machine
         }
-        // DOWN_CLIMB transistions
-        if (system_state_ == GameStates.DOWN_CLIMB && isDownClimbFinished()) {
-            system_state_ = GameStates.HOLD;
-        } else {
-        } // empty to not interfere with rest of state machine
     }
 
     // updateLogic
@@ -145,6 +136,9 @@ public class GameStatesSubsystem extends MwSubsystem<GameStates, GameStatesConst
                 LocalizationSubsystem.getInstance()
                         .setWantedState(LocalizationStates.SHOOTING_FOCUS);
                 break;
+            case SHOOT:
+            //intermediate between HOLD and PASS/SCORE
+                break;
             case SCORE:
                 ShooterSubsystem.getInstance().setWantedState(ShooterStates.SHOOT);
                 HopperSubsystem.getInstance().setWantedState(HopperStates.SHOOTING);
@@ -173,6 +167,9 @@ public class GameStatesSubsystem extends MwSubsystem<GameStates, GameStatesConst
                             .setWantedState(SwerveStates.FIELD_CENTRIC_ROTATION_LOCK);
                 }
                 break;
+            case AUTO:
+            //does what its told to in origonal auto sequnce
+                break;
         }
     }
 
@@ -187,18 +184,6 @@ public class GameStatesSubsystem extends MwSubsystem<GameStates, GameStatesConst
     private boolean isPassZone(Pose2d pose) {
         return FieldRegions.NEUTRAL_ZONE.contains(pose)
                 || FieldRegions.OPP_ALLIANCE_ZONE.contains(pose);
-    }
-
-    private boolean isInHoldZone(Pose2d pose) {
-        boolean in_zone = false;
-        for (int i = 0; i < FieldRegions.HOLD_REGIONS.size(); i++) {
-            in_zone = (in_zone || FieldRegions.HOLD_REGIONS.get(i).contains(pose));
-        }
-        return in_zone;
-    }
-
-    private boolean isDownClimbFinished() {
-        return false;
     }
 
     // Public API for pass override (dead-man switch)
