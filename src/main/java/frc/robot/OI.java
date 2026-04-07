@@ -109,16 +109,6 @@ public abstract class OI {
                                     ShooterSubsystem.getInstance()
                                             .adjustHood(Units.degreesToRadians(1));
                                 }));
-
-        // Operator X button: run pivot homing/auto-home intake
-        operator_controller_
-                .x()
-                .onTrue(
-                        Commands.runOnce(
-                                        () ->
-                                                IntakeSubsystem.getInstance()
-                                                        .setWantedState(IntakeStates.PIVOT_HOMING))
-                                .ignoringDisable(true));
     }
 
     /**
