@@ -57,7 +57,6 @@ public class ControlCommands {
                 .ignoringDisable(true);
     }
 
-
     /**
      * This command snaps robot to nearest bump crossing angle while held, returns to normal field
      * centric when released.
@@ -252,25 +251,23 @@ public class ControlCommands {
                         () -> {
                             if (IntakeSubsystem.getInstance().getSystemState()
                                     == IntakeStates.STORE)
-                                IntakeSubsystem.getInstance()
-                                        .setWantedState(IntakeStates.DEPLOYED);
+                                IntakeSubsystem.getInstance().setWantedState(IntakeStates.DEPLOYED);
                             else IntakeSubsystem.getInstance().setWantedState(IntakeStates.STORE);
                         })
                 .withName("Toggle Intake")
                 .ignoringDisable(true);
     }
+
     static Command outTakeFuelCommand() {
         return Commands.startEnd(
-                                () ->{
-                                        HopperSubsystem.getInstance()
-                                                .setWantedState(HopperStates.REVERSE);
-                                        IntakeSubsystem.getInstance()
-                                                .setWantedState(IntakeStates.OUTTAKE);},
-                                () ->{
-                                        HopperSubsystem.getInstance()
-                                                .setWantedState(HopperStates.IDLE);
-                                        IntakeSubsystem.getInstance()
-                                                .setWantedState(IntakeStates.DEPLOYED);})
+                        () -> {
+                            HopperSubsystem.getInstance().setWantedState(HopperStates.REVERSE);
+                            IntakeSubsystem.getInstance().setWantedState(IntakeStates.OUTTAKE);
+                        },
+                        () -> {
+                            HopperSubsystem.getInstance().setWantedState(HopperStates.IDLE);
+                            IntakeSubsystem.getInstance().setWantedState(IntakeStates.DEPLOYED);
+                        })
                 .withName("Outtake Fuel")
                 .ignoringDisable(true);
     }

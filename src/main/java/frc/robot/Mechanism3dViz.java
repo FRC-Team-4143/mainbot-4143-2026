@@ -21,8 +21,6 @@ public class Mechanism3dViz {
     private static final double INTAKE_STORE_POSITION = Units.degreesToRadians(95.0);
     private static final double INTAKE_RANGE = INTAKE_STORE_POSITION - INTAKE_HOME_POSITION;
 
-    
-
     static Pose3d robot_pose_ = new Pose3d();
     static Pose3d hood_pose_ = HOOD_POSE_OFFSET;
     static Pose3d intake_pose_ = new Pose3d();
@@ -36,7 +34,6 @@ public class Mechanism3dViz {
         updateRobotPose();
         updateHoodPose();
         updateIntakePose();
-        
 
         DogLog.log("Mechanism3dViz/BasePose", robot_pose_);
         DogLog.log("Mechanism3dViz/HoodPose", hood_pose_);
@@ -50,10 +47,7 @@ public class Mechanism3dViz {
      */
     private static void updateRobotPose() {
         // Apply 5 degree deadband - robot doesn't start to flip until after 5 degrees
-        robot_pose_ =
-                new Pose3d(LocalizationSubsystem.getInstance().getFieldPose());
-                        
-                
+        robot_pose_ = new Pose3d(LocalizationSubsystem.getInstance().getFieldPose());
     }
 
     /** Updates the pose of the hood mechanism based on its current angle. */
@@ -71,5 +65,4 @@ public class Mechanism3dViz {
                 INTAKE_POSE_OFFSET.transformBy(
                         new Transform3d(-0.3 * intake_ratio, 0.0, 0.0, Rotation3d.kZero));
     }
-
 }

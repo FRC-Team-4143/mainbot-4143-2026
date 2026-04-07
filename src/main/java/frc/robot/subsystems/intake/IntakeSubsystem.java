@@ -90,11 +90,13 @@ public class IntakeSubsystem extends MwSubsystem<IntakeStates, IntakeConstants> 
             pivot_.setCurrentPosition(CONSTANTS.PIVOT_HOME_POSITION);
             setWantedState(IntakeStates.STORE);
             system_state_ = IntakeStates.STORE;
-        }else if (!MathUtil.isNear(
+        } else if (!MathUtil.isNear(
                         CONSTANTS.PIVOT_DEPLOY_POSITION,
                         pivot_.getCurrentPosition(),
                         CONSTANTS.DEPLOY_PIVOT_TOLERANCE)
-                && (wantedState == IntakeStates.INTAKE ||wantedState == IntakeStates.OUTTAKE || wantedState == IntakeStates.DEPLOYED)) {
+                && (wantedState == IntakeStates.INTAKE
+                        || wantedState == IntakeStates.OUTTAKE
+                        || wantedState == IntakeStates.DEPLOYED)) {
             system_state_ = IntakeStates.DEPLOYING;
         } else if (system_state_ == IntakeStates.DEPLOYING) {
             if (MathUtil.isNear(
