@@ -4,8 +4,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import frc.robot.lib2026.FieldTargets;
-import frc.robot.subsystems.climber.ClimberConstants.ClimberStates;
-import frc.robot.subsystems.climber.ClimberSubsystem;
 import frc.robot.subsystems.hopper.HopperConstants.HopperStates;
 import frc.robot.subsystems.hopper.HopperSubsystem;
 import frc.robot.subsystems.intake.IntakeConstants.IntakeStates;
@@ -57,40 +55,6 @@ public class ControlCommands {
                         })
                 .withName("Aim At Target")
                 .ignoringDisable(true);
-    }
-
-    static Command advanceClimbingStage() {
-        return Commands.runOnce(
-                () -> {
-                    if (ClimberSubsystem.getInstance().getSystemState() == ClimberStates.STOWED
-                            && IntakeSubsystem.getInstance().getSystemState()
-                                    != IntakeStates.STORE) {
-                        // Intentional do nothing
-                    } else if (ClimberSubsystem.getInstance().getSystemState()
-                                    == ClimberStates.STOWED
-                            && IntakeSubsystem.getInstance().getSystemState()
-                                    == IntakeStates.STORE) {
-                        ClimberSubsystem.getInstance().setWantedState(ClimberStates.DEPLOY);
-                    } else if (ClimberSubsystem.getInstance().getSystemState()
-                            == ClimberStates.DEPLOY) {
-                        ClimberSubsystem.getInstance().setWantedState(ClimberStates.L2);
-                    }
-                });
-    }
-
-    static Command reverseClimbingStage() {
-        return Commands.runOnce(
-                () -> {
-                    if (ClimberSubsystem.getInstance().getSystemState() == ClimberStates.CLIMB_HOLD
-                            || ClimberSubsystem.getInstance().getSystemState() == ClimberStates.L1
-                            || ClimberSubsystem.getInstance().getSystemState()
-                                    == ClimberStates.L2) {
-                        ClimberSubsystem.getInstance().setWantedState(ClimberStates.GROUND);
-                    } else if (ClimberSubsystem.getInstance().getSystemState()
-                            == ClimberStates.DEPLOY) {
-                        ClimberSubsystem.getInstance().setWantedState(ClimberStates.STOWED);
-                    }
-                });
     }
 
     /**
@@ -287,11 +251,24 @@ public class ControlCommands {
                         () -> {
                             if (IntakeSubsystem.getInstance().getSystemState()
                                     == IntakeStates.STORE)
-                                IntakeSubsystem.getInstance()
-                                        .setWantedState(IntakeStates.DEPLOYING);
+                                IntakeSubsystem.getInstance().setWantedState(IntakeStates.DEPLOYED);
                             else IntakeSubsystem.getInstance().setWantedState(IntakeStates.STORE);
                         })
                 .withName("Toggle Intake")
+                .ignoringDisable(true);
+    }
+
+    static Command outTakeFuelCommand() {
+        return Commands.startEnd(
+                        () -> {
+                            HopperSubsystem.getInstance().setWantedState(HopperStates.REVERSE);
+                            IntakeSubsystem.getInstance().setWantedState(IntakeStates.OUTTAKE);
+                        },
+                        () -> {
+                            HopperSubsystem.getInstance().setWantedState(HopperStates.IDLE);
+                            IntakeSubsystem.getInstance().setWantedState(IntakeStates.DEPLOYED);
+                        })
+                .withName("Outtake Fuel")
                 .ignoringDisable(true);
     }
 }
