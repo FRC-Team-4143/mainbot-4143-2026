@@ -88,8 +88,8 @@ public class IntakeSubsystem extends MwSubsystem<IntakeStates, IntakeConstants> 
         if (pivot_.getLeaderCurrent() > CONSTANTS.PIVOT_HOMMING_CURRENT_THRESHOLD
                 && system_state_ == IntakeStates.PIVOT_HOMING) {
             pivot_.setCurrentPosition(CONSTANTS.PIVOT_HOME_POSITION);
-            setWantedState(IntakeStates.STORE);
-            system_state_ = IntakeStates.STORE;
+            setWantedState(IntakeStates.DEPLOYED);
+            system_state_ = IntakeStates.DEPLOYED;
         } else if (!MathUtil.isNear(
                         CONSTANTS.PIVOT_DEPLOY_POSITION,
                         pivot_.getCurrentPosition(),
