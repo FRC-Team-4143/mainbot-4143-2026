@@ -22,6 +22,8 @@ public class IntakeConstants extends MwConstants {
         DEPLOYING,
         /** Intake deployed and ready */
         DEPLOYED,
+        /** Homing the pivot to its home position by driving until a current spike */
+        PIVOT_HOMING,
         /** Actively intaking game pieces */
         INTAKE,
         /** Ejecting game pieces out of intake */
@@ -68,6 +70,11 @@ public class IntakeConstants extends MwConstants {
     public final double PIVOT_STORE_POSITION = Units.degreesToRadians(98);
     public final double DEPLOY_PIVOT_TOLERANCE = Units.degreesToRadians(20);
     public final Slot0Configs PIVOT_POSITION_GAINS = new Slot0Configs().withKG(3).withKP(200);
+
+    // Homing for pivot - drive with a small duty cycle until the motor current spikes
+    public final double PIVOT_HOMING_DUTY_CYCLE = -0.15;
+    public final double PIVOT_HOMMING_CURRENT_THRESHOLD =
+            5.0; // Amps, threshold for detecting stall during homing
 
     // Time to wait between cycling SHOOTING and RACKING modes (seconds)
     public final double SHOOTING_CYCLE_TIME = 1.0;

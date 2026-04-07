@@ -57,6 +57,12 @@ public class IntakeSubsystem extends MwSubsystem<IntakeStates, IntakeConstants> 
                 Commands.runOnce(() -> pivot_.setCurrentPosition(CONSTANTS.PIVOT_HOME_POSITION))
                         .ignoringDisable(true));
 
+        // SmartDashboard button to run a pivot zeroing/homing sequence
+        SmartDashboard.putData(
+                "Auto Home Pivot",
+                Commands.runOnce(() -> setWantedState(IntakeStates.PIVOT_HOMING))
+                        .ignoringDisable(true));
+
         DogLog.tunable(
                 getSubsystemKey() + "/Roller/TargetDutyCycle",
                 manual_roller_duty_cycle_,
@@ -78,11 +84,19 @@ public class IntakeSubsystem extends MwSubsystem<IntakeStates, IntakeConstants> 
     // handleStateTransition
     @Override
     protected void handleStateTransition(IntakeStates wantedState) {
-        if (!MathUtil.isNear(
+        // If pivot current spikes while in homing state, set the current position as home
+        if (pivot_.getLeaderCurrent() > CONSTANTS.PIVOT_HOMMING_CURRENT_THRESHOLD
+                && system_state_ == IntakeStates.PIVOT_HOMING) {
+            pivot_.setCurrentPosition(CONSTANTS.PIVOT_HOME_POSITION);
+            setWantedState(IntakeStates.DEPLOYED);
+            system_state_ = IntakeStates.DEPLOYED;
+        } else if (!MathUtil.isNear(
                         CONSTANTS.PIVOT_DEPLOY_POSITION,
                         pivot_.getCurrentPosition(),
                         CONSTANTS.DEPLOY_PIVOT_TOLERANCE)
-                && (wantedState == IntakeStates.INTAKE ||wantedState == IntakeStates.OUTTAKE || wantedState == IntakeStates.DEPLOYED)) {
+                && (wantedState == IntakeStates.INTAKE
+                        || wantedState == IntakeStates.OUTTAKE
+                        || wantedState == IntakeStates.DEPLOYED)) {
             system_state_ = IntakeStates.DEPLOYING;
         } else if (system_state_ == IntakeStates.DEPLOYING) {
             if (MathUtil.isNear(
@@ -123,6 +137,11 @@ public class IntakeSubsystem extends MwSubsystem<IntakeStates, IntakeConstants> 
             case OUTTAKE:
                 roller_.setTargetDutyCycle(-manual_roller_duty_cycle_);
                 pivot_.setTargetDutyCycle(0.0);
+                break;
+            case PIVOT_HOMING:
+                // Drive the pivot slowly outward until the motor current indicates a stall/contact
+                roller_.setTargetDutyCycle(0.0);
+                pivot_.setTargetDutyCycle(CONSTANTS.PIVOT_HOMING_DUTY_CYCLE);
                 break;
             case TUNING:
                 // No default behavior for tuning mode
