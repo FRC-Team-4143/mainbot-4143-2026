@@ -1,5 +1,6 @@
 package frc.robot.subsystems.hopper;
 
+import com.marswars.mechanisms.ElevatorMech;
 import com.marswars.mechanisms.RollerMech;
 import com.marswars.subsystem.MwSubsystem;
 import com.marswars.subsystem.SubsystemIoBase;
@@ -19,6 +20,8 @@ public class HopperSubsystem extends MwSubsystem<HopperStates, HopperConstants> 
     private final Timer hopper_timer_ = new Timer();
     private Debouncer debouncer_ =
             new Debouncer(CONSTANTS.DEBOUNCE_TIME, Debouncer.DebounceType.kBoth);
+    //private ELEVATORMECH elevator
+    private ElevatorMech elevator_;
 
     // getInstance
     public static HopperSubsystem getInstance() {
@@ -37,6 +40,16 @@ public class HopperSubsystem extends MwSubsystem<HopperStates, HopperConstants> 
                         "Hopper",
                         List.of(CONSTANTS.HOPPER_MOTOR_CONFIG),
                         CONSTANTS.HOPPER_GEAR_RATIO);
+        elevator_ =
+                new ElevatorMech(
+                        getSubsystemKey(),
+                        "Elevator",
+                        List.of(CONSTANTS.ELEVATOR_MOTOR_CONFIG),
+                        CONSTANTS.ELEVATOR_GEAR_RATIO,
+                        CONSTANTS.ELEVATOR_DRUM_RADIUS,
+                        CONSTANTS.ELEVATOR_CARRIAGE_MASS_KG,
+                        CONSTANTS.ELEVATOR_MAX_EXTENSION_METERS,
+                        CONSTANTS.ELEVATOR_RIGGING_RATIO);
 
         DogLog.tunable(
                 getSubsystemKey() + "/Hopper/TargetVelocity",
@@ -89,8 +102,11 @@ public class HopperSubsystem extends MwSubsystem<HopperStates, HopperConstants> 
     public void updateLogic(double timestamp) {
         switch (system_state_) {
             case INTAKE:
+                elevator_.setTargetPosition(CONSTANTS.ELEVATOR_MAX_EXTENSION_METERS);
+                break;
             case SHOOTING:
                 hopper_.setTargetVelocity(manual_hopper_velocity_);
+                elevator_.setTargetPosition(0.0);
                 break;
             case UNJAM_REVERSE:
                 hopper_.setTargetVelocity(-manual_hopper_velocity_);
