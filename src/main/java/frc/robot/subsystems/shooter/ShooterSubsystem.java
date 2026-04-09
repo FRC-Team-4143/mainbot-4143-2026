@@ -229,7 +229,6 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
                                         CONSTANTS.SHOOTER_CENTER.getX(),
                                         CONSTANTS.SHOOTER_CENTER.getY()),
                                 heading_feedforward_);
-                is_shooting_ = is_shooting_debouncer.calculate(flywheel_.getCurrentVelocity() > flywheel_omega_*CONSTANTS.SHOOTING_VELOCITY_FACTOR);
                 break;
             case AIMING:
                 flywheel_.setTargetVelocity(flywheel_omega_);
