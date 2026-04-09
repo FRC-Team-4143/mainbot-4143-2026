@@ -4,8 +4,8 @@ import com.marswars.auto.Auto;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.lib2026.FieldTargets;
-import frc.robot.subsystems.hopper.HopperConstants.HopperStates;
-import frc.robot.subsystems.hopper.HopperSubsystem;
+import frc.robot.subsystems.hopper.FloorConstants.FloorStates;
+import frc.robot.subsystems.hopper.FloorSubsystem;
 import frc.robot.subsystems.intake.IntakeConstants.IntakeStates;
 import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterStates;
@@ -70,7 +70,7 @@ public class Citrus_Left_Side extends Auto {
                 Commands.runOnce(
                         () -> {
                             ShooterSubsystem.getInstance().setWantedState(ShooterStates.SHOOT);
-                            HopperSubsystem.getInstance().setWantedState(HopperStates.SHOOTING);
+                            FloorSubsystem.getInstance().setWantedState(FloorStates.SHOOTING);
                         }),
                 // Shoot for 3 seconds
                 new WaitCommand(3),
@@ -83,7 +83,7 @@ public class Citrus_Left_Side extends Auto {
                 Commands.runOnce(
                         () -> {
                             ShooterSubsystem.getInstance().setWantedState(ShooterStates.TRACKING);
-                            HopperSubsystem.getInstance().setWantedState(HopperStates.IDLE);
+                            FloorSubsystem.getInstance().setWantedState(FloorStates.IDLE);
                             IntakeSubsystem.getInstance().setWantedState(IntakeStates.STORE);
                         }),
                 // Set the second trajectory for the second pass
@@ -108,7 +108,7 @@ public class Citrus_Left_Side extends Auto {
                 Commands.runOnce(
                         () -> {
                             ShooterSubsystem.getInstance().setWantedState(ShooterStates.SHOOT);
-                            HopperSubsystem.getInstance().setWantedState(HopperStates.SHOOTING);
+                            FloorSubsystem.getInstance().setWantedState(FloorStates.SHOOTING);
                         }),
                 // Shoot for 3 seconds
                 new WaitCommand(3),
