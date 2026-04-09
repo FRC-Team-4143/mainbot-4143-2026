@@ -364,6 +364,9 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
                 RadiansPerSecond);
         DogLog.log(getSubsystemKey() + "Tolerance/HoodAngle", hood_pos_tol_, Radians);
         DogLog.log(getSubsystemKey() + "Tolerance/HeadingAngle", rot_pos_tol_, Radians);
+
+
+        DogLog.log(getSubsystemKey() + "IsShooting", is_shooting_);
     }
 
     // =============================================================================
