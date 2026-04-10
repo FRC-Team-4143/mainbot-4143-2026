@@ -1,6 +1,5 @@
 package frc.robot.subsystems.hopper;
 
-import com.marswars.mechanisms.ElevatorMech;
 import com.marswars.mechanisms.RollerMech;
 import com.marswars.subsystem.MwSubsystem;
 import com.marswars.subsystem.SubsystemIoBase;

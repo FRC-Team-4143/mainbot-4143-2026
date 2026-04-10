@@ -13,12 +13,8 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.lib2026.HubMonitor;
 import frc.robot.subsystems.gamestates.GameStatesSubsystem;
-import frc.robot.subsystems.hopper.FloorConstants.FloorStates;
 import frc.robot.subsystems.hopper.RoofConstants.RoofStates;
-import frc.robot.subsystems.hopper.FloorSubsystem;
 import frc.robot.subsystems.hopper.RoofSubsystem;
-import frc.robot.subsystems.intake.IntakeConstants.IntakeStates;
-import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.localization.LocalizationSubsystem;
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterStates;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
@@ -131,17 +127,12 @@ public abstract class OI {
                 .y()
                 .onTrue(
                         Commands.runOnce(
-                                () ->
-                                        RoofSubsystem.getInstance()
-                                                .setWantedState(RoofStates.UP)));
+                                () -> RoofSubsystem.getInstance().setWantedState(RoofStates.UP)));
         operator_controller_
                 .a()
                 .onTrue(
                         Commands.runOnce(
-                                () ->   
-                                        RoofSubsystem.getInstance()
-                                                .setWantedState(RoofStates.DOWN)));
-
+                                () -> RoofSubsystem.getInstance().setWantedState(RoofStates.DOWN)));
     }
 
     /**

@@ -3,16 +3,14 @@ package frc.robot.subsystems.hopper;
 import com.marswars.mechanisms.ElevatorMech;
 import com.marswars.subsystem.MwSubsystem;
 import com.marswars.subsystem.SubsystemIoBase;
-
 import frc.robot.subsystems.hopper.RoofConstants.RoofStates;
-
 import java.util.Arrays;
 import java.util.List;
 
 public class RoofSubsystem extends MwSubsystem<RoofStates, RoofConstants> {
     private static RoofSubsystem instance_ = null;
 
-    //private ELEVATORMECH elevator
+    // private ELEVATORMECH elevator
     private ElevatorMech elevator_;
 
     // getInstance
@@ -52,36 +50,23 @@ public class RoofSubsystem extends MwSubsystem<RoofStates, RoofConstants> {
     }
 
     // handleStateTransition
-    @Override
-    public void handleStateTransition(RoofStates wanted) {
-        //DOWN transitions
-        if (system_state_ == RoofStates.DOWN && wanted == RoofStates.UP) {
-            system_state_ = RoofStates.UP;
-        } else {
-            //left empty to not interfere with elevator state machine
-        }
-        //UP transitions
-        if (system_state_ == RoofStates.UP && wanted == RoofStates.DOWN) {
-            system_state_ = RoofStates.DOWN;
-        } else {
-            //left empty to not interfere with elevator state machine
-        }
-        // CLIMB transitions
-        
-        // blank for now, will be filled in when we implement the climb state
-    }
+    // @Override
+    // public void handleStateTransition(RoofStates wanted) {
+    // }
 
     // updateLogic
     @Override
     public void updateLogic(double timestamp) {
         switch (system_state_) {
             case UP:
-                elevator_.setTargetPosition(CONSTANTS.ELEVATOR_MAX_EXTENSION_METERS);
+                elevator_.setTargetPosition(CONSTANTS.ELEVATOR_UP_POSITION_METERS);
                 break;
             case DOWN:
-                elevator_.setTargetPosition(0.0);
+                elevator_.setTargetPosition(CONSTANTS.ELEVATOR_DOWN_POSITION_METERS);
                 break;
             case CLIMB:
+                break;
+            case TUNING:
                 break;
         }
     }
@@ -89,6 +74,5 @@ public class RoofSubsystem extends MwSubsystem<RoofStates, RoofConstants> {
     // =============================================================================
     // PUBLIC HELPER METHODS
     // =============================================================================
-
 
 }

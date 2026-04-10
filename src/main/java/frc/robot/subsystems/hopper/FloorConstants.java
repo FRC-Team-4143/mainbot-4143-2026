@@ -1,13 +1,10 @@
 package frc.robot.subsystems.hopper;
 
-import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.Slot1Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.marswars.mechanisms.MotorConfig;
 import com.marswars.mechanisms.MotorConfig.TalonMotorType;
 import com.marswars.subsystem.MwConstants;
-
-import edu.wpi.first.math.util.Units;
 
 public class FloorConstants extends MwConstants {
 
@@ -48,7 +45,7 @@ public class FloorConstants extends MwConstants {
     public final double HOPPER_DANGER_CURRENT = 40;
     public final double HOPPER_VELOCITY_TARGET = 200;
     public final Slot1Configs HOPPER_VELOCITY_GAINS = new Slot1Configs().withKV(.122).withKP(0.5);
-            
+
     // =============================================================================
     // CONTROL AND OPERATIONAL CONSTANTS
     // =============================================================================
