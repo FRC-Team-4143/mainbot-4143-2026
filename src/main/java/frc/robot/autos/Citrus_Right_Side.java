@@ -2,10 +2,13 @@ package frc.robot.autos;
 
 import com.marswars.auto.Auto;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.lib2026.FieldTargets;
 import frc.robot.subsystems.hopper.FloorConstants.FloorStates;
 import frc.robot.subsystems.hopper.FloorSubsystem;
+import frc.robot.subsystems.hopper.RoofConstants.RoofStates;
+import frc.robot.subsystems.hopper.RoofSubsystem;
 import frc.robot.subsystems.intake.IntakeConstants.IntakeStates;
 import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterStates;
@@ -22,6 +25,7 @@ public class Citrus_Right_Side extends Auto {
         // =============================================================================
         loadTrajectory(ChoreoTraj.CitrusRightSide.name());
         loadTrajectory(ChoreoTraj.CitrusRightSideSecondPass.name());
+        loadTrajectory(ChoreoTraj.CitrusRightSideSecondPassBump.name());
 
         // =============================================================================
         // EVENT TRIGGER BINDING
@@ -50,6 +54,7 @@ public class Citrus_Right_Side extends Auto {
                         () -> {
                             ShooterSubsystem.getInstance().setTarget(FieldTargets.Shooter.HUB);
                             ShooterSubsystem.getInstance().setWantedState(ShooterStates.TRACKING);
+                            RoofSubsystem.getInstance().setWantedState(RoofStates.DOWN);
                         }),
 
                 // Set the initial trajectory
@@ -77,6 +82,10 @@ public class Citrus_Right_Side extends Auto {
                 // Pull the intake in while we shoot to help index more balls
                 Commands.runOnce(
                         () -> IntakeSubsystem.getInstance().setWantedState(IntakeStates.INTAKE)),
+                Commands.runOnce(
+                                () -> {
+                                    RoofSubsystem.getInstance().setWantedState(RoofStates.DOWN);
+                                }),
                 // Continue to shoot for 3 more seconds
                 new WaitCommand(3),
                 // Stop shooting
@@ -87,9 +96,13 @@ public class Citrus_Right_Side extends Auto {
                             IntakeSubsystem.getInstance().setWantedState(IntakeStates.STORE);
                         }),
                 // Set the second trajectory for the second pass
-                SwerveSubsystem.getInstance()
+                new ConditionalCommand(SwerveSubsystem.getInstance()
                         .setDesiredChoreoTrajectoryCommand(
-                                getTrajectory(ChoreoTraj.CitrusRightSideSecondPass.name())),
+                                getTrajectory(ChoreoTraj.CitrusRightSideSecondPass.name())), 
+                        SwerveSubsystem.getInstance()
+                        .setDesiredChoreoTrajectoryCommand(
+                                getTrajectory(ChoreoTraj.CitrusRightSideSecondPassBump.name())), RoofSubsystem.getInstance()::isDown)
+                ,
                 // Start Choreo following
                 Commands.startEnd(
                                 () ->
@@ -114,6 +127,10 @@ public class Citrus_Right_Side extends Auto {
                 new WaitCommand(3),
                 // Pull the intake in while we shoot to help index more balls
                 Commands.runOnce(
-                        () -> IntakeSubsystem.getInstance().setWantedState(IntakeStates.STORE)));
+                        () -> IntakeSubsystem.getInstance().setWantedState(IntakeStates.STORE)),
+                Commands.runOnce(
+                        () -> {
+                            RoofSubsystem.getInstance().setWantedState(RoofStates.DOWN);
+                       }));
     }
 }

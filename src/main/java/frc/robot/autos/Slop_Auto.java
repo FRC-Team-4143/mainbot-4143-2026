@@ -16,17 +16,16 @@ import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.swerve.SwerveConstants.SwerveStates;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 
-public class Citrus_Left_Side extends Auto {
+public class Slop_Auto extends Auto {
 
-    public Citrus_Left_Side() {
+    public Slop_Auto() {
         // =============================================================================
         // TRAJECTORY LOADING
         // These should be loaded in the order they will be used to ensure correct start
         // poses
         // =============================================================================
-        loadTrajectory(ChoreoTraj.CitrusLeftSide.name());
-        loadTrajectory(ChoreoTraj.CitrusLeftSideSecondPass.name());
-        loadTrajectory(ChoreoTraj.CitrusLeftSideSecondPassBump.name());
+        loadTrajectory(ChoreoTraj.SlopAutoStart.name());
+        loadTrajectory(ChoreoTraj.SlopAutoClimb.name());
 
         // =============================================================================
         // EVENT TRIGGER BINDING
@@ -74,7 +73,7 @@ public class Citrus_Left_Side extends Auto {
                 // Set the initial trajectory
                 SwerveSubsystem.getInstance()
                         .setDesiredChoreoTrajectoryCommand(
-                                getTrajectory(ChoreoTraj.CitrusLeftSide.name())),
+                                getTrajectory(ChoreoTraj.SlopAutoStart.name())),
                 // Start Choreo following
                 Commands.startEnd(
                                 () ->
@@ -110,13 +109,9 @@ public class Citrus_Left_Side extends Auto {
                             IntakeSubsystem.getInstance().setWantedState(IntakeStates.STORE);
                         }),
                 // Set the second trajectory for the second pass
-                new ConditionalCommand(SwerveSubsystem.getInstance()
+                SwerveSubsystem.getInstance()
                         .setDesiredChoreoTrajectoryCommand(
-                                getTrajectory(ChoreoTraj.CitrusLeftSideSecondPass.name())), 
-                        SwerveSubsystem.getInstance()
-                        .setDesiredChoreoTrajectoryCommand(
-                                getTrajectory(ChoreoTraj.CitrusLeftSideSecondPassBump.name())), RoofSubsystem.getInstance()::isDown)
-                ,
+                                getTrajectory(ChoreoTraj.SlopAutoClimb.name())),
                 // Start Choreo following
                 Commands.startEnd(
                                 () ->
@@ -125,26 +120,13 @@ public class Citrus_Left_Side extends Auto {
                                 () ->
                                         SwerveSubsystem.getInstance()
                                                 .setWantedState(
-                                                        SwerveStates.FIELD_CENTRIC_ROTATION_LOCK))
+                                                        SwerveStates.IDLE))
                         .until(
                                 () ->
                                         SwerveSubsystem.getInstance().isAtChoreoSetpoint()
                                                 && SwerveSubsystem.getInstance()
-                                                        .hasChoreoTimeElapsed(1)),
-                // Start shooting here
-                Commands.runOnce(
-                        () -> {
-                            ShooterSubsystem.getInstance().setWantedState(ShooterStates.SHOOT);
-                            FloorSubsystem.getInstance().setWantedState(FloorStates.SHOOTING);
-                        }),
-                // Shoot for 3 seconds
-                new WaitCommand(3),
-                // Pull the intake in while we shoot to help index more balls
-                Commands.runOnce(
-                        () -> IntakeSubsystem.getInstance().setWantedState(IntakeStates.STORE)),
-                Commands.runOnce(
-                        () -> {
-                            RoofSubsystem.getInstance().setWantedState(RoofStates.DOWN);
-                       }));
+                                                        .hasChoreoTimeElapsed(1))
+                //Climb
+                );
     }
 }
