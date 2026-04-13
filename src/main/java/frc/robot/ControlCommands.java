@@ -121,6 +121,7 @@ public class ControlCommands {
                             SwerveSubsystem.getInstance().setTeleOpVelocityScalar(0.25);
                             LocalizationSubsystem.getInstance()
                                     .setWantedState(LocalizationStates.SHOOTING_FOCUS);
+                            IntakeSubsystem.getInstance().setWantedState(IntakeStates.RACKING);
                         },
                         () -> {
                             if (SwerveSubsystem.getInstance().isChassisStationary()
@@ -139,6 +140,7 @@ public class ControlCommands {
                                     .setWantedState(SwerveStates.FIELD_CENTRIC);
                             LocalizationSubsystem.getInstance()
                                     .setWantedState(LocalizationStates.FULL);
+                            IntakeSubsystem.getInstance().setWantedState(IntakeStates.DEPLOYED);
                         },
                         () -> false)
                 .withName("Shoot Fuel")
