@@ -30,6 +30,12 @@ public class IntakeConstants extends MwConstants {
         OUTTAKE,
         /** Idle state with intake mechanisms stopped */
         IDLE,
+        /** The state that is asked for by the wanted state for racking in and out to occur */
+        RACKING,
+        /** Racking the intake up to the racking position */
+        RACKED_IN,
+        /** Racking the intake down to the raking position */
+        RACKED_OUT,
         /** Manual tuning mode for testing and calibration */
         TUNING
     }
@@ -78,6 +84,7 @@ public class IntakeConstants extends MwConstants {
 
     // Time to wait between cycling SHOOTING and RACKING modes (seconds)
     public final double SHOOTING_CYCLE_TIME = 1.0;
+    public final double RACKING_CYCLE_TIME = 1.0;
 
     // =============================================================================
     // MOTOR CONFIGURATION OBJECTS

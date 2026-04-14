@@ -6,13 +6,13 @@ import com.marswars.mechanisms.MotorConfig;
 import com.marswars.mechanisms.MotorConfig.TalonMotorType;
 import com.marswars.subsystem.MwConstants;
 
-public class HopperConstants extends MwConstants {
+public class FloorConstants extends MwConstants {
 
     // =============================================================================
     // ENUMS AND STATE DEFINITIONS
     // =============================================================================
 
-    public enum HopperStates {
+    public enum FloorStates {
         /** Idle state with hopper stopped */
         IDLE,
         /** Actively intaking game pieces */
@@ -65,7 +65,7 @@ public class HopperConstants extends MwConstants {
     // CONSTRUCTOR - MOTOR CONFIGURATION INITIALIZATION
     // =============================================================================
 
-    public HopperConstants() {
+    public FloorConstants() {
         // Configure Hopper Motor
         HOPPER_MOTOR_CONFIG.can_id = HOPPER_MOTOR_ID;
         HOPPER_MOTOR_CONFIG.motor_type = TalonMotorType.X44;
