@@ -97,9 +97,9 @@ public class Citrus_Left_Side extends Auto {
                 Commands.runOnce(
                         () -> IntakeSubsystem.getInstance().setWantedState(IntakeStates.INTAKE)),
                 Commands.runOnce(
-                                () -> {
-                                    RoofSubsystem.getInstance().setWantedState(RoofStates.DOWN);
-                                }),
+                        () -> {
+                            RoofSubsystem.getInstance().setWantedState(RoofStates.DOWN);
+                        }),
                 // Continue to shoot for 3 more seconds
                 new WaitCommand(3),
                 // Stop shooting
@@ -110,13 +110,15 @@ public class Citrus_Left_Side extends Auto {
                             IntakeSubsystem.getInstance().setWantedState(IntakeStates.STORE);
                         }),
                 // Set the second trajectory for the second pass
-                new ConditionalCommand(SwerveSubsystem.getInstance()
-                        .setDesiredChoreoTrajectoryCommand(
-                                getTrajectory(ChoreoTraj.CitrusLeftSideSecondPass.name())), 
+                new ConditionalCommand(
                         SwerveSubsystem.getInstance()
-                        .setDesiredChoreoTrajectoryCommand(
-                                getTrajectory(ChoreoTraj.CitrusLeftSideSecondPassBump.name())), RoofSubsystem.getInstance()::isDown)
-                ,
+                                .setDesiredChoreoTrajectoryCommand(
+                                        getTrajectory(ChoreoTraj.CitrusLeftSideSecondPass.name())),
+                        SwerveSubsystem.getInstance()
+                                .setDesiredChoreoTrajectoryCommand(
+                                        getTrajectory(
+                                                ChoreoTraj.CitrusLeftSideSecondPassBump.name())),
+                        RoofSubsystem.getInstance()::isDown),
                 // Start Choreo following
                 Commands.startEnd(
                                 () ->
@@ -145,6 +147,6 @@ public class Citrus_Left_Side extends Auto {
                 Commands.runOnce(
                         () -> {
                             RoofSubsystem.getInstance().setWantedState(RoofStates.DOWN);
-                       }));
+                        }));
     }
 }

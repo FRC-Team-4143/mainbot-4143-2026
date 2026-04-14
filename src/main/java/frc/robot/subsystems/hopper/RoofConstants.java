@@ -44,14 +44,17 @@ public class RoofConstants extends MwConstants {
             new Slot0Configs().withKV(0.0).withKP(3.0).withKI(0.0).withKD(0.0).withKG(0.2895);
     public final double ELEVATOR_RIGGING_RATIO =
             1.0; // Ratio of motor rotation to elevator extension (depends on pulley system)
-    public final double ELEVATOR_UP_POSITION_METERS = 0.95*ELEVATOR_MAX_EXTENSION_METERS; // Target position for the elevator when in the UP state
-    public final double ELEVATOR_DOWN_POSITION_METERS = 0.05*ELEVATOR_MAX_EXTENSION_METERS; // Target position for the elevator when in the DOWN state
+    public final double ELEVATOR_UP_POSITION_METERS =
+            0.95 * ELEVATOR_MAX_EXTENSION_METERS; // Target position for the elevator when in the
+    // UP state
+    public final double ELEVATOR_DOWN_POSITION_METERS =
+            0.05 * ELEVATOR_MAX_EXTENSION_METERS; // Target position for the elevator when in the
+    // DOWN state
     // =============================================================================
     // MOTOR CONFIGURATION OBJECTS
     // =============================================================================
 
     public final MotorConfig ELEVATOR_MOTOR_CONFIG = new MotorConfig();
-
 
     // =============================================================================
     // CONSTRUCTOR - MOTOR CONFIGURATION INITIALIZATION

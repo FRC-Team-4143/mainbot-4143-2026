@@ -3,11 +3,6 @@ package frc.robot.subsystems.hopper;
 import com.marswars.mechanisms.ElevatorMech;
 import com.marswars.subsystem.MwSubsystem;
 import com.marswars.subsystem.SubsystemIoBase;
-
-import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
-import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
-import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.hopper.RoofConstants.RoofStates;
 import java.util.Arrays;
 import java.util.List;
@@ -17,12 +12,6 @@ public class RoofSubsystem extends MwSubsystem<RoofStates, RoofConstants> {
 
     // private ELEVATORMECH elevator
     private ElevatorMech elevator_;
-
-    private Mechanism2d mech = new Mechanism2d(3,3);
-
-    private MechanismRoot2d root = mech.getRoot("climber",2,0);
-
-    private MechanismLigament2d m_elevator;
 
     // getInstance
     public static RoofSubsystem getInstance() {
@@ -35,8 +24,6 @@ public class RoofSubsystem extends MwSubsystem<RoofStates, RoofConstants> {
     // Constructor
     public RoofSubsystem() {
         super(RoofStates.DOWN, new RoofConstants());
-        m_elevator = root.append(new MechanismLigament2d("elevator", 0.548, 90));
-        SmartDashboard.putData("Mech2d", mech);
         elevator_ =
                 new ElevatorMech(
                         getSubsystemKey(),
@@ -81,15 +68,13 @@ public class RoofSubsystem extends MwSubsystem<RoofStates, RoofConstants> {
             case TUNING:
                 break;
         }
-            m_elevator.setLength(elevator_.getCurrentPosition()+0.548);
     }
 
     // =============================================================================
     // PUBLIC HELPER METHODS
     // =============================================================================
 
-
-    public boolean isDown(){
+    public boolean isDown() {
         return elevator_.getCurrentPosition() < (CONSTANTS.ELEVATOR_DOWN_POSITION_METERS + 0.02);
     }
 }

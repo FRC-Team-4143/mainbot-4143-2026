@@ -2,7 +2,6 @@ package frc.robot.autos;
 
 import com.marswars.auto.Auto;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.lib2026.FieldTargets;
 import frc.robot.subsystems.hopper.FloorConstants.FloorStates;
@@ -96,9 +95,9 @@ public class Slop_Auto extends Auto {
                 Commands.runOnce(
                         () -> IntakeSubsystem.getInstance().setWantedState(IntakeStates.INTAKE)),
                 Commands.runOnce(
-                                () -> {
-                                    RoofSubsystem.getInstance().setWantedState(RoofStates.DOWN);
-                                }),
+                        () -> {
+                            RoofSubsystem.getInstance().setWantedState(RoofStates.DOWN);
+                        }),
                 // Continue to shoot for 3 more seconds
                 new WaitCommand(3),
                 // Stop shooting
@@ -119,14 +118,13 @@ public class Slop_Auto extends Auto {
                                                 .setWantedState(SwerveStates.CHOREO_PATH),
                                 () ->
                                         SwerveSubsystem.getInstance()
-                                                .setWantedState(
-                                                        SwerveStates.IDLE))
+                                                .setWantedState(SwerveStates.IDLE))
                         .until(
                                 () ->
                                         SwerveSubsystem.getInstance().isAtChoreoSetpoint()
                                                 && SwerveSubsystem.getInstance()
                                                         .hasChoreoTimeElapsed(1))
-                //Climb
+                // Climb
                 );
     }
 }
