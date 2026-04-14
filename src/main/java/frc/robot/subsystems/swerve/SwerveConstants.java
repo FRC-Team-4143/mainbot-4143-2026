@@ -103,7 +103,7 @@ public class SwerveConstants extends MwConstants {
     // CONTROL AND OPERATIONAL CONSTANTS
     // =============================================================================
 
-    public final double CONTROLLER_DEADBAND = 0.05;
+    public final double CONTROLLER_DEADBAND = 0.1; // Deadband for joystick inputs to prevent drift
     public final double MAX_TRANSLATION_RATE = getDoubleConstant("com", "max_translation_rate");
     public final double MAX_TRANSLATION_ACCEL =
             40.0; // Meters per second squared (Used for slew rate limiters)
@@ -117,7 +117,6 @@ public class SwerveConstants extends MwConstants {
     public final double STATIONARY_ANGULAR_VELOCITY_THRESHOLD =
             0.2; // Radians per second, max angular velocity to be considered stationary
 
-
     // =============================================================================
     // CHOREO PATH FOLLOWING CONSTANTS
     // =============================================================================
@@ -128,9 +127,9 @@ public class SwerveConstants extends MwConstants {
     public final double CHOREO_TRANSLATION_CONTROLLER_KP = 7.0;
     public final double CHOREO_TRANSLATION_CONTROLLER_KI = 0.0;
     public final double CHOREO_TRANSLATION_CONTROLLER_KD = 0.0;
-    public final double CHOREO_THETA_CONTROLLER_KP = 7.3;
+    public final double CHOREO_THETA_CONTROLLER_KP = 12.0; // 7.3;
     public final double CHOREO_THETA_CONTROLLER_KI = 0.0;
-    public final double CHOREO_THETA_CONTROLLER_KD = 0.07;
+    public final double CHOREO_THETA_CONTROLLER_KD = 1.0; // 0.07;
 
     // =============================================================================
     // TRACTOR BEAM CONSTANTS

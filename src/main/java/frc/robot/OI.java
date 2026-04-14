@@ -12,7 +12,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.lib2026.HubMonitor;
-import frc.robot.subsystems.climber.ClimberSubsystem;
+import frc.robot.subsystems.gamestates.GameStatesConstants.GameStates;
+import frc.robot.subsystems.gamestates.GameStatesSubsystem;
+import frc.robot.subsystems.hopper.RoofConstants.RoofStates;
+import frc.robot.subsystems.hopper.RoofSubsystem;
 import frc.robot.subsystems.localization.LocalizationSubsystem;
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterStates;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
@@ -63,29 +66,53 @@ public abstract class OI {
         driver_controller_
                 .rightStick()
                 .onTrue(SwerveSubsystem.getInstance().toggleFieldCentric().ignoringDisable(true));
-        driver_controller_.rightTrigger().whileTrue(ControlCommands.shootFuelCommand());
-        driver_controller_.leftTrigger().whileTrue(ControlCommands.aimAtTargetCommand());
+        driver_controller_
+                .rightTrigger()
+                .whileTrue(
+                        Commands.startEnd(
+                                () -> {
+                                    GameStatesSubsystem.getInstance()
+                                            .setWantedState(GameStates.SHOOT);
+                                },
+                                () -> {
+                                    GameStatesSubsystem.getInstance()
+                                            .setWantedState(GameStates.HOLD);
+                                }));
+        driver_controller_
+                .leftTrigger()
+                .whileTrue(
+                        Commands.startEnd(
+                                () -> {
+                                    GameStatesSubsystem.getInstance()
+                                            .setWantedState(GameStates.AIM);
+                                },
+                                () -> {
+                                    GameStatesSubsystem.getInstance()
+                                            .setWantedState(GameStates.HOLD);
+                                }));
         driver_controller_.leftStick().whileTrue(ControlCommands.rotateForBumpCommand());
         driver_controller_.rightBumper().whileTrue(ControlCommands.intakeFuelCommand());
         driver_controller_.leftBumper().onFalse(ControlCommands.toggleStoreIntakeCommand());
-        driver_controller_.start().onTrue(ControlCommands.advanceClimbingStage());
-        driver_controller_.back().onTrue(ControlCommands.reverseClimbingStage());
         driver_controller_.y().whileTrue(ControlCommands.manualShootFuelCommand());
         driver_controller_.b().whileTrue(ControlCommands.manualPassFuelCommand());
+        driver_controller_.a().whileTrue(ControlCommands.outTakeFuelCommand());
+
         // =============================================================================
         // OPERATOR CONTROLLER BINDINGS
         // =============================================================================
-
-        // operator_controller_.a().onTrue(ClimberSubsystem.getInstance().toggleDeployCommand());
-        // operator_controller_.b().onTrue(Commands.runOnce(() ->
-        // ClimberSubsystem.getInstance().setWantedState(ClimberStates.L1)));
-        // operator_controller_.x().whileTrue(ClimberSubsystem.getInstance().bumpUpCommand());
-        // operator_controller_.y().onTrue(Commands.runOnce(() ->
-        // ClimberSubsystem.getInstance().setWantedState(ClimberStates.GROUND)));
-
-        // driver_controller_.x().onTrue(Commands.runOnce(
-        // () -> ClimberSubsystem.getInstance().setWantedState(ClimberStates.L1)));
-
+        // Dead-man force-pass override: hold to force GSM to choose a PASS target
+        // while inside the alliance zone (left bumper acts as the dead-man).
+        operator_controller_
+                .leftBumper()
+                .whileTrue(
+                        Commands.startEnd(
+                                        () ->
+                                                GameStatesSubsystem.getInstance()
+                                                        .setPassOverride(true),
+                                        () ->
+                                                GameStatesSubsystem.getInstance()
+                                                        .setPassOverride(false))
+                                .ignoringDisable(true));
         operator_controller_
                 .povUp()
                 .onTrue(
@@ -116,12 +143,16 @@ public abstract class OI {
                                     ShooterSubsystem.getInstance()
                                             .adjustHood(Units.degreesToRadians(1));
                                 }));
-        operator_controller_.rightBumper().onTrue(ClimberSubsystem.getInstance().bumpUpCommand());
-        operator_controller_.leftBumper().onTrue(ClimberSubsystem.getInstance().bumpDownCommand());
-        // =============================================================================
-        // TESTING BINDINGS (THESE SHOULD BE REMOVED BEFORE COMPETITION)
-
-        // =============================================================================
+        operator_controller_
+                .y()
+                .onTrue(
+                        Commands.runOnce(
+                                () -> RoofSubsystem.getInstance().setWantedState(RoofStates.UP)));
+        operator_controller_
+                .a()
+                .onTrue(
+                        Commands.runOnce(
+                                () -> RoofSubsystem.getInstance().setWantedState(RoofStates.DOWN)));
     }
 
     /**

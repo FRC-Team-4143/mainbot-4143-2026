@@ -13,16 +13,17 @@ import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.swerve.SwerveConstants.SwerveStates;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 
-public class Citrus_Left_Side extends Auto {
+public class CitrusSynergy extends Auto {
 
-    public Citrus_Left_Side() {
+    public CitrusSynergy() {
         // =============================================================================
         // TRAJECTORY LOADING
-        // These should be loaded in the order they will be used to ensure correct start
-        // poses
+        // These should be loaded in the order they will be used to ensure correct start poses
         // =============================================================================
-        loadTrajectory(ChoreoTraj.CitrusLeftSide.name());
-        loadTrajectory(ChoreoTraj.CitrusLeftSideSecondPass.name());
+        loadTrajectory(ChoreoTraj.CitrusSynergyP1.name());
+        loadTrajectory(ChoreoTraj.CitrusSynergyP2.name());
+        loadTrajectory(ChoreoTraj.CitrusSynergyP3.name());
+        loadTrajectory(ChoreoTraj.CitrusSynergyP4.name());
 
         // =============================================================================
         // EVENT TRIGGER BINDING
@@ -46,16 +47,47 @@ public class Citrus_Left_Side extends Auto {
         // AUTO COMMAND SEQUENCE
         // =============================================================================
         addCommands(
-                // Drive over the bump at a set speed
                 Commands.runOnce(
                         () -> {
                             ShooterSubsystem.getInstance().setTarget(FieldTargets.Shooter.HUB);
                             ShooterSubsystem.getInstance().setWantedState(ShooterStates.TRACKING);
                         }),
+
                 // Set the initial trajectory
                 SwerveSubsystem.getInstance()
                         .setDesiredChoreoTrajectoryCommand(
-                                getTrajectory(ChoreoTraj.CitrusLeftSide.name())),
+                                getTrajectory(ChoreoTraj.CitrusSynergyP1.name())),
+                // Start Choreo following
+                Commands.startEnd(
+                                () ->
+                                        SwerveSubsystem.getInstance()
+                                                .setWantedState(SwerveStates.CHOREO_PATH),
+                                () ->
+                                        SwerveSubsystem.getInstance()
+                                                .setWantedState(SwerveStates.IDLE))
+                        .until(SwerveSubsystem.getInstance()::isAtChoreoSetpoint),
+                // Wait for 4 seconds for other robots to clear the middle
+                new DynamicWaitCommand(getName() + "/MiddleWaitTime", 4),
+                // Set the second trajectory for the second part
+                SwerveSubsystem.getInstance()
+                        .setDesiredChoreoTrajectoryCommand(
+                                getTrajectory(ChoreoTraj.CitrusSynergyP2.name())),
+                // Start Choreo following
+                Commands.startEnd(
+                                () ->
+                                        SwerveSubsystem.getInstance()
+                                                .setWantedState(SwerveStates.CHOREO_PATH),
+                                () ->
+                                        SwerveSubsystem.getInstance()
+                                                .setWantedState(SwerveStates.IDLE))
+                        .until(SwerveSubsystem.getInstance()::isAtChoreoSetpoint),
+                // Wait for 1 second to allow the other bots to get out of the way in the alliance
+                // zone
+                new DynamicWaitCommand(getName() + "/BeforeAllianceZoneWaitTime", 1),
+                // Set the third trajectory for the third part
+                SwerveSubsystem.getInstance()
+                        .setDesiredChoreoTrajectoryCommand(
+                                getTrajectory(ChoreoTraj.CitrusSynergyP3.name())),
                 // Start Choreo following
                 Commands.startEnd(
                                 () ->
@@ -72,48 +104,22 @@ public class Citrus_Left_Side extends Auto {
                             ShooterSubsystem.getInstance().setWantedState(ShooterStates.SHOOT);
                             FloorSubsystem.getInstance().setWantedState(FloorStates.SHOOTING);
                         }),
-                // Shoot for 3 seconds
-                new WaitCommand(3),
-                // Pull the intake in while we shoot to help index more balls
-                Commands.runOnce(
-                        () -> IntakeSubsystem.getInstance().setWantedState(IntakeStates.INTAKE)),
-                // Continue to shoot for 3 more seconds
-                new WaitCommand(3),
-                // Stop shooting
-                Commands.runOnce(
-                        () -> {
-                            ShooterSubsystem.getInstance().setWantedState(ShooterStates.TRACKING);
-                            FloorSubsystem.getInstance().setWantedState(FloorStates.IDLE);
-                            IntakeSubsystem.getInstance().setWantedState(IntakeStates.STORE);
-                        }),
-                // Set the second trajectory for the second pass
+                // Shoot for 2 seconds
+                new WaitCommand(2),
+                // Set the fourth trajectory for the fourth part
                 SwerveSubsystem.getInstance()
                         .setDesiredChoreoTrajectoryCommand(
-                                getTrajectory(ChoreoTraj.CitrusLeftSideSecondPass.name())),
+                                getTrajectory(ChoreoTraj.CitrusSynergyP4.name())),
                 // Start Choreo following
                 Commands.startEnd(
                                 () ->
                                         SwerveSubsystem.getInstance()
-                                                .setWantedState(SwerveStates.CHOREO_PATH),
+                                                .setWantedState(
+                                                        SwerveStates.CHOREO_PATH_ROTATION_LOCK),
                                 () ->
                                         SwerveSubsystem.getInstance()
                                                 .setWantedState(
                                                         SwerveStates.FIELD_CENTRIC_ROTATION_LOCK))
-                        .until(
-                                () ->
-                                        SwerveSubsystem.getInstance().isAtChoreoSetpoint()
-                                                && SwerveSubsystem.getInstance()
-                                                        .hasChoreoTimeElapsed(1)),
-                // Start shooting here
-                Commands.runOnce(
-                        () -> {
-                            ShooterSubsystem.getInstance().setWantedState(ShooterStates.SHOOT);
-                            FloorSubsystem.getInstance().setWantedState(FloorStates.SHOOTING);
-                        }),
-                // Shoot for 3 seconds
-                new WaitCommand(3),
-                // Pull the intake in while we shoot to help index more balls
-                Commands.runOnce(
-                        () -> IntakeSubsystem.getInstance().setWantedState(IntakeStates.STORE)));
+                        .until(SwerveSubsystem.getInstance()::isAtChoreoSetpoint));
     }
 }

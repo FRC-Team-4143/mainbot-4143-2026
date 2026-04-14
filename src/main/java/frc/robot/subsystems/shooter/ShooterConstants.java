@@ -40,7 +40,9 @@ public class ShooterConstants extends MwConstants {
         /** Smooth return to zero velocity for clean disable */
         SPIN_DOWN,
         /** Aiming at target with shooter spinning and robot rotating, with no intent to SHOOT */
-        AIMING
+        AIMING,
+        /** Homing the hood to its home position */
+        HOOD_HOMING
     }
 
     public enum TargetType {
@@ -99,11 +101,8 @@ public class ShooterConstants extends MwConstants {
     public final boolean INDEXER_LEADER_INVERTED = false;
     public final boolean INDEXER_FOLLOWER_INVERTED = false;
     public final double INDEXER_GEAR_RATIO = 24.0 / 18.0;
-    public final Slot1Configs INDEXER_VELOCITY_GAINS = new Slot1Configs().withKD(0.01).withKI(1).withKP(0.5).withKV(0.129);
-    // kd = 0.01
-    //kI = 1
-    //kP = 0.5
-    //kV = 0.129
+    public final Slot1Configs INDEXER_VELOCITY_GAINS =
+            new Slot1Configs().withKD(0.01).withKI(1).withKP(0.5).withKV(0.129);
 
     // =============================================================================
     // MECHANICAL CONSTANTS - HOOD
@@ -124,6 +123,10 @@ public class ShooterConstants extends MwConstants {
     public final double HOOD_MANUAL_PASS_ANGLE =
             Units.degreesToRadians(51.57); // Hood angle for passing
 
+    public final double HOOD_HOMING_DUTY_CYCLE = 0.15;
+    public final double HOOD_HOMMING_CURRENT_THRESHOLD =
+            5.0; // Amps, threshold for detecting stall during homing
+
     @Deprecated
     public final double HOOD_MANUAL_ANGLE =
             Units.degreesToRadians(0); // Use HOOD_MANUAL_HUB_ANGLE instead
@@ -135,8 +138,8 @@ public class ShooterConstants extends MwConstants {
     // CONTROL AND OPERATIONAL CONSTANTS
     // =============================================================================
     public final double INDEXER_DUTY_CYCLE = 0.5; // 30% power for indexing
-    public final double IDLE_INDEXER_DUTY_CYCLE = -.1;
-    public final double INDEXER_VELOCITY = 250; 
+    public final double IDLE_INDEXER_DUTY_CYCLE = 0;
+    public final double INDEXER_VELOCITY = 250;
     public final double SHOOTER_IDLE_SPEED = 300.0;
     public final double HOOD_IDLE_POSITION = Units.degreesToRadians(80);
     public final Transform2d SHOOTER_CENTER =
@@ -180,29 +183,29 @@ public class ShooterConstants extends MwConstants {
 
         // Populate hood angle map (distance in meters -> angle in radians)
         // Empirically determined values from testing
-        HUB_LAUNCH_CALCULATOR.addHoodAnglePoint(0.75, Units.degreesToRadians(80.17));
-        HUB_LAUNCH_CALCULATOR.addHoodAnglePoint(1.34, Units.degreesToRadians(76.35));
-        HUB_LAUNCH_CALCULATOR.addHoodAnglePoint(1.78, Units.degreesToRadians(76.00));
-        HUB_LAUNCH_CALCULATOR.addHoodAnglePoint(2.17, Units.degreesToRadians(74.48));
-        HUB_LAUNCH_CALCULATOR.addHoodAnglePoint(2.81, Units.degreesToRadians(73.76));
-        HUB_LAUNCH_CALCULATOR.addHoodAnglePoint(3.82, Units.degreesToRadians(67.90));
-        HUB_LAUNCH_CALCULATOR.addHoodAnglePoint(4.40, Units.degreesToRadians(63.89));
-        HUB_LAUNCH_CALCULATOR.addHoodAnglePoint(4.77, Units.degreesToRadians(63.89));
-        HUB_LAUNCH_CALCULATOR.addHoodAnglePoint(5.60, Units.degreesToRadians(63.89));
-        HUB_LAUNCH_CALCULATOR.addHoodAnglePoint(6.50, Units.degreesToRadians(63.89));
+        HUB_LAUNCH_CALCULATOR.addHoodAnglePoint(0.75, 1.399);
+        HUB_LAUNCH_CALCULATOR.addHoodAnglePoint(1.34, 1.330);
+        HUB_LAUNCH_CALCULATOR.addHoodAnglePoint(1.78, 1.325);
+        HUB_LAUNCH_CALCULATOR.addHoodAnglePoint(2.17, 1.275);
+        HUB_LAUNCH_CALCULATOR.addHoodAnglePoint(2.81, 1.225);
+        HUB_LAUNCH_CALCULATOR.addHoodAnglePoint(3.82, 1.175);
+        HUB_LAUNCH_CALCULATOR.addHoodAnglePoint(4.40, 1.114);
+        HUB_LAUNCH_CALCULATOR.addHoodAnglePoint(4.77, 1.114);
+        HUB_LAUNCH_CALCULATOR.addHoodAnglePoint(5.60, 1.114);
+        HUB_LAUNCH_CALCULATOR.addHoodAnglePoint(6.50, 1.114);
 
         // Populate flywheel speed map (distance in meters -> speed in rad/s)
         // Empirically determined values from testing
-        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(0.75, (260.0 * 1.05) + 2.0);
-        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(1.34, (260.0 * 1.075) + 2.0);
-        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(1.78, (265.0 * 1.1) + 2.0);
-        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(2.17, (275.0 * 1.1) + 2.0);
-        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(2.81, (295.0 * 1.1) + 2.0);
-        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(3.82, (295.0 * 1.1) + 2.0);
-        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(4.40, (305.0 * 1.1) + 2.0);
-        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(4.77, (320.0 * 1.1) + 2.0);
-        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(5.60, (375.0 * 1.15) + 2.0);
-        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(6.50, (420.0 * 1.2) + 2.0);
+        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(0.75, 230);
+        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(1.34, 240);
+        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(1.78, 280);
+        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(2.17, 285.66);
+        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(2.81, 290);
+        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(3.82, 315);
+        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(4.40, 330);
+        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(4.77, 340);
+        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(5.60, 445); // needs updating
+        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(6.50, 518); // needs updating
 
         // Populate time of flight map (distance in meters -> time in seconds)
         // Empirically determined values from testing
@@ -214,7 +217,7 @@ public class ShooterConstants extends MwConstants {
                 new LaunchCalculator("Subsystem/Shooter/PassLaunchCalculator/", SHOOTER_CENTER);
 
         // Configure range limits
-        PASS_LAUNCH_CALCULATOR.setMinDistance(4.0); // Minimum passing distance in meters
+        PASS_LAUNCH_CALCULATOR.setMinDistance(0.5); // Minimum passing distance in meters
         PASS_LAUNCH_CALCULATOR.setMaxDistance(18.0); // Maximum passing distance in meters
         PASS_LAUNCH_CALCULATOR.setPhaseDelay(0.03); // Processing and actuator delay in seconds
 
@@ -247,6 +250,7 @@ public class ShooterConstants extends MwConstants {
         TalonFXConfiguration indexer_leader_config = new TalonFXConfiguration();
         indexer_leader_config.MotorOutput.Inverted =
                 PhoenixUtil.toInvertedValue(INDEXER_LEADER_INVERTED);
+        indexer_leader_config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
         indexer_leader_config.Slot1 = INDEXER_VELOCITY_GAINS;
         INDEXER_LEADER_MOTOR_CONFIG.apply(indexer_leader_config);
 
@@ -257,6 +261,7 @@ public class ShooterConstants extends MwConstants {
         TalonFXConfiguration indexer_follower_config = new TalonFXConfiguration();
         indexer_follower_config.MotorOutput.Inverted =
                 PhoenixUtil.toInvertedValue(INDEXER_FOLLOWER_INVERTED);
+        indexer_follower_config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
         INDEXER_FOLLOWER_MOTOR_CONFIG.apply(indexer_follower_config);
 
         // Configure Shooter Leader Motor

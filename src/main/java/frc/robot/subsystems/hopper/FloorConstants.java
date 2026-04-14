@@ -6,13 +6,13 @@ import com.marswars.mechanisms.MotorConfig;
 import com.marswars.mechanisms.MotorConfig.TalonMotorType;
 import com.marswars.subsystem.MwConstants;
 
-public class HopperConstants extends MwConstants {
+public class FloorConstants extends MwConstants {
 
     // =============================================================================
     // ENUMS AND STATE DEFINITIONS
     // =============================================================================
 
-    public enum HopperStates {
+    public enum FloorStates {
         /** Idle state with hopper stopped */
         IDLE,
         /** Actively intaking game pieces */
@@ -23,6 +23,8 @@ public class HopperConstants extends MwConstants {
         UNJAM_REVERSE,
         /** Unjamming by running hopper forward */
         UNJAM_FORWARD,
+        /** Running hopper in reverse */
+        REVERSE,
         /** Manual tuning mode for testing and calibration */
         TUNING,
     }
@@ -63,13 +65,14 @@ public class HopperConstants extends MwConstants {
     // CONSTRUCTOR - MOTOR CONFIGURATION INITIALIZATION
     // =============================================================================
 
-    public HopperConstants() {
+    public FloorConstants() {
         // Configure Hopper Motor
         HOPPER_MOTOR_CONFIG.can_id = HOPPER_MOTOR_ID;
         HOPPER_MOTOR_CONFIG.motor_type = TalonMotorType.X44;
         HOPPER_MOTOR_CONFIG.canbus_name = "rio";
         TalonFXConfiguration hopper_config = new TalonFXConfiguration();
         hopper_config.Slot1 = HOPPER_VELOCITY_GAINS;
+        // hopper_config.CurrentLimits.StatorCurrentLimit = 50;
         HOPPER_MOTOR_CONFIG.apply(hopper_config);
     }
 }

@@ -1101,12 +1101,13 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
     }
 
     /**
-     * Gets the chassis translation velocity in meters per second by calculating the magnitude of the current chassis speeds.
+     * Gets the chassis translation velocity in meters per second by calculating the magnitude of
+     * the current chassis speeds.
      *
      * @return the chassis translation velocity in meters per second
      */
     private double getChassisTranslationVelocity() {
-        ChassisSpeeds current_speeds  = getDesiredChassisSpeeds();
+        ChassisSpeeds current_speeds = getDesiredChassisSpeeds();
         return Math.hypot(current_speeds.vxMetersPerSecond, current_speeds.vyMetersPerSecond);
     }
 
@@ -1120,7 +1121,8 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
     }
 
     /**
-     * Checks if the chassis is stationary by comparing the translation and angular velocities to predefined thresholds.
+     * Checks if the chassis is stationary by comparing the translation and angular velocities to
+     * predefined thresholds.
      *
      * @return true if the chassis is stationary, false otherwise
      */

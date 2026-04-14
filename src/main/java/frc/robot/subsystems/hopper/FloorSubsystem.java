@@ -6,12 +6,12 @@ import com.marswars.subsystem.SubsystemIoBase;
 import dev.doglog.DogLog;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.wpilibj.Timer;
-import frc.robot.subsystems.hopper.HopperConstants.HopperStates;
+import frc.robot.subsystems.hopper.FloorConstants.FloorStates;
 import java.util.Arrays;
 import java.util.List;
 
-public class HopperSubsystem extends MwSubsystem<HopperStates, HopperConstants> {
-    private static HopperSubsystem instance_ = null;
+public class FloorSubsystem extends MwSubsystem<FloorStates, FloorConstants> {
+    private static FloorSubsystem instance_ = null;
 
     // private RollerMech feeder_;
     private RollerMech hopper_;
@@ -21,23 +21,22 @@ public class HopperSubsystem extends MwSubsystem<HopperStates, HopperConstants> 
             new Debouncer(CONSTANTS.DEBOUNCE_TIME, Debouncer.DebounceType.kBoth);
 
     // getInstance
-    public static HopperSubsystem getInstance() {
+    public static FloorSubsystem getInstance() {
         if (instance_ == null) {
-            instance_ = new HopperSubsystem();
+            instance_ = new FloorSubsystem();
         }
         return instance_;
     }
 
     // Constructor
-    public HopperSubsystem() {
-        super(HopperStates.IDLE, new HopperConstants());
+    public FloorSubsystem() {
+        super(FloorStates.IDLE, new FloorConstants());
         hopper_ =
                 new RollerMech(
                         getSubsystemKey(),
                         "Hopper",
                         List.of(CONSTANTS.HOPPER_MOTOR_CONFIG),
                         CONSTANTS.HOPPER_GEAR_RATIO);
-
 
         DogLog.tunable(
                 getSubsystemKey() + "/Hopper/TargetVelocity",
@@ -48,7 +47,7 @@ public class HopperSubsystem extends MwSubsystem<HopperStates, HopperConstants> 
     // reset
     @Override
     public void reset() {
-        system_state_ = HopperStates.IDLE;
+        system_state_ = FloorStates.IDLE;
     }
 
     // getIos
@@ -59,26 +58,26 @@ public class HopperSubsystem extends MwSubsystem<HopperStates, HopperConstants> 
 
     // handleStateTransition
     @Override
-    public void handleStateTransition(HopperStates wanted) {
+    public void handleStateTransition(FloorStates wanted) {
         boolean jammed = isJammed();
         DogLog.log(getSubsystemKey() + "Jammed", jammed);
-        if (jammed && (system_state_ == HopperStates.SHOOTING)) {
-            system_state_ = HopperStates.UNJAM_REVERSE;
+        if (jammed && (system_state_ == FloorStates.SHOOTING)) {
+            system_state_ = FloorStates.UNJAM_REVERSE;
             hopper_timer_.reset();
             hopper_timer_.start();
         } else if (hopper_timer_.hasElapsed(CONSTANTS.UNJAMM_TIMER)
-                && ((system_state_ == HopperStates.UNJAM_REVERSE)
-                        || (system_state_ == HopperStates.UNJAM_FORWARD))) {
+                && ((system_state_ == FloorStates.UNJAM_REVERSE)
+                        || (system_state_ == FloorStates.UNJAM_FORWARD))) {
             system_state_ =
-                    (system_state_ == HopperStates.UNJAM_REVERSE)
-                            ? HopperStates.UNJAM_FORWARD
-                            : HopperStates.UNJAM_REVERSE;
+                    (system_state_ == FloorStates.UNJAM_REVERSE)
+                            ? FloorStates.UNJAM_FORWARD
+                            : FloorStates.UNJAM_REVERSE;
             hopper_timer_.reset();
-        } else if ((system_state_ == HopperStates.UNJAM_REVERSE) && (!jammed)) {
-            system_state_ = HopperStates.SHOOTING;
+        } else if ((system_state_ == FloorStates.UNJAM_REVERSE) && (!jammed)) {
+            system_state_ = FloorStates.SHOOTING;
             hopper_timer_.stop();
-        } else if ((system_state_ == HopperStates.UNJAM_FORWARD) && (!jammed)) {
-            system_state_ = HopperStates.SHOOTING;
+        } else if ((system_state_ == FloorStates.UNJAM_FORWARD) && (!jammed)) {
+            system_state_ = FloorStates.SHOOTING;
             hopper_timer_.stop();
         } else {
             system_state_ = wanted;
@@ -90,6 +89,7 @@ public class HopperSubsystem extends MwSubsystem<HopperStates, HopperConstants> 
     public void updateLogic(double timestamp) {
         switch (system_state_) {
             case INTAKE:
+                break;
             case SHOOTING:
                 hopper_.setTargetVelocity(manual_hopper_velocity_);
                 break;
@@ -98,6 +98,9 @@ public class HopperSubsystem extends MwSubsystem<HopperStates, HopperConstants> 
                 break;
             case UNJAM_FORWARD:
                 hopper_.setTargetVelocity(manual_hopper_velocity_);
+                break;
+            case REVERSE:
+                hopper_.setTargetVelocity(-manual_hopper_velocity_);
                 break;
             case TUNING:
                 break;

@@ -4,10 +4,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import frc.robot.lib2026.FieldTargets;
-import frc.robot.subsystems.climber.ClimberConstants.ClimberStates;
-import frc.robot.subsystems.climber.ClimberSubsystem;
-import frc.robot.subsystems.hopper.HopperConstants.HopperStates;
-import frc.robot.subsystems.hopper.HopperSubsystem;
+import frc.robot.subsystems.hopper.FloorConstants.FloorStates;
+import frc.robot.subsystems.hopper.FloorSubsystem;
 import frc.robot.subsystems.intake.IntakeConstants.IntakeStates;
 import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.localization.LocalizationConstants.LocalizationStates;
@@ -47,7 +45,6 @@ public class ControlCommands {
                                     .setWantedState(SwerveStates.FIELD_CENTRIC_ROTATION_LOCK);
                             LocalizationSubsystem.getInstance()
                                     .setWantedState(LocalizationStates.SHOOTING_FOCUS);
-                            
                         },
                         () -> {
                             ShooterSubsystem.getInstance().setWantedState(ShooterStates.TRACKING);
@@ -58,40 +55,6 @@ public class ControlCommands {
                         })
                 .withName("Aim At Target")
                 .ignoringDisable(true);
-    }
-
-    static Command advanceClimbingStage() {
-        return Commands.runOnce(
-                () -> {
-                    if (ClimberSubsystem.getInstance().getSystemState() == ClimberStates.STOWED
-                            && IntakeSubsystem.getInstance().getSystemState()
-                                    != IntakeStates.STORE) {
-                        // Intentional do nothing
-                    } else if (ClimberSubsystem.getInstance().getSystemState()
-                                    == ClimberStates.STOWED
-                            && IntakeSubsystem.getInstance().getSystemState()
-                                    == IntakeStates.STORE) {
-                        ClimberSubsystem.getInstance().setWantedState(ClimberStates.DEPLOY);
-                    } else if (ClimberSubsystem.getInstance().getSystemState()
-                            == ClimberStates.DEPLOY) {
-                        ClimberSubsystem.getInstance().setWantedState(ClimberStates.L2);
-                    }
-                });
-    }
-
-    static Command reverseClimbingStage() {
-        return Commands.runOnce(
-                () -> {
-                    if (ClimberSubsystem.getInstance().getSystemState() == ClimberStates.CLIMB_HOLD
-                            || ClimberSubsystem.getInstance().getSystemState() == ClimberStates.L1
-                            || ClimberSubsystem.getInstance().getSystemState()
-                                    == ClimberStates.L2) {
-                        ClimberSubsystem.getInstance().setWantedState(ClimberStates.GROUND);
-                    } else if (ClimberSubsystem.getInstance().getSystemState()
-                            == ClimberStates.DEPLOY) {
-                        ClimberSubsystem.getInstance().setWantedState(ClimberStates.STOWED);
-                    }
-                });
     }
 
     /**
@@ -154,24 +117,30 @@ public class ControlCommands {
         return new FunctionalCommand(
                         () -> {
                             ShooterSubsystem.getInstance().setWantedState(ShooterStates.SHOOT);
-                            HopperSubsystem.getInstance().setWantedState(HopperStates.SHOOTING);
+                            FloorSubsystem.getInstance().setWantedState(FloorStates.SHOOTING);
                             SwerveSubsystem.getInstance().setTeleOpVelocityScalar(0.25);
-                            LocalizationSubsystem.getInstance().setWantedState(LocalizationStates.SHOOTING_FOCUS);
+                            LocalizationSubsystem.getInstance()
+                                    .setWantedState(LocalizationStates.SHOOTING_FOCUS);
+                            IntakeSubsystem.getInstance().setWantedState(IntakeStates.RACKING);
                         },
                         () -> {
-                            if (SwerveSubsystem.getInstance().isChassisStationary() && ShooterSubsystem.getInstance().isShooterReady())
-                            {SwerveSubsystem.getInstance().setWantedState(SwerveStates.BRAKE);
-                            } else {SwerveSubsystem.getInstance().setWantedState(SwerveStates.FIELD_CENTRIC_ROTATION_LOCK);
+                            if (SwerveSubsystem.getInstance().isChassisStationary()
+                                    && ShooterSubsystem.getInstance().isShooterReady()) {
+                                SwerveSubsystem.getInstance().setWantedState(SwerveStates.BRAKE);
+                            } else {
+                                SwerveSubsystem.getInstance()
+                                        .setWantedState(SwerveStates.FIELD_CENTRIC_ROTATION_LOCK);
                             }
                         },
                         (interrupted) -> {
-                            ShooterSubsystem.getInstance().setWantedState(ShooterStates.TRACKING);
-                            HopperSubsystem.getInstance().setWantedState(HopperStates.IDLE);
+                            ShooterSubsystem.getInstance().setWantedState(ShooterStates.IDLE);
+                            FloorSubsystem.getInstance().setWantedState(FloorStates.IDLE);
                             SwerveSubsystem.getInstance().setTeleOpVelocityScalar(1.0);
                             SwerveSubsystem.getInstance()
                                     .setWantedState(SwerveStates.FIELD_CENTRIC);
                             LocalizationSubsystem.getInstance()
                                     .setWantedState(LocalizationStates.FULL);
+                            IntakeSubsystem.getInstance().setWantedState(IntakeStates.DEPLOYED);
                         },
                         () -> false)
                 .withName("Shoot Fuel")
@@ -200,11 +169,11 @@ public class ControlCommands {
         return Commands.startEnd(
                         () -> {
                             ShooterSubsystem.getInstance().setWantedState(ShooterStates.MANUAL_HUB);
-                            HopperSubsystem.getInstance().setWantedState(HopperStates.SHOOTING);
+                            FloorSubsystem.getInstance().setWantedState(FloorStates.SHOOTING);
                         },
                         () -> {
                             ShooterSubsystem.getInstance().setWantedState(ShooterStates.TRACKING);
-                            HopperSubsystem.getInstance().setWantedState(HopperStates.IDLE);
+                            FloorSubsystem.getInstance().setWantedState(FloorStates.IDLE);
                         })
                 .withName("Shoot Fuel Manual")
                 .ignoringDisable(true);
@@ -233,11 +202,11 @@ public class ControlCommands {
                         () -> {
                             ShooterSubsystem.getInstance()
                                     .setWantedState(ShooterStates.MANUAL_PASS);
-                            HopperSubsystem.getInstance().setWantedState(HopperStates.SHOOTING);
+                            FloorSubsystem.getInstance().setWantedState(FloorStates.SHOOTING);
                         },
                         () -> {
                             ShooterSubsystem.getInstance().setWantedState(ShooterStates.TRACKING);
-                            HopperSubsystem.getInstance().setWantedState(HopperStates.IDLE);
+                            FloorSubsystem.getInstance().setWantedState(FloorStates.IDLE);
                         })
                 .withName("Pass Fuel Manual")
                 .ignoringDisable(true);
@@ -284,11 +253,24 @@ public class ControlCommands {
                         () -> {
                             if (IntakeSubsystem.getInstance().getSystemState()
                                     == IntakeStates.STORE)
-                                IntakeSubsystem.getInstance()
-                                        .setWantedState(IntakeStates.DEPLOYING);
+                                IntakeSubsystem.getInstance().setWantedState(IntakeStates.DEPLOYED);
                             else IntakeSubsystem.getInstance().setWantedState(IntakeStates.STORE);
                         })
                 .withName("Toggle Intake")
+                .ignoringDisable(true);
+    }
+
+    static Command outTakeFuelCommand() {
+        return Commands.startEnd(
+                        () -> {
+                            FloorSubsystem.getInstance().setWantedState(FloorStates.REVERSE);
+                            IntakeSubsystem.getInstance().setWantedState(IntakeStates.OUTTAKE);
+                        },
+                        () -> {
+                            FloorSubsystem.getInstance().setWantedState(FloorStates.IDLE);
+                            IntakeSubsystem.getInstance().setWantedState(IntakeStates.DEPLOYED);
+                        })
+                .withName("Outtake Fuel")
                 .ignoringDisable(true);
     }
 }
