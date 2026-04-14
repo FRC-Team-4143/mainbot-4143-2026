@@ -73,7 +73,7 @@ public class ShooterConstants extends MwConstants {
     public final boolean FLYWHEEL_FOLLOWER_3_INVERTED = true;
     public final double FLYWHEEL_GEAR_RATIO = 1.5;
     public final double FLYWHEEL_WHEEL_RADIUS_METERS = Units.inchesToMeters(2);
-    public final double FLYWHEEL_INERTIA = 21.394 * 0.00029264; // kg m^2, approximate
+    public final double FLYWHEEL_INERTIA = 21.394 * 0.00029264; // kg m^2, approximate, 0.00029264 is the conversion factor from lb in² to kg m²
     public final double FLYWHEEL_EFF_FACTOR = 2.2;
     public final Slot1Configs FLYWHEEL_VELOCITY_GAINS =
             new Slot1Configs().withKP(0.5).withKV(0.118).withKI(2);
@@ -164,11 +164,10 @@ public class ShooterConstants extends MwConstants {
     public final LaunchCalculator PASS_LAUNCH_CALCULATOR;
     
     // =============================================================================
-    // Hopper empty - Map-based shooting with motion compensation
+    // Hopper empty
     // =============================================================================
-
-        public final double SHOOTING_VELOCITY_FACTOR = 0.99; // needs tuning
-        public final double SHOOTING_DOWN_TIME = 0.65; // seconds to run shooter at reduced velocity after shooting to clear balls, needs tuning
+        public final double SHOOTING_DETECTION_VELOCITY_FACTOR = 0.99; // factor applied to current speed to get threshold for triggering detection, needs tuning
+        public final double SHOOTING_DETECTION_TIME = 0.65; // seconds for shooter detection to be true, needs tuning
     // =============================================================================
     // CONSTRUCTOR - MOTOR CONFIGURATION INITIALIZATION
     // =============================================================================

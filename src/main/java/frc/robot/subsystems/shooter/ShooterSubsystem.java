@@ -54,7 +54,7 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
     private final Debouncer shooter_ready_debouncer =
             new Debouncer(CONSTANTS.SHOOTER_READY_DEBOUNCE_TIME, DebounceType.kRising);
     private final Debouncer is_shooting_debouncer =
-            new Debouncer(CONSTANTS.SHOOTING_DOWN_TIME, DebounceType.kFalling);
+            new Debouncer(CONSTANTS.SHOOTING_DETECTION_TIME, DebounceType.kFalling);
     private boolean is_shooting_ = false;
 
     private final LinearFilter flywheel_velocity_filter_ =
@@ -258,14 +258,14 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
                                         CONSTANTS.SHOOTER_CENTER.getX(),
                                         CONSTANTS.SHOOTER_CENTER.getY()),
                                 heading_feedforward_);
-                is_shooting_ = is_shooting_debouncer.calculate(flywheel_.getCurrentVelocity() > flywheel_omega_*CONSTANTS.SHOOTING_VELOCITY_FACTOR);
+                is_shooting_ = is_shooting_debouncer.calculate(flywheel_.getCurrentVelocity() > flywheel_omega_*CONSTANTS.SHOOTING_DETECTION_VELOCITY_FACTOR);
                 break;
             case MANUAL_HUB:
                 // Manual hub shooting mode - uses fixed setpoints for hub shots
                 flywheel_.setTargetVelocity(CONSTANTS.FLYWHEEL_MANUAL_HUB_VELOCITY + flywheel_adj_);
                 indexer_.setTargetDutyCycle(CONSTANTS.INDEXER_DUTY_CYCLE);
                 hood_.setTargetPosition(CONSTANTS.HOOD_MANUAL_HUB_ANGLE + hood_adj_);
-                is_shooting_ = is_shooting_debouncer.calculate(flywheel_.getCurrentVelocity() > (CONSTANTS.FLYWHEEL_MANUAL_HUB_VELOCITY + flywheel_adj_)*CONSTANTS.SHOOTING_VELOCITY_FACTOR);
+                is_shooting_ = is_shooting_debouncer.calculate(flywheel_.getCurrentVelocity() > (CONSTANTS.FLYWHEEL_MANUAL_HUB_VELOCITY + flywheel_adj_)*CONSTANTS.SHOOTING_DETECTION_VELOCITY_FACTOR);
                 break;
             case MANUAL_PASS:
                 // Manual pass mode - uses fixed setpoints for passing
@@ -273,7 +273,7 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
                         CONSTANTS.FLYWHEEL_MANUAL_PASS_VELOCITY + flywheel_adj_);
                 indexer_.setTargetDutyCycle(CONSTANTS.INDEXER_DUTY_CYCLE);
                 hood_.setTargetPosition(CONSTANTS.HOOD_MANUAL_PASS_ANGLE + hood_adj_);
-                is_shooting_ = is_shooting_debouncer.calculate(flywheel_.getCurrentVelocity() > (CONSTANTS.FLYWHEEL_MANUAL_PASS_VELOCITY + flywheel_adj_)*CONSTANTS.SHOOTING_VELOCITY_FACTOR);
+                is_shooting_ = is_shooting_debouncer.calculate(flywheel_.getCurrentVelocity() > (CONSTANTS.FLYWHEEL_MANUAL_PASS_VELOCITY + flywheel_adj_)*CONSTANTS.SHOOTING_DETECTION_VELOCITY_FACTOR);
                 break;
             case TUNING:
                 // code does NOTHING to allow for testing
