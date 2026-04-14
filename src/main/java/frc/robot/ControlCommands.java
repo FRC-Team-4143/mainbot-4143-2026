@@ -1,5 +1,6 @@
 package frc.robot;
 
+import dev.doglog.DogLog;
 import edu.wpi.first.util.datalog.BooleanLogEntry;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -289,6 +290,7 @@ public class ControlCommands {
                             } else {
                                 isAbleToRack = true;
                             }
-                        });
+                            DogLog.log("Subsystem/Intake/IsAbleToRack", isAbleToRack);
+                        }).withName("Toggle Racking").ignoringDisable(true);
     }
 }
