@@ -2,7 +2,6 @@ package frc.robot.autos;
 
 import com.marswars.auto.Auto;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.lib2026.FieldTargets;
 import frc.robot.subsystems.hopper.FloorConstants.FloorStates;
@@ -16,20 +15,34 @@ import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.swerve.SwerveConstants.SwerveStates;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 
-public class Citrus_Right_Side extends Auto {
+public class Slop_Auto extends Auto {
 
-    public Citrus_Right_Side() {
+    public Slop_Auto() {
         // =============================================================================
         // TRAJECTORY LOADING
-        // These should be loaded in the order they will be used to ensure correct start poses
+        // These should be loaded in the order they will be used to ensure correct start
+        // poses
         // =============================================================================
-        loadTrajectory(ChoreoTraj.CitrusRightSide.name());
-        loadTrajectory(ChoreoTraj.CitrusRightSideSecondPass.name());
-        loadTrajectory(ChoreoTraj.CitrusRightSideSecondPassBump.name());
+        loadTrajectory(ChoreoTraj.SlopAutoStart.name());
+        loadTrajectory(ChoreoTraj.SlopAutoClimb.name());
 
         // =============================================================================
         // EVENT TRIGGER BINDING
         // =============================================================================
+        SwerveSubsystem.getInstance()
+                .getChoreoEventTimeTrigger("Raise Hopper")
+                .onTrue(
+                        Commands.runOnce(
+                                () -> {
+                                    RoofSubsystem.getInstance().setWantedState(RoofStates.UP);
+                                }));
+        SwerveSubsystem.getInstance()
+                .getChoreoEventTimeTrigger("Lower Hopper")
+                .onTrue(
+                        Commands.runOnce(
+                                () -> {
+                                    RoofSubsystem.getInstance().setWantedState(RoofStates.DOWN);
+                                }));
         SwerveSubsystem.getInstance()
                 .getChoreoEventTimeTrigger("Intake Out")
                 .onTrue(
@@ -56,11 +69,10 @@ public class Citrus_Right_Side extends Auto {
                             ShooterSubsystem.getInstance().setWantedState(ShooterStates.TRACKING);
                             RoofSubsystem.getInstance().setWantedState(RoofStates.DOWN);
                         }),
-
                 // Set the initial trajectory
                 SwerveSubsystem.getInstance()
                         .setDesiredChoreoTrajectoryCommand(
-                                getTrajectory(ChoreoTraj.CitrusRightSide.name())),
+                                getTrajectory(ChoreoTraj.SlopAutoStart.name())),
                 // Start Choreo following
                 Commands.startEnd(
                                 () ->
@@ -96,15 +108,9 @@ public class Citrus_Right_Side extends Auto {
                             IntakeSubsystem.getInstance().setWantedState(IntakeStates.STORE);
                         }),
                 // Set the second trajectory for the second pass
-                new ConditionalCommand(
-                        SwerveSubsystem.getInstance()
-                                .setDesiredChoreoTrajectoryCommand(
-                                        getTrajectory(ChoreoTraj.CitrusRightSideSecondPass.name())),
-                        SwerveSubsystem.getInstance()
-                                .setDesiredChoreoTrajectoryCommand(
-                                        getTrajectory(
-                                                ChoreoTraj.CitrusRightSideSecondPassBump.name())),
-                        RoofSubsystem.getInstance()::isDown),
+                SwerveSubsystem.getInstance()
+                        .setDesiredChoreoTrajectoryCommand(
+                                getTrajectory(ChoreoTraj.SlopAutoClimb.name())),
                 // Start Choreo following
                 Commands.startEnd(
                                 () ->
@@ -112,27 +118,13 @@ public class Citrus_Right_Side extends Auto {
                                                 .setWantedState(SwerveStates.CHOREO_PATH),
                                 () ->
                                         SwerveSubsystem.getInstance()
-                                                .setWantedState(
-                                                        SwerveStates.FIELD_CENTRIC_ROTATION_LOCK))
+                                                .setWantedState(SwerveStates.IDLE))
                         .until(
                                 () ->
                                         SwerveSubsystem.getInstance().isAtChoreoSetpoint()
                                                 && SwerveSubsystem.getInstance()
-                                                        .hasChoreoTimeElapsed(1)),
-                // Start shooting here
-                Commands.runOnce(
-                        () -> {
-                            ShooterSubsystem.getInstance().setWantedState(ShooterStates.SHOOT);
-                            FloorSubsystem.getInstance().setWantedState(FloorStates.SHOOTING);
-                        }),
-                // Shoot for 3 seconds
-                new WaitCommand(3),
-                // Pull the intake in while we shoot to help index more balls
-                Commands.runOnce(
-                        () -> IntakeSubsystem.getInstance().setWantedState(IntakeStates.STORE)),
-                Commands.runOnce(
-                        () -> {
-                            RoofSubsystem.getInstance().setWantedState(RoofStates.DOWN);
-                        }));
+                                                        .hasChoreoTimeElapsed(1))
+                // Climb
+                );
     }
 }

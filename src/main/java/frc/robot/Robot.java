@@ -19,6 +19,7 @@ import frc.robot.autos.CitrusSynergyFarBump;
 import frc.robot.autos.Citrus_Left_Side;
 import frc.robot.autos.Citrus_Right_Side;
 import frc.robot.autos.Shoot;
+import frc.robot.autos.Slop_Auto;
 import frc.robot.lib2026.FieldConstants;
 import frc.robot.lib2026.FieldRegions;
 import frc.robot.lib2026.FieldTargets;
@@ -60,7 +61,8 @@ public class Robot extends TimedRobot {
                         new Citrus_Right_Side(),
                         new Shoot(),
                         new CitrusSynergy(),
-                        new CitrusSynergyFarBump()
+                        new CitrusSynergyFarBump(),
+                        new Slop_Auto()
                         // new TestAuto()
                         );
 

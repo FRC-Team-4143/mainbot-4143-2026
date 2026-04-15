@@ -24,7 +24,6 @@ public class RoofSubsystem extends MwSubsystem<RoofStates, RoofConstants> {
     // Constructor
     public RoofSubsystem() {
         super(RoofStates.DOWN, new RoofConstants());
-
         elevator_ =
                 new ElevatorMech(
                         getSubsystemKey(),
@@ -75,4 +74,7 @@ public class RoofSubsystem extends MwSubsystem<RoofStates, RoofConstants> {
     // PUBLIC HELPER METHODS
     // =============================================================================
 
+    public boolean isDown() {
+        return elevator_.getCurrentPosition() < (CONSTANTS.ELEVATOR_DOWN_POSITION_METERS + 0.02);
+    }
 }

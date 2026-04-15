@@ -6,6 +6,8 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.lib2026.FieldTargets;
 import frc.robot.subsystems.hopper.FloorConstants.FloorStates;
 import frc.robot.subsystems.hopper.FloorSubsystem;
+import frc.robot.subsystems.hopper.RoofConstants.RoofStates;
+import frc.robot.subsystems.hopper.RoofSubsystem;
 import frc.robot.subsystems.intake.IntakeConstants.IntakeStates;
 import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterStates;
@@ -28,6 +30,13 @@ public class CitrusSynergyFarBump extends Auto {
         // =============================================================================
         // EVENT TRIGGER BINDING
         // =============================================================================
+        SwerveSubsystem.getInstance()
+                .getChoreoEventTimeTrigger("Raise Hopper")
+                .onTrue(
+                        Commands.runOnce(
+                                () -> {
+                                    RoofSubsystem.getInstance().setWantedState(RoofStates.UP);
+                                }));
         SwerveSubsystem.getInstance()
                 .getChoreoEventTimeTrigger("Intake Out")
                 .onTrue(
