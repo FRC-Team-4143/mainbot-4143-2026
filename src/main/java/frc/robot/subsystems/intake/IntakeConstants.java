@@ -63,17 +63,17 @@ public class IntakeConstants extends MwConstants {
     // =============================================================================
 
     public final boolean PIVOT_MOTOR_INVERTED = false;
-    public final double PIVOT_GEAR_RATIO = (40.0 / 12.0) * (56.0 / 24.0) * (32.0 / 14.0);
+    public final double PIVOT_GEAR_RATIO = (50.0 / 12.0) * (50.0 / 24.0) * (32.0 / 14.0);
     public final SlotConfigs PIVOT_POSITION_SLOT_CONFIG = new SlotConfigs();
-    public final double PIVOT_LENGTH = Units.inchesToMeters(11.5);
-    public final double PIVOT_MASS = Units.lbsToKilograms(8.38);
-    public final double PIVOT_MIN = Units.degreesToRadians(11);
-    public final double PIVOT_MAX = Units.degreesToRadians(98);
-    public final double PIVOT_HOME_POSITION = Units.degreesToRadians(11);
+    public final double PIVOT_LENGTH = Units.inchesToMeters(13.0);
+    public final double PIVOT_MASS = Units.lbsToKilograms(7.875);
+    public final double PIVOT_MIN = Units.degreesToRadians(-130);
+    public final double PIVOT_MAX = Units.degreesToRadians(0);
+    public final double PIVOT_HOME_POSITION = Units.degreesToRadians(0);
     public final double PIVOT_STATOR_CURRENT_LIMIT = 90;
-    public final double PIVOT_DEPLOY_POSITION = Units.degreesToRadians(11);
-    public final double PIVOT_RACKING_POSITION = Units.degreesToRadians(60);
-    public final double PIVOT_STORE_POSITION = Units.degreesToRadians(98);
+    public final double PIVOT_DEPLOY_POSITION = Units.degreesToRadians(0);
+    public final double PIVOT_RACKING_POSITION = Units.degreesToRadians(50);
+    public final double PIVOT_STORE_POSITION = Units.degreesToRadians(-130);
     public final double DEPLOY_PIVOT_TOLERANCE = Units.degreesToRadians(20);
     public final Slot0Configs PIVOT_POSITION_GAINS = new Slot0Configs().withKG(3).withKP(200);
 
