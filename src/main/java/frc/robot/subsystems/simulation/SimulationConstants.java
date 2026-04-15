@@ -32,21 +32,21 @@ public class SimulationConstants extends MwConstants {
                     0.288,
                     0.540,
                     new Rotation3d(
-                            0.0, Units.degreesToRadians(-30.0), Units.degreesToRadians(180.0)));
+                            0.0, Units.degreesToRadians(-10.0), Units.degreesToRadians(180.0)));
     public final Transform3d RIGHT_CAMERA_TRANSFORM =
             new Transform3d(
-                    -0.031,
-                    -0.335,
-                    0.202,
+                    -0.022,
+                -0.360,
+                        0.293,
                     new Rotation3d(
-                            0.0, Units.degreesToRadians(-35.0), Units.degreesToRadians(-90.0)));
+                            0.0, Units.degreesToRadians(-10.0), Units.degreesToRadians(-90.0)));
     public final Transform3d LEFT_CAMERA_TRANSFORM =
             new Transform3d(
-                    -0.239,
-                    0.343,
-                    0.540,
+                    -0.022,
+                 0.360,
+                0.293,
                     new Rotation3d(
-                            0.0, Units.degreesToRadians(-10.0), Units.degreesToRadians(60.0)));
+                            0.0, Units.degreesToRadians(-10.0), Units.degreesToRadians(90.0)));
 
     // =============================================================================
     // SHOOTER SIMULATION
