@@ -34,7 +34,7 @@ public class RoofConstants extends MwConstants {
     // MECHANICAL CONSTANTS - ELEVATOR
     // =============================================================================
 
-    public final boolean ELEVATOR_MOTOR_INVERTED = false;
+    public final boolean ELEVATOR_MOTOR_INVERTED = true;
     public final double ELEVATOR_GEAR_RATIO = 3.0 * (22.0 / 48.0) * (48.0 / 32.0);
     public final double ELEVATOR_DRUM_RADIUS = Units.inchesToMeters(0.878);
     public final double ELEVATOR_CARRIAGE_MASS_KG = Units.lbsToKilograms(3.44);
