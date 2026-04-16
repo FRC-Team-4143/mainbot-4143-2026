@@ -71,7 +71,7 @@ public class ShooterConstants extends MwConstants {
     public final boolean FLYWHEEL_FOLLOWER_1_INVERTED = true;
     public final boolean FLYWHEEL_FOLLOWER_2_INVERTED = true;
     public final boolean FLYWHEEL_FOLLOWER_3_INVERTED = true;
-    public final double FLYWHEEL_GEAR_RATIO = 24.0 /32.0;
+    public final double FLYWHEEL_GEAR_RATIO = 32.0 /24.0;
     public final double FLYWHEEL_WHEEL_RADIUS_METERS = Units.inchesToMeters(2);
     public final double FLYWHEEL_INERTIA = 21.394 * 0.00029264; // kg m^2, approximate, 0.00029264 is the conversion factor from lb in² to kg m²
     public final double FLYWHEEL_EFF_FACTOR = 2.2;
@@ -95,14 +95,14 @@ public class ShooterConstants extends MwConstants {
     // =============================================================================
 
     public final boolean INDEXER_LEADER_INVERTED = false;
-    public final double INDEXER_GEAR_RATIO = 11.0 / 28.0;
+    public final double INDEXER_GEAR_RATIO = 28.0 / 11.0;
     public final Slot1Configs INDEXER_VELOCITY_GAINS =
             new Slot1Configs().withKD(0.01).withKI(1).withKP(0.5).withKV(0.129);
     // =============================================================================
     // MECHANICAL CONSTANTS - INDEXER
     // =============================================================================
     public final boolean ACCELERATOR_INVERTED = false;
-    public final double ACCELERATOR_GEAR_RATIO = (11.0 / 40.0) * (26.0 / 23.0);
+    public final double ACCELERATOR_GEAR_RATIO = (40.0 / 11.0) * (23.0 / 26.0);
     public final Slot1Configs ACCELERATOR_VELOCITY_GAINS =
             new Slot1Configs().withKD(0.0).withKI(0).withKP(0.0).withKV(0.0);
     // =============================================================================
@@ -111,7 +111,7 @@ public class ShooterConstants extends MwConstants {
 
     public final boolean HOOD_INVERTED = false;
     public final double HOOD_GEAR_RATIO =
-            (11.0 /44.0) * (10.0 / 170.0); // motor rotations / output mechanism rotations
+            68; // motor rotations / output mechanism rotations / orginal 44/ 11 * 170/100
     // Min/max physical hood angles (radians). Configure to match the mechanical limits
     public final double HOOD_MIN_ANGLE = Units.degreesToRadians(51.0);
     public final double HOOD_HOME_POSITION = Units.degreesToRadians(90.0);

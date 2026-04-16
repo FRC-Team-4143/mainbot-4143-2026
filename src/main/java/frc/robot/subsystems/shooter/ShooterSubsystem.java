@@ -41,6 +41,7 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
     private RollerMech indexer_;
     private FlywheelMech flywheel_;
     private RollerMech hood_;
+    private RollerMech accelerator_;
 
     // Shooter parameters calculated from LaunchCalculator
     private double flywheel_omega_ = CONSTANTS.FLYWHEEL_MANUAL_HUB_VELOCITY;
@@ -108,6 +109,11 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
                         "Hood",
                         List.of(CONSTANTS.HOOD_MOTOR_CONFIGS),
                         CONSTANTS.HOOD_GEAR_RATIO);
+        accelerator_ =new RollerMech(
+                        getSubsystemKey(),
+                        "Accelerator",
+                        List.of(CONSTANTS.ACCELERATOR_MOTOR_CONFIG),
+                        CONSTANTS.ACCELERATOR_GEAR_RATIO);
         hood_.setCurrentPosition(CONSTANTS.HOOD_HOME_POSITION);
 
         // Setup tunable for hood feedforward gain
@@ -216,6 +222,7 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
                 flywheel_.setTargetVelocity(flywheel_omega_);
                 indexer_.setTargetDutyCycle(CONSTANTS.IDLE_INDEXER_DUTY_CYCLE);
                 hood_.setTargetPositionWithFF(hood_angle_, hood_feedforward_);
+                accelerator_.setTargetDutyCycle(CONSTANTS.ACCELERATOR_DUTY_CYCLE);
                 break;
             case SHOOT_WAIT:
                 flywheel_.setTargetVelocity(flywheel_omega_);
@@ -228,6 +235,7 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
                                         CONSTANTS.SHOOTER_CENTER.getX(),
                                         CONSTANTS.SHOOTER_CENTER.getY()),
                                 heading_feedforward_);
+                accelerator_.setTargetDutyCycle(CONSTANTS.ACCELERATOR_DUTY_CYCLE);
                 break;
             case AIMING:
                 flywheel_.setTargetVelocity(flywheel_omega_);
@@ -240,11 +248,13 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
                                         CONSTANTS.SHOOTER_CENTER.getX(),
                                         CONSTANTS.SHOOTER_CENTER.getY()),
                                 heading_feedforward_);
+                accelerator_.setTargetDutyCycle(CONSTANTS.ACCELERATOR_DUTY_CYCLE);
                 break;
             case DUMP:
                 flywheel_.setTargetVelocity(flywheel_omega_);
                 indexer_.setTargetDutyCycle(-CONSTANTS.INDEXER_DUTY_CYCLE);
                 hood_.setTargetPosition(CONSTANTS.HOOD_MAX_ANGLE);
+                accelerator_.setTargetDutyCycle(CONSTANTS.ACCELERATOR_DUTY_CYCLE);
                 break;
             case SHOOT:
                 flywheel_.setTargetVelocity(flywheel_omega_);
@@ -258,6 +268,7 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
                                         CONSTANTS.SHOOTER_CENTER.getY()),
                                 heading_feedforward_);
                 is_shooting_ = is_shooting_debouncer.calculate(flywheel_.getCurrentVelocity() > flywheel_omega_*CONSTANTS.SHOOTING_DETECTION_VELOCITY_FACTOR);
+                accelerator_.setTargetDutyCycle(CONSTANTS.ACCELERATOR_DUTY_CYCLE);
                 break;
             case MANUAL_HUB:
                 // Manual hub shooting mode - uses fixed setpoints for hub shots
@@ -265,6 +276,7 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
                 indexer_.setTargetDutyCycle(CONSTANTS.INDEXER_DUTY_CYCLE);
                 hood_.setTargetPosition(CONSTANTS.HOOD_MANUAL_HUB_ANGLE + hood_adj_);
                 is_shooting_ = is_shooting_debouncer.calculate(flywheel_.getCurrentVelocity() > (CONSTANTS.FLYWHEEL_MANUAL_HUB_VELOCITY + flywheel_adj_)*CONSTANTS.SHOOTING_DETECTION_VELOCITY_FACTOR);
+                accelerator_.setTargetDutyCycle(CONSTANTS.ACCELERATOR_DUTY_CYCLE);
                 break;
             case MANUAL_PASS:
                 // Manual pass mode - uses fixed setpoints for passing
@@ -273,6 +285,7 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
                 indexer_.setTargetDutyCycle(CONSTANTS.INDEXER_DUTY_CYCLE);
                 hood_.setTargetPosition(CONSTANTS.HOOD_MANUAL_PASS_ANGLE + hood_adj_);
                 is_shooting_ = is_shooting_debouncer.calculate(flywheel_.getCurrentVelocity() > (CONSTANTS.FLYWHEEL_MANUAL_PASS_VELOCITY + flywheel_adj_)*CONSTANTS.SHOOTING_DETECTION_VELOCITY_FACTOR);
+                accelerator_.setTargetDutyCycle(CONSTANTS.ACCELERATOR_DUTY_CYCLE);
                 break;
             case TUNING:
                 // code does NOTHING to allow for testing
@@ -282,12 +295,14 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
                 flywheel_.setTargetVelocityMotionProfile(CONSTANTS.SHOOTER_IDLE_SPEED);
                 indexer_.setTargetDutyCycle(0);
                 hood_.setTargetPosition(CONSTANTS.HOOD_IDLE_POSITION);
+                accelerator_.setTargetDutyCycle(CONSTANTS.ACCELERATOR_DUTY_CYCLE);
 
                 break;
             case SPIN_DOWN:
                 flywheel_.setTargetVelocityMotionProfile(0);
                 indexer_.setTargetDutyCycle(0);
                 hood_.setTargetPosition(CONSTANTS.HOOD_IDLE_POSITION);
+                accelerator_.setTargetDutyCycle(0);
                 break;
             case HOOD_HOMING:
                 hood_.setTargetDutyCycle(CONSTANTS.HOOD_HOMING_DUTY_CYCLE);
