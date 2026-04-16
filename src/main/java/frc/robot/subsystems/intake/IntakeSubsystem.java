@@ -9,7 +9,6 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Commands;
-import frc.robot.subsystems.hopper.FloorConstants.FloorStates;
 import frc.robot.subsystems.intake.IntakeConstants.IntakeStates;
 import java.util.Arrays;
 import java.util.List;
@@ -33,23 +32,25 @@ public class IntakeSubsystem extends MwSubsystem<IntakeStates, IntakeConstants> 
     // Constructor
     public IntakeSubsystem() {
         super(IntakeStates.STORE, new IntakeConstants());
-        roller_ = new RollerMech(
-                getSubsystemKey(),
-                "Roller",
-                List.of(
-                        CONSTANTS.ROLLER_MOTOR_CONFIG,
-                        CONSTANTS.ROLLER_FOLLOWER_MOTOR_CONFIG),
-                CONSTANTS.ROLLER_GEAR_RATIO);
+        roller_ =
+                new RollerMech(
+                        getSubsystemKey(),
+                        "Roller",
+                        List.of(
+                                CONSTANTS.ROLLER_MOTOR_CONFIG,
+                                CONSTANTS.ROLLER_FOLLOWER_MOTOR_CONFIG),
+                        CONSTANTS.ROLLER_GEAR_RATIO);
 
-        pivot_ = new ArmMech(
-                getSubsystemKey(),
-                "Pivot",
-                List.of(CONSTANTS.PIVOT_MOTOR_CONFIG),
-                CONSTANTS.PIVOT_GEAR_RATIO,
-                CONSTANTS.PIVOT_LENGTH,
-                CONSTANTS.PIVOT_MASS,
-                CONSTANTS.PIVOT_MIN,
-                CONSTANTS.PIVOT_MAX);
+        pivot_ =
+                new ArmMech(
+                        getSubsystemKey(),
+                        "Pivot",
+                        List.of(CONSTANTS.PIVOT_MOTOR_CONFIG),
+                        CONSTANTS.PIVOT_GEAR_RATIO,
+                        CONSTANTS.PIVOT_LENGTH,
+                        CONSTANTS.PIVOT_MASS,
+                        CONSTANTS.PIVOT_MIN,
+                        CONSTANTS.PIVOT_MAX);
         pivot_.setCurrentPosition(CONSTANTS.PIVOT_HOME_POSITION);
 
         SmartDashboard.putData(
@@ -91,23 +92,26 @@ public class IntakeSubsystem extends MwSubsystem<IntakeStates, IntakeConstants> 
             pivot_.setCurrentPosition(CONSTANTS.PIVOT_HOME_POSITION);
             setWantedState(IntakeStates.DEPLOYED);
             system_state_ = IntakeStates.DEPLOYED;
-        } else if (wantedState == IntakeStates.RACKING && !(system_state_ == IntakeStates.RACKED_IN
-                || system_state_ == IntakeStates.RACKED_OUT)) {
+        } else if (wantedState == IntakeStates.RACKING
+                && !(system_state_ == IntakeStates.RACKED_IN
+                        || system_state_ == IntakeStates.RACKED_OUT)) {
             racking_timer_.reset();
             racking_timer_.start();
             system_state_ = IntakeStates.RACKED_IN;
         } else if (wantedState == IntakeStates.RACKING
-                && (system_state_ == IntakeStates.RACKED_IN || system_state_ == IntakeStates.RACKED_OUT)
+                && (system_state_ == IntakeStates.RACKED_IN
+                        || system_state_ == IntakeStates.RACKED_OUT)
                 && racking_timer_.hasElapsed(CONSTANTS.RACKING_CYCLE_TIME)) {
-            system_state_ = (system_state_ == IntakeStates.RACKED_IN)
-                    ? IntakeStates.RACKED_OUT
-                    : IntakeStates.RACKED_IN;
+            system_state_ =
+                    (system_state_ == IntakeStates.RACKED_IN)
+                            ? IntakeStates.RACKED_OUT
+                            : IntakeStates.RACKED_IN;
             racking_timer_.reset();
             racking_timer_.start();
         } else if (!MathUtil.isNear(
-                CONSTANTS.PIVOT_DEPLOY_POSITION,
-                pivot_.getCurrentPosition(),
-                CONSTANTS.DEPLOY_PIVOT_TOLERANCE)
+                        CONSTANTS.PIVOT_DEPLOY_POSITION,
+                        pivot_.getCurrentPosition(),
+                        CONSTANTS.DEPLOY_PIVOT_TOLERANCE)
                 && (wantedState == IntakeStates.INTAKE
                         || wantedState == IntakeStates.OUTTAKE
                         || wantedState == IntakeStates.DEPLOYED)) {
@@ -120,9 +124,10 @@ public class IntakeSubsystem extends MwSubsystem<IntakeStates, IntakeConstants> 
                 system_state_ = IntakeStates.DEPLOYED;
             }
         } else {
-            if(wantedState == IntakeStates.RACKING){
-                return; // Don't allow directly setting RACKING state, since it is a transient state for cycling between RACKED_IN and RACKED_OUT
-            }else system_state_ = wantedState;
+            if (wantedState == IntakeStates.RACKING) {
+                return; // Don't allow directly setting RACKING state, since it is a transient state
+                // for cycling between RACKED_IN and RACKED_OUT
+            } else system_state_ = wantedState;
         }
     }
 
@@ -131,7 +136,7 @@ public class IntakeSubsystem extends MwSubsystem<IntakeStates, IntakeConstants> 
     public void updateLogic(double timestamp) {
         switch (system_state_) {
             case STORE:
-                    roller_.setTargetDutyCycle(0.0);
+                roller_.setTargetDutyCycle(0.0);
                 pivot_.setTargetPosition(CONSTANTS.PIVOT_STORE_POSITION);
 
                 break;
@@ -183,8 +188,7 @@ public class IntakeSubsystem extends MwSubsystem<IntakeStates, IntakeConstants> 
     // =============================================================================
 
     /**
-     * Returns the current angle of the pivot joint in radians. (Used for testing
-     * and visualization
+     * Returns the current angle of the pivot joint in radians. (Used for testing and visualization
      * purposes)
      *
      * @return the current angle of the pivot joint in radians

@@ -71,9 +71,12 @@ public class ShooterConstants extends MwConstants {
     public final boolean FLYWHEEL_FOLLOWER_1_INVERTED = true;
     public final boolean FLYWHEEL_FOLLOWER_2_INVERTED = true;
     public final boolean FLYWHEEL_FOLLOWER_3_INVERTED = true;
-    public final double FLYWHEEL_GEAR_RATIO = 32.0 /24.0;
+    public final double FLYWHEEL_GEAR_RATIO = 32.0 / 24.0;
     public final double FLYWHEEL_WHEEL_RADIUS_METERS = Units.inchesToMeters(2);
-    public final double FLYWHEEL_INERTIA = (21.394 * 0.00029264) + (0.812 * 2); // kg m^2, approximate, 0.00029264 is the conversion factor from lb in² to kg m²
+    public final double FLYWHEEL_INERTIA =
+            (21.394 * 0.00029264)
+                    + (0.812 * 2); // kg m^2, approximate, 0.00029264 is the conversion factor from
+    // lb in² to kg m²
     public final double FLYWHEEL_EFF_FACTOR = 2.2;
     public final Slot1Configs FLYWHEEL_VELOCITY_GAINS =
             new Slot1Configs().withKP(0.5).withKV(0.159).withKI(1);
@@ -142,7 +145,7 @@ public class ShooterConstants extends MwConstants {
     public final double IDLE_INDEXER_DUTY_CYCLE = 0;
     public final double INDEXER_VELOCITY = 250;
     public final double ACCELERATOR_VELOCITY = 300;
-    public final double ACCELERATOR_DUTY_CYCLE = 0.5; // 50% power for accelerating     
+    public final double ACCELERATOR_DUTY_CYCLE = 0.5; // 50% power for accelerating
     public final double IDLE_ACCELERATOR_DUTY_CYCLE = 0;
     public final double SHOOTER_IDLE_SPEED = 300.0;
     public final double HOOD_IDLE_POSITION = Units.degreesToRadians(80);
@@ -170,12 +173,16 @@ public class ShooterConstants extends MwConstants {
     // =============================================================================
     public final LaunchCalculator HUB_LAUNCH_CALCULATOR;
     public final LaunchCalculator PASS_LAUNCH_CALCULATOR;
-    
+
     // =============================================================================
     // Hopper empty
     // =============================================================================
-        public final double SHOOTING_DETECTION_VELOCITY_FACTOR = 0.99; // factor applied to current speed to get threshold for triggering detection, needs tuning
-        public final double SHOOTING_DETECTION_TIME = 0.65; // seconds for shooter detection to be true, needs tuning
+    public final double SHOOTING_DETECTION_VELOCITY_FACTOR =
+            0.99; // factor applied to current speed to get threshold for triggering detection,
+    // needs tuning
+    public final double SHOOTING_DETECTION_TIME =
+            0.65; // seconds for shooter detection to be true, needs tuning
+
     // =============================================================================
     // CONSTRUCTOR - MOTOR CONFIGURATION INITIALIZATION
     // =============================================================================
@@ -267,12 +274,10 @@ public class ShooterConstants extends MwConstants {
         ACCELERATOR_MOTOR_CONFIG.motor_type = TalonMotorType.X44;
         ACCELERATOR_MOTOR_CONFIG.canbus_name = "rio";
         TalonFXConfiguration accelerator_config = new TalonFXConfiguration();
-        accelerator_config.MotorOutput.Inverted =
-                PhoenixUtil.toInvertedValue(ACCELERATOR_INVERTED);
+        accelerator_config.MotorOutput.Inverted = PhoenixUtil.toInvertedValue(ACCELERATOR_INVERTED);
         accelerator_config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
         accelerator_config.Slot1 = ACCELERATOR_VELOCITY_GAINS;
         ACCELERATOR_MOTOR_CONFIG.apply(accelerator_config);
-
 
         // Configure Shooter Leader Motor
         SHOOTER_LEADER_MOTOR_CONFIG.can_id = SHOOTER_LEADER_ID;

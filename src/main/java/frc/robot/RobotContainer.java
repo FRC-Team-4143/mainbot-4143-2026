@@ -6,14 +6,6 @@ package frc.robot;
 
 import com.marswars.subsystem.SubsystemManager;
 import edu.wpi.first.wpilibj.RobotBase;
-import frc.robot.subsystems.gamestates.GameStatesSubsystem;
-import frc.robot.subsystems.hopper.FloorSubsystem;
-import frc.robot.subsystems.hopper.RoofSubsystem;
-import frc.robot.subsystems.intake.IntakeSubsystem;
-import frc.robot.subsystems.localization.LocalizationSubsystem;
-import frc.robot.subsystems.shooter.ShooterSubsystem;
-import frc.robot.subsystems.simulation.SimulationSubsystem;
-import frc.robot.subsystems.swerve.SwerveSubsystem;
 
 public class RobotContainer extends SubsystemManager {
     private static RobotContainer instance;
@@ -28,17 +20,17 @@ public class RobotContainer extends SubsystemManager {
     public RobotContainer() {
         super(BuildConstants.class);
         // !!!!!! ALL SUBSYSTEMS MUST BE REGISTERED HERE TO RUN !!!!!!!
-        registerSubsystem(SwerveSubsystem.getInstance());
-        registerSubsystem(LocalizationSubsystem.getInstance());
-        registerSubsystem(ShooterSubsystem.getInstance());
-        registerSubsystem(FloorSubsystem.getInstance());
-        registerSubsystem(RoofSubsystem.getInstance());
-        registerSubsystem(IntakeSubsystem.getInstance());
-        registerSubsystem(GameStatesSubsystem.getInstance());
+        // registerSubsystem(SwerveSubsystem.getInstance());
+        // registerSubsystem(LocalizationSubsystem.getInstance());
+        // registerSubsystem(ShooterSubsystem.getInstance());
+        // registerSubsystem(FloorSubsystem.getInstance());
+        // registerSubsystem(RoofSubsystem.getInstance());
+        // registerSubsystem(IntakeSubsystem.getInstance());
+        // registerSubsystem(GameStatesSubsystem.getInstance());
 
         // Only enable the simulation subsystem if we are in simulation
         if (RobotBase.isSimulation()) {
-            registerSubsystem(SimulationSubsystem.getInstance());
+            // registerSubsystem(SimulationSubsystem.getInstance());
         }
 
         // !!!!! LEAVE THESE LINES AS THE LAST LINE IN THE CONSTRUCTOR !!!!!!

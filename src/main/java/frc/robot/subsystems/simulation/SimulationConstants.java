@@ -36,15 +36,15 @@ public class SimulationConstants extends MwConstants {
     public final Transform3d RIGHT_CAMERA_TRANSFORM =
             new Transform3d(
                     -0.022,
-                -0.360,
-                        0.293,
+                    -0.360,
+                    0.293,
                     new Rotation3d(
                             0.0, Units.degreesToRadians(-10.0), Units.degreesToRadians(-90.0)));
     public final Transform3d LEFT_CAMERA_TRANSFORM =
             new Transform3d(
                     -0.022,
-                 0.360,
-                0.293,
+                    0.360,
+                    0.293,
                     new Rotation3d(
                             0.0, Units.degreesToRadians(-10.0), Units.degreesToRadians(90.0)));
 
