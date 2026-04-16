@@ -67,7 +67,7 @@ public class IntakeConstants extends MwConstants {
     public final SlotConfigs PIVOT_POSITION_SLOT_CONFIG = new SlotConfigs();
     public final double PIVOT_LENGTH = Units.inchesToMeters(13.0);
     public final double PIVOT_MASS = Units.lbsToKilograms(7.875);
-    public final double PIVOT_MIN = Units.degreesToRadians(-130);
+    public final double PIVOT_MIN = Units.degreesToRadians(130);
     public final double PIVOT_MAX = Units.degreesToRadians(0);
     public final double PIVOT_HOME_POSITION = Units.degreesToRadians(0);
     public final double PIVOT_STATOR_CURRENT_LIMIT = 90;

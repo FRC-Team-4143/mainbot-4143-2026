@@ -73,10 +73,10 @@ public class ShooterConstants extends MwConstants {
     public final boolean FLYWHEEL_FOLLOWER_3_INVERTED = true;
     public final double FLYWHEEL_GEAR_RATIO = 32.0 /24.0;
     public final double FLYWHEEL_WHEEL_RADIUS_METERS = Units.inchesToMeters(2);
-    public final double FLYWHEEL_INERTIA = 21.394 * 0.00029264; // kg m^2, approximate, 0.00029264 is the conversion factor from lb in² to kg m²
+    public final double FLYWHEEL_INERTIA = (21.394 * 0.00029264) + (0.812 * 2); // kg m^2, approximate, 0.00029264 is the conversion factor from lb in² to kg m²
     public final double FLYWHEEL_EFF_FACTOR = 2.2;
     public final Slot1Configs FLYWHEEL_VELOCITY_GAINS =
-            new Slot1Configs().withKP(0.5).withKV(0.118).withKI(2);
+            new Slot1Configs().withKP(0.5).withKV(0.159).withKI(1);
 
     public final double FLYWHEEL_FILTER_TIME_CONSTANT =
             0.15; // seconds for flywheel velocity smoothing
@@ -116,7 +116,7 @@ public class ShooterConstants extends MwConstants {
     public final double HOOD_MIN_ANGLE = Units.degreesToRadians(51.0);
     public final double HOOD_HOME_POSITION = Units.degreesToRadians(90.0);
     public final double HOOD_MAX_ANGLE = HOOD_HOME_POSITION;
-    public final Slot0Configs HOOD_POSITION_GAINS = new Slot0Configs().withKP(100).withKD(0.15);
+    public final Slot0Configs HOOD_POSITION_GAINS = new Slot0Configs().withKP(90).withKD(0.15);
 
     // Manual mode hood angles (radians) - TUNE THESE!
     public final double HOOD_MANUAL_HUB_ANGLE =
