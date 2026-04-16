@@ -58,6 +58,7 @@ public class IntakeConstants extends MwConstants {
     public final double ROLLER_GEAR_RATIO = 1.0;
     public final double INTAKE_DUTY_CYCLE = 1.0;
     public final double ROLLER_STATOR_CURRENT_LIMIT = 60;
+
     // =============================================================================
     // MECHANICAL CONSTANTS - PIVOT
     // =============================================================================
@@ -67,19 +68,19 @@ public class IntakeConstants extends MwConstants {
     public final SlotConfigs PIVOT_POSITION_SLOT_CONFIG = new SlotConfigs();
     public final double PIVOT_LENGTH = Units.inchesToMeters(13.0);
     public final double PIVOT_MASS = Units.lbsToKilograms(7.875);
-    public final double PIVOT_MIN = Units.degreesToRadians(130);
-    public final double PIVOT_MAX = Units.degreesToRadians(0);
+    public final double PIVOT_MIN = Units.degreesToRadians(-10);
+    public final double PIVOT_MAX = Units.degreesToRadians(140);
     public final double PIVOT_HOME_POSITION = Units.degreesToRadians(0);
     public final double PIVOT_STATOR_CURRENT_LIMIT = 90;
     public final double PIVOT_DEPLOY_POSITION = Units.degreesToRadians(0);
     public final double PIVOT_RACKING_POSITION = Units.degreesToRadians(50);
-    public final double PIVOT_STORE_POSITION = Units.degreesToRadians(-130);
+    public final double PIVOT_STORE_POSITION = Units.degreesToRadians(130);
     public final double DEPLOY_PIVOT_TOLERANCE = Units.degreesToRadians(20);
     public final Slot0Configs PIVOT_POSITION_GAINS = new Slot0Configs().withKG(3).withKP(200);
 
     // Homing for pivot - drive with a small duty cycle until the motor current spikes
     public final double PIVOT_HOMING_DUTY_CYCLE = -0.15;
-    public final double PIVOT_HOMMING_CURRENT_THRESHOLD =
+    public final double PIVOT_HOMING_CURRENT_THRESHOLD =
             5.0; // Amps, threshold for detecting stall during homing
 
     // Time to wait between cycling SHOOTING and RACKING modes (seconds)
@@ -122,7 +123,7 @@ public class IntakeConstants extends MwConstants {
 
         // Configure Pivot Motor
         PIVOT_MOTOR_CONFIG.can_id = PIVOT_MOTOR_ID;
-        PIVOT_MOTOR_CONFIG.motor_type = TalonMotorType.X44;
+        PIVOT_MOTOR_CONFIG.motor_type = TalonMotorType.X60;
         PIVOT_MOTOR_CONFIG.canbus_name = "CANivore";
         TalonFXConfiguration pivot_config = new TalonFXConfiguration();
         pivot_config.Slot0 = Slot0Configs.from(PIVOT_POSITION_SLOT_CONFIG);

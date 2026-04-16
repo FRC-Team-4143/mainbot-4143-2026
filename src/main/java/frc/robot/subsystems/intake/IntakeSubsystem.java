@@ -87,7 +87,7 @@ public class IntakeSubsystem extends MwSubsystem<IntakeStates, IntakeConstants> 
     protected void handleStateTransition(IntakeStates wantedState) {
         // If pivot current spikes while in homing state, set the current position as
         // home
-        if (pivot_.getLeaderCurrent() > CONSTANTS.PIVOT_HOMMING_CURRENT_THRESHOLD
+        if (pivot_.getLeaderCurrent() > CONSTANTS.PIVOT_HOMING_CURRENT_THRESHOLD
                 && system_state_ == IntakeStates.PIVOT_HOMING) {
             pivot_.setCurrentPosition(CONSTANTS.PIVOT_HOME_POSITION);
             setWantedState(IntakeStates.DEPLOYED);

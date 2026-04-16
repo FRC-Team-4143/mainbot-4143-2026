@@ -87,7 +87,7 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
                 new RollerMech(
                         getSubsystemKey(),
                         "Indexer",
-                        List.of(CONSTANTS.INDEXER_LEADER_MOTOR_CONFIG),
+                        List.of(CONSTANTS.INDEXER_MOTOR_CONFIG),
                         CONSTANTS.INDEXER_GEAR_RATIO);
         flywheel_ =
                 new FlywheelMech(
