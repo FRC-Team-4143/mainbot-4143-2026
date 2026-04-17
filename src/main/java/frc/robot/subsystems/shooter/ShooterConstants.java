@@ -265,8 +265,7 @@ public class ShooterConstants extends MwConstants {
         INDEXER_MOTOR_CONFIG.motor_type = TalonMotorType.X44;
         INDEXER_MOTOR_CONFIG.canbus_name = "rio";
         TalonFXConfiguration indexer_leader_config = new TalonFXConfiguration();
-        indexer_leader_config.MotorOutput.Inverted =
-                PhoenixUtil.toInvertedValue(INDEXER_INVERTED);
+        indexer_leader_config.MotorOutput.Inverted = PhoenixUtil.toInvertedValue(INDEXER_INVERTED);
         indexer_leader_config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
         indexer_leader_config.Slot1 = INDEXER_VELOCITY_GAINS;
         INDEXER_MOTOR_CONFIG.apply(indexer_leader_config);

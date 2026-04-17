@@ -76,7 +76,8 @@ public class IntakeConstants extends MwConstants {
     public final double PIVOT_RACKING_POSITION = Units.degreesToRadians(50);
     public final double PIVOT_STORE_POSITION = Units.degreesToRadians(130);
     public final double DEPLOY_PIVOT_TOLERANCE = Units.degreesToRadians(20);
-    public final Slot0Configs PIVOT_POSITION_GAINS = new Slot0Configs().withKG(0.495).withKP(100.0).withKD(3.0);
+    public final Slot0Configs PIVOT_POSITION_GAINS =
+            new Slot0Configs().withKG(0.495).withKP(100.0).withKD(3.0);
 
     // Homing for pivot - drive with a small duty cycle until the motor current spikes
     public final double PIVOT_HOMING_DUTY_CYCLE = -0.15;
