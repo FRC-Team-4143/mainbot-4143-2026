@@ -59,7 +59,7 @@ public class ShooterConstants extends MwConstants {
     public final int SHOOTER_FOLLOWER_1_ID = 11;
     public final int SHOOTER_FOLLOWER_2_ID = 12;
     public final int SHOOTER_FOLLOWER_3_ID = 13;
-    public final int INDEXER_LEADER_ID = 14;
+    public final int INDEXER_ID = 14;
     public final int ACCELERATOR_ID = 15;
     public final int HOOD_ID = 16;
 
@@ -69,14 +69,17 @@ public class ShooterConstants extends MwConstants {
 
     public final boolean FLYWHEEL_LEADER_INVERTED = true;
     public final boolean FLYWHEEL_FOLLOWER_1_INVERTED = true;
-    public final boolean FLYWHEEL_FOLLOWER_2_INVERTED = true;
-    public final boolean FLYWHEEL_FOLLOWER_3_INVERTED = true;
-    public final double FLYWHEEL_GEAR_RATIO = 32.0 /24.0;
+    public final boolean FLYWHEEL_FOLLOWER_2_INVERTED = false;
+    public final boolean FLYWHEEL_FOLLOWER_3_INVERTED = false;
+    public final double FLYWHEEL_GEAR_RATIO = 32.0 / 24.0;
     public final double FLYWHEEL_WHEEL_RADIUS_METERS = Units.inchesToMeters(2);
-    public final double FLYWHEEL_INERTIA = 21.394 * 0.00029264; // kg m^2, approximate, 0.00029264 is the conversion factor from lb in² to kg m²
+    public final double FLYWHEEL_INERTIA =
+            (21.394 * 0.00029264)
+                    + (0.812 * 2); // kg m^2, approximate, 0.00029264 is the conversion factor from
+    // lb in² to kg m²
     public final double FLYWHEEL_EFF_FACTOR = 2.2;
     public final Slot1Configs FLYWHEEL_VELOCITY_GAINS =
-            new Slot1Configs().withKP(0.5).withKV(0.118).withKI(2);
+            new Slot1Configs().withKP(0.5).withKV(0.159).withKI(1);
 
     public final double FLYWHEEL_FILTER_TIME_CONSTANT =
             0.15; // seconds for flywheel velocity smoothing
@@ -94,14 +97,15 @@ public class ShooterConstants extends MwConstants {
     // MECHANICAL CONSTANTS - INDEXER
     // =============================================================================
 
-    public final boolean INDEXER_LEADER_INVERTED = false;
+    public final boolean INDEXER_INVERTED = true;
     public final double INDEXER_GEAR_RATIO = 28.0 / 11.0;
     public final Slot1Configs INDEXER_VELOCITY_GAINS =
             new Slot1Configs().withKD(0.01).withKI(1).withKP(0.5).withKV(0.129);
+
     // =============================================================================
-    // MECHANICAL CONSTANTS - INDEXER
+    // MECHANICAL CONSTANTS - ACCELERATOR
     // =============================================================================
-    public final boolean ACCELERATOR_INVERTED = false;
+    public final boolean ACCELERATOR_INVERTED = true;
     public final double ACCELERATOR_GEAR_RATIO = (40.0 / 11.0) * (23.0 / 26.0);
     public final Slot1Configs ACCELERATOR_VELOCITY_GAINS =
             new Slot1Configs().withKD(0.0).withKI(0).withKP(0.0).withKV(0.0);
@@ -109,14 +113,14 @@ public class ShooterConstants extends MwConstants {
     // MECHANICAL CONSTANTS - HOOD
     // =============================================================================
 
-    public final boolean HOOD_INVERTED = false;
+    public final boolean HOOD_INVERTED = true;
     public final double HOOD_GEAR_RATIO =
-            68; // motor rotations / output mechanism rotations / orginal 44/ 11 * 170/100
+            68; // motor rotations / output mechanism rotations / original 44/ 11 * 170/100
     // Min/max physical hood angles (radians). Configure to match the mechanical limits
     public final double HOOD_MIN_ANGLE = Units.degreesToRadians(51.0);
     public final double HOOD_HOME_POSITION = Units.degreesToRadians(90.0);
     public final double HOOD_MAX_ANGLE = HOOD_HOME_POSITION;
-    public final Slot0Configs HOOD_POSITION_GAINS = new Slot0Configs().withKP(100).withKD(0.15);
+    public final Slot0Configs HOOD_POSITION_GAINS = new Slot0Configs().withKP(90).withKD(0.15);
 
     // Manual mode hood angles (radians) - TUNE THESE!
     public final double HOOD_MANUAL_HUB_ANGLE =
@@ -142,7 +146,7 @@ public class ShooterConstants extends MwConstants {
     public final double IDLE_INDEXER_DUTY_CYCLE = 0;
     public final double INDEXER_VELOCITY = 250;
     public final double ACCELERATOR_VELOCITY = 300;
-    public final double ACCELERATOR_DUTY_CYCLE = 0.5; // 50% power for accelerating     
+    public final double ACCELERATOR_DUTY_CYCLE = 0.5; // 50% power for accelerating
     public final double IDLE_ACCELERATOR_DUTY_CYCLE = 0;
     public final double SHOOTER_IDLE_SPEED = 300.0;
     public final double HOOD_IDLE_POSITION = Units.degreesToRadians(80);
@@ -161,7 +165,7 @@ public class ShooterConstants extends MwConstants {
     public final MotorConfig SHOOTER_FOLLOWER_MOTOR_1_CONFIG = new MotorConfig();
     public final MotorConfig SHOOTER_FOLLOWER_MOTOR_2_CONFIG = new MotorConfig();
     public final MotorConfig SHOOTER_FOLLOWER_MOTOR_3_CONFIG = new MotorConfig();
-    public final MotorConfig INDEXER_LEADER_MOTOR_CONFIG = new MotorConfig();
+    public final MotorConfig INDEXER_MOTOR_CONFIG = new MotorConfig();
     public final MotorConfig ACCELERATOR_MOTOR_CONFIG = new MotorConfig();
     public final MotorConfig HOOD_MOTOR_CONFIGS = new MotorConfig();
 
@@ -170,12 +174,16 @@ public class ShooterConstants extends MwConstants {
     // =============================================================================
     public final LaunchCalculator HUB_LAUNCH_CALCULATOR;
     public final LaunchCalculator PASS_LAUNCH_CALCULATOR;
-    
+
     // =============================================================================
     // Hopper empty
     // =============================================================================
-        public final double SHOOTING_DETECTION_VELOCITY_FACTOR = 0.99; // factor applied to current speed to get threshold for triggering detection, needs tuning
-        public final double SHOOTING_DETECTION_TIME = 0.65; // seconds for shooter detection to be true, needs tuning
+    public final double SHOOTING_DETECTION_VELOCITY_FACTOR =
+            0.99; // factor applied to current speed to get threshold for triggering detection,
+    // needs tuning
+    public final double SHOOTING_DETECTION_TIME =
+            0.65; // seconds for shooter detection to be true, needs tuning
+
     // =============================================================================
     // CONSTRUCTOR - MOTOR CONFIGURATION INITIALIZATION
     // =============================================================================
@@ -253,26 +261,24 @@ public class ShooterConstants extends MwConstants {
         // MOTOR CONFIGURATION INITIALIZATION
         // =============================================================================
         // Configure Indexer Leader Motor
-        INDEXER_LEADER_MOTOR_CONFIG.can_id = INDEXER_LEADER_ID;
-        INDEXER_LEADER_MOTOR_CONFIG.motor_type = TalonMotorType.X44;
-        INDEXER_LEADER_MOTOR_CONFIG.canbus_name = "rio";
+        INDEXER_MOTOR_CONFIG.can_id = INDEXER_ID;
+        INDEXER_MOTOR_CONFIG.motor_type = TalonMotorType.X44;
+        INDEXER_MOTOR_CONFIG.canbus_name = "rio";
         TalonFXConfiguration indexer_leader_config = new TalonFXConfiguration();
         indexer_leader_config.MotorOutput.Inverted =
-                PhoenixUtil.toInvertedValue(INDEXER_LEADER_INVERTED);
+                PhoenixUtil.toInvertedValue(INDEXER_INVERTED);
         indexer_leader_config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
         indexer_leader_config.Slot1 = INDEXER_VELOCITY_GAINS;
-        INDEXER_LEADER_MOTOR_CONFIG.apply(indexer_leader_config);
+        INDEXER_MOTOR_CONFIG.apply(indexer_leader_config);
 
         ACCELERATOR_MOTOR_CONFIG.can_id = ACCELERATOR_ID;
         ACCELERATOR_MOTOR_CONFIG.motor_type = TalonMotorType.X44;
         ACCELERATOR_MOTOR_CONFIG.canbus_name = "rio";
         TalonFXConfiguration accelerator_config = new TalonFXConfiguration();
-        accelerator_config.MotorOutput.Inverted =
-                PhoenixUtil.toInvertedValue(ACCELERATOR_INVERTED);
+        accelerator_config.MotorOutput.Inverted = PhoenixUtil.toInvertedValue(ACCELERATOR_INVERTED);
         accelerator_config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
         accelerator_config.Slot1 = ACCELERATOR_VELOCITY_GAINS;
         ACCELERATOR_MOTOR_CONFIG.apply(accelerator_config);
-
 
         // Configure Shooter Leader Motor
         SHOOTER_LEADER_MOTOR_CONFIG.can_id = SHOOTER_LEADER_ID;

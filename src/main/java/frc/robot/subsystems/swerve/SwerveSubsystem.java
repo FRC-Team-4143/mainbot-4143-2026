@@ -399,7 +399,8 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
             case IDLE:
             default:
                 desired_chassis_speeds_ = new ChassisSpeeds();
-                swerve_mech_.setChassisRequest(new ChassisRequest.ApplyChassisSpeeds().withSpeeds(new ChassisSpeeds()));
+                swerve_mech_.setChassisRequest(
+                        new ChassisRequest.ApplyChassisSpeeds().withSpeeds(new ChassisSpeeds()));
                 break;
         }
 

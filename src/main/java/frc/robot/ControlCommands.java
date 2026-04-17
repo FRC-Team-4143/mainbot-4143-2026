@@ -1,14 +1,13 @@
 package frc.robot;
 
 import dev.doglog.DogLog;
-import edu.wpi.first.util.datalog.BooleanLogEntry;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import frc.robot.lib2026.FieldTargets;
-import frc.robot.subsystems.hopper.FloorConstants.FloorStates;
 import frc.robot.subsystems.gamestates.GameStatesConstants.GameStates;
 import frc.robot.subsystems.gamestates.GameStatesSubsystem;
+import frc.robot.subsystems.hopper.FloorConstants.FloorStates;
 import frc.robot.subsystems.hopper.FloorSubsystem;
 import frc.robot.subsystems.intake.IntakeConstants.IntakeStates;
 import frc.robot.subsystems.intake.IntakeSubsystem;
@@ -21,8 +20,8 @@ import frc.robot.subsystems.swerve.SwerveSubsystem;
 
 public class ControlCommands {
 
-
     private static boolean isAbleToRack = true;
+
     /**
      * This command aims the robot at the target with no intent to shoot, used for lining up shots
      * or for teleop control while aiming.
@@ -127,8 +126,12 @@ public class ControlCommands {
                             SwerveSubsystem.getInstance().setTeleOpVelocityScalar(0.25);
                             LocalizationSubsystem.getInstance()
                                     .setWantedState(LocalizationStates.SHOOTING_FOCUS);
-                            if(SwerveSubsystem.getInstance().isChassisStationary() && !(GameStatesSubsystem.getInstance().getSystemState() == GameStates.PASS || GameStatesSubsystem.getInstance().getPassOverride()) && isAbleToRack){
-                            IntakeSubsystem.getInstance().setWantedState(IntakeStates.RACKING);
+                            if (SwerveSubsystem.getInstance().isChassisStationary()
+                                    && !(GameStatesSubsystem.getInstance().getSystemState()
+                                                    == GameStates.PASS
+                                            || GameStatesSubsystem.getInstance().getPassOverride())
+                                    && isAbleToRack) {
+                                IntakeSubsystem.getInstance().setWantedState(IntakeStates.RACKING);
                             }
                         },
                         () -> {
@@ -282,15 +285,17 @@ public class ControlCommands {
                 .ignoringDisable(true);
     }
 
-    static Command toggleIsAbleToRack(){
+    static Command toggleIsAbleToRack() {
         return Commands.runOnce(
                         () -> {
-                            if(isAbleToRack == true){
+                            if (isAbleToRack == true) {
                                 isAbleToRack = false;
                             } else {
                                 isAbleToRack = true;
                             }
                             DogLog.log("Subsystem/Intake/IsAbleToRack", isAbleToRack);
-                        }).withName("Toggle Racking").ignoringDisable(true);
+                        })
+                .withName("Toggle Racking")
+                .ignoringDisable(true);
     }
 }
