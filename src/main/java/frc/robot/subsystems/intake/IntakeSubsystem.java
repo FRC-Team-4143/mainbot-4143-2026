@@ -92,22 +92,6 @@ public class IntakeSubsystem extends MwSubsystem<IntakeStates, IntakeConstants> 
             pivot_.setCurrentPosition(CONSTANTS.PIVOT_HOME_POSITION);
             setWantedState(IntakeStates.DEPLOYED);
             system_state_ = IntakeStates.DEPLOYED;
-        } else if (wantedState == IntakeStates.RACKING
-                && !(system_state_ == IntakeStates.RACKED_IN
-                        || system_state_ == IntakeStates.RACKED_OUT)) {
-            racking_timer_.reset();
-            racking_timer_.start();
-            system_state_ = IntakeStates.RACKED_IN;
-        } else if (wantedState == IntakeStates.RACKING
-                && (system_state_ == IntakeStates.RACKED_IN
-                        || system_state_ == IntakeStates.RACKED_OUT)
-                && racking_timer_.hasElapsed(CONSTANTS.RACKING_CYCLE_TIME)) {
-            system_state_ =
-                    (system_state_ == IntakeStates.RACKED_IN)
-                            ? IntakeStates.RACKED_OUT
-                            : IntakeStates.RACKED_IN;
-            racking_timer_.reset();
-            racking_timer_.start();
         } else if (!MathUtil.isNear(
                         CONSTANTS.PIVOT_DEPLOY_POSITION,
                         pivot_.getCurrentPosition(),
@@ -163,14 +147,6 @@ public class IntakeSubsystem extends MwSubsystem<IntakeStates, IntakeConstants> 
                 pivot_.setTargetDutyCycle(CONSTANTS.PIVOT_HOMING_DUTY_CYCLE);
                 break;
             case RACKING:
-                break;
-            case RACKED_IN:
-                roller_.setTargetDutyCycle(0.0);
-                pivot_.setTargetPosition(CONSTANTS.PIVOT_RACKING_POSITION);
-                break;
-            case RACKED_OUT:
-                roller_.setTargetDutyCycle(0.0);
-                pivot_.setTargetPosition(CONSTANTS.PIVOT_DEPLOY_POSITION);
                 break;
             case TUNING:
                 // No default behavior for tuning mode

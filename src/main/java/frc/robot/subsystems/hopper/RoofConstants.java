@@ -5,6 +5,8 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.marswars.mechanisms.MotorConfig;
 import com.marswars.mechanisms.MotorConfig.TalonMotorType;
 import com.marswars.subsystem.MwConstants;
+import com.marswars.util.PhoenixUtil;
+
 import edu.wpi.first.math.util.Units;
 
 public class RoofConstants extends MwConstants {
@@ -36,7 +38,7 @@ public class RoofConstants extends MwConstants {
 
     public final boolean ELEVATOR_MOTOR_INVERTED = true;
     public final double ELEVATOR_GEAR_RATIO =
-            3.0
+            5.0
                     * (48.0 / 22.0)
                     * (32.0 / 48.0); // Total gear ratio from motor to elevator extension
     public final double ELEVATOR_DRUM_RADIUS = Units.inchesToMeters(0.878);
@@ -44,7 +46,7 @@ public class RoofConstants extends MwConstants {
     public final double ELEVATOR_MAX_EXTENSION_METERS =
             Units.inchesToMeters(8.25); // Maximum extension of the elevator in meters
     public final Slot0Configs ELEVATOR_POSITION_GAINS =
-            new Slot0Configs().withKV(0.0).withKP(3.0).withKI(0.0).withKD(0.0).withKG(0.2895);
+            new Slot0Configs().withKV(0.0).withKP(4.8).withKI(0.0).withKD(0.0).withKG(0.0);
     public final double ELEVATOR_RIGGING_RATIO =
             1.0; // Ratio of motor rotation to elevator extension (depends on pulley system)
     public final double ELEVATOR_UP_POSITION_METERS =
@@ -70,6 +72,7 @@ public class RoofConstants extends MwConstants {
         ELEVATOR_MOTOR_CONFIG.motor_type = TalonMotorType.X60;
         ELEVATOR_MOTOR_CONFIG.canbus_name = "rio";
         TalonFXConfiguration elevator_config = new TalonFXConfiguration();
+        elevator_config.MotorOutput.Inverted = PhoenixUtil.toInvertedValue(ELEVATOR_MOTOR_INVERTED);
         elevator_config.Slot0 = ELEVATOR_POSITION_GAINS;
         // elevator_config.CurrentLimits.StatorCurrentLimit = 50;
         ELEVATOR_MOTOR_CONFIG.apply(elevator_config);

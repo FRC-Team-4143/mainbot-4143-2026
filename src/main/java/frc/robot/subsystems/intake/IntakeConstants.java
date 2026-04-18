@@ -53,8 +53,8 @@ public class IntakeConstants extends MwConstants {
     // MECHANICAL CONSTANTS - ROLLER
     // =============================================================================
 
-    public final boolean ROLLER_MOTOR_INVERTED = false;
-    public final boolean ROLLER_FOLLOWER_MOTOR_INVERTED = true;
+    public final boolean ROLLER_MOTOR_INVERTED = true;
+    public final boolean ROLLER_FOLLOWER_MOTOR_INVERTED = false;
     public final double ROLLER_GEAR_RATIO = 1.0;
     public final double INTAKE_DUTY_CYCLE = 1.0;
     public final double ROLLER_STATOR_CURRENT_LIMIT = 60;
@@ -74,10 +74,10 @@ public class IntakeConstants extends MwConstants {
     public final double PIVOT_STATOR_CURRENT_LIMIT = 90;
     public final double PIVOT_DEPLOY_POSITION = Units.degreesToRadians(0);
     public final double PIVOT_RACKING_POSITION = Units.degreesToRadians(50);
-    public final double PIVOT_STORE_POSITION = Units.degreesToRadians(130);
+    public final double PIVOT_STORE_POSITION = Units.degreesToRadians(105);
     public final double DEPLOY_PIVOT_TOLERANCE = Units.degreesToRadians(20);
     public final Slot0Configs PIVOT_POSITION_GAINS =
-            new Slot0Configs().withKG(0.495).withKP(100.0).withKD(3.0);
+            new Slot0Configs().withKG(0.45).withKP(15.0).withKD(0.0);
 
     // Homing for pivot - drive with a small duty cycle until the motor current spikes
     public final double PIVOT_HOMING_DUTY_CYCLE = -0.15;
