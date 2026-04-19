@@ -6,6 +6,7 @@ package frc.robot;
 
 import com.marswars.subsystem.SubsystemManager;
 import edu.wpi.first.wpilibj.RobotBase;
+import frc.robot.subsystems.gamestates.GameStatesSubsystem;
 import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.localization.LocalizationSubsystem;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
@@ -30,7 +31,7 @@ public class RobotContainer extends SubsystemManager {
         registerSubsystem(ShooterSubsystem.getInstance());
         // registerSubsystem(RoofSubsystem.getInstance());
         registerSubsystem(IntakeSubsystem.getInstance());
-        // registerSubsystem(GameStatesSubsystem.getInstance());
+        registerSubsystem(GameStatesSubsystem.getInstance());
 
         // Only enable the simulation subsystem if we are in simulation
         if (RobotBase.isSimulation()) {
