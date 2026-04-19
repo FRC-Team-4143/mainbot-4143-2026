@@ -4,12 +4,10 @@ import com.marswars.auto.Auto;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.lib2026.FieldTargets;
-import frc.robot.subsystems.hopper.FloorConstants.FloorStates;
-import frc.robot.subsystems.hopper.FloorSubsystem;
-import frc.robot.subsystems.hopper.RoofConstants.RoofStates;
-import frc.robot.subsystems.hopper.RoofSubsystem;
 import frc.robot.subsystems.intake.IntakeConstants.IntakeStates;
 import frc.robot.subsystems.intake.IntakeSubsystem;
+import frc.robot.subsystems.roof.RoofConstants.RoofStates;
+import frc.robot.subsystems.roof.RoofSubsystem;
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterStates;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.swerve.SwerveConstants.SwerveStates;
@@ -111,9 +109,8 @@ public class CitrusSynergy extends Auto {
                 Commands.runOnce(
                         () -> {
                             ShooterSubsystem.getInstance().setWantedState(ShooterStates.SHOOT);
-                            FloorSubsystem.getInstance().setWantedState(FloorStates.SHOOTING);
                         }),
-                // Shoot for 2 seconds
+                // Shoot for 3 seconds
                 new WaitCommand(2),
                 // Set the fourth trajectory for the fourth part
                 SwerveSubsystem.getInstance()

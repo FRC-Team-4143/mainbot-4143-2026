@@ -7,8 +7,6 @@ import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import frc.robot.lib2026.FieldTargets;
 import frc.robot.subsystems.gamestates.GameStatesConstants.GameStates;
 import frc.robot.subsystems.gamestates.GameStatesSubsystem;
-import frc.robot.subsystems.hopper.FloorConstants.FloorStates;
-import frc.robot.subsystems.hopper.FloorSubsystem;
 import frc.robot.subsystems.intake.IntakeConstants.IntakeStates;
 import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.localization.LocalizationConstants.LocalizationStates;
@@ -102,7 +100,6 @@ public class ControlCommands {
      *
      * <ul>
      *   <li>Shooter: SHOOT
-     *   <li>Hopper: SHOOTING
      *   <li>Swerve: Sets velocity scalar to 0.25
      *   <li>Swerve: FIELD_CENTRIC_ROTATION_LOCK
      *   <li>Localization: SHOOTING_FOCUS
@@ -112,7 +109,6 @@ public class ControlCommands {
      *
      * <ul>
      *   <li>Shooter: TRACKING
-     *   <li>Hopper: IDLE
      *   <li>Swerve: Sets velocity scalar to 1.0
      *   <li>Swerve: FIELD_CENTRIC
      *   <li>Localization: FULL
@@ -122,7 +118,6 @@ public class ControlCommands {
         return new FunctionalCommand(
                         () -> {
                             ShooterSubsystem.getInstance().setWantedState(ShooterStates.SHOOT);
-                            FloorSubsystem.getInstance().setWantedState(FloorStates.SHOOTING);
                             SwerveSubsystem.getInstance().setTeleOpVelocityScalar(0.25);
                             LocalizationSubsystem.getInstance()
                                     .setWantedState(LocalizationStates.SHOOTING_FOCUS);
@@ -145,7 +140,6 @@ public class ControlCommands {
                         },
                         (interrupted) -> {
                             ShooterSubsystem.getInstance().setWantedState(ShooterStates.IDLE);
-                            FloorSubsystem.getInstance().setWantedState(FloorStates.IDLE);
                             SwerveSubsystem.getInstance().setTeleOpVelocityScalar(1.0);
                             SwerveSubsystem.getInstance()
                                     .setWantedState(SwerveStates.FIELD_CENTRIC);
@@ -166,25 +160,21 @@ public class ControlCommands {
      *
      * <ul>
      *   <li>Shooter: MANUAL_HUB
-     *   <li>Hopper: SHOOTING
      * </ul>
      *
      * <p>On End:
      *
      * <ul>
      *   <li>Shooter: TRACKING
-     *   <li>Hopper: IDLE
      * </ul>
      */
     static Command manualShootFuelCommand() {
         return Commands.startEnd(
                         () -> {
                             ShooterSubsystem.getInstance().setWantedState(ShooterStates.MANUAL_HUB);
-                            FloorSubsystem.getInstance().setWantedState(FloorStates.SHOOTING);
                         },
                         () -> {
                             ShooterSubsystem.getInstance().setWantedState(ShooterStates.IDLE);
-                            FloorSubsystem.getInstance().setWantedState(FloorStates.IDLE);
                         })
                 .withName("Shoot Fuel Manual")
                 .ignoringDisable(true);
@@ -198,14 +188,12 @@ public class ControlCommands {
      *
      * <ul>
      *   <li>Shooter: MANUAL_PASS
-     *   <li>Hopper: SHOOTING
      * </ul>
      *
      * <p>On End:
      *
      * <ul>
      *   <li>Shooter: TRACKING
-     *   <li>Hopper: IDLE
      * </ul>
      */
     static Command manualPassFuelCommand() {
@@ -213,11 +201,9 @@ public class ControlCommands {
                         () -> {
                             ShooterSubsystem.getInstance()
                                     .setWantedState(ShooterStates.MANUAL_PASS);
-                            FloorSubsystem.getInstance().setWantedState(FloorStates.SHOOTING);
                         },
                         () -> {
                             ShooterSubsystem.getInstance().setWantedState(ShooterStates.IDLE);
-                            FloorSubsystem.getInstance().setWantedState(FloorStates.IDLE);
                         })
                 .withName("Pass Fuel Manual")
                 .ignoringDisable(true);
@@ -274,11 +260,9 @@ public class ControlCommands {
     static Command outTakeFuelCommand() {
         return Commands.startEnd(
                         () -> {
-                            FloorSubsystem.getInstance().setWantedState(FloorStates.REVERSE);
                             IntakeSubsystem.getInstance().setWantedState(IntakeStates.OUTTAKE);
                         },
                         () -> {
-                            FloorSubsystem.getInstance().setWantedState(FloorStates.IDLE);
                             IntakeSubsystem.getInstance().setWantedState(IntakeStates.DEPLOYED);
                         })
                 .withName("Outtake Fuel")

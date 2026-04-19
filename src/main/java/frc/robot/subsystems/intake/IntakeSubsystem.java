@@ -4,9 +4,7 @@ import com.marswars.mechanisms.ArmMech;
 import com.marswars.mechanisms.RollerMech;
 import com.marswars.subsystem.MwSubsystem;
 import com.marswars.subsystem.SubsystemIoBase;
-import dev.doglog.DogLog;
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.intake.IntakeConstants.IntakeStates;
@@ -100,7 +98,7 @@ public class IntakeSubsystem extends MwSubsystem<IntakeStates, IntakeConstants> 
                 system_state_ = IntakeStates.DEPLOYED;
             }
         } else {
-           system_state_ = wantedState;
+            system_state_ = wantedState;
         }
     }
 
@@ -136,7 +134,7 @@ public class IntakeSubsystem extends MwSubsystem<IntakeStates, IntakeConstants> 
                 break;
             case SQUEEZE:
                 roller_.setTargetDutyCycle(0.0);
-                if(pivot_.getCurrentPosition() > CONSTANTS.PIVOT_SQUEEZE_MAX_POSITION) {
+                if (pivot_.getCurrentPosition() > CONSTANTS.PIVOT_SQUEEZE_MAX_POSITION) {
                     pivot_.setTargetPosition(CONSTANTS.PIVOT_STORE_POSITION);
                 } else {
                     pivot_.setTargetCurrent(CONSTANTS.PIVOT_SQUEEZE_CURRENT);

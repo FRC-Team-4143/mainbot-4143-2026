@@ -78,8 +78,7 @@ public class IntakeConstants extends MwConstants {
 
     public final double PIVOT_SQUEEZE_CURRENT = 5.0;
     public final double PIVOT_SQUEEZE_MAX_POSITION = Units.degreesToRadians(80);
-    public final Slot2Configs PIVOT_CURRENT_GAINS =
-            new Slot2Configs().withKP(0.0);
+    public final Slot2Configs PIVOT_CURRENT_GAINS = new Slot2Configs().withKP(0.0);
 
     // Homing for pivot - drive with a small duty cycle until the motor current spikes
     public final double PIVOT_HOMING_DUTY_CYCLE = -0.15;

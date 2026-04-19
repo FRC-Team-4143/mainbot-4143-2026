@@ -6,7 +6,6 @@ package frc.robot;
 
 import com.marswars.subsystem.SubsystemManager;
 import edu.wpi.first.wpilibj.RobotBase;
-import frc.robot.subsystems.hopper.FloorSubsystem;
 import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.localization.LocalizationSubsystem;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
@@ -29,7 +28,6 @@ public class RobotContainer extends SubsystemManager {
         registerSubsystem(SwerveSubsystem.getInstance());
         registerSubsystem(LocalizationSubsystem.getInstance());
         registerSubsystem(ShooterSubsystem.getInstance());
-        registerSubsystem(FloorSubsystem.getInstance());
         // registerSubsystem(RoofSubsystem.getInstance());
         registerSubsystem(IntakeSubsystem.getInstance());
         // registerSubsystem(GameStatesSubsystem.getInstance());
