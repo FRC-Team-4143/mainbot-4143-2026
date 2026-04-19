@@ -7,15 +7,18 @@ import dev.doglog.DogLog;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.subsystems.hopper.FloorConstants.FloorStates;
+import frc.robot.subsystems.shooter.ShooterSubsystem;
+
 import java.util.Arrays;
 import java.util.List;
+
+import javax.lang.model.util.ElementScanner14;
 
 public class FloorSubsystem extends MwSubsystem<FloorStates, FloorConstants> {
     private static FloorSubsystem instance_ = null;
 
     // private RollerMech feeder_;
     private RollerMech hopper_;
-    private double manual_hopper_velocity_ = CONSTANTS.HOPPER_VELOCITY_TARGET;
     private final Timer hopper_timer_ = new Timer();
     private Debouncer debouncer_ =
             new Debouncer(CONSTANTS.DEBOUNCE_TIME, Debouncer.DebounceType.kBoth);
@@ -37,11 +40,6 @@ public class FloorSubsystem extends MwSubsystem<FloorStates, FloorConstants> {
                         "Hopper",
                         List.of(CONSTANTS.HOPPER_MOTOR_CONFIG),
                         CONSTANTS.HOPPER_GEAR_RATIO);
-
-        DogLog.tunable(
-                getSubsystemKey() + "/Hopper/TargetVelocity",
-                manual_hopper_velocity_,
-                (v) -> manual_hopper_velocity_ = v);
     }
 
     // reset
@@ -91,16 +89,19 @@ public class FloorSubsystem extends MwSubsystem<FloorStates, FloorConstants> {
             case INTAKE:
                 break;
             case SHOOTING:
-                hopper_.setTargetVelocity(manual_hopper_velocity_);
+                if(ShooterSubsystem.getInstance().isShooterReady())
+                    hopper_.setTargetVelocity(CONSTANTS.HOPPER_VELOCITY_TARGET);
+                else
+                    hopper_.setTargetDutyCycle(0);
                 break;
             case UNJAM_REVERSE:
-                hopper_.setTargetVelocity(-manual_hopper_velocity_);
+                hopper_.setTargetVelocity(-CONSTANTS.HOPPER_VELOCITY_TARGET);
                 break;
             case UNJAM_FORWARD:
-                hopper_.setTargetVelocity(manual_hopper_velocity_);
+                hopper_.setTargetVelocity(CONSTANTS.HOPPER_VELOCITY_TARGET);
                 break;
             case REVERSE:
-                hopper_.setTargetVelocity(-manual_hopper_velocity_);
+                hopper_.setTargetVelocity(-CONSTANTS.HOPPER_VELOCITY_TARGET);
                 break;
             case TUNING:
                 break;

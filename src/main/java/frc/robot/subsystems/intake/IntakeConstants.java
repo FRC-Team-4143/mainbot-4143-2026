@@ -1,6 +1,7 @@
 package frc.robot.subsystems.intake;
 
 import com.ctre.phoenix6.configs.Slot0Configs;
+import com.ctre.phoenix6.configs.Slot2Configs;
 import com.ctre.phoenix6.configs.SlotConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.marswars.mechanisms.MotorConfig;
@@ -30,12 +31,8 @@ public class IntakeConstants extends MwConstants {
         OUTTAKE,
         /** Idle state with intake mechanisms stopped */
         IDLE,
-        /** The state that is asked for by the wanted state for racking in and out to occur */
-        RACKING,
-        /** Racking the intake up to the racking position */
-        RACKED_IN,
-        /** Racking the intake down to the raking position */
-        RACKED_OUT,
+        /** Intake squeezes the fuel into the shooter */
+        SQUEEZE,
         /** Manual tuning mode for testing and calibration */
         TUNING
     }
@@ -73,20 +70,21 @@ public class IntakeConstants extends MwConstants {
     public final double PIVOT_HOME_POSITION = Units.degreesToRadians(0);
     public final double PIVOT_STATOR_CURRENT_LIMIT = 90;
     public final double PIVOT_DEPLOY_POSITION = Units.degreesToRadians(0);
-    public final double PIVOT_RACKING_POSITION = Units.degreesToRadians(50);
+    public final double PIVOT_RACKING_POSITION = Units.degreesToRadians(105);
     public final double PIVOT_STORE_POSITION = Units.degreesToRadians(105);
-    public final double DEPLOY_PIVOT_TOLERANCE = Units.degreesToRadians(20);
+    public final double DEPLOY_PIVOT_TOLERANCE = Units.degreesToRadians(10);
     public final Slot0Configs PIVOT_POSITION_GAINS =
             new Slot0Configs().withKG(0.45).withKP(15.0).withKD(0.0);
+
+    public final double PIVOT_SQUEEZE_CURRENT = 5.0;
+    public final double PIVOT_SQUEEZE_MAX_POSITION = Units.degreesToRadians(80);
+    public final Slot2Configs PIVOT_CURRENT_GAINS =
+            new Slot2Configs().withKP(0.0);
 
     // Homing for pivot - drive with a small duty cycle until the motor current spikes
     public final double PIVOT_HOMING_DUTY_CYCLE = -0.15;
     public final double PIVOT_HOMING_CURRENT_THRESHOLD =
             5.0; // Amps, threshold for detecting stall during homing
-
-    // Time to wait between cycling SHOOTING and RACKING modes (seconds)
-    public final double SHOOTING_CYCLE_TIME = 1.0;
-    public final double RACKING_CYCLE_TIME = 1.0;
 
     // =============================================================================
     // MOTOR CONFIGURATION OBJECTS
@@ -132,6 +130,7 @@ public class IntakeConstants extends MwConstants {
         pivot_config.CurrentLimits.StatorCurrentLimit = PIVOT_STATOR_CURRENT_LIMIT;
         pivot_config.CurrentLimits.StatorCurrentLimitEnable = true;
         pivot_config.Slot0 = PIVOT_POSITION_GAINS;
+        pivot_config.Slot2 = PIVOT_CURRENT_GAINS;
         PIVOT_MOTOR_CONFIG.apply(pivot_config);
     }
 }

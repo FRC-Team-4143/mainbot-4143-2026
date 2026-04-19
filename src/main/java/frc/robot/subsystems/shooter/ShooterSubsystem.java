@@ -137,7 +137,12 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
     // getIos
     @Override
     public List<SubsystemIoBase> getIos() {
-        return Arrays.asList(flywheel_, indexer_, hood_, accelerator_);
+        return Arrays.asList(
+                flywheel_, 
+                indexer_, 
+                accelerator_, 
+                hood_
+        );
     }
 
     // handleStateTransition
@@ -215,12 +220,13 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
         hood_angle_ =
                 MathUtil.clamp(hood_angle_, CONSTANTS.HOOD_MIN_ANGLE, CONSTANTS.HOOD_MAX_ANGLE);
         is_shooting_ = false;
+
         // Execute state-specific behavior
         switch (system_state_) {
             case TRACKING:
                 flywheel_.setTargetVelocity(flywheel_omega_);
                 indexer_.setTargetDutyCycle(CONSTANTS.IDLE_INDEXER_DUTY_CYCLE);
-                hood_.setTargetPositionWithFF(hood_angle_, hood_feedforward_);
+                hood_.setTargetPositionWithFF(CONSTANTS.HOOD_IDLE_POSITION, hood_feedforward_);
                 accelerator_.setTargetDutyCycle(CONSTANTS.ACCELERATOR_DUTY_CYCLE);
                 break;
             case SHOOT_WAIT:
@@ -307,7 +313,6 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
                 indexer_.setTargetDutyCycle(0);
                 hood_.setTargetPosition(CONSTANTS.HOOD_IDLE_POSITION);
                 accelerator_.setTargetDutyCycle(CONSTANTS.ACCELERATOR_DUTY_CYCLE);
-
                 break;
             case SPIN_DOWN:
                 flywheel_.setTargetVelocityMotionProfile(0);

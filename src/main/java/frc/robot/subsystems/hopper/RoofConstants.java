@@ -6,7 +6,6 @@ import com.marswars.mechanisms.MotorConfig;
 import com.marswars.mechanisms.MotorConfig.TalonMotorType;
 import com.marswars.subsystem.MwConstants;
 import com.marswars.util.PhoenixUtil;
-
 import edu.wpi.first.math.util.Units;
 
 public class RoofConstants extends MwConstants {

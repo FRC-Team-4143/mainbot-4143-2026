@@ -143,6 +143,7 @@ public class Robot extends TimedRobot {
     @Override
     public void testInit() {
         CommandScheduler.getInstance().cancelAll();
+        SwerveSubsystem.getInstance().setWantedState(SwerveStates.FIELD_CENTRIC);
         ShooterSubsystem.getInstance().setWantedState(ShooterStates.TUNING);
         FloorSubsystem.getInstance().setWantedState(FloorStates.TUNING);
         IntakeSubsystem.getInstance().setWantedState(IntakeStates.TUNING);

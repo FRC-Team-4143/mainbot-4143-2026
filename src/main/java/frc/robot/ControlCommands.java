@@ -131,7 +131,7 @@ public class ControlCommands {
                                                     == GameStates.PASS
                                             || GameStatesSubsystem.getInstance().getPassOverride())
                                     && isAbleToRack) {
-                                IntakeSubsystem.getInstance().setWantedState(IntakeStates.RACKING);
+                                IntakeSubsystem.getInstance().setWantedState(IntakeStates.SQUEEZE);
                             }
                         },
                         () -> {
@@ -183,7 +183,7 @@ public class ControlCommands {
                             FloorSubsystem.getInstance().setWantedState(FloorStates.SHOOTING);
                         },
                         () -> {
-                            ShooterSubsystem.getInstance().setWantedState(ShooterStates.TRACKING);
+                            ShooterSubsystem.getInstance().setWantedState(ShooterStates.IDLE);
                             FloorSubsystem.getInstance().setWantedState(FloorStates.IDLE);
                         })
                 .withName("Shoot Fuel Manual")
@@ -216,7 +216,7 @@ public class ControlCommands {
                             FloorSubsystem.getInstance().setWantedState(FloorStates.SHOOTING);
                         },
                         () -> {
-                            ShooterSubsystem.getInstance().setWantedState(ShooterStates.TRACKING);
+                            ShooterSubsystem.getInstance().setWantedState(ShooterStates.IDLE);
                             FloorSubsystem.getInstance().setWantedState(FloorStates.IDLE);
                         })
                 .withName("Pass Fuel Manual")
