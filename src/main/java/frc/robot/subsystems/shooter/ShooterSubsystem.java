@@ -246,7 +246,7 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
                 flywheel_.setTargetVelocity(flywheel_omega_);
                 indexer_.setTargetDutyCycle(CONSTANTS.IDLE_INDEXER_DUTY_CYCLE);
                 hood_.setTargetPositionWithFF(CONSTANTS.HOOD_IDLE_POSITION, hood_feedforward_);
-                accelerator_.setTargetDutyCycle(CONSTANTS.ACCELERATOR_DUTY_CYCLE);
+                accelerator_.setTargetDutyCycle(CONSTANTS.IDLE_ACCELERATOR_DUTY_CYCLE);
                 hopper_.setTargetDutyCycle(0);
                 break;
             case SHOOT_WAIT:
@@ -349,7 +349,7 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
                 flywheel_.setTargetVelocityMotionProfile(CONSTANTS.SHOOTER_IDLE_SPEED);
                 indexer_.setTargetDutyCycle(0);
                 hood_.setTargetPosition(CONSTANTS.HOOD_IDLE_POSITION);
-                accelerator_.setTargetDutyCycle(CONSTANTS.ACCELERATOR_DUTY_CYCLE);
+                accelerator_.setTargetDutyCycle(CONSTANTS.IDLE_ACCELERATOR_DUTY_CYCLE);
                 hopper_.setTargetDutyCycle(0);
                 break;
         }

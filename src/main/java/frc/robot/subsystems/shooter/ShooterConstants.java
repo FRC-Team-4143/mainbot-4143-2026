@@ -86,7 +86,7 @@ public class ShooterConstants extends MwConstants {
 
     // Control gains
     public final Slot1Configs FLYWHEEL_VELOCITY_GAINS =
-            new Slot1Configs().withKP(0.5).withKV(0.159).withKI(1);
+            new Slot1Configs().withKP(0.5).withKV(0.159).withKI(0.5).withKD(0.005);
 
     // =============================================================================
     // MECHANICAL CONSTANTS - INDEXER
@@ -146,7 +146,7 @@ public class ShooterConstants extends MwConstants {
 
     // Flywheel control
     public final double FLYWHEEL_FILTER_TIME_CONSTANT = 0.15; // seconds for velocity smoothing
-    public final double SHOOTER_IDLE_SPEED = 200.0; // rad/s
+    public final double SHOOTER_IDLE_SPEED = 180.0; // rad/s
 
     // Indexer control
     public final double INDEXER_DUTY_CYCLE = 1.0;
@@ -162,7 +162,7 @@ public class ShooterConstants extends MwConstants {
     public final double HOPPER_VELOCITY_TARGET = 200; // rad/s
 
     // Hood control
-    public final double HOOD_IDLE_POSITION = Units.degreesToRadians(80);
+    public final double HOOD_IDLE_POSITION = Units.degreesToRadians(88);
     public final double HOOD_HOMING_DUTY_CYCLE = 0.15;
     public final double HOOD_HOMING_CURRENT_THRESHOLD = 5.0; // Amps, stall detection threshold
 
