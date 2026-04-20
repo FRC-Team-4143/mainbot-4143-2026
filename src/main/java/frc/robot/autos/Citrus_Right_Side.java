@@ -5,12 +5,10 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.lib2026.FieldTargets;
-import frc.robot.subsystems.hopper.FloorConstants.FloorStates;
-import frc.robot.subsystems.hopper.FloorSubsystem;
-import frc.robot.subsystems.hopper.RoofConstants.RoofStates;
-import frc.robot.subsystems.hopper.RoofSubsystem;
 import frc.robot.subsystems.intake.IntakeConstants.IntakeStates;
 import frc.robot.subsystems.intake.IntakeSubsystem;
+import frc.robot.subsystems.roof.RoofConstants.RoofStates;
+import frc.robot.subsystems.roof.RoofSubsystem;
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterStates;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.swerve.SwerveConstants.SwerveStates;
@@ -75,7 +73,6 @@ public class Citrus_Right_Side extends Auto {
                 Commands.runOnce(
                         () -> {
                             ShooterSubsystem.getInstance().setWantedState(ShooterStates.SHOOT);
-                            FloorSubsystem.getInstance().setWantedState(FloorStates.SHOOTING);
                         }),
                 // Shoot for 3 seconds
                 new WaitCommand(3),
@@ -92,7 +89,6 @@ public class Citrus_Right_Side extends Auto {
                 Commands.runOnce(
                         () -> {
                             ShooterSubsystem.getInstance().setWantedState(ShooterStates.TRACKING);
-                            FloorSubsystem.getInstance().setWantedState(FloorStates.IDLE);
                             IntakeSubsystem.getInstance().setWantedState(IntakeStates.STORE);
                         }),
                 // Set the second trajectory for the second pass
@@ -123,7 +119,6 @@ public class Citrus_Right_Side extends Auto {
                 Commands.runOnce(
                         () -> {
                             ShooterSubsystem.getInstance().setWantedState(ShooterStates.SHOOT);
-                            FloorSubsystem.getInstance().setWantedState(FloorStates.SHOOTING);
                         }),
                 // Shoot for 3 seconds
                 new WaitCommand(3),

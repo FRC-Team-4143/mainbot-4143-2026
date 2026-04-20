@@ -4,9 +4,7 @@ import com.marswars.mechanisms.ArmMech;
 import com.marswars.mechanisms.RollerMech;
 import com.marswars.subsystem.MwSubsystem;
 import com.marswars.subsystem.SubsystemIoBase;
-import dev.doglog.DogLog;
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.intake.IntakeConstants.IntakeStates;
@@ -18,8 +16,6 @@ public class IntakeSubsystem extends MwSubsystem<IntakeStates, IntakeConstants> 
 
     private RollerMech roller_;
     private ArmMech pivot_;
-    private double manual_roller_duty_cycle_ = CONSTANTS.INTAKE_DUTY_CYCLE;
-    public final Timer racking_timer_ = new Timer();
 
     // getInstance
     public static IntakeSubsystem getInstance() {
@@ -63,11 +59,6 @@ public class IntakeSubsystem extends MwSubsystem<IntakeStates, IntakeConstants> 
                 "Auto Home Pivot",
                 Commands.runOnce(() -> setWantedState(IntakeStates.PIVOT_HOMING))
                         .ignoringDisable(true));
-
-        DogLog.tunable(
-                getSubsystemKey() + "/Roller/TargetDutyCycle",
-                manual_roller_duty_cycle_,
-                (v) -> manual_roller_duty_cycle_ = v);
     }
 
     // reset
@@ -85,29 +76,12 @@ public class IntakeSubsystem extends MwSubsystem<IntakeStates, IntakeConstants> 
     // handleStateTransition
     @Override
     protected void handleStateTransition(IntakeStates wantedState) {
-        // If pivot current spikes while in homing state, set the current position as
-        // home
+        // If pivot current spikes while in homing state, set current position as home
         if (pivot_.getLeaderCurrent() > CONSTANTS.PIVOT_HOMING_CURRENT_THRESHOLD
                 && system_state_ == IntakeStates.PIVOT_HOMING) {
             pivot_.setCurrentPosition(CONSTANTS.PIVOT_HOME_POSITION);
             setWantedState(IntakeStates.DEPLOYED);
             system_state_ = IntakeStates.DEPLOYED;
-        } else if (wantedState == IntakeStates.RACKING
-                && !(system_state_ == IntakeStates.RACKED_IN
-                        || system_state_ == IntakeStates.RACKED_OUT)) {
-            racking_timer_.reset();
-            racking_timer_.start();
-            system_state_ = IntakeStates.RACKED_IN;
-        } else if (wantedState == IntakeStates.RACKING
-                && (system_state_ == IntakeStates.RACKED_IN
-                        || system_state_ == IntakeStates.RACKED_OUT)
-                && racking_timer_.hasElapsed(CONSTANTS.RACKING_CYCLE_TIME)) {
-            system_state_ =
-                    (system_state_ == IntakeStates.RACKED_IN)
-                            ? IntakeStates.RACKED_OUT
-                            : IntakeStates.RACKED_IN;
-            racking_timer_.reset();
-            racking_timer_.start();
         } else if (!MathUtil.isNear(
                         CONSTANTS.PIVOT_DEPLOY_POSITION,
                         pivot_.getCurrentPosition(),
@@ -124,10 +98,7 @@ public class IntakeSubsystem extends MwSubsystem<IntakeStates, IntakeConstants> 
                 system_state_ = IntakeStates.DEPLOYED;
             }
         } else {
-            if (wantedState == IntakeStates.RACKING) {
-                return; // Don't allow directly setting RACKING state, since it is a transient state
-                // for cycling between RACKED_IN and RACKED_OUT
-            } else system_state_ = wantedState;
+            system_state_ = wantedState;
         }
     }
 
@@ -136,9 +107,8 @@ public class IntakeSubsystem extends MwSubsystem<IntakeStates, IntakeConstants> 
     public void updateLogic(double timestamp) {
         switch (system_state_) {
             case STORE:
-                roller_.setTargetDutyCycle(0.0);
+                roller_.setTargetDutyCycle(0.1);
                 pivot_.setTargetPosition(CONSTANTS.PIVOT_STORE_POSITION);
-
                 break;
             case DEPLOYING:
                 roller_.setTargetDutyCycle(0.0);
@@ -149,11 +119,11 @@ public class IntakeSubsystem extends MwSubsystem<IntakeStates, IntakeConstants> 
                 pivot_.setTargetDutyCycle(0.0);
                 break;
             case INTAKE:
-                roller_.setTargetDutyCycle(manual_roller_duty_cycle_);
+                roller_.setTargetDutyCycle(CONSTANTS.INTAKE_DUTY_CYCLE);
                 pivot_.setTargetDutyCycle(0.0);
                 break;
             case OUTTAKE:
-                roller_.setTargetDutyCycle(-manual_roller_duty_cycle_);
+                roller_.setTargetDutyCycle(-CONSTANTS.INTAKE_DUTY_CYCLE);
                 pivot_.setTargetDutyCycle(0.0);
                 break;
             case PIVOT_HOMING:
@@ -162,15 +132,13 @@ public class IntakeSubsystem extends MwSubsystem<IntakeStates, IntakeConstants> 
                 roller_.setTargetDutyCycle(0.0);
                 pivot_.setTargetDutyCycle(CONSTANTS.PIVOT_HOMING_DUTY_CYCLE);
                 break;
-            case RACKING:
-                break;
-            case RACKED_IN:
+            case SQUEEZE:
                 roller_.setTargetDutyCycle(0.0);
-                pivot_.setTargetPosition(CONSTANTS.PIVOT_RACKING_POSITION);
-                break;
-            case RACKED_OUT:
-                roller_.setTargetDutyCycle(0.0);
-                pivot_.setTargetPosition(CONSTANTS.PIVOT_DEPLOY_POSITION);
+                if (pivot_.getCurrentPosition() > CONSTANTS.PIVOT_SQUEEZE_MAX_POSITION) {
+                    pivot_.setTargetPosition(CONSTANTS.PIVOT_STORE_POSITION);
+                } else {
+                    pivot_.setTargetCurrent(CONSTANTS.PIVOT_SQUEEZE_CURRENT);
+                }
                 break;
             case TUNING:
                 // No default behavior for tuning mode
