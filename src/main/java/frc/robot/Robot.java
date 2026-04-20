@@ -17,7 +17,9 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.autos.CitrusSynergy;
 import frc.robot.autos.CitrusSynergyFarBump;
 import frc.robot.autos.Citrus_Left_Side;
+import frc.robot.autos.Citrus_Left_Side_Trench;
 import frc.robot.autos.Citrus_Right_Side;
+import frc.robot.autos.Citrus_Right_Side_Trench;
 import frc.robot.autos.Shoot;
 import frc.robot.autos.Slop_Auto;
 import frc.robot.lib2026.FieldConstants;
@@ -62,7 +64,9 @@ public class Robot extends TimedRobot {
                         new Shoot(),
                         new CitrusSynergy(),
                         new CitrusSynergyFarBump(),
-                        new Slop_Auto()
+                        new Slop_Auto(),
+                        new Citrus_Left_Side_Trench(),
+                        new Citrus_Right_Side_Trench()
                         // new TestAuto()
                         );
 
