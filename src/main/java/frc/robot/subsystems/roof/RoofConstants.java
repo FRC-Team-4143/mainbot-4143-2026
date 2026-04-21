@@ -21,6 +21,7 @@ public class RoofConstants extends MwConstants {
         DOWN,
         /** Elevator is climbing */
         CLIMB,
+        /** Elevator is in a tuning mode (e.g., for testing or calibration) */
         TUNING
     }
 
@@ -37,9 +38,7 @@ public class RoofConstants extends MwConstants {
 
     public final boolean ELEVATOR_MOTOR_INVERTED = true;
     public final double ELEVATOR_GEAR_RATIO =
-            5.0
-                    * (48.0 / 22.0)
-                    * (32.0 / 48.0); // Total gear ratio from motor to elevator extension
+            5.0 * (32.0 / 22.0); // Total gear ratio from motor to elevator extension
     public final double ELEVATOR_DRUM_RADIUS = Units.inchesToMeters(0.878);
     public final double ELEVATOR_CARRIAGE_MASS_KG = Units.lbsToKilograms(3.44);
     public final double ELEVATOR_MAX_EXTENSION_METERS =
