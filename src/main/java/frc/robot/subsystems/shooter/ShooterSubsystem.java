@@ -286,7 +286,7 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
                 break;
             case SHOOT:
                 flywheel_.setTargetVelocity(flywheel_omega_);
-                indexer_.setTargetDutyCycle(CONSTANTS.INDEXER_DUTY_CYCLE);
+                indexer_.setTargetVelocity(CONSTANTS.INDEXER_VELOCITY);
                 hood_.setTargetPositionWithFF(hood_angle_, hood_feedforward_);
                 SwerveSubsystem.getInstance()
                         .setDesiredRotationLockCORWithFF(
@@ -300,34 +300,34 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
                                 flywheel_.getCurrentVelocity()
                                         > flywheel_omega_
                                                 * CONSTANTS.SHOOTING_DETECTION_VELOCITY_FACTOR);
-                accelerator_.setTargetDutyCycle(CONSTANTS.ACCELERATOR_DUTY_CYCLE);
+                accelerator_.setTargetVelocity(CONSTANTS.ACCELERATOR_VELOCITY);
                 hopper_.setTargetVelocity(CONSTANTS.HOPPER_VELOCITY_TARGET);
                 break;
             case MANUAL_HUB:
                 // Manual hub shooting mode - uses fixed setpoints for hub shots
                 flywheel_.setTargetVelocity(CONSTANTS.FLYWHEEL_MANUAL_HUB_VELOCITY + flywheel_adj_);
-                indexer_.setTargetDutyCycle(CONSTANTS.INDEXER_DUTY_CYCLE);
+                indexer_.setTargetVelocity(CONSTANTS.INDEXER_VELOCITY);
                 hood_.setTargetPosition(CONSTANTS.HOOD_MANUAL_HUB_ANGLE + hood_adj_);
                 is_shooting_ =
                         is_shooting_debouncer.calculate(
                                 flywheel_.getCurrentVelocity()
                                         > (CONSTANTS.FLYWHEEL_MANUAL_HUB_VELOCITY + flywheel_adj_)
                                                 * CONSTANTS.SHOOTING_DETECTION_VELOCITY_FACTOR);
-                accelerator_.setTargetDutyCycle(CONSTANTS.ACCELERATOR_DUTY_CYCLE);
+                accelerator_.setTargetVelocity(CONSTANTS.ACCELERATOR_VELOCITY);
                 hopper_.setTargetVelocity(CONSTANTS.HOPPER_VELOCITY_TARGET);
                 break;
             case MANUAL_PASS:
                 // Manual pass mode - uses fixed setpoints for passing
                 flywheel_.setTargetVelocity(
                         CONSTANTS.FLYWHEEL_MANUAL_PASS_VELOCITY + flywheel_adj_);
-                indexer_.setTargetDutyCycle(CONSTANTS.INDEXER_DUTY_CYCLE);
+                indexer_.setTargetVelocity(CONSTANTS.INDEXER_VELOCITY);
                 hood_.setTargetPosition(CONSTANTS.HOOD_MANUAL_PASS_ANGLE + hood_adj_);
                 is_shooting_ =
                         is_shooting_debouncer.calculate(
                                 flywheel_.getCurrentVelocity()
                                         > (CONSTANTS.FLYWHEEL_MANUAL_PASS_VELOCITY + flywheel_adj_)
                                                 * CONSTANTS.SHOOTING_DETECTION_VELOCITY_FACTOR);
-                accelerator_.setTargetDutyCycle(CONSTANTS.ACCELERATOR_DUTY_CYCLE);
+                accelerator_.setTargetVelocity(CONSTANTS.ACCELERATOR_VELOCITY);
                 hopper_.setTargetVelocity(CONSTANTS.HOPPER_VELOCITY_TARGET);
                 break;
             case SPIN_DOWN:

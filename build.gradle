@@ -121,7 +121,7 @@ dependencies {
 
     testImplementation 'org.junit.jupiter:junit-jupiter:5.10.1'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-    implementation 'com.github.frc-team-4143:mw-lib-java:26.14.1'
+    implementation 'com.github.frc-team-4143:mw-lib-java:26.14.2'
     //implementation name: 'MW-Lib', version: '', ext: 'jar'
 }
 

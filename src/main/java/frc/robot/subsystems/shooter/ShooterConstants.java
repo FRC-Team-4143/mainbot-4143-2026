@@ -95,7 +95,7 @@ public class ShooterConstants extends MwConstants {
     public final boolean INDEXER_INVERTED = true;
     public final double INDEXER_GEAR_RATIO = 28.0 / 11.0;
     public final Slot1Configs INDEXER_VELOCITY_GAINS =
-            new Slot1Configs().withKD(0.01).withKI(1).withKP(0.5).withKV(0.129);
+            new Slot1Configs().withKD(0.01).withKP(1).withKV(0.25);
 
     // =============================================================================
     // MECHANICAL CONSTANTS - ACCELERATOR
@@ -104,7 +104,7 @@ public class ShooterConstants extends MwConstants {
     public final boolean ACCELERATOR_INVERTED = true;
     public final double ACCELERATOR_GEAR_RATIO = (40.0 / 11.0) * (23.0 / 26.0);
     public final Slot1Configs ACCELERATOR_VELOCITY_GAINS =
-            new Slot1Configs().withKD(0.0).withKI(0).withKP(0.0).withKV(0.0);
+            new Slot1Configs().withKP(1).withKV(0.318);
 
     // =============================================================================
     // MECHANICAL CONSTANTS - HOPPER
@@ -151,12 +151,12 @@ public class ShooterConstants extends MwConstants {
     // Indexer control
     public final double INDEXER_DUTY_CYCLE = 1.0;
     public final double IDLE_INDEXER_DUTY_CYCLE = 0.0;
-    public final double INDEXER_VELOCITY = 250; // rad/s
+    public final double INDEXER_VELOCITY = 230; // rad/s
 
     // Accelerator control
     public final double ACCELERATOR_DUTY_CYCLE = 1.0;
     public final double IDLE_ACCELERATOR_DUTY_CYCLE = 0.0;
-    public final double ACCELERATOR_VELOCITY = 300; // rad/s
+    public final double ACCELERATOR_VELOCITY = 220; // rad/s
 
     // Hopper control
     public final double HOPPER_VELOCITY_TARGET = 200; // rad/s
@@ -219,29 +219,29 @@ public class ShooterConstants extends MwConstants {
 
         // Populate hood angle map (distance in meters -> angle in radians)
         // Empirically determined values from testing
-        HUB_LAUNCH_CALCULATOR.addHoodAnglePoint(0.75, 1.5);
+        HUB_LAUNCH_CALCULATOR.addHoodAnglePoint(0.75, 1.55);
         HUB_LAUNCH_CALCULATOR.addHoodAnglePoint(1.34, 1.4);
-        HUB_LAUNCH_CALCULATOR.addHoodAnglePoint(1.78, 1.35);
-        HUB_LAUNCH_CALCULATOR.addHoodAnglePoint(2.17, 1.32);
-        HUB_LAUNCH_CALCULATOR.addHoodAnglePoint(2.81, 1.32);
-        HUB_LAUNCH_CALCULATOR.addHoodAnglePoint(3.82, 1.2);
+        HUB_LAUNCH_CALCULATOR.addHoodAnglePoint(1.78, 1.38);
+        HUB_LAUNCH_CALCULATOR.addHoodAnglePoint(2.17, 1.335);
+        HUB_LAUNCH_CALCULATOR.addHoodAnglePoint(2.81, 1.335);
+        HUB_LAUNCH_CALCULATOR.addHoodAnglePoint(3.82, 1.23);
         HUB_LAUNCH_CALCULATOR.addHoodAnglePoint(4.40, 1.2);
         HUB_LAUNCH_CALCULATOR.addHoodAnglePoint(4.77, 1.15);
         HUB_LAUNCH_CALCULATOR.addHoodAnglePoint(5.60, 1.12);
-        HUB_LAUNCH_CALCULATOR.addHoodAnglePoint(6.50, 1.15);
+        HUB_LAUNCH_CALCULATOR.addHoodAnglePoint(6.50, 1.1);
 
         // Populate flywheel speed map (distance in meters -> speed in rad/s)
         // Empirically determined values from testing
-        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(0.75, 140);
+        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(0.75, 145);
         HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(1.34, 140);
         HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(1.78, 160);
         HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(2.17, 160);
-        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(2.81, 175);
-        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(3.82, 184);
-        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(4.40, 196);
-        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(4.77, 196);
-        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(5.60, 225); 
-        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(6.50, 245); 
+        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(2.81, 170);
+        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(3.82, 182);
+        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(4.40, 188);
+        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(4.77, 190);
+        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(5.60, 220);
+        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(6.50, 250);
 
         // Populate time of flight map (distance in meters -> time in seconds)
         // Empirically determined values from testing
@@ -285,7 +285,7 @@ public class ShooterConstants extends MwConstants {
         INDEXER_MOTOR_CONFIG.canbus_name = "rio";
         TalonFXConfiguration indexer_leader_config = new TalonFXConfiguration();
         indexer_leader_config.MotorOutput.Inverted = PhoenixUtil.toInvertedValue(INDEXER_INVERTED);
-        indexer_leader_config.Voltage.PeakForwardVoltage = 8.0;
+        // indexer_leader_config.Voltage.PeakForwardVoltage = 8.0;
         indexer_leader_config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
         indexer_leader_config.Slot1 = INDEXER_VELOCITY_GAINS;
         INDEXER_MOTOR_CONFIG.apply(indexer_leader_config);
@@ -295,7 +295,7 @@ public class ShooterConstants extends MwConstants {
         ACCELERATOR_MOTOR_CONFIG.canbus_name = "rio";
         TalonFXConfiguration accelerator_config = new TalonFXConfiguration();
         accelerator_config.MotorOutput.Inverted = PhoenixUtil.toInvertedValue(ACCELERATOR_INVERTED);
-        accelerator_config.Voltage.PeakForwardVoltage = 8.0;
+        // accelerator_config.Voltage.PeakForwardVoltage = 8.0;
         accelerator_config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
         accelerator_config.Slot1 = ACCELERATOR_VELOCITY_GAINS;
         ACCELERATOR_MOTOR_CONFIG.apply(accelerator_config);

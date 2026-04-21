@@ -282,4 +282,16 @@ public class ControlCommands {
                 .withName("Toggle Racking")
                 .ignoringDisable(true);
     }
+
+    static Command squeezeCommand() {
+        return Commands.startEnd(
+                        () -> {
+                            IntakeSubsystem.getInstance().setWantedState(IntakeStates.SQUEEZE);
+                        },
+                        () -> {
+                            IntakeSubsystem.getInstance().setWantedState(IntakeStates.DEPLOYED);
+                        })
+                .withName("Squeeze")
+                .ignoringDisable(true);
+    }
 }
