@@ -97,6 +97,9 @@ public class IntakeSubsystem extends MwSubsystem<IntakeStates, IntakeConstants> 
                     CONSTANTS.DEPLOY_PIVOT_TOLERANCE)) {
                 system_state_ = IntakeStates.DEPLOYED;
             }
+        } else if (wantedState == IntakeStates.SQUEEZE
+                && pivot_.getCurrentPosition() > CONSTANTS.PIVOT_SQUEEZE_MAX_POSITION) {
+            system_state_ = IntakeStates.STORE;
         } else {
             system_state_ = wantedState;
         }
@@ -134,11 +137,7 @@ public class IntakeSubsystem extends MwSubsystem<IntakeStates, IntakeConstants> 
                 break;
             case SQUEEZE:
                 roller_.setTargetDutyCycle(0.0);
-                if (pivot_.getCurrentPosition() > CONSTANTS.PIVOT_SQUEEZE_MAX_POSITION) {
-                    pivot_.setTargetPosition(CONSTANTS.PIVOT_STORE_POSITION);
-                } else {
-                    pivot_.setTargetCurrent(CONSTANTS.PIVOT_SQUEEZE_CURRENT);
-                }
+                pivot_.setTargetCurrent(CONSTANTS.PIVOT_SQUEEZE_CURRENT);
                 break;
             case TUNING:
                 // No default behavior for tuning mode
