@@ -240,8 +240,8 @@ public class ShooterConstants extends MwConstants {
         HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(3.82, 182);
         HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(4.40, 188);
         HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(4.77, 190);
-        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(5.60, 220); 
-        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(6.50, 250); 
+        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(5.60, 220);
+        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(6.50, 250);
 
         // Populate time of flight map (distance in meters -> time in seconds)
         // Empirically determined values from testing
@@ -285,7 +285,7 @@ public class ShooterConstants extends MwConstants {
         INDEXER_MOTOR_CONFIG.canbus_name = "rio";
         TalonFXConfiguration indexer_leader_config = new TalonFXConfiguration();
         indexer_leader_config.MotorOutput.Inverted = PhoenixUtil.toInvertedValue(INDEXER_INVERTED);
-        //indexer_leader_config.Voltage.PeakForwardVoltage = 8.0;
+        // indexer_leader_config.Voltage.PeakForwardVoltage = 8.0;
         indexer_leader_config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
         indexer_leader_config.Slot1 = INDEXER_VELOCITY_GAINS;
         INDEXER_MOTOR_CONFIG.apply(indexer_leader_config);
@@ -295,7 +295,7 @@ public class ShooterConstants extends MwConstants {
         ACCELERATOR_MOTOR_CONFIG.canbus_name = "rio";
         TalonFXConfiguration accelerator_config = new TalonFXConfiguration();
         accelerator_config.MotorOutput.Inverted = PhoenixUtil.toInvertedValue(ACCELERATOR_INVERTED);
-        //accelerator_config.Voltage.PeakForwardVoltage = 8.0;
+        // accelerator_config.Voltage.PeakForwardVoltage = 8.0;
         accelerator_config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
         accelerator_config.Slot1 = ACCELERATOR_VELOCITY_GAINS;
         ACCELERATOR_MOTOR_CONFIG.apply(accelerator_config);
