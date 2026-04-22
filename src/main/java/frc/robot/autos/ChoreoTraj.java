@@ -38,6 +38,13 @@ public record ChoreoTraj(
 	    new Pose2d(2.887, 5.604, Rotation2d.fromRadians(2.165)),
 	    new Pose2d(2.872, 5.535, Rotation2d.fromRadians(1.584))
 	);
+	public static final ChoreoTraj CitrusLeftSideSecondPassBump = new ChoreoTraj(
+	    "CitrusLeftSideSecondPassBump",
+	    OptionalInt.empty(),
+	    7.13182,
+	    new Pose2d(2.887, 5.604, Rotation2d.fromRadians(2.165)),
+	    new Pose2d(2.872, 5.535, Rotation2d.fromRadians(1.584))
+	);
 	public static final ChoreoTraj CitrusRightSide = new ChoreoTraj(
 	    "CitrusRightSide",
 	    OptionalInt.empty(),
@@ -49,6 +56,13 @@ public record ChoreoTraj(
 	    "CitrusRightSideSecondPass",
 	    OptionalInt.empty(),
 	    5.85297,
+	    new Pose2d(2.911, 2.329, Rotation2d.fromRadians(-1.772)),
+	    new Pose2d(2.779, 2.585, Rotation2d.fromRadians(-1.545))
+	);
+	public static final ChoreoTraj CitrusRightSideSecondPassBump = new ChoreoTraj(
+	    "CitrusRightSideSecondPassBump",
+	    OptionalInt.empty(),
+	    6.19094,
 	    new Pose2d(2.911, 2.329, Rotation2d.fromRadians(-1.772)),
 	    new Pose2d(2.779, 2.585, Rotation2d.fromRadians(-1.545))
 	);
@@ -94,27 +108,6 @@ public record ChoreoTraj(
 	    new Pose2d(1.532, 5.406, Rotation2d.fromRadians(2.678)),
 	    new Pose2d(0.87, 5.724, Rotation2d.fromRadians(2.678))
 	);
-	public static final ChoreoTraj TestPath = new ChoreoTraj(
-	    "TestPath",
-	    OptionalInt.empty(),
-	    4.1157,
-	    new Pose2d(2.5, 1, Rotation2d.fromRadians(0)),
-	    new Pose2d(2.5, 5, Rotation2d.fromRadians(0))
-	);
-	public static final ChoreoTraj CitrusRightSideSecondPassBump = new ChoreoTraj(
-	    "CitrusRightSideSecondPassBump",
-	    OptionalInt.empty(),
-	    6.19094,
-	    new Pose2d(2.911, 2.329, Rotation2d.fromRadians(-1.772)),
-	    new Pose2d(2.779, 2.585, Rotation2d.fromRadians(-1.545))
-	);
-	public static final ChoreoTraj CitrusLeftSideSecondPassBump = new ChoreoTraj(
-	    "CitrusLeftSideSecondPassBump",
-	    OptionalInt.empty(),
-	    7.13182,
-	    new Pose2d(2.887, 5.604, Rotation2d.fromRadians(2.165)),
-	    new Pose2d(2.872, 5.535, Rotation2d.fromRadians(1.584))
-	);
 	public static final ChoreoTraj SlopAutoClimb = new ChoreoTraj(
 	    "SlopAutoClimb",
 	    OptionalInt.empty(),
@@ -129,47 +122,54 @@ public record ChoreoTraj(
 	    new Pose2d(3.558, 4.062, Rotation2d.fromRadians(3.118)),
 	    new Pose2d(2.436, 5.948, Rotation2d.fromRadians(2.388))
 	);
+	public static final ChoreoTraj TestPath = new ChoreoTraj(
+	    "TestPath",
+	    OptionalInt.empty(),
+	    4.1157,
+	    new Pose2d(2.5, 1, Rotation2d.fromRadians(0)),
+	    new Pose2d(2.5, 5, Rotation2d.fromRadians(0))
+	);
 	public static final ChoreoTraj CitrusLeftSideTrench = new ChoreoTraj(
 	    "CitrusLeftSideTrench",
 	    OptionalInt.empty(),
-	    6.42369,
+	    6.72258,
 	    new Pose2d(4.416, 7.48, Rotation2d.fromRadians(-1.571)),
-	    new Pose2d(2.872, 5.535, Rotation2d.fromRadians(2.503))
+	    new Pose2d(3.134, 7.36, Rotation2d.fromRadians(2.005))
 	);
 	public static final ChoreoTraj CitrusLeftSideSecondPassTrench = new ChoreoTraj(
-	    "CitrusLeftSideSecondPassTrench", 
-		OptionalInt.empty(),
-	    6.79221,
-	    new Pose2d(2.887, 5.604, Rotation2d.fromRadians(2.165)),
-	    new Pose2d(2.872, 5.535, Rotation2d.fromRadians(1.584))
-	);
-	public static final ChoreoTraj CitrusRightSideTrench = new ChoreoTraj(
-	    "CitrusRightSideTrench",
+	    "CitrusLeftSideSecondPassTrench",
 	    OptionalInt.empty(),
-	    6.23673,
-	    new Pose2d(4.47, 0.64, Rotation2d.fromRadians(1.571)),
-	    new Pose2d(2.755, 2.534, Rotation2d.fromRadians(-2.467))
-	);
-	public static final ChoreoTraj CitrusRightSideSecondPassTrench = new ChoreoTraj(
-	    "CitrusRightSideSecondPassTrench",
-	    OptionalInt.empty(),
-	    5.85297,
-	    new Pose2d(2.911, 2.329, Rotation2d.fromRadians(-1.772)),
-	    new Pose2d(2.779, 2.585, Rotation2d.fromRadians(-1.545))
-	);
-	public static final ChoreoTraj CitrusRightSideSecondPassBumpTrench = new ChoreoTraj(
-	    "CitrusRightSideSecondPassBumpTrench",
-	    OptionalInt.empty(),
-	    6.19094,
-	    new Pose2d(2.911, 2.329, Rotation2d.fromRadians(-1.772)),
-	    new Pose2d(2.779, 2.585, Rotation2d.fromRadians(-1.545))
+	    6.87047,
+	    new Pose2d(3.134, 7.36, Rotation2d.fromRadians(1.997)),
+	    new Pose2d(3.134, 7.36, Rotation2d.fromRadians(1.989))
 	);
 	public static final ChoreoTraj CitrusLeftSideSecondPassBumpTrench = new ChoreoTraj(
 	    "CitrusLeftSideSecondPassBumpTrench",
 	    OptionalInt.empty(),
-	    7.13182,
-	    new Pose2d(2.887, 5.604, Rotation2d.fromRadians(2.165)),
-	    new Pose2d(2.872, 5.535, Rotation2d.fromRadians(1.584))
+	    7.22273,
+	    new Pose2d(3.134, 7.36, Rotation2d.fromRadians(1.907)),
+	    new Pose2d(3.134, 7.36, Rotation2d.fromRadians(1.951))
+	);
+	public static final ChoreoTraj CitrusRightSideTrench = new ChoreoTraj(
+	    "CitrusRightSideTrench",
+	    OptionalInt.empty(),
+	    6.45942,
+	    new Pose2d(4.47, 0.64, Rotation2d.fromRadians(1.571)),
+	    new Pose2d(3.058, 0.782, Rotation2d.fromRadians(-2.09))
+	);
+	public static final ChoreoTraj CitrusRightSideSecondPassTrench = new ChoreoTraj(
+	    "CitrusRightSideSecondPassTrench",
+	    OptionalInt.empty(),
+	    5.90729,
+	    new Pose2d(3.058, 0.782, Rotation2d.fromRadians(-2.09)),
+	    new Pose2d(3.058, 0.782, Rotation2d.fromRadians(-2.09))
+	);
+	public static final ChoreoTraj CitrusRightSideSecondPassBumpTrench = new ChoreoTraj(
+	    "CitrusRightSideSecondPassBumpTrench",
+	    OptionalInt.empty(),
+	    6.23479,
+	    new Pose2d(3.058, 0.782, Rotation2d.fromRadians(-2.09)),
+	    new Pose2d(3.058, 0.782, Rotation2d.fromRadians(-2.09))
 	);
 
     /**
@@ -179,23 +179,25 @@ public record ChoreoTraj(
     public static final Map<String, ChoreoTraj> ALL_TRAJECTORIES = Map.ofEntries(
     	Map.entry("CitrusLeftSide", CitrusLeftSide),
 		Map.entry("CitrusLeftSideSecondPass", CitrusLeftSideSecondPass),
+		Map.entry("CitrusLeftSideSecondPassBump", CitrusLeftSideSecondPassBump),
 		Map.entry("CitrusRightSide", CitrusRightSide),
 		Map.entry("CitrusRightSideSecondPass", CitrusRightSideSecondPass),
+		Map.entry("CitrusRightSideSecondPassBump", CitrusRightSideSecondPassBump),
 		Map.entry("CitrusSynergyFarBumpP2", CitrusSynergyFarBumpP2),
 		Map.entry("CitrusSynergyFarBumpP3", CitrusSynergyFarBumpP3),
 		Map.entry("CitrusSynergyP1", CitrusSynergyP1),
 		Map.entry("CitrusSynergyP2", CitrusSynergyP2),
 		Map.entry("CitrusSynergyP3", CitrusSynergyP3),
 		Map.entry("CitrusSynergyP4", CitrusSynergyP4),
-		Map.entry("TestPath", TestPath),
-		Map.entry("CitrusRightSideSecondPassBump", CitrusRightSideSecondPassBump),
-		Map.entry("CitrusLeftSideSecondPassBump", CitrusLeftSideSecondPassBump),
 		Map.entry("SlopAutoClimb", SlopAutoClimb),
 		Map.entry("SlopAutoStart", SlopAutoStart),
+		Map.entry("TestPath", TestPath),
 		Map.entry("CitrusLeftSideTrench", CitrusLeftSideTrench),
 		Map.entry("CitrusLeftSideSecondPassTrench", CitrusLeftSideSecondPassTrench),
+		Map.entry("CitrusLeftSideSecondPassBumpTrench", CitrusLeftSideSecondPassBumpTrench),
 		Map.entry("CitrusRightSideTrench", CitrusRightSideTrench),
-		Map.entry("CitrusRightSideSecondPassTrench", CitrusRightSideSecondPassTrench)
+		Map.entry("CitrusRightSideSecondPassTrench", CitrusRightSideSecondPassTrench),
+		Map.entry("CitrusRightSideSecondPassBumpTrench", CitrusRightSideSecondPassBumpTrench)
     );
 
     /**

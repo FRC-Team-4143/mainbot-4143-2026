@@ -335,7 +335,9 @@ public class FieldConstants {
         OFFICIAL("2026-official"),
         NONE("2026-none");
 
+        @SuppressWarnings("unused")
         private final String name;
+        @SuppressWarnings("unused")
         private volatile AprilTagFieldLayout layout;
         private volatile String layoutString;
 

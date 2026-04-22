@@ -99,11 +99,13 @@ public class Citrus_Right_Side_Trench extends Auto {
                 new ConditionalCommand(
                         SwerveSubsystem.getInstance()
                                 .setDesiredChoreoTrajectoryCommand(
-                                        getTrajectory(ChoreoTraj.CitrusRightSideSecondPassTrench.name())),
+                                        getTrajectory(
+                                                ChoreoTraj.CitrusRightSideSecondPassTrench.name())),
                         SwerveSubsystem.getInstance()
                                 .setDesiredChoreoTrajectoryCommand(
                                         getTrajectory(
-                                                ChoreoTraj.CitrusRightSideSecondPassBumpTrench.name())),
+                                                ChoreoTraj.CitrusRightSideSecondPassBumpTrench
+                                                        .name())),
                         RoofSubsystem.getInstance()::isDown),
                 // Start Choreo following
                 Commands.startEnd(
