@@ -337,8 +337,10 @@ public class FieldConstants {
 
         @SuppressWarnings("unused")
         private final String name;
+
         @SuppressWarnings("unused")
         private volatile AprilTagFieldLayout layout;
+
         private volatile String layoutString;
 
         AprilTagLayoutType(String name) {

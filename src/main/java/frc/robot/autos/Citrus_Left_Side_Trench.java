@@ -150,6 +150,5 @@ public class Citrus_Left_Side_Trench extends Auto {
                         () -> {
                             RoofSubsystem.getInstance().setWantedState(RoofStates.DOWN);
                         }));
-
-                }
+    }
 }
