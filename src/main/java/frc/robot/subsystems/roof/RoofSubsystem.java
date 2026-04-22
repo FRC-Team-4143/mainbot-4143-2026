@@ -3,6 +3,10 @@ package frc.robot.subsystems.roof;
 import com.marswars.mechanisms.ElevatorMech;
 import com.marswars.subsystem.MwSubsystem;
 import com.marswars.subsystem.SubsystemIoBase;
+
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.subsystems.intake.IntakeConstants.IntakeStates;
 import frc.robot.subsystems.roof.RoofConstants.RoofStates;
 import java.util.Arrays;
 import java.util.List;
@@ -34,6 +38,12 @@ public class RoofSubsystem extends MwSubsystem<RoofStates, RoofConstants> {
                         CONSTANTS.ELEVATOR_CARRIAGE_MASS_KG,
                         CONSTANTS.ELEVATOR_MAX_EXTENSION_METERS,
                         CONSTANTS.ELEVATOR_RIGGING_RATIO);
+        elevator_.setCurrentPosition(0);
+        SmartDashboard.putData("Home Roof",Commands.runOnce(()-> elevator_.setCurrentPosition(CONSTANTS.ELEVATOR_HOME_POSITION)));
+        SmartDashboard.putData(
+                "Auto Home Roof",
+                Commands.runOnce(() -> setWantedState(RoofStates.ROOF_HOMING))
+                        .ignoringDisable(true));
     }
 
     // reset
@@ -48,10 +58,23 @@ public class RoofSubsystem extends MwSubsystem<RoofStates, RoofConstants> {
         return Arrays.asList(elevator_);
     }
 
-    // handleStateTransition
-    // @Override
-    // public void handleStateTransition(RoofStates wanted) {
-    // }
+    //handleStateTransition
+    @Override
+    public void handleStateTransition(RoofStates wanted) {
+        if (elevator_.getLeaderCurrent() > CONSTANTS.ELEVATOR_HOMING_CURRENT_THRESHOLD
+                && system_state_ == RoofStates.ROOF_HOMING) {
+            elevator_.setCurrentPosition(CONSTANTS.ELEVATOR_HOME_POSITION);
+            setWantedState(RoofStates.DOWN);
+            system_state_ = RoofStates.DOWN;
+        }else if(system_state_ != RoofStates.CLIMB && wanted == RoofStates.CLIMB){
+            system_state_ = wanted;
+            elevator_.configSlot(0,CONSTANTS.ELEVATOR_CLIMB_POSITION_GAINS);
+        }else if(wanted != RoofStates.CLIMB && system_state_ == RoofStates.CLIMB){
+            system_state_ = wanted;
+            elevator_.configSlot(0,CONSTANTS.ELEVATOR_POSITION_GAINS);
+        }
+        system_state_= wanted;
+    }
 
     // updateLogic
     @Override
@@ -64,6 +87,10 @@ public class RoofSubsystem extends MwSubsystem<RoofStates, RoofConstants> {
                 elevator_.setTargetPosition(CONSTANTS.ELEVATOR_DOWN_POSITION_METERS);
                 break;
             case CLIMB:
+                elevator_.setTargetPosition(CONSTANTS.ELEVATOR_DOWN_POSITION_METERS);
+                break;
+            case ROOF_HOMING:
+                elevator_.setTargetDutyCycle(CONSTANTS.ELEVATOR_HOMING_DUTY_CYCLE);
                 break;
             case TUNING:
                 break;
