@@ -1,15 +1,15 @@
 package frc.robot.subsystems.roof;
 
+import java.util.Arrays;
+import java.util.List;
+
 import com.marswars.mechanisms.ElevatorMech;
 import com.marswars.subsystem.MwSubsystem;
 import com.marswars.subsystem.SubsystemIoBase;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Commands;
-import frc.robot.subsystems.intake.IntakeConstants.IntakeStates;
 import frc.robot.subsystems.roof.RoofConstants.RoofStates;
-import java.util.Arrays;
-import java.util.List;
 
 public class RoofSubsystem extends MwSubsystem<RoofStates, RoofConstants> {
     private static RoofSubsystem instance_ = null;
@@ -72,6 +72,9 @@ public class RoofSubsystem extends MwSubsystem<RoofStates, RoofConstants> {
         }else if(wanted != RoofStates.CLIMB && system_state_ == RoofStates.CLIMB){
             system_state_ = wanted;
             elevator_.configSlot(0,CONSTANTS.ELEVATOR_POSITION_GAINS);
+        } else if (wanted == RoofStates.SQUEEZE
+                && elevator_.getCurrentPosition() < CONSTANTS.ELEVATOR_SQUEEZE_MIN_POSITION) {
+            system_state_ = RoofStates.DOWN;
         }
         system_state_= wanted;
     }
@@ -92,6 +95,9 @@ public class RoofSubsystem extends MwSubsystem<RoofStates, RoofConstants> {
             case ROOF_HOMING:
                 elevator_.setTargetDutyCycle(CONSTANTS.ELEVATOR_HOMING_DUTY_CYCLE);
                 break;
+            case SQUEEZE:
+                elevator_.setTargetCurrent(CONSTANTS.ELEVATOR_SQUEEZE_CURRENT);
+                break;
             case TUNING:
                 break;
         }
@@ -103,5 +109,13 @@ public class RoofSubsystem extends MwSubsystem<RoofStates, RoofConstants> {
 
     public boolean isDown() {
         return elevator_.getCurrentPosition() < (CONSTANTS.ELEVATOR_DOWN_POSITION_METERS + 0.02);
+    }
+
+    public RoofStates getIdlStates() {
+        if (elevator_.getCurrentPosition() < CONSTANTS.ELEVATOR_SQUEEZE_MIN_POSITION) {
+            return RoofStates.DOWN;
+        } else {
+            return RoofStates.UP;
+        }
     }
 }

@@ -8,6 +8,7 @@ import com.marswars.mechanisms.MotorConfig;
 import com.marswars.mechanisms.MotorConfig.TalonMotorType;
 import com.marswars.subsystem.MwConstants;
 import com.marswars.util.PhoenixUtil;
+
 import edu.wpi.first.math.util.Units;
 
 public class RoofConstants extends MwConstants {
@@ -25,6 +26,8 @@ public class RoofConstants extends MwConstants {
         CLIMB,
         /**Elevator homing */
         ROOF_HOMING,
+        /** */
+        SQUEEZE,
         /** Elevator is in a tuning mode (e.g., for testing or calibration) */
         TUNING
     }
@@ -57,6 +60,10 @@ public class RoofConstants extends MwConstants {
     // UP state
     public final double ELEVATOR_DOWN_POSITION_METERS = 0.005; // Target position for the elevator when in the
     // DOWN state
+
+    //Squeeze Constants
+    public final double ELEVATOR_SQUEEZE_CURRENT = 10.0;
+    public final double ELEVATOR_SQUEEZE_MIN_POSITION = ELEVATOR_DOWN_POSITION_METERS;
 
 
     // Homing for elevator - drive with a small duty cycle until the motor current spikes
