@@ -1,6 +1,7 @@
 package frc.robot.subsystems.roof;
 
 import com.ctre.phoenix6.configs.Slot0Configs;
+import com.ctre.phoenix6.configs.Slot2Configs;
 import com.ctre.phoenix6.configs.SlotConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -8,6 +9,7 @@ import com.marswars.mechanisms.MotorConfig;
 import com.marswars.mechanisms.MotorConfig.TalonMotorType;
 import com.marswars.subsystem.MwConstants;
 import com.marswars.util.PhoenixUtil;
+
 import edu.wpi.first.math.util.Units;
 
 public class RoofConstants extends MwConstants {
@@ -21,10 +23,14 @@ public class RoofConstants extends MwConstants {
         UP,
         /** Elevator is at the bottom */
         DOWN,
+        /** Elevator is in a safety-down position which is farther than the hard stop */
+        SAFETY_DOWN,
         /** Elevator is climbing */
         CLIMB,
         /**Elevator homing */
         ROOF_HOMING,
+        /** */
+        SQUEEZE,
         /** Elevator is in a tuning mode (e.g., for testing or calibration) */
         TUNING
     }
@@ -50,6 +56,7 @@ public class RoofConstants extends MwConstants {
     public final double ELEVATOR_HOME_POSITION = 0.0;
     public final SlotConfigs ELEVATOR_POSITION_GAINS =
             new SlotConfigs().withKV(0.0).withKP(4.8).withKI(0.0).withKD(0.0).withKG(0.0);
+    public final SlotConfigs ELEVATOR_CURRENT_GAINS = new SlotConfigs().withKI(0.01666);
     public final SlotConfigs ELEVATOR_CLIMB_POSITION_GAINS = new SlotConfigs().withKP(4.8).withKI(0.0).withKD(0.0);
     public final double ELEVATOR_RIGGING_RATIO =
             1.0; // Ratio of motor rotation to elevator extension (depends on pulley system)
@@ -57,6 +64,13 @@ public class RoofConstants extends MwConstants {
     // UP state
     public final double ELEVATOR_DOWN_POSITION_METERS = 0.005; // Target position for the elevator when in the
     // DOWN state
+
+
+    public final double SAFETY_DEBOUNCER_TIME_SECONDS = 0.25; // Time in seconds to confirm that the roof is safely down before allowing certain actions
+
+    //Squeeze Constants
+    public final double ELEVATOR_SQUEEZE_CURRENT = -10.0;
+    public final double ELEVATOR_SQUEEZE_MIN_POSITION = ELEVATOR_DOWN_POSITION_METERS;
 
 
     // Homing for elevator - drive with a small duty cycle until the motor current spikes
@@ -83,6 +97,7 @@ public class RoofConstants extends MwConstants {
         elevator_config.MotorOutput.Inverted = PhoenixUtil.toInvertedValue(ELEVATOR_MOTOR_INVERTED);
         elevator_config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
         elevator_config.Slot0 = Slot0Configs.from(ELEVATOR_CLIMB_POSITION_GAINS);
+        elevator_config.Slot2 = Slot2Configs.from(ELEVATOR_CURRENT_GAINS);
         // elevator_config.CurrentLimits.StatorCurrentLimit = 50;
         ELEVATOR_MOTOR_CONFIG.apply(elevator_config);
     }

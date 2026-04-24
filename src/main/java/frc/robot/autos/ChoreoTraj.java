@@ -27,23 +27,23 @@ public record ChoreoTraj(
     public static final ChoreoTraj CitrusLeftSide = new ChoreoTraj(
 	    "CitrusLeftSide",
 	    OptionalInt.empty(),
-	    6.42369,
-	    new Pose2d(4.416, 7.48, Rotation2d.fromRadians(-1.571)),
+	    9.19568,
+	    new Pose2d(4.416, 7.48, Rotation2d.fromRadians(0.005)),
 	    new Pose2d(2.872, 5.535, Rotation2d.fromRadians(2.503))
 	);
 	public static final ChoreoTraj CitrusLeftSideSecondPass = new ChoreoTraj(
 	    "CitrusLeftSideSecondPass",
 	    OptionalInt.empty(),
-	    6.79221,
+	    6.82354,
 	    new Pose2d(2.887, 5.604, Rotation2d.fromRadians(2.165)),
 	    new Pose2d(2.872, 5.535, Rotation2d.fromRadians(1.584))
 	);
 	public static final ChoreoTraj CitrusLeftSideSecondPassBump = new ChoreoTraj(
 	    "CitrusLeftSideSecondPassBump",
 	    OptionalInt.empty(),
-	    7.13182,
+	    7.11353,
 	    new Pose2d(2.887, 5.604, Rotation2d.fromRadians(2.165)),
-	    new Pose2d(2.872, 5.535, Rotation2d.fromRadians(1.584))
+	    new Pose2d(2.872, 5.535, Rotation2d.fromRadians(3.112))
 	);
 	public static final ChoreoTraj CitrusRightSide = new ChoreoTraj(
 	    "CitrusRightSide",
@@ -69,8 +69,8 @@ public record ChoreoTraj(
 	public static final ChoreoTraj CitrusSynergyFarBumpP2 = new ChoreoTraj(
 	    "CitrusSynergyFarBumpP2",
 	    OptionalInt.empty(),
-	    2.07846,
-	    new Pose2d(7.043, 7.562, Rotation2d.fromRadians(-1.571)),
+	    2.0699,
+	    new Pose2d(7.004, 7.504, Rotation2d.fromRadians(-1.571)),
 	    new Pose2d(6.062, 2.517, Rotation2d.fromRadians(3.142))
 	);
 	public static final ChoreoTraj CitrusSynergyFarBumpP3 = new ChoreoTraj(
@@ -83,15 +83,15 @@ public record ChoreoTraj(
 	public static final ChoreoTraj CitrusSynergyP1 = new ChoreoTraj(
 	    "CitrusSynergyP1",
 	    OptionalInt.empty(),
-	    1.25759,
+	    1.25911,
 	    new Pose2d(3.548, 7.404, Rotation2d.fromRadians(-1.571)),
-	    new Pose2d(7.043, 7.404, Rotation2d.fromRadians(-1.571))
+	    new Pose2d(7.043, 7.504, Rotation2d.fromRadians(-1.571))
 	);
 	public static final ChoreoTraj CitrusSynergyP2 = new ChoreoTraj(
 	    "CitrusSynergyP2",
 	    OptionalInt.empty(),
-	    2.5228,
-	    new Pose2d(7.043, 7.404, Rotation2d.fromRadians(-1.571)),
+	    2.54177,
+	    new Pose2d(7.043, 7.504, Rotation2d.fromRadians(-1.571)),
 	    new Pose2d(6.215, 5.368, Rotation2d.fromRadians(3.142))
 	);
 	public static final ChoreoTraj CitrusSynergyP3 = new ChoreoTraj(

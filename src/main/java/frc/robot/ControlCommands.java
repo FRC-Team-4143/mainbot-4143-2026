@@ -10,6 +10,8 @@ import frc.robot.subsystems.gamestates.GameStatesSubsystem;
 import frc.robot.subsystems.intake.IntakeConstants.IntakeStates;
 import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.localization.LocalizationConstants.LocalizationStates;
+import frc.robot.subsystems.roof.RoofSubsystem;
+import frc.robot.subsystems.roof.RoofConstants.RoofStates;
 import frc.robot.subsystems.localization.LocalizationSubsystem;
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterStates;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
@@ -146,6 +148,7 @@ public class ControlCommands {
                             LocalizationSubsystem.getInstance()
                                     .setWantedState(LocalizationStates.FULL);
                             IntakeSubsystem.getInstance().setWantedState(IntakeStates.DEPLOYED);
+                            RoofSubsystem.getInstance().setWantedState(RoofSubsystem.getInstance().getIdlStates());
                         },
                         () -> false)
                 .withName("Shoot Fuel")
