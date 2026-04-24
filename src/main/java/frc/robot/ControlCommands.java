@@ -129,7 +129,6 @@ public class ControlCommands {
                                             || GameStatesSubsystem.getInstance().getPassOverride())
                                     && isAbleToRack) {
                                 IntakeSubsystem.getInstance().setWantedState(IntakeStates.SQUEEZE);
-                                RoofSubsystem.getInstance().setWantedState(RoofStates.SQUEEZE);
                             }
                         },
                         () -> {
@@ -291,11 +290,9 @@ public class ControlCommands {
         return Commands.startEnd(
                         () -> {
                             IntakeSubsystem.getInstance().setWantedState(IntakeStates.SQUEEZE);
-                            RoofSubsystem.getInstance().setWantedState(RoofStates.SQUEEZE);
                         },
                         () -> {
                             IntakeSubsystem.getInstance().setWantedState(IntakeStates.DEPLOYED);
-                            RoofSubsystem.getInstance().setWantedState(RoofSubsystem.getInstance().getIdlStates());
                         })
                 .withName("Squeeze")
                 .ignoringDisable(true);

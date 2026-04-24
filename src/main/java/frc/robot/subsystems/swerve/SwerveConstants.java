@@ -130,6 +130,7 @@ public class SwerveConstants extends MwConstants {
     public final double CHOREO_THETA_CONTROLLER_KP = 12.0; // 7.3;
     public final double CHOREO_THETA_CONTROLLER_KI = 0.0;
     public final double CHOREO_THETA_CONTROLLER_KD = 1.0; // 0.07;
+    public final double CHOREO_LOOK_AHEAD = 1.0; // In meters
 
     // =============================================================================
     // TRACTOR BEAM CONSTANTS

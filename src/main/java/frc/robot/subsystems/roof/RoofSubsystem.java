@@ -42,8 +42,7 @@ public class RoofSubsystem extends MwSubsystem<RoofStates, RoofConstants> {
         SmartDashboard.putData("Home Roof",Commands.runOnce(()-> elevator_.setCurrentPosition(CONSTANTS.ELEVATOR_HOME_POSITION)));
         SmartDashboard.putData(
                 "Auto Home Roof",
-                Commands.runOnce(() -> setWantedState(RoofStates.ROOF_HOMING))
-                        .ignoringDisable(true));
+                Commands.runOnce(() -> setWantedState(RoofStates.ROOF_HOMING)));
     }
 
     // reset
@@ -73,8 +72,9 @@ public class RoofSubsystem extends MwSubsystem<RoofStates, RoofConstants> {
             system_state_ = wanted;
             elevator_.configSlot(0,CONSTANTS.ELEVATOR_POSITION_GAINS);
         } else if (wanted == RoofStates.SQUEEZE
-                && elevator_.getCurrentPosition() < CONSTANTS.ELEVATOR_SQUEEZE_MIN_POSITION) {
-            system_state_ = RoofStates.DOWN;
+                && elevator_.getCurrentPosition() <= CONSTANTS.ELEVATOR_SQUEEZE_MIN_POSITION) {
+            system_state_ = getIdlStates();
+            setWantedState(getIdlStates());
         }
         system_state_= wanted;
     }
