@@ -7,6 +7,7 @@ import com.marswars.mechanisms.ElevatorMech;
 import com.marswars.subsystem.MwSubsystem;
 import com.marswars.subsystem.SubsystemIoBase;
 
+import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.roof.RoofConstants.RoofStates;
@@ -16,6 +17,8 @@ public class RoofSubsystem extends MwSubsystem<RoofStates, RoofConstants> {
 
     // private ELEVATORMECH elevator
     private ElevatorMech elevator_;
+    private double roofConfirmedDown = 0.0;
+private Debouncer safetyDebouncer = new Debouncer(CONSTANTS.SAFETY_DEBOUNCER_TIME_SECONDS, Debouncer.DebounceType.kRising);
 
     // getInstance
     public static RoofSubsystem getInstance() {
@@ -65,6 +68,16 @@ public class RoofSubsystem extends MwSubsystem<RoofStates, RoofConstants> {
             elevator_.setCurrentPosition(CONSTANTS.ELEVATOR_HOME_POSITION);
             setWantedState(RoofStates.DOWN);
             system_state_ = RoofStates.DOWN;
+        }else if(wanted == RoofStates.DOWN && !(system_state_ == RoofStates.DOWN || system_state_ == RoofStates.SAFETY_DOWN)){
+            system_state_ = RoofStates.SAFETY_DOWN;
+            return;
+
+        }else if (safetyDebouncer.calculate(elevator_.getLeaderCurrent() > CONSTANTS.ELEVATOR_HOMING_CURRENT_THRESHOLD)
+                && system_state_ == RoofStates.SAFETY_DOWN) {
+            roofConfirmedDown = elevator_.getCurrentPosition();
+            system_state_ = RoofStates.DOWN;
+        }else if (system_state_ == RoofStates.SAFETY_DOWN){
+            return;
         }else if(system_state_ != RoofStates.CLIMB && wanted == RoofStates.CLIMB){
             system_state_ = wanted;
             elevator_.configSlot(0,CONSTANTS.ELEVATOR_CLIMB_POSITION_GAINS);
@@ -87,7 +100,10 @@ public class RoofSubsystem extends MwSubsystem<RoofStates, RoofConstants> {
                 elevator_.setTargetPosition(CONSTANTS.ELEVATOR_UP_POSITION_METERS);
                 break;
             case DOWN:
-                elevator_.setTargetPosition(CONSTANTS.ELEVATOR_DOWN_POSITION_METERS);
+                elevator_.setTargetPosition(roofConfirmedDown);
+                break;
+            case SAFETY_DOWN:
+                elevator_.setTargetPosition(CONSTANTS.ELEVATOR_DOWN_POSITION_METERS - 0.05);
                 break;
             case CLIMB:
                 elevator_.setTargetPosition(CONSTANTS.ELEVATOR_DOWN_POSITION_METERS);

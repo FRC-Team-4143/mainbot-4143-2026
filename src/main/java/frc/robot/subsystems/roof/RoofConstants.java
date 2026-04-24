@@ -23,6 +23,8 @@ public class RoofConstants extends MwConstants {
         UP,
         /** Elevator is at the bottom */
         DOWN,
+        /** Elevator is in a safety-down position which is farther than the hard stop */
+        SAFETY_DOWN,
         /** Elevator is climbing */
         CLIMB,
         /**Elevator homing */
@@ -62,6 +64,9 @@ public class RoofConstants extends MwConstants {
     // UP state
     public final double ELEVATOR_DOWN_POSITION_METERS = 0.005; // Target position for the elevator when in the
     // DOWN state
+
+
+    public final double SAFETY_DEBOUNCER_TIME_SECONDS = 0.25; // Time in seconds to confirm that the roof is safely down before allowing certain actions
 
     //Squeeze Constants
     public final double ELEVATOR_SQUEEZE_CURRENT = -10.0;
