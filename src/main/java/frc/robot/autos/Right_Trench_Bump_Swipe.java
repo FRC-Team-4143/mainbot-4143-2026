@@ -95,7 +95,7 @@ public class Right_Trench_Bump_Swipe extends Auto {
                 Commands.runOnce(
                         () -> {
                             ShooterSubsystem.getInstance().setWantedState(ShooterStates.TRACKING);
-                            IntakeSubsystem.getInstance().setWantedState(IntakeStates.STORE);
+                            IntakeSubsystem.getInstance().setWantedState(IntakeStates.SQUEEZE_HOLD);
                         }),
                 // Set the second trajectory for the second pass
                 SwerveSubsystem.getInstance()
