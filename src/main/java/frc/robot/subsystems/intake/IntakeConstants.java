@@ -35,6 +35,7 @@ public class IntakeConstants extends MwConstants {
         SQUEEZE,
 
         SQUEEZEWAIT,
+        SQUEEZE_HOLD,
         /** Manual tuning mode for testing and calibration */
         TUNING
     }
@@ -79,14 +80,16 @@ public class IntakeConstants extends MwConstants {
             new Slot0Configs().withKG(0.45).withKP(15.0).withKD(0.0);
 
     public final double PIVOT_SQUEEZE_CURRENT = 15.0;
-    public final double PIVOT_SQUEEZE_MAX_POSITION = Units.degreesToRadians(80);
+    public final double PIVOT_SQUEEZE_MAX_POSITION = 0.56; // radians
+    public final double PIVOT_SQUEEZE_HOLD_POSITION = 0.56; // radians
     public final Slot2Configs PIVOT_CURRENT_GAINS = new Slot2Configs().withKP(0.0).withKI(0.0166);
 
     // Homing for pivot - drive with a small duty cycle until the motor current spikes
     public final double PIVOT_HOMING_DUTY_CYCLE = -0.15;
+    public final double PIVOT_HOMING_WAIT_TIME = 0.5;// seconds
     public final double PIVOT_HOMING_CURRENT_THRESHOLD =
-            5.0; // Amps, threshold for detecting stall during homing
-    public final double SQUEEZEWAITTIME = 1.0;
+            10.0; // Amps, threshold for detecting stall during homing
+    public final double SQUEEZEWAITTIME = 1.5;
 
     // =============================================================================
     // MOTOR CONFIGURATION OBJECTS

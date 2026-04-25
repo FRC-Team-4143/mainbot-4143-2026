@@ -122,10 +122,13 @@ public class ControlCommands {
                             SwerveSubsystem.getInstance().setTeleOpVelocityScalar(0.25);
                             LocalizationSubsystem.getInstance()
                                     .setWantedState(LocalizationStates.SHOOTING_FOCUS);
-                                IntakeSubsystem.getInstance().setWantedState(IntakeStates.SQUEEZE);
+                                
                             
                         },
                         () -> {
+                            if(ShooterSubsystem.getInstance().isShooterReady()){
+                                IntakeSubsystem.getInstance().setWantedState(IntakeStates.SQUEEZE);
+                            }
                             if (SwerveSubsystem.getInstance().isChassisStationary()
                                     && ShooterSubsystem.getInstance().isShooterReady()) {
                                 SwerveSubsystem.getInstance().setWantedState(SwerveStates.BRAKE);

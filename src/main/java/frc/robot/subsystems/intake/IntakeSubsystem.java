@@ -5,6 +5,8 @@ import com.marswars.mechanisms.RollerMech;
 import com.marswars.subsystem.MwSubsystem;
 import com.marswars.subsystem.SubsystemIoBase;
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.filter.Debouncer;
+import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -18,6 +20,7 @@ public class IntakeSubsystem extends MwSubsystem<IntakeStates, IntakeConstants> 
     private RollerMech roller_;
     private ArmMech pivot_;
     private Timer timer = new Timer();
+    private Debouncer homeDebouncer = new Debouncer(CONSTANTS.PIVOT_HOMING_WAIT_TIME, DebounceType.kFalling);
     // getInstance
     public static IntakeSubsystem getInstance() {
         if (instance_ == null) {
@@ -77,7 +80,7 @@ public class IntakeSubsystem extends MwSubsystem<IntakeStates, IntakeConstants> 
     @Override
     protected void handleStateTransition(IntakeStates wantedState) {
         // If pivot current spikes while in homing state, set current position as home
-        if (pivot_.getLeaderCurrent() > CONSTANTS.PIVOT_HOMING_CURRENT_THRESHOLD
+        if (homeDebouncer.calculate(pivot_.getLeaderCurrent() > CONSTANTS.PIVOT_HOMING_CURRENT_THRESHOLD)
                 && system_state_ == IntakeStates.PIVOT_HOMING) {
             pivot_.setCurrentPosition(CONSTANTS.PIVOT_HOME_POSITION);
             setWantedState(IntakeStates.DEPLOYED);
@@ -107,7 +110,7 @@ public class IntakeSubsystem extends MwSubsystem<IntakeStates, IntakeConstants> 
             }
         }else if (wantedState == IntakeStates.SQUEEZE
                 && pivot_.getCurrentPosition() > CONSTANTS.PIVOT_SQUEEZE_MAX_POSITION) {
-            system_state_ = IntakeStates.STORE;
+            system_state_ = IntakeStates.SQUEEZE_HOLD;
         } else {
             system_state_ = wantedState;
         }
@@ -150,6 +153,10 @@ public class IntakeSubsystem extends MwSubsystem<IntakeStates, IntakeConstants> 
                 break;
             case SQUEEZEWAIT:
                 roller_.setTargetDutyCycle(0.0);
+                break;
+            case SQUEEZE_HOLD:
+                pivot_.setTargetPosition(CONSTANTS.PIVOT_SQUEEZE_HOLD_POSITION);
+                roller_.setTargetDutyCycle(0.15);
                 break;
             case TUNING:
                 // No default behavior for tuning mode
