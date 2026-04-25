@@ -93,7 +93,9 @@ public class IntakeSubsystem extends MwSubsystem<IntakeStates, IntakeConstants> 
                         || wantedState == IntakeStates.OUTTAKE
                         || wantedState == IntakeStates.DEPLOYED)) {
             system_state_ = IntakeStates.DEPLOYING;
-        } else if (system_state_ == IntakeStates.DEPLOYING) {
+        } else if(system_state_ == IntakeStates.DEPLOYING && wantedState == IntakeStates.STORE){
+            system_state_ = IntakeStates.STORE;
+        }else if (system_state_ == IntakeStates.DEPLOYING) {
             if (MathUtil.isNear(
                     CONSTANTS.PIVOT_DEPLOY_POSITION,
                     pivot_.getCurrentPosition(),
@@ -111,6 +113,7 @@ public class IntakeSubsystem extends MwSubsystem<IntakeStates, IntakeConstants> 
         }else if (wantedState == IntakeStates.SQUEEZE
                 && pivot_.getCurrentPosition() > CONSTANTS.PIVOT_SQUEEZE_MAX_POSITION) {
             system_state_ = IntakeStates.SQUEEZE_HOLD;
+            setWantedState(IntakeStates.SQUEEZE_HOLD);
         } else {
             system_state_ = wantedState;
         }

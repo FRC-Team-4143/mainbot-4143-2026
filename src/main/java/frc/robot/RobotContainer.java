@@ -30,7 +30,7 @@ public class RobotContainer extends SubsystemManager {
         registerSubsystem(SwerveSubsystem.getInstance());
         registerSubsystem(LocalizationSubsystem.getInstance());
         registerSubsystem(ShooterSubsystem.getInstance());
-        registerSubsystem(RoofSubsystem.getInstance());
+        //registerSubsystem(RoofSubsystem.getInstance());
         registerSubsystem(IntakeSubsystem.getInstance());
         registerSubsystem(GameStatesSubsystem.getInstance());
 
