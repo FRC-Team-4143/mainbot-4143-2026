@@ -5,6 +5,7 @@ import com.marswars.mechanisms.RollerMech;
 import com.marswars.subsystem.MwSubsystem;
 import com.marswars.subsystem.SubsystemIoBase;
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.intake.IntakeConstants.IntakeStates;
@@ -16,7 +17,7 @@ public class IntakeSubsystem extends MwSubsystem<IntakeStates, IntakeConstants> 
 
     private RollerMech roller_;
     private ArmMech pivot_;
-
+    private Timer timer = new Timer();
     // getInstance
     public static IntakeSubsystem getInstance() {
         if (instance_ == null) {
@@ -96,7 +97,15 @@ public class IntakeSubsystem extends MwSubsystem<IntakeStates, IntakeConstants> 
                     CONSTANTS.DEPLOY_PIVOT_TOLERANCE)) {
                 system_state_ = IntakeStates.DEPLOYED;
             }
-        } else if (wantedState == IntakeStates.SQUEEZE
+        }else if(wantedState == IntakeStates.SQUEEZE && (system_state_ == IntakeStates.DEPLOYED || system_state_ == IntakeStates.DEPLOYING)){
+            system_state_ = IntakeStates.SQUEEZEWAIT;
+            timer.reset();
+            timer.start();
+        }else if(system_state_ == IntakeStates.SQUEEZEWAIT){
+            if(timer.get() > CONSTANTS.SQUEEZEWAITTIME){
+                system_state_ = IntakeStates.SQUEEZE;
+            }
+        }else if (wantedState == IntakeStates.SQUEEZE
                 && pivot_.getCurrentPosition() > CONSTANTS.PIVOT_SQUEEZE_MAX_POSITION) {
             system_state_ = IntakeStates.STORE;
         } else {
@@ -135,8 +144,12 @@ public class IntakeSubsystem extends MwSubsystem<IntakeStates, IntakeConstants> 
                 pivot_.setTargetDutyCycle(CONSTANTS.PIVOT_HOMING_DUTY_CYCLE);
                 break;
             case SQUEEZE:
+                timer.stop();
                 roller_.setTargetDutyCycle(0.0);
                 pivot_.setTargetCurrent(CONSTANTS.PIVOT_SQUEEZE_CURRENT);
+                break;
+            case SQUEEZEWAIT:
+                roller_.setTargetDutyCycle(0.0);
                 break;
             case TUNING:
                 // No default behavior for tuning mode

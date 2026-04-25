@@ -33,6 +33,8 @@ public class IntakeConstants extends MwConstants {
         IDLE,
         /** Intake squeezes the fuel into the shooter */
         SQUEEZE,
+
+        SQUEEZEWAIT,
         /** Manual tuning mode for testing and calibration */
         TUNING
     }
@@ -84,6 +86,7 @@ public class IntakeConstants extends MwConstants {
     public final double PIVOT_HOMING_DUTY_CYCLE = -0.15;
     public final double PIVOT_HOMING_CURRENT_THRESHOLD =
             5.0; // Amps, threshold for detecting stall during homing
+    public final double SQUEEZEWAITTIME = 1.0;
 
     // =============================================================================
     // MOTOR CONFIGURATION OBJECTS
