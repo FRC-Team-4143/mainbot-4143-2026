@@ -98,13 +98,13 @@ public class Right_Trench_Trench_Swipe extends Auto {
                             IntakeSubsystem.getInstance().setWantedState(IntakeStates.SQUEEZE);
                         }),
                 // Shoot for 3 seconds
-                new WaitCommand(2),
+                new WaitCommand(3),
                 Commands.runOnce(
                         () -> {
                             RoofSubsystem.getInstance().setWantedState(RoofStates.DOWN);
                         }),
                 // Continue to shoot for 3 more seconds
-                new WaitCommand(2),
+                new WaitCommand(1),
                 // Stop shooting
                 Commands.runOnce(
                         () -> {
@@ -136,7 +136,7 @@ public class Right_Trench_Trench_Swipe extends Auto {
                             IntakeSubsystem.getInstance().setWantedState(IntakeStates.SQUEEZE);
                         }),
                 // Shoot for 3 seconds
-                new WaitCommand(2),
+                new WaitCommand(3),
                 Commands.runOnce(
                         () -> {
                             RoofSubsystem.getInstance().setWantedState(RoofStates.DOWN);
