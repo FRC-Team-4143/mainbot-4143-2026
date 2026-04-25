@@ -122,13 +122,8 @@ public class ControlCommands {
                             SwerveSubsystem.getInstance().setTeleOpVelocityScalar(0.25);
                             LocalizationSubsystem.getInstance()
                                     .setWantedState(LocalizationStates.SHOOTING_FOCUS);
-                            if (SwerveSubsystem.getInstance().isChassisStationary()
-                                    && !(GameStatesSubsystem.getInstance().getSystemState()
-                                                    == GameStates.PASS
-                                            || GameStatesSubsystem.getInstance().getPassOverride())
-                                    && isAbleToRack) {
                                 IntakeSubsystem.getInstance().setWantedState(IntakeStates.SQUEEZE);
-                            }
+                            
                         },
                         () -> {
                             if (SwerveSubsystem.getInstance().isChassisStationary()
@@ -175,9 +170,11 @@ public class ControlCommands {
         return Commands.startEnd(
                         () -> {
                             ShooterSubsystem.getInstance().setWantedState(ShooterStates.MANUAL_HUB);
+                            IntakeSubsystem.getInstance().setWantedState(IntakeStates.SQUEEZE);
                         },
                         () -> {
                             ShooterSubsystem.getInstance().setWantedState(ShooterStates.IDLE);
+                            IntakeSubsystem.getInstance().setWantedState(IntakeStates.DEPLOYED);
                         })
                 .withName("Shoot Fuel Manual")
                 .ignoringDisable(true);
@@ -204,9 +201,11 @@ public class ControlCommands {
                         () -> {
                             ShooterSubsystem.getInstance()
                                     .setWantedState(ShooterStates.MANUAL_PASS);
+                            IntakeSubsystem.getInstance().setWantedState(IntakeStates.SQUEEZE);
                         },
                         () -> {
                             ShooterSubsystem.getInstance().setWantedState(ShooterStates.IDLE);
+                            IntakeSubsystem.getInstance().setWantedState(IntakeStates.DEPLOYED);
                         })
                 .withName("Pass Fuel Manual")
                 .ignoringDisable(true);
