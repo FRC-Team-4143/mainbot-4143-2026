@@ -9,7 +9,6 @@ import com.marswars.mechanisms.MotorConfig;
 import com.marswars.mechanisms.MotorConfig.TalonMotorType;
 import com.marswars.subsystem.MwConstants;
 import com.marswars.util.PhoenixUtil;
-
 import edu.wpi.first.math.util.Units;
 
 public class RoofConstants extends MwConstants {
@@ -27,7 +26,7 @@ public class RoofConstants extends MwConstants {
         SAFETY_DOWN,
         /** Elevator is climbing */
         CLIMB,
-        /**Elevator homing */
+        /** Elevator homing */
         ROOF_HOMING,
         /** */
         SQUEEZE,
@@ -57,21 +56,24 @@ public class RoofConstants extends MwConstants {
     public final SlotConfigs ELEVATOR_POSITION_GAINS =
             new SlotConfigs().withKV(0.0).withKP(4.8).withKI(0.0).withKD(0.0).withKG(0.0);
     public final SlotConfigs ELEVATOR_CURRENT_GAINS = new SlotConfigs().withKI(0.01666);
-    public final SlotConfigs ELEVATOR_CLIMB_POSITION_GAINS = new SlotConfigs().withKP(4.8).withKI(0.0).withKD(0.0);
+    public final SlotConfigs ELEVATOR_CLIMB_POSITION_GAINS =
+            new SlotConfigs().withKP(4.8).withKI(0.0).withKD(0.0);
     public final double ELEVATOR_RIGGING_RATIO =
             1.0; // Ratio of motor rotation to elevator extension (depends on pulley system)
-    public final double ELEVATOR_UP_POSITION_METERS = ELEVATOR_MAX_EXTENSION_METERS; // Target position for the elevator when in the
+    public final double ELEVATOR_UP_POSITION_METERS =
+            ELEVATOR_MAX_EXTENSION_METERS; // Target position for the elevator when in the
     // UP state
-    public final double ELEVATOR_DOWN_POSITION_METERS = 0.005; // Target position for the elevator when in the
+    public final double ELEVATOR_DOWN_POSITION_METERS =
+            0.005; // Target position for the elevator when in the
     // DOWN state
 
+    public final double SAFETY_DEBOUNCER_TIME_SECONDS =
+            0.25; // Time in seconds to confirm that the roof is safely down before allowing certain
+    // actions
 
-    public final double SAFETY_DEBOUNCER_TIME_SECONDS = 0.25; // Time in seconds to confirm that the roof is safely down before allowing certain actions
-
-    //Squeeze Constants
+    // Squeeze Constants
     public final double ELEVATOR_SQUEEZE_CURRENT = -10.0;
     public final double ELEVATOR_SQUEEZE_MIN_POSITION = ELEVATOR_DOWN_POSITION_METERS;
-
 
     // Homing for elevator - drive with a small duty cycle until the motor current spikes
     public final double ELEVATOR_HOMING_DUTY_CYCLE = -0.08;

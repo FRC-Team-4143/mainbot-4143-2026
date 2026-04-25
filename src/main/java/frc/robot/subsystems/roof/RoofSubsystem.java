@@ -1,16 +1,14 @@
 package frc.robot.subsystems.roof;
 
-import java.util.Arrays;
-import java.util.List;
-
 import com.marswars.mechanisms.ElevatorMech;
 import com.marswars.subsystem.MwSubsystem;
 import com.marswars.subsystem.SubsystemIoBase;
-
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.roof.RoofConstants.RoofStates;
+import java.util.Arrays;
+import java.util.List;
 
 public class RoofSubsystem extends MwSubsystem<RoofStates, RoofConstants> {
     private static RoofSubsystem instance_ = null;
@@ -18,7 +16,8 @@ public class RoofSubsystem extends MwSubsystem<RoofStates, RoofConstants> {
     // private ELEVATORMECH elevator
     private ElevatorMech elevator_;
     private double roofConfirmedDown = 0.0;
-private Debouncer safetyDebouncer = new Debouncer(CONSTANTS.SAFETY_DEBOUNCER_TIME_SECONDS, Debouncer.DebounceType.kRising);
+    private Debouncer safetyDebouncer =
+            new Debouncer(CONSTANTS.SAFETY_DEBOUNCER_TIME_SECONDS, Debouncer.DebounceType.kRising);
 
     // getInstance
     public static RoofSubsystem getInstance() {
@@ -42,10 +41,12 @@ private Debouncer safetyDebouncer = new Debouncer(CONSTANTS.SAFETY_DEBOUNCER_TIM
                         CONSTANTS.ELEVATOR_MAX_EXTENSION_METERS,
                         CONSTANTS.ELEVATOR_RIGGING_RATIO);
         elevator_.setCurrentPosition(0);
-        SmartDashboard.putData("Home Roof",Commands.runOnce(()-> elevator_.setCurrentPosition(CONSTANTS.ELEVATOR_HOME_POSITION)));
         SmartDashboard.putData(
-                "Auto Home Roof",
-                Commands.runOnce(() -> setWantedState(RoofStates.ROOF_HOMING)));
+                "Home Roof",
+                Commands.runOnce(
+                        () -> elevator_.setCurrentPosition(CONSTANTS.ELEVATOR_HOME_POSITION)));
+        SmartDashboard.putData(
+                "Auto Home Roof", Commands.runOnce(() -> setWantedState(RoofStates.ROOF_HOMING)));
     }
 
     // reset
@@ -60,7 +61,7 @@ private Debouncer safetyDebouncer = new Debouncer(CONSTANTS.SAFETY_DEBOUNCER_TIM
         return Arrays.asList(elevator_);
     }
 
-    //handleStateTransition
+    // handleStateTransition
     @Override
     public void handleStateTransition(RoofStates wanted) {
         if (elevator_.getLeaderCurrent() > CONSTANTS.ELEVATOR_HOMING_CURRENT_THRESHOLD
@@ -68,28 +69,30 @@ private Debouncer safetyDebouncer = new Debouncer(CONSTANTS.SAFETY_DEBOUNCER_TIM
             elevator_.setCurrentPosition(CONSTANTS.ELEVATOR_HOME_POSITION);
             setWantedState(RoofStates.DOWN);
             system_state_ = RoofStates.DOWN;
-        }else if(wanted == RoofStates.DOWN && !(system_state_ == RoofStates.DOWN || system_state_ == RoofStates.SAFETY_DOWN)){
+        } else if (wanted == RoofStates.DOWN
+                && !(system_state_ == RoofStates.DOWN || system_state_ == RoofStates.SAFETY_DOWN)) {
             system_state_ = RoofStates.SAFETY_DOWN;
             return;
 
-        }else if (safetyDebouncer.calculate(elevator_.getLeaderCurrent() > CONSTANTS.ELEVATOR_HOMING_CURRENT_THRESHOLD)
+        } else if (safetyDebouncer.calculate(
+                        elevator_.getLeaderCurrent() > CONSTANTS.ELEVATOR_HOMING_CURRENT_THRESHOLD)
                 && system_state_ == RoofStates.SAFETY_DOWN) {
             roofConfirmedDown = elevator_.getCurrentPosition();
             system_state_ = RoofStates.DOWN;
-        }else if (system_state_ == RoofStates.SAFETY_DOWN){
+        } else if (system_state_ == RoofStates.SAFETY_DOWN) {
             return;
-        }else if(system_state_ != RoofStates.CLIMB && wanted == RoofStates.CLIMB){
+        } else if (system_state_ != RoofStates.CLIMB && wanted == RoofStates.CLIMB) {
             system_state_ = wanted;
-            elevator_.configSlot(0,CONSTANTS.ELEVATOR_CLIMB_POSITION_GAINS);
-        }else if(wanted != RoofStates.CLIMB && system_state_ == RoofStates.CLIMB){
+            elevator_.configSlot(0, CONSTANTS.ELEVATOR_CLIMB_POSITION_GAINS);
+        } else if (wanted != RoofStates.CLIMB && system_state_ == RoofStates.CLIMB) {
             system_state_ = wanted;
-            elevator_.configSlot(0,CONSTANTS.ELEVATOR_POSITION_GAINS);
+            elevator_.configSlot(0, CONSTANTS.ELEVATOR_POSITION_GAINS);
         } else if (wanted == RoofStates.SQUEEZE
                 && elevator_.getCurrentPosition() <= CONSTANTS.ELEVATOR_SQUEEZE_MIN_POSITION) {
             system_state_ = getIdlStates();
             setWantedState(getIdlStates());
         }
-        system_state_= wanted;
+        system_state_ = wanted;
     }
 
     // updateLogic

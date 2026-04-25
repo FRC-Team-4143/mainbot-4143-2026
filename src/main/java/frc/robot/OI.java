@@ -9,7 +9,6 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.lib2026.HubMonitor;
@@ -77,7 +76,13 @@ public abstract class OI {
         driver_controller_.y().whileTrue(ControlCommands.manualShootFuelCommand());
         driver_controller_.b().whileTrue(ControlCommands.manualPassFuelCommand());
         driver_controller_.a().whileTrue(ControlCommands.outTakeFuelCommand());
-        driver_controller_.start().onTrue(Commands.runOnce(()->RoofSubsystem.getInstance().setWantedState(RoofStates.CLIMB)));
+        driver_controller_
+                .start()
+                .onTrue(
+                        Commands.runOnce(
+                                () ->
+                                        RoofSubsystem.getInstance()
+                                                .setWantedState(RoofStates.CLIMB)));
 
         // =============================================================================
         // OPERATOR CONTROLLER BINDINGS

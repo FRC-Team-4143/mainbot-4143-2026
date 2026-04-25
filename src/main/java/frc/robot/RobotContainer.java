@@ -9,10 +9,10 @@ import edu.wpi.first.wpilibj.RobotBase;
 import frc.robot.subsystems.gamestates.GameStatesSubsystem;
 import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.localization.LocalizationSubsystem;
+import frc.robot.subsystems.roof.RoofSubsystem;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.simulation.SimulationSubsystem;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
-import frc.robot.subsystems.roof.RoofSubsystem;
 
 public class RobotContainer extends SubsystemManager {
     private static RobotContainer instance;
