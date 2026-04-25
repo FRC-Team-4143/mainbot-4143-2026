@@ -256,9 +256,7 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
                 SwerveSubsystem.getInstance()
                         .setDesiredRotationLockCORWithFF(
                                 Rotation2d.fromRadians(heading_angle_),
-                                new Translation2d(
-                                        CONSTANTS.SHOOTER_CENTER.getX(),
-                                        CONSTANTS.SHOOTER_CENTER.getY()),
+                                Translation2d.kZero,
                                 heading_feedforward_);
                 accelerator_.setTargetDutyCycle(CONSTANTS.ACCELERATOR_DUTY_CYCLE);
                 hopper_.setTargetDutyCycle(0);
@@ -270,9 +268,7 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
                 SwerveSubsystem.getInstance()
                         .setDesiredRotationLockCORWithFF(
                                 Rotation2d.fromRadians(heading_angle_),
-                                new Translation2d(
-                                        CONSTANTS.SHOOTER_CENTER.getX(),
-                                        CONSTANTS.SHOOTER_CENTER.getY()),
+                                Translation2d.kZero,
                                 heading_feedforward_);
                 accelerator_.setTargetDutyCycle(CONSTANTS.ACCELERATOR_DUTY_CYCLE);
                 hopper_.setTargetDutyCycle(0);
@@ -291,9 +287,7 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
                 SwerveSubsystem.getInstance()
                         .setDesiredRotationLockCORWithFF(
                                 Rotation2d.fromRadians(heading_angle_),
-                                new Translation2d(
-                                        CONSTANTS.SHOOTER_CENTER.getX(),
-                                        CONSTANTS.SHOOTER_CENTER.getY()),
+                                Translation2d.kZero,
                                 heading_feedforward_);
                 is_shooting_ =
                         is_shooting_debouncer.calculate(

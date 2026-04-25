@@ -40,6 +40,16 @@ public class Right_Trench_Bump_Swipe extends Auto {
                                 () ->
                                         IntakeSubsystem.getInstance()
                                                 .setWantedState(IntakeStates.STORE)));
+        SwerveSubsystem.getInstance()
+                .getChoreoEventTimeTrigger("Shoot")
+                .onTrue(
+                        Commands.runOnce(
+                                () -> {
+                                    ShooterSubsystem.getInstance()
+                                            .setWantedState(ShooterStates.SHOOT);
+                                    SwerveSubsystem.getInstance()
+                                            .setWantedState(SwerveStates.CHOREO_PATH_ROTATION_LOCK);
+                                }));
 
         // =============================================================================
         // AUTO COMMAND SEQUENCE
