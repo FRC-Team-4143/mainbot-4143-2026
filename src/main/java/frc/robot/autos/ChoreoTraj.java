@@ -27,21 +27,21 @@ public record ChoreoTraj(
     public static final ChoreoTraj LTrenchStartBumpReturn = new ChoreoTraj(
 	    "LTrenchStartBumpReturn",
 	    OptionalInt.empty(),
-	    4.53464,
+	    5.55276,
 	    new Pose2d(4.416, 7.48, Rotation2d.fromRadians(0.005)),
 	    new Pose2d(2.872, 5.535, Rotation2d.fromRadians(3.14))
 	);
 	public static final ChoreoTraj LTrenchSwipeBumpReturn = new ChoreoTraj(
 	    "LTrenchSwipeBumpReturn",
 	    OptionalInt.empty(),
-	    5.61834,
+	    5.24945,
 	    new Pose2d(2.887, 5.604, Rotation2d.fromRadians(2.165)),
 	    new Pose2d(2.872, 5.535, Rotation2d.fromRadians(-3.122))
 	);
 	public static final ChoreoTraj LTrenchStartTrenchReturn = new ChoreoTraj(
 	    "LTrenchStartTrenchReturn",
 	    OptionalInt.empty(),
-	    5.21318,
+	    5.77419,
 	    new Pose2d(4.416, 7.48, Rotation2d.fromRadians(0.006)),
 	    new Pose2d(3.019, 7.213, Rotation2d.fromRadians(3.141))
 	);
@@ -118,7 +118,7 @@ public record ChoreoTraj(
 	public static final ChoreoTraj RTrenchStartBumpReturn = new ChoreoTraj(
 	    "RTrenchStartBumpReturn",
 	    OptionalInt.empty(),
-	    4.46094,
+	    5.47746,
 	    new Pose2d(4.416, 0.59, Rotation2d.fromRadians(0.005)),
 	    new Pose2d(2.872, 2.53, Rotation2d.fromRadians(-3.124))
 	);
@@ -132,7 +132,7 @@ public record ChoreoTraj(
 	public static final ChoreoTraj RTrenchStartTrenchReturn = new ChoreoTraj(
 	    "RTrenchStartTrenchReturn",
 	    OptionalInt.empty(),
-	    4.87825,
+	    5.99469,
 	    new Pose2d(4.416, 0.59, Rotation2d.fromRadians(0.006)),
 	    new Pose2d(3.019, 0.86, Rotation2d.fromRadians(3.141))
 	);
