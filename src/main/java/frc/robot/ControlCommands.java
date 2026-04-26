@@ -10,9 +10,8 @@ import frc.robot.subsystems.gamestates.GameStatesSubsystem;
 import frc.robot.subsystems.intake.IntakeConstants.IntakeStates;
 import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.localization.LocalizationConstants.LocalizationStates;
-import frc.robot.subsystems.roof.RoofSubsystem;
-import frc.robot.subsystems.roof.RoofConstants.RoofStates;
 import frc.robot.subsystems.localization.LocalizationSubsystem;
+import frc.robot.subsystems.roof.RoofSubsystem;
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterStates;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.swerve.SwerveConstants.SwerveStates;
@@ -123,15 +122,13 @@ public class ControlCommands {
                             SwerveSubsystem.getInstance().setTeleOpVelocityScalar(0.25);
                             LocalizationSubsystem.getInstance()
                                     .setWantedState(LocalizationStates.SHOOTING_FOCUS);
-                            if (SwerveSubsystem.getInstance().isChassisStationary()
-                                    && !(GameStatesSubsystem.getInstance().getSystemState()
-                                                    == GameStates.PASS
-                                            || GameStatesSubsystem.getInstance().getPassOverride())
-                                    && isAbleToRack) {
-                                IntakeSubsystem.getInstance().setWantedState(IntakeStates.SQUEEZE);
-                            }
+                                
+                            
                         },
                         () -> {
+                            if(ShooterSubsystem.getInstance().isShooterReady()){
+                                IntakeSubsystem.getInstance().setWantedState(IntakeStates.SQUEEZE);
+                            }
                             if (SwerveSubsystem.getInstance().isChassisStationary()
                                     && ShooterSubsystem.getInstance().isShooterReady()) {
                                 SwerveSubsystem.getInstance().setWantedState(SwerveStates.BRAKE);
@@ -148,7 +145,8 @@ public class ControlCommands {
                             LocalizationSubsystem.getInstance()
                                     .setWantedState(LocalizationStates.FULL);
                             IntakeSubsystem.getInstance().setWantedState(IntakeStates.DEPLOYED);
-                            RoofSubsystem.getInstance().setWantedState(RoofSubsystem.getInstance().getIdlStates());
+                            RoofSubsystem.getInstance()
+                                    .setWantedState(RoofSubsystem.getInstance().getIdlStates());
                         },
                         () -> false)
                 .withName("Shoot Fuel")
@@ -175,9 +173,11 @@ public class ControlCommands {
         return Commands.startEnd(
                         () -> {
                             ShooterSubsystem.getInstance().setWantedState(ShooterStates.MANUAL_HUB);
+                            IntakeSubsystem.getInstance().setWantedState(IntakeStates.SQUEEZE);
                         },
                         () -> {
                             ShooterSubsystem.getInstance().setWantedState(ShooterStates.IDLE);
+                            IntakeSubsystem.getInstance().setWantedState(IntakeStates.DEPLOYED);
                         })
                 .withName("Shoot Fuel Manual")
                 .ignoringDisable(true);
@@ -204,9 +204,11 @@ public class ControlCommands {
                         () -> {
                             ShooterSubsystem.getInstance()
                                     .setWantedState(ShooterStates.MANUAL_PASS);
+                            IntakeSubsystem.getInstance().setWantedState(IntakeStates.SQUEEZE);
                         },
                         () -> {
                             ShooterSubsystem.getInstance().setWantedState(ShooterStates.IDLE);
+                            IntakeSubsystem.getInstance().setWantedState(IntakeStates.DEPLOYED);
                         })
                 .withName("Pass Fuel Manual")
                 .ignoringDisable(true);

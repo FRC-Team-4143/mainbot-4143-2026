@@ -13,17 +13,16 @@ import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.swerve.SwerveConstants.SwerveStates;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 
-public class CitrusSynergyFarBump extends Auto {
+public class Left_Trench_Bump_Swipe extends Auto {
 
-    public CitrusSynergyFarBump() {
+    public Left_Trench_Bump_Swipe() {
         // =============================================================================
         // TRAJECTORY LOADING
-        // These should be loaded in the order they will be used to ensure correct start poses
+        // These should be loaded in the order they will be used to ensure correct start
+        // poses
         // =============================================================================
-        loadTrajectory(ChoreoTraj.SynergyP1.name());
-        loadTrajectory(ChoreoTraj.SynergyFarBumpP2.name());
-        loadTrajectory(ChoreoTraj.SynergyFarBumpP3.name());
-        loadTrajectory(ChoreoTraj.SynergyP4.name());
+        loadTrajectory(ChoreoTraj.LTrenchStartBumpReturn.name());
+        loadTrajectory(ChoreoTraj.LTrenchSwipeBumpReturn.name());
 
         // =============================================================================
         // EVENT TRIGGER BINDING
@@ -34,6 +33,13 @@ public class CitrusSynergyFarBump extends Auto {
                         Commands.runOnce(
                                 () -> {
                                     RoofSubsystem.getInstance().setWantedState(RoofStates.UP);
+                                }));
+        SwerveSubsystem.getInstance()
+                .getChoreoEventTimeTrigger("Lower Hopper")
+                .onTrue(
+                        Commands.runOnce(
+                                () -> {
+                                    RoofSubsystem.getInstance().setWantedState(RoofStates.DOWN);
                                 }));
         SwerveSubsystem.getInstance()
                 .getChoreoEventTimeTrigger("Intake Out")
@@ -49,52 +55,32 @@ public class CitrusSynergyFarBump extends Auto {
                                 () ->
                                         IntakeSubsystem.getInstance()
                                                 .setWantedState(IntakeStates.STORE)));
+        SwerveSubsystem.getInstance()
+                .getChoreoEventTimeTrigger("Shoot")
+                .onTrue(
+                        Commands.runOnce(
+                                () -> {
+                                    ShooterSubsystem.getInstance()
+                                            .setWantedState(ShooterStates.SHOOT);
+                                    SwerveSubsystem.getInstance()
+                                            .setWantedState(SwerveStates.CHOREO_PATH_ROTATION_LOCK);
+                                }));
 
         // =============================================================================
         // AUTO COMMAND SEQUENCE
         // =============================================================================
         addCommands(
+                // Drive over the bump at a set speed
                 Commands.runOnce(
                         () -> {
                             ShooterSubsystem.getInstance().setTarget(FieldTargets.Shooter.HUB);
                             ShooterSubsystem.getInstance().setWantedState(ShooterStates.TRACKING);
+                            RoofSubsystem.getInstance().setWantedState(RoofStates.DOWN);
                         }),
-
                 // Set the initial trajectory
                 SwerveSubsystem.getInstance()
                         .setDesiredChoreoTrajectoryCommand(
-                                getTrajectory(ChoreoTraj.SynergyP1.name())),
-                // Start Choreo following
-                Commands.startEnd(
-                                () ->
-                                        SwerveSubsystem.getInstance()
-                                                .setWantedState(SwerveStates.CHOREO_PATH),
-                                () ->
-                                        SwerveSubsystem.getInstance()
-                                                .setWantedState(SwerveStates.IDLE))
-                        .until(SwerveSubsystem.getInstance()::isAtChoreoSetpoint),
-                // Wait for 4 seconds for other robots to clear the middle
-                new DynamicWaitCommand(getName() + "/MiddleWaitTime", 4),
-                // Set the second trajectory for the second part
-                SwerveSubsystem.getInstance()
-                        .setDesiredChoreoTrajectoryCommand(
-                                getTrajectory(ChoreoTraj.SynergyFarBumpP2.name())),
-                // Start Choreo following
-                Commands.startEnd(
-                                () ->
-                                        SwerveSubsystem.getInstance()
-                                                .setWantedState(SwerveStates.CHOREO_PATH),
-                                () ->
-                                        SwerveSubsystem.getInstance()
-                                                .setWantedState(SwerveStates.IDLE))
-                        .until(SwerveSubsystem.getInstance()::isAtChoreoSetpoint),
-                // Wait for 1 second to allow the other bots to get out of the way in the alliance
-                // zone
-                new DynamicWaitCommand(getName() + "/BeforeAllianceZoneWaitTime", 1),
-                // Set the third trajectory for the third part
-                SwerveSubsystem.getInstance()
-                        .setDesiredChoreoTrajectoryCommand(
-                                getTrajectory(ChoreoTraj.SynergyFarBumpP3.name())),
+                                getTrajectory(ChoreoTraj.LTrenchStartBumpReturn.name())),
                 // Start Choreo following
                 Commands.startEnd(
                                 () ->
@@ -109,23 +95,51 @@ public class CitrusSynergyFarBump extends Auto {
                 Commands.runOnce(
                         () -> {
                             ShooterSubsystem.getInstance().setWantedState(ShooterStates.SHOOT);
+                            IntakeSubsystem.getInstance().setWantedState(IntakeStates.SQUEEZE);
                         }),
-                // Shoot for 2 seconds
-                new WaitCommand(2),
-                // Set the fourth trajectory for the fourth part
+                // Shoot for 3 seconds
+                new WaitCommand(3),
+                Commands.runOnce(
+                        () -> {
+                            RoofSubsystem.getInstance().setWantedState(RoofStates.DOWN);
+                        }),
+                // Continue to shoot for 3 more seconds
+                new WaitCommand(1),
+                // Stop shooting
+                Commands.runOnce(
+                        () -> {
+                            ShooterSubsystem.getInstance().setWantedState(ShooterStates.TRACKING);
+                            IntakeSubsystem.getInstance().setWantedState(IntakeStates.SQUEEZE_HOLD);
+                        }),
+                // Set the second trajectory for the second pass
                 SwerveSubsystem.getInstance()
                         .setDesiredChoreoTrajectoryCommand(
-                                getTrajectory(ChoreoTraj.SynergyP4.name())),
+                                getTrajectory(ChoreoTraj.LTrenchSwipeBumpReturn.name())),
                 // Start Choreo following
                 Commands.startEnd(
                                 () ->
                                         SwerveSubsystem.getInstance()
-                                                .setWantedState(
-                                                        SwerveStates.CHOREO_PATH_ROTATION_LOCK),
+                                                .setWantedState(SwerveStates.CHOREO_PATH),
                                 () ->
                                         SwerveSubsystem.getInstance()
                                                 .setWantedState(
                                                         SwerveStates.FIELD_CENTRIC_ROTATION_LOCK))
-                        .until(SwerveSubsystem.getInstance()::isAtChoreoSetpoint));
+                        .until(
+                                () ->
+                                        SwerveSubsystem.getInstance().isAtChoreoSetpoint()
+                                                && SwerveSubsystem.getInstance()
+                                                        .hasChoreoTimeElapsed(1)),
+                // Start shooting here
+                Commands.runOnce(
+                        () -> {
+                            ShooterSubsystem.getInstance().setWantedState(ShooterStates.SHOOT);
+                            IntakeSubsystem.getInstance().setWantedState(IntakeStates.SQUEEZE);
+                        }),
+                // Shoot for 2 seconds
+                new WaitCommand(3),
+                Commands.runOnce(
+                        () -> {
+                            RoofSubsystem.getInstance().setWantedState(RoofStates.DOWN);
+                        }));
     }
 }

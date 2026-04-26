@@ -24,85 +24,64 @@ public record ChoreoTraj(
     Pose2d initialPoseBlue,
     Pose2d endPoseBlue
 ) {
-    public static final ChoreoTraj CitrusLeftSide = new ChoreoTraj(
-	    "CitrusLeftSide",
+    public static final ChoreoTraj LTrenchStartBumpReturn = new ChoreoTraj(
+	    "LTrenchStartBumpReturn",
 	    OptionalInt.empty(),
-	    9.19568,
+	    5.55276,
 	    new Pose2d(4.416, 7.48, Rotation2d.fromRadians(0.005)),
-	    new Pose2d(2.872, 5.535, Rotation2d.fromRadians(2.503))
+	    new Pose2d(2.872, 5.535, Rotation2d.fromRadians(3.14))
 	);
-	public static final ChoreoTraj CitrusLeftSideSecondPass = new ChoreoTraj(
-	    "CitrusLeftSideSecondPass",
+	public static final ChoreoTraj LTrenchSwipeBumpReturn = new ChoreoTraj(
+	    "LTrenchSwipeBumpReturn",
 	    OptionalInt.empty(),
-	    6.82354,
+	    5.24945,
 	    new Pose2d(2.887, 5.604, Rotation2d.fromRadians(2.165)),
-	    new Pose2d(2.872, 5.535, Rotation2d.fromRadians(1.584))
+	    new Pose2d(2.872, 5.535, Rotation2d.fromRadians(-3.122))
 	);
-	public static final ChoreoTraj CitrusLeftSideSecondPassBump = new ChoreoTraj(
-	    "CitrusLeftSideSecondPassBump",
+	public static final ChoreoTraj LTrenchStartTrenchReturn = new ChoreoTraj(
+	    "LTrenchStartTrenchReturn",
 	    OptionalInt.empty(),
-	    7.11353,
-	    new Pose2d(2.887, 5.604, Rotation2d.fromRadians(2.165)),
-	    new Pose2d(2.872, 5.535, Rotation2d.fromRadians(3.112))
+	    5.77419,
+	    new Pose2d(4.416, 7.48, Rotation2d.fromRadians(0.006)),
+	    new Pose2d(3.019, 7.213, Rotation2d.fromRadians(3.141))
 	);
-	public static final ChoreoTraj CitrusRightSide = new ChoreoTraj(
-	    "CitrusRightSide",
+	public static final ChoreoTraj SynergyFarBumpP2 = new ChoreoTraj(
+	    "SynergyFarBumpP2",
 	    OptionalInt.empty(),
-	    6.23673,
-	    new Pose2d(4.47, 0.64, Rotation2d.fromRadians(1.571)),
-	    new Pose2d(2.755, 2.534, Rotation2d.fromRadians(-2.467))
-	);
-	public static final ChoreoTraj CitrusRightSideSecondPass = new ChoreoTraj(
-	    "CitrusRightSideSecondPass",
-	    OptionalInt.empty(),
-	    5.85297,
-	    new Pose2d(2.911, 2.329, Rotation2d.fromRadians(-1.772)),
-	    new Pose2d(2.779, 2.585, Rotation2d.fromRadians(-1.545))
-	);
-	public static final ChoreoTraj CitrusRightSideSecondPassBump = new ChoreoTraj(
-	    "CitrusRightSideSecondPassBump",
-	    OptionalInt.empty(),
-	    6.20956,
-	    new Pose2d(2.911, 2.329, Rotation2d.fromRadians(-1.772)),
-	    new Pose2d(2.779, 2.585, Rotation2d.fromRadians(-1.545))
-	);
-	public static final ChoreoTraj CitrusSynergyFarBumpP2 = new ChoreoTraj(
-	    "CitrusSynergyFarBumpP2",
-	    OptionalInt.empty(),
-	    2.0699,
-	    new Pose2d(7.004, 7.504, Rotation2d.fromRadians(-1.571)),
+	    1.84602,
+	    new Pose2d(7.823, 7.462, Rotation2d.fromRadians(-1.571)),
 	    new Pose2d(6.062, 2.517, Rotation2d.fromRadians(3.142))
 	);
-	public static final ChoreoTraj CitrusSynergyFarBumpP3 = new ChoreoTraj(
-	    "CitrusSynergyFarBumpP3",
+	public static final ChoreoTraj SynergyFarBumpP3 = new ChoreoTraj(
+	    "SynergyFarBumpP3",
 	    OptionalInt.empty(),
 	    2.31949,
 	    new Pose2d(6.062, 2.517, Rotation2d.fromRadians(-3.142)),
 	    new Pose2d(1.532, 5.406, Rotation2d.fromRadians(2.678))
 	);
-	public static final ChoreoTraj CitrusSynergyP1 = new ChoreoTraj(
-	    "CitrusSynergyP1",
+	public static final ChoreoTraj SynergyP1 = new ChoreoTraj(
+	    "SynergyP1",
 	    OptionalInt.empty(),
-	    1.25911,
+	    1.41676,
 	    new Pose2d(3.548, 7.404, Rotation2d.fromRadians(-1.571)),
-	    new Pose2d(7.043, 7.504, Rotation2d.fromRadians(-1.571))
+	    new Pose2d(7.823, 7.402, Rotation2d.fromRadians(-1.571))
 	);
-	public static final ChoreoTraj CitrusSynergyP2 = new ChoreoTraj(
-	    "CitrusSynergyP2",
+	public static final ChoreoTraj SynergyP2 = new ChoreoTraj(
+	    "SynergyP2",
 	    OptionalInt.empty(),
-	    2.54177,
-	    new Pose2d(7.043, 7.504, Rotation2d.fromRadians(-1.571)),
+	    2.46192,
+	    new Pose2d(7.823, 7.404, Rotation2d.fromRadians(-1.571)),
 	    new Pose2d(6.215, 5.368, Rotation2d.fromRadians(3.142))
 	);
-	public static final ChoreoTraj CitrusSynergyP3 = new ChoreoTraj(
-	    "CitrusSynergyP3",
+	public static final ChoreoTraj SynergyP3 = new ChoreoTraj(
+	    "SynergyP3",
 	    OptionalInt.empty(),
 	    1.50074,
 	    new Pose2d(6.215, 5.368, Rotation2d.fromRadians(3.142)),
 	    new Pose2d(1.532, 5.406, Rotation2d.fromRadians(2.678))
 	);
-	public static final ChoreoTraj CitrusSynergyP4 = new ChoreoTraj(
-	    "CitrusSynergyP4",
+	public static final ChoreoTraj SynergyP4 = new ChoreoTraj(
+	    "SynergyP4",
 	    OptionalInt.empty(),
 	    2.49784,
 	    new Pose2d(1.532, 5.406, Rotation2d.fromRadians(2.678)),
@@ -129,27 +108,64 @@ public record ChoreoTraj(
 	    new Pose2d(2.5, 1, Rotation2d.fromRadians(0)),
 	    new Pose2d(2.5, 5, Rotation2d.fromRadians(0))
 	);
+	public static final ChoreoTraj LTrenchSwipeTrenchReturn = new ChoreoTraj(
+	    "LTrenchSwipeTrenchReturn",
+	    OptionalInt.empty(),
+	    4.81522,
+	    new Pose2d(3.027, 7.212, Rotation2d.fromRadians(0.006)),
+	    new Pose2d(3.019, 7.213, Rotation2d.fromRadians(3.141))
+	);
+	public static final ChoreoTraj RTrenchStartBumpReturn = new ChoreoTraj(
+	    "RTrenchStartBumpReturn",
+	    OptionalInt.empty(),
+	    5.47746,
+	    new Pose2d(4.416, 0.59, Rotation2d.fromRadians(0.005)),
+	    new Pose2d(2.872, 2.53, Rotation2d.fromRadians(-3.124))
+	);
+	public static final ChoreoTraj RTrenchSwipeBumpReturn = new ChoreoTraj(
+	    "RTrenchSwipeBumpReturn",
+	    OptionalInt.empty(),
+	    5.56337,
+	    new Pose2d(2.887, 2.47, Rotation2d.fromRadians(2.165)),
+	    new Pose2d(2.872, 2.53, Rotation2d.fromRadians(-3.122))
+	);
+	public static final ChoreoTraj RTrenchStartTrenchReturn = new ChoreoTraj(
+	    "RTrenchStartTrenchReturn",
+	    OptionalInt.empty(),
+	    5.99469,
+	    new Pose2d(4.416, 0.59, Rotation2d.fromRadians(0.006)),
+	    new Pose2d(3.019, 0.86, Rotation2d.fromRadians(3.141))
+	);
+	public static final ChoreoTraj RTrenchSwipeTrenchReturn = new ChoreoTraj(
+	    "RTrenchSwipeTrenchReturn",
+	    OptionalInt.empty(),
+	    4.84453,
+	    new Pose2d(3.027, 0.86, Rotation2d.fromRadians(0.006)),
+	    new Pose2d(3.019, 0.86, Rotation2d.fromRadians(3.141))
+	);
 
     /**
      * A map between trajectory names and their corresponding data.
      * This allows for trajectory data to be looked up with strings during runtime.
      */
     public static final Map<String, ChoreoTraj> ALL_TRAJECTORIES = Map.ofEntries(
-    	Map.entry("CitrusLeftSide", CitrusLeftSide),
-		Map.entry("CitrusLeftSideSecondPass", CitrusLeftSideSecondPass),
-		Map.entry("CitrusLeftSideSecondPassBump", CitrusLeftSideSecondPassBump),
-		Map.entry("CitrusRightSide", CitrusRightSide),
-		Map.entry("CitrusRightSideSecondPass", CitrusRightSideSecondPass),
-		Map.entry("CitrusRightSideSecondPassBump", CitrusRightSideSecondPassBump),
-		Map.entry("CitrusSynergyFarBumpP2", CitrusSynergyFarBumpP2),
-		Map.entry("CitrusSynergyFarBumpP3", CitrusSynergyFarBumpP3),
-		Map.entry("CitrusSynergyP1", CitrusSynergyP1),
-		Map.entry("CitrusSynergyP2", CitrusSynergyP2),
-		Map.entry("CitrusSynergyP3", CitrusSynergyP3),
-		Map.entry("CitrusSynergyP4", CitrusSynergyP4),
+    	Map.entry("LTrenchStartBumpReturn", LTrenchStartBumpReturn),
+		Map.entry("LTrenchSwipeBumpReturn", LTrenchSwipeBumpReturn),
+		Map.entry("LTrenchStartTrenchReturn", LTrenchStartTrenchReturn),
+		Map.entry("SynergyFarBumpP2", SynergyFarBumpP2),
+		Map.entry("SynergyFarBumpP3", SynergyFarBumpP3),
+		Map.entry("SynergyP1", SynergyP1),
+		Map.entry("SynergyP2", SynergyP2),
+		Map.entry("SynergyP3", SynergyP3),
+		Map.entry("SynergyP4", SynergyP4),
 		Map.entry("SlopAutoClimb", SlopAutoClimb),
 		Map.entry("SlopAutoStart", SlopAutoStart),
-		Map.entry("TestPath", TestPath)
+		Map.entry("TestPath", TestPath),
+		Map.entry("LTrenchSwipeTrenchReturn", LTrenchSwipeTrenchReturn),
+		Map.entry("RTrenchStartBumpReturn", RTrenchStartBumpReturn),
+		Map.entry("RTrenchSwipeBumpReturn", RTrenchSwipeBumpReturn),
+		Map.entry("RTrenchStartTrenchReturn", RTrenchStartTrenchReturn),
+		Map.entry("RTrenchSwipeTrenchReturn", RTrenchSwipeTrenchReturn)
     );
 
     /**

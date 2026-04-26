@@ -135,7 +135,7 @@ public abstract class OI {
                 .onTrue(
                         Commands.runOnce(
                                 () -> RoofSubsystem.getInstance().setWantedState(RoofStates.DOWN)));
-        operator_controller_.x().onTrue(ControlCommands.toggleIsAbleToRack());
+        //operator_controller_.x().onTrue(ControlCommands.toggleIsAbleToRack());
     }
 
     /**

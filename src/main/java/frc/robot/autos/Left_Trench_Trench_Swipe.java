@@ -2,7 +2,6 @@ package frc.robot.autos;
 
 import com.marswars.auto.Auto;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.lib2026.FieldTargets;
 import frc.robot.subsystems.intake.IntakeConstants.IntakeStates;
@@ -14,20 +13,34 @@ import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.swerve.SwerveConstants.SwerveStates;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 
-public class Citrus_Right_Side extends Auto {
+public class Left_Trench_Trench_Swipe extends Auto {
 
-    public Citrus_Right_Side() {
+    public Left_Trench_Trench_Swipe() {
         // =============================================================================
         // TRAJECTORY LOADING
-        // These should be loaded in the order they will be used to ensure correct start poses
+        // These should be loaded in the order they will be used to ensure correct start
+        // poses
         // =============================================================================
-        loadTrajectory(ChoreoTraj.CitrusRightSide.name());
-        loadTrajectory(ChoreoTraj.CitrusRightSideSecondPass.name());
-        loadTrajectory(ChoreoTraj.CitrusRightSideSecondPassBump.name());
+        loadTrajectory(ChoreoTraj.LTrenchStartTrenchReturn.name());
+        loadTrajectory(ChoreoTraj.LTrenchSwipeTrenchReturn.name());
 
         // =============================================================================
         // EVENT TRIGGER BINDING
         // =============================================================================
+        SwerveSubsystem.getInstance()
+                .getChoreoEventTimeTrigger("Raise Hopper")
+                .onTrue(
+                        Commands.runOnce(
+                                () -> {
+                                    RoofSubsystem.getInstance().setWantedState(RoofStates.UP);
+                                }));
+        SwerveSubsystem.getInstance()
+                .getChoreoEventTimeTrigger("Lower Hopper")
+                .onTrue(
+                        Commands.runOnce(
+                                () -> {
+                                    RoofSubsystem.getInstance().setWantedState(RoofStates.DOWN);
+                                }));
         SwerveSubsystem.getInstance()
                 .getChoreoEventTimeTrigger("Intake Out")
                 .onTrue(
@@ -42,6 +55,16 @@ public class Citrus_Right_Side extends Auto {
                                 () ->
                                         IntakeSubsystem.getInstance()
                                                 .setWantedState(IntakeStates.STORE)));
+        SwerveSubsystem.getInstance()
+                .getChoreoEventTimeTrigger("Shoot")
+                .onTrue(
+                        Commands.runOnce(
+                                () -> {
+                                    ShooterSubsystem.getInstance()
+                                            .setWantedState(ShooterStates.SHOOT);
+                                    SwerveSubsystem.getInstance()
+                                            .setWantedState(SwerveStates.CHOREO_PATH_ROTATION_LOCK);
+                                }));
 
         // =============================================================================
         // AUTO COMMAND SEQUENCE
@@ -54,11 +77,10 @@ public class Citrus_Right_Side extends Auto {
                             ShooterSubsystem.getInstance().setWantedState(ShooterStates.TRACKING);
                             RoofSubsystem.getInstance().setWantedState(RoofStates.DOWN);
                         }),
-
                 // Set the initial trajectory
                 SwerveSubsystem.getInstance()
                         .setDesiredChoreoTrajectoryCommand(
-                                getTrajectory(ChoreoTraj.CitrusRightSide.name())),
+                                getTrajectory(ChoreoTraj.LTrenchStartTrenchReturn.name())),
                 // Start Choreo following
                 Commands.startEnd(
                                 () ->
@@ -73,34 +95,26 @@ public class Citrus_Right_Side extends Auto {
                 Commands.runOnce(
                         () -> {
                             ShooterSubsystem.getInstance().setWantedState(ShooterStates.SHOOT);
+                            IntakeSubsystem.getInstance().setWantedState(IntakeStates.SQUEEZE);
                         }),
                 // Shoot for 3 seconds
                 new WaitCommand(3),
-                // Pull the intake in while we shoot to help index more balls
-                Commands.runOnce(
-                        () -> IntakeSubsystem.getInstance().setWantedState(IntakeStates.INTAKE)),
                 Commands.runOnce(
                         () -> {
                             RoofSubsystem.getInstance().setWantedState(RoofStates.DOWN);
                         }),
                 // Continue to shoot for 3 more seconds
-                new WaitCommand(3),
+                new WaitCommand(1),
                 // Stop shooting
                 Commands.runOnce(
                         () -> {
                             ShooterSubsystem.getInstance().setWantedState(ShooterStates.TRACKING);
-                            IntakeSubsystem.getInstance().setWantedState(IntakeStates.STORE);
+                            IntakeSubsystem.getInstance().setWantedState(IntakeStates.SQUEEZE_HOLD);
                         }),
                 // Set the second trajectory for the second pass
-                new ConditionalCommand(
-                        SwerveSubsystem.getInstance()
-                                .setDesiredChoreoTrajectoryCommand(
-                                        getTrajectory(ChoreoTraj.CitrusRightSideSecondPass.name())),
-                        SwerveSubsystem.getInstance()
-                                .setDesiredChoreoTrajectoryCommand(
-                                        getTrajectory(
-                                                ChoreoTraj.CitrusRightSideSecondPassBump.name())),
-                        RoofSubsystem.getInstance()::isDown),
+                SwerveSubsystem.getInstance()
+                        .setDesiredChoreoTrajectoryCommand(
+                                getTrajectory(ChoreoTraj.LTrenchSwipeTrenchReturn.name())),
                 // Start Choreo following
                 Commands.startEnd(
                                 () ->
@@ -119,12 +133,10 @@ public class Citrus_Right_Side extends Auto {
                 Commands.runOnce(
                         () -> {
                             ShooterSubsystem.getInstance().setWantedState(ShooterStates.SHOOT);
+                            IntakeSubsystem.getInstance().setWantedState(IntakeStates.SQUEEZE);
                         }),
                 // Shoot for 3 seconds
                 new WaitCommand(3),
-                // Pull the intake in while we shoot to help index more balls
-                Commands.runOnce(
-                        () -> IntakeSubsystem.getInstance().setWantedState(IntakeStates.STORE)),
                 Commands.runOnce(
                         () -> {
                             RoofSubsystem.getInstance().setWantedState(RoofStates.DOWN);

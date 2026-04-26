@@ -187,19 +187,6 @@
             }
           },
           {
-            "title": "Hub - Active",
-            "x": 896.0,
-            "y": 0.0,
-            "width": 256.0,
-            "height": 256.0,
-            "type": "Single Color View",
-            "properties": {
-              "topic": "/Robot/HubMonitor/Active",
-              "period": 0.06,
-              "data_type": "string"
-            }
-          },
-          {
             "title": "Scheduler",
             "x": 256.0,
             "y": 512.0,
@@ -239,22 +226,6 @@
               "time_display_mode": "Minutes and Seconds",
               "red_start_time": 20,
               "yellow_start_time": 30
-            }
-          },
-          {
-            "title": "Hub - Shift Time Remaining",
-            "x": 1152.0,
-            "y": 0.0,
-            "width": 256.0,
-            "height": 256.0,
-            "type": "Match Time",
-            "properties": {
-              "topic": "/Robot/HubMonitor/ShiftTimeRemaining",
-              "period": 0.06,
-              "data_type": "double",
-              "time_display_mode": "Minutes and Seconds",
-              "red_start_time": 3,
-              "yellow_start_time": 10
             }
           },
           {
@@ -347,6 +318,35 @@
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": false
+            }
+          },
+          {
+            "title": "Hub - Active",
+            "x": 896.0,
+            "y": 0.0,
+            "width": 256.0,
+            "height": 256.0,
+            "type": "Single Color View",
+            "properties": {
+              "topic": "/Robot/HubMonitor/Active",
+              "period": 0.06,
+              "data_type": "string"
+            }
+          },
+          {
+            "title": "Hub - Shift Time Remaining",
+            "x": 1152.0,
+            "y": 0.0,
+            "width": 256.0,
+            "height": 256.0,
+            "type": "Match Time",
+            "properties": {
+              "topic": "/Robot/HubMonitor/StatusTimeRemaining",
+              "period": 0.06,
+              "data_type": "double",
+              "time_display_mode": "Minutes and Seconds",
+              "red_start_time": 20,
+              "yellow_start_time": 30
             }
           }
         ]
