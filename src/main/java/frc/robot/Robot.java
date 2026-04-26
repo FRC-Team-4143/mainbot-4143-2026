@@ -101,6 +101,8 @@ public class Robot extends TimedRobot {
 
     @Override
     public void disabledPeriodic() {
+        AutoManager.getInstance().periodic();
+
         // Allow chaning alliance perspective while disabled
         if (hasAllianceChanged()) {
             SwerveSubsystem.getInstance()
