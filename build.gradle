@@ -86,6 +86,13 @@ wpi.java.debugJni = false
 def includeDesktopSupport = false
 
 repositories {
+    // Use local MW-Lib build if -PuseLocalMWLib is specified
+    if (project.hasProperty('useLocalMWLib')) {
+        flatDir {
+            dirs "${rootProject.projectDir}/../MW-Lib/build/libs"
+        }
+        println "Using local MW-Lib from: ${rootProject.projectDir}/../MW-Lib/build/libs"
+    }
     maven {
         url = uri('https://maven.pkg.github.com/FRC-Team-4143/MW-Lib')
         credentials {
@@ -93,9 +100,6 @@ repositories {
             password = '\u0067\u0068\u0070\u005f\u004d\u006b\u0076\u006c\u0074\u0073\u0049\u0045\u004a\u0070\u006c\u0078\u0073\u0069\u0031\u0076\u0037\u0049\u0070\u0047\u0039\u0030\u004b\u0062\u006f\u0068\u0050\u0034\u0047\u0032\u0032\u0044\u0030\u0059\u0032\u0064'
         }
     }
-    // flatDir{
-    //     dirs 'C:/Users/FIRSTMentor/Documents/MW-Lib/build/libs'
-    // }
 }
 
 // Defining my dependencies. In this case, WPILib (+ friends), and vendor libraries.
@@ -121,8 +125,12 @@ dependencies {
 
     testImplementation 'org.junit.jupiter:junit-jupiter:5.10.1'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-    implementation 'com.github.frc-team-4143:mw-lib-java:26.14.3'
-    //implementation name: 'MW-Lib', version: '', ext: 'jar'
+    
+    if (project.hasProperty('useLocalMWLib')) {
+        implementation name: 'MW-Lib', ext: 'jar'
+    } else {
+        implementation 'com.github.frc-team-4143:mw-lib-java:26.14.3'
+    }
 }
 
 test {
