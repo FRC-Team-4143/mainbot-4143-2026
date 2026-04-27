@@ -5,6 +5,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import frc.robot.lib2026.FieldTargets;
+import frc.robot.subsystems.gamestates.GameStatesConstants.GameStates;
+import frc.robot.subsystems.gamestates.GameStatesSubsystem;
 import frc.robot.subsystems.intake.IntakeConstants.IntakeStates;
 import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.localization.LocalizationConstants.LocalizationStates;
@@ -121,15 +123,41 @@ public class ControlCommands {
                                     .setWantedState(LocalizationStates.SHOOTING_FOCUS);
                         },
                         () -> {
-                            if (ShooterSubsystem.getInstance().isShooterReady()) {
-                                IntakeSubsystem.getInstance().setWantedState(IntakeStates.SQUEEZE);
+                            if (GameStatesSubsystem.getInstance().getSystemState()
+                                    == GameStates.SCORE) {
+                                if (ShooterSubsystem.getInstance().isShooterReady()) {
+                                    if (isAbleToRack) {
+                                        IntakeSubsystem.getInstance()
+                                                .setWantedState(IntakeStates.SQUEEZE);
+                                    }
+
+                                    if (SwerveSubsystem.getInstance().isChassisStationary()) {
+                                        SwerveSubsystem.getInstance()
+                                                .setWantedState(SwerveStates.BRAKE);
+                                    } else {
+                                        SwerveSubsystem.getInstance()
+                                                .setWantedState(
+                                                        SwerveStates.FIELD_CENTRIC_ROTATION_LOCK);
+                                    }
+                                }
                             }
-                            if (SwerveSubsystem.getInstance().isChassisStationary()
-                                    && ShooterSubsystem.getInstance().isShooterReady()) {
-                                SwerveSubsystem.getInstance().setWantedState(SwerveStates.BRAKE);
-                            } else {
-                                SwerveSubsystem.getInstance()
-                                        .setWantedState(SwerveStates.FIELD_CENTRIC_ROTATION_LOCK);
+
+                            if (GameStatesSubsystem.getInstance().getSystemState()
+                                    == GameStates.PASS) {
+                                if (ShooterSubsystem.getInstance().isShooterReady()) {
+                                    if (SwerveSubsystem.getInstance().isChassisStationary()) {
+                                        SwerveSubsystem.getInstance()
+                                                .setWantedState(SwerveStates.BRAKE);
+                                        if (isAbleToRack) {
+                                            IntakeSubsystem.getInstance()
+                                                    .setWantedState(IntakeStates.SQUEEZE);
+                                        }
+                                    } else {
+                                        SwerveSubsystem.getInstance()
+                                                .setWantedState(
+                                                        SwerveStates.FIELD_CENTRIC_ROTATION_LOCK);
+                                    }
+                                }
                             }
                         },
                         (interrupted) -> {

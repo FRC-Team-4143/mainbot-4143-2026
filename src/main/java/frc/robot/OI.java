@@ -121,7 +121,7 @@ public abstract class OI {
                                     ShooterSubsystem.getInstance()
                                             .adjustHood(Units.degreesToRadians(1));
                                 }));
-        // operator_controller_.x().onTrue(ControlCommands.toggleIsAbleToRack());
+        operator_controller_.x().onTrue(ControlCommands.toggleIsAbleToRack());
     }
 
     /**
