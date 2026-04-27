@@ -5,13 +5,10 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import frc.robot.lib2026.FieldTargets;
-import frc.robot.subsystems.gamestates.GameStatesConstants.GameStates;
-import frc.robot.subsystems.gamestates.GameStatesSubsystem;
 import frc.robot.subsystems.intake.IntakeConstants.IntakeStates;
 import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.localization.LocalizationConstants.LocalizationStates;
 import frc.robot.subsystems.localization.LocalizationSubsystem;
-import frc.robot.subsystems.roof.RoofSubsystem;
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterStates;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.swerve.SwerveConstants.SwerveStates;
@@ -122,11 +119,9 @@ public class ControlCommands {
                             SwerveSubsystem.getInstance().setTeleOpVelocityScalar(0.25);
                             LocalizationSubsystem.getInstance()
                                     .setWantedState(LocalizationStates.SHOOTING_FOCUS);
-                                
-                            
                         },
                         () -> {
-                            if(ShooterSubsystem.getInstance().isShooterReady()){
+                            if (ShooterSubsystem.getInstance().isShooterReady()) {
                                 IntakeSubsystem.getInstance().setWantedState(IntakeStates.SQUEEZE);
                             }
                             if (SwerveSubsystem.getInstance().isChassisStationary()
@@ -145,8 +140,6 @@ public class ControlCommands {
                             LocalizationSubsystem.getInstance()
                                     .setWantedState(LocalizationStates.FULL);
                             IntakeSubsystem.getInstance().setWantedState(IntakeStates.DEPLOYED);
-                            RoofSubsystem.getInstance()
-                                    .setWantedState(RoofSubsystem.getInstance().getIdlStates());
                         },
                         () -> false)
                 .withName("Shoot Fuel")
