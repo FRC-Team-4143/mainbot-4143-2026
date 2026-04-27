@@ -6,8 +6,6 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.lib2026.FieldTargets;
 import frc.robot.subsystems.intake.IntakeConstants.IntakeStates;
 import frc.robot.subsystems.intake.IntakeSubsystem;
-import frc.robot.subsystems.roof.RoofConstants.RoofStates;
-import frc.robot.subsystems.roof.RoofSubsystem;
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterStates;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.swerve.SwerveConstants.SwerveStates;
@@ -27,20 +25,6 @@ public class Slop_Auto extends Auto {
         // =============================================================================
         // EVENT TRIGGER BINDING
         // =============================================================================
-        SwerveSubsystem.getInstance()
-                .getChoreoEventTimeTrigger("Raise Hopper")
-                .onTrue(
-                        Commands.runOnce(
-                                () -> {
-                                    RoofSubsystem.getInstance().setWantedState(RoofStates.UP);
-                                }));
-        SwerveSubsystem.getInstance()
-                .getChoreoEventTimeTrigger("Lower Hopper")
-                .onTrue(
-                        Commands.runOnce(
-                                () -> {
-                                    RoofSubsystem.getInstance().setWantedState(RoofStates.DOWN);
-                                }));
         SwerveSubsystem.getInstance()
                 .getChoreoEventTimeTrigger("Intake Out")
                 .onTrue(
@@ -65,7 +49,6 @@ public class Slop_Auto extends Auto {
                         () -> {
                             ShooterSubsystem.getInstance().setTarget(FieldTargets.Shooter.HUB);
                             ShooterSubsystem.getInstance().setWantedState(ShooterStates.TRACKING);
-                            RoofSubsystem.getInstance().setWantedState(RoofStates.DOWN);
                         }),
                 // Set the initial trajectory
                 SwerveSubsystem.getInstance()
@@ -91,10 +74,6 @@ public class Slop_Auto extends Auto {
                 // Pull the intake in while we shoot to help index more balls
                 Commands.runOnce(
                         () -> IntakeSubsystem.getInstance().setWantedState(IntakeStates.INTAKE)),
-                Commands.runOnce(
-                        () -> {
-                            RoofSubsystem.getInstance().setWantedState(RoofStates.DOWN);
-                        }),
                 // Continue to shoot for 3 more seconds
                 new WaitCommand(3),
                 // Stop shooting

@@ -6,8 +6,6 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.lib2026.FieldTargets;
 import frc.robot.subsystems.intake.IntakeConstants.IntakeStates;
 import frc.robot.subsystems.intake.IntakeSubsystem;
-import frc.robot.subsystems.roof.RoofConstants.RoofStates;
-import frc.robot.subsystems.roof.RoofSubsystem;
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterStates;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.swerve.SwerveConstants.SwerveStates;
@@ -60,7 +58,6 @@ public class Right_Trench_Bump_Swipe extends Auto {
                         () -> {
                             ShooterSubsystem.getInstance().setTarget(FieldTargets.Shooter.HUB);
                             ShooterSubsystem.getInstance().setWantedState(ShooterStates.TRACKING);
-                            RoofSubsystem.getInstance().setWantedState(RoofStates.DOWN);
                         }),
 
                 // Set the initial trajectory
@@ -85,10 +82,6 @@ public class Right_Trench_Bump_Swipe extends Auto {
                         }),
                 // Shoot for 2 seconds
                 new WaitCommand(3),
-                Commands.runOnce(
-                        () -> {
-                            RoofSubsystem.getInstance().setWantedState(RoofStates.DOWN);
-                        }),
                 // Continue to shoot for 2 more seconds
                 new WaitCommand(1),
                 // Stop shooting
@@ -122,10 +115,6 @@ public class Right_Trench_Bump_Swipe extends Auto {
                             IntakeSubsystem.getInstance().setWantedState(IntakeStates.SQUEEZE);
                         }),
                 // Shoot for 2 seconds
-                new WaitCommand(3),
-                Commands.runOnce(
-                        () -> {
-                            RoofSubsystem.getInstance().setWantedState(RoofStates.DOWN);
-                        }));
+                new WaitCommand(3));
     }
 }

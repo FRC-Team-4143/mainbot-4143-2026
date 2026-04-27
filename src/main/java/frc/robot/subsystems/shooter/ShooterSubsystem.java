@@ -497,15 +497,15 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
         if (MathUtil.isNear(FieldTargets.Shooter.HUB.getZ(), target.getZ(), 1E-6)) {
             launch_calculator_ = CONSTANTS.HUB_LAUNCH_CALCULATOR;
             setShootingTolerances(
-                            FieldTargets.Shooter.FLYWHEEL_SPEED_TOLERANCE,
-                            FieldTargets.Shooter.HOOD_POSITION_TOLERANCE,
-                            FieldTargets.Shooter.ROTATION_ANGLE_TOLERANCE);
+                    FieldTargets.Shooter.FLYWHEEL_SPEED_TOLERANCE,
+                    FieldTargets.Shooter.HOOD_POSITION_TOLERANCE,
+                    FieldTargets.Shooter.ROTATION_ANGLE_TOLERANCE);
         } else {
             launch_calculator_ = CONSTANTS.PASS_LAUNCH_CALCULATOR;
             setShootingTolerances(
-                            FieldTargets.Shooter.FLYWHEEL_PASS_SPEED_TOLERANCE,
-                            FieldTargets.Shooter.HOOD_PASS_POSITION_TOLERANCE,
-                            FieldTargets.Shooter.ROTATION_PASS_ANGLE_TOLERANCE);
+                    FieldTargets.Shooter.FLYWHEEL_PASS_SPEED_TOLERANCE,
+                    FieldTargets.Shooter.HOOD_PASS_POSITION_TOLERANCE,
+                    FieldTargets.Shooter.ROTATION_PASS_ANGLE_TOLERANCE);
         }
     }
 

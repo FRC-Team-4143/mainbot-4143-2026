@@ -11,7 +11,6 @@ import frc.robot.subsystems.intake.IntakeConstants.IntakeStates;
 import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.localization.LocalizationConstants.LocalizationStates;
 import frc.robot.subsystems.localization.LocalizationSubsystem;
-import frc.robot.subsystems.roof.RoofSubsystem;
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterStates;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.swerve.SwerveConstants.SwerveStates;
@@ -122,19 +121,43 @@ public class ControlCommands {
                             SwerveSubsystem.getInstance().setTeleOpVelocityScalar(0.25);
                             LocalizationSubsystem.getInstance()
                                     .setWantedState(LocalizationStates.SHOOTING_FOCUS);
-                                
-                            
                         },
                         () -> {
-                            if(ShooterSubsystem.getInstance().isShooterReady()){
-                                IntakeSubsystem.getInstance().setWantedState(IntakeStates.SQUEEZE);
+                            if (GameStatesSubsystem.getInstance().getSystemState()
+                                    == GameStates.SCORE) {
+                                if (ShooterSubsystem.getInstance().isShooterReady()) {
+                                    if (isAbleToRack) {
+                                        IntakeSubsystem.getInstance()
+                                                .setWantedState(IntakeStates.SQUEEZE);
+                                    }
+
+                                    if (SwerveSubsystem.getInstance().isChassisStationary()) {
+                                        SwerveSubsystem.getInstance()
+                                                .setWantedState(SwerveStates.BRAKE);
+                                    } else {
+                                        SwerveSubsystem.getInstance()
+                                                .setWantedState(
+                                                        SwerveStates.FIELD_CENTRIC_ROTATION_LOCK);
+                                    }
+                                }
                             }
-                            if (SwerveSubsystem.getInstance().isChassisStationary()
-                                    && ShooterSubsystem.getInstance().isShooterReady()) {
-                                SwerveSubsystem.getInstance().setWantedState(SwerveStates.BRAKE);
-                            } else {
-                                SwerveSubsystem.getInstance()
-                                        .setWantedState(SwerveStates.FIELD_CENTRIC_ROTATION_LOCK);
+
+                            if (GameStatesSubsystem.getInstance().getSystemState()
+                                    == GameStates.PASS) {
+                                if (ShooterSubsystem.getInstance().isShooterReady()) {
+                                    if (SwerveSubsystem.getInstance().isChassisStationary()) {
+                                        SwerveSubsystem.getInstance()
+                                                .setWantedState(SwerveStates.BRAKE);
+                                        if (isAbleToRack) {
+                                            IntakeSubsystem.getInstance()
+                                                    .setWantedState(IntakeStates.SQUEEZE);
+                                        }
+                                    } else {
+                                        SwerveSubsystem.getInstance()
+                                                .setWantedState(
+                                                        SwerveStates.FIELD_CENTRIC_ROTATION_LOCK);
+                                    }
+                                }
                             }
                         },
                         (interrupted) -> {
@@ -145,8 +168,6 @@ public class ControlCommands {
                             LocalizationSubsystem.getInstance()
                                     .setWantedState(LocalizationStates.FULL);
                             IntakeSubsystem.getInstance().setWantedState(IntakeStates.DEPLOYED);
-                            RoofSubsystem.getInstance()
-                                    .setWantedState(RoofSubsystem.getInstance().getIdlStates());
                         },
                         () -> false)
                 .withName("Shoot Fuel")

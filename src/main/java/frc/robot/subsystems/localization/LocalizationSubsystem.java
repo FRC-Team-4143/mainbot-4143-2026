@@ -1,7 +1,6 @@
 package frc.robot.subsystems.localization;
 
 import com.marswars.auto.AutoManager;
-import com.marswars.geometry.AllianceFlipUtil;
 import com.marswars.proxy_server.ProxyServerThread;
 import com.marswars.proxy_server.TagSolutionPacket.TagSolutionData;
 import com.marswars.subsystem.MwSubsystem;
@@ -220,10 +219,6 @@ public class LocalizationSubsystem extends MwSubsystem<LocalizationStates, Local
     public void resetPoseEstimatorAuto() {
         // Move robot to starting pose
         Pose2d start_pose = AutoManager.getInstance().getSelectedAuto().getStartPose();
-        Optional<Alliance> alliance = DriverStation.getAlliance();
-        if (alliance.isPresent() && alliance.get() == Alliance.Red) {
-            start_pose = AllianceFlipUtil.apply(start_pose);
-        }
         resetPoseEstimator(start_pose);
     }
 

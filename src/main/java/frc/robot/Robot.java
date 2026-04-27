@@ -29,8 +29,6 @@ import frc.robot.lib2026.HubMonitor;
 import frc.robot.subsystems.intake.IntakeConstants.IntakeStates;
 import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.localization.LocalizationSubsystem;
-import frc.robot.subsystems.roof.RoofConstants.RoofStates;
-import frc.robot.subsystems.roof.RoofSubsystem;
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterStates;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.swerve.SwerveConstants;
@@ -101,6 +99,8 @@ public class Robot extends TimedRobot {
 
     @Override
     public void disabledPeriodic() {
+        AutoManager.getInstance().periodic();
+
         // Allow chaning alliance perspective while disabled
         if (hasAllianceChanged()) {
             SwerveSubsystem.getInstance()
@@ -147,7 +147,6 @@ public class Robot extends TimedRobot {
         SwerveSubsystem.getInstance().setWantedState(SwerveStates.FIELD_CENTRIC);
         ShooterSubsystem.getInstance().setWantedState(ShooterStates.TUNING);
         IntakeSubsystem.getInstance().setWantedState(IntakeStates.TUNING);
-        RoofSubsystem.getInstance().setWantedState(RoofStates.TUNING);
     }
 
     @Override

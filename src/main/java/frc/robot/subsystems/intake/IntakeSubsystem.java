@@ -20,7 +20,9 @@ public class IntakeSubsystem extends MwSubsystem<IntakeStates, IntakeConstants> 
     private RollerMech roller_;
     private ArmMech pivot_;
     private Timer timer = new Timer();
-    private Debouncer homeDebouncer = new Debouncer(CONSTANTS.PIVOT_HOMING_WAIT_TIME, DebounceType.kFalling);
+    private Debouncer homeDebouncer =
+            new Debouncer(CONSTANTS.PIVOT_HOMING_WAIT_TIME, DebounceType.kFalling);
+
     // getInstance
     public static IntakeSubsystem getInstance() {
         if (instance_ == null) {
@@ -80,7 +82,8 @@ public class IntakeSubsystem extends MwSubsystem<IntakeStates, IntakeConstants> 
     @Override
     protected void handleStateTransition(IntakeStates wantedState) {
         // If pivot current spikes while in homing state, set current position as home
-        if (homeDebouncer.calculate(pivot_.getLeaderCurrent() > CONSTANTS.PIVOT_HOMING_CURRENT_THRESHOLD)
+        if (homeDebouncer.calculate(
+                        pivot_.getLeaderCurrent() > CONSTANTS.PIVOT_HOMING_CURRENT_THRESHOLD)
                 && system_state_ == IntakeStates.PIVOT_HOMING) {
             pivot_.setCurrentPosition(CONSTANTS.PIVOT_HOME_POSITION);
             setWantedState(IntakeStates.DEPLOYED);
@@ -93,24 +96,26 @@ public class IntakeSubsystem extends MwSubsystem<IntakeStates, IntakeConstants> 
                         || wantedState == IntakeStates.OUTTAKE
                         || wantedState == IntakeStates.DEPLOYED)) {
             system_state_ = IntakeStates.DEPLOYING;
-        } else if(system_state_ == IntakeStates.DEPLOYING && wantedState == IntakeStates.STORE){
+        } else if (system_state_ == IntakeStates.DEPLOYING && wantedState == IntakeStates.STORE) {
             system_state_ = IntakeStates.STORE;
-        }else if (system_state_ == IntakeStates.DEPLOYING) {
+        } else if (system_state_ == IntakeStates.DEPLOYING) {
             if (MathUtil.isNear(
                     CONSTANTS.PIVOT_DEPLOY_POSITION,
                     pivot_.getCurrentPosition(),
                     CONSTANTS.DEPLOY_PIVOT_TOLERANCE)) {
                 system_state_ = IntakeStates.DEPLOYED;
             }
-        }else if(wantedState == IntakeStates.SQUEEZE && (system_state_ == IntakeStates.DEPLOYED || system_state_ == IntakeStates.DEPLOYING)){
-            system_state_ = IntakeStates.SQUEEZEWAIT;
+        } else if (wantedState == IntakeStates.SQUEEZE
+                && (system_state_ == IntakeStates.DEPLOYED
+                        || system_state_ == IntakeStates.DEPLOYING)) {
+            system_state_ = IntakeStates.SQUEEZE_WAIT;
             timer.reset();
             timer.start();
-        }else if(system_state_ == IntakeStates.SQUEEZEWAIT){
-            if(timer.get() > CONSTANTS.SQUEEZEWAITTIME){
+        } else if (system_state_ == IntakeStates.SQUEEZE_WAIT) {
+            if (timer.get() > CONSTANTS.SQUEEZE_WAIT_TIME) {
                 system_state_ = IntakeStates.SQUEEZE;
             }
-        }else if (wantedState == IntakeStates.SQUEEZE
+        } else if (wantedState == IntakeStates.SQUEEZE
                 && pivot_.getCurrentPosition() > CONSTANTS.PIVOT_SQUEEZE_MAX_POSITION) {
             system_state_ = IntakeStates.SQUEEZE_HOLD;
             setWantedState(IntakeStates.SQUEEZE_HOLD);
@@ -154,7 +159,7 @@ public class IntakeSubsystem extends MwSubsystem<IntakeStates, IntakeConstants> 
                 roller_.setTargetDutyCycle(0.0);
                 pivot_.setTargetCurrent(CONSTANTS.PIVOT_SQUEEZE_CURRENT);
                 break;
-            case SQUEEZEWAIT:
+            case SQUEEZE_WAIT:
                 roller_.setTargetDutyCycle(0.0);
                 break;
             case SQUEEZE_HOLD:
