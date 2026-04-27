@@ -987,7 +987,8 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
                         LocalizationSubsystem.getInstance()
                                 .getCurrentChassisSpeedsFieldRelative()
                                 .vyMetersPerSecond,
-                        CONSTANTS.CHOREO_VELOCITY_ERROR_MARGIN);
+                        CONSTANTS.CHOREO_VELOCITY_ERROR_MARGIN)
+                && choreo_timer_.get() >= desired_choreo_traj_.getTotalTime();
     }
 
     /**
