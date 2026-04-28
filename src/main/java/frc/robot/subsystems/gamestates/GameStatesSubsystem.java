@@ -17,7 +17,7 @@ public class GameStatesSubsystem extends MwSubsystem<GameStates, GameStatesConst
     private static GameStatesSubsystem instance_ = null;
 
     // Variables, temporary
-    boolean goal_active_ = false;
+    boolean goal_active_ = true; // must be true :)
     boolean operator_presses_climb_button_ = false;
     boolean full_load_ = false;
     boolean pass_overide_ = false;

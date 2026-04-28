@@ -19,8 +19,6 @@ public class IntakeConstants extends MwConstants {
     public enum IntakeStates {
         /** Intake stowed in robot */
         STORE,
-        /** Intake actively deploying to ground */
-        DEPLOYING,
         /** Intake deployed and ready */
         DEPLOYED,
         /** Homing the pivot to its home position by driving until a current spike */
@@ -81,8 +79,8 @@ public class IntakeConstants extends MwConstants {
             new Slot0Configs().withKG(0.45).withKP(15.0).withKD(0.0);
 
     public final double PIVOT_SQUEEZE_CURRENT = 15.0;
-    public final double PIVOT_SQUEEZE_MAX_POSITION = Units.degreesToRadians(60);
-    public final double PIVOT_SQUEEZE_HOLD_POSITION = Units.degreesToRadians(60);
+    public final double PIVOT_SQUEEZE_MAX_POSITION = Units.degreesToRadians(80);
+    public final double PIVOT_SQUEEZE_HOLD_POSITION = Units.degreesToRadians(80);
     public final Slot2Configs PIVOT_CURRENT_GAINS = new Slot2Configs().withKP(0.0).withKI(0.0166);
 
     // Homing for pivot - drive with a small duty cycle until the motor current spikes
@@ -90,7 +88,7 @@ public class IntakeConstants extends MwConstants {
     public final double PIVOT_HOMING_WAIT_TIME = 0.5; // seconds
     public final double PIVOT_HOMING_CURRENT_THRESHOLD =
             10.0; // Amps, threshold for detecting stall during homing
-    public final double SQUEEZE_WAIT_TIME = 1.0;
+    public final double SQUEEZE_WAIT_TIME = 0.5;
 
     // =============================================================================
     // MOTOR CONFIGURATION OBJECTS

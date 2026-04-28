@@ -4,7 +4,6 @@ import com.marswars.mechanisms.ArmMech;
 import com.marswars.mechanisms.RollerMech;
 import com.marswars.subsystem.MwSubsystem;
 import com.marswars.subsystem.SubsystemIoBase;
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.wpilibj.Timer;
@@ -88,26 +87,7 @@ public class IntakeSubsystem extends MwSubsystem<IntakeStates, IntakeConstants> 
             pivot_.setCurrentPosition(CONSTANTS.PIVOT_HOME_POSITION);
             setWantedState(IntakeStates.DEPLOYED);
             system_state_ = IntakeStates.DEPLOYED;
-        } else if (!MathUtil.isNear(
-                        CONSTANTS.PIVOT_DEPLOY_POSITION,
-                        pivot_.getCurrentPosition(),
-                        CONSTANTS.DEPLOY_PIVOT_TOLERANCE)
-                && (wantedState == IntakeStates.INTAKE
-                        || wantedState == IntakeStates.OUTTAKE
-                        || wantedState == IntakeStates.DEPLOYED)) {
-            system_state_ = IntakeStates.DEPLOYING;
-        } else if (system_state_ == IntakeStates.DEPLOYING && wantedState == IntakeStates.STORE) {
-            system_state_ = IntakeStates.STORE;
-        } else if (system_state_ == IntakeStates.DEPLOYING) {
-            if (MathUtil.isNear(
-                    CONSTANTS.PIVOT_DEPLOY_POSITION,
-                    pivot_.getCurrentPosition(),
-                    CONSTANTS.DEPLOY_PIVOT_TOLERANCE)) {
-                system_state_ = IntakeStates.DEPLOYED;
-            }
-        } else if (wantedState == IntakeStates.SQUEEZE
-                && (system_state_ == IntakeStates.DEPLOYED
-                        || system_state_ == IntakeStates.DEPLOYING)) {
+        } else if (wantedState == IntakeStates.SQUEEZE && system_state_ == IntakeStates.DEPLOYED) {
             system_state_ = IntakeStates.SQUEEZE_WAIT;
             timer.reset();
             timer.start();
@@ -132,17 +112,13 @@ public class IntakeSubsystem extends MwSubsystem<IntakeStates, IntakeConstants> 
                 roller_.setTargetDutyCycle(0.1);
                 pivot_.setTargetPosition(CONSTANTS.PIVOT_STORE_POSITION);
                 break;
-            case DEPLOYING:
+            case DEPLOYED:
                 roller_.setTargetDutyCycle(0.0);
                 pivot_.setTargetPosition(CONSTANTS.PIVOT_DEPLOY_POSITION);
                 break;
-            case DEPLOYED:
-                roller_.setTargetDutyCycle(0.0);
-                pivot_.setTargetDutyCycle(0.0);
-                break;
             case INTAKE:
                 roller_.setTargetDutyCycle(CONSTANTS.INTAKE_DUTY_CYCLE);
-                pivot_.setTargetDutyCycle(0.0);
+                pivot_.setTargetPosition(CONSTANTS.PIVOT_DEPLOY_POSITION);
                 break;
             case OUTTAKE:
                 roller_.setTargetDutyCycle(-CONSTANTS.INTAKE_DUTY_CYCLE);
