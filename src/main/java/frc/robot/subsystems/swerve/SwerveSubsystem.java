@@ -9,6 +9,7 @@ import static edu.wpi.first.units.Units.Seconds;
 import choreo.trajectory.SwerveSample;
 import choreo.trajectory.Trajectory;
 import com.marswars.auto.ChoreoEventTracker;
+import com.marswars.auto.ChoreoTrajectory;
 import com.marswars.subsystem.MwSubsystem;
 import com.marswars.subsystem.SubsystemIoBase;
 import com.marswars.swerve_lib.ChassisRequest;
@@ -41,6 +42,7 @@ import frc.robot.subsystems.swerve.SwerveConstants.SwerveStates;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> {
 
@@ -253,14 +255,8 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
                             choreo_theta_controller_.reset();
                             choreo_timer_.restart();
                             choreo_event_tracker_.start();
-                            choreo_sample_to_apply_ =
-                                    desired_choreo_traj_.sampleAt(
-                                            choreo_timer_.get(), CONSTANTS.FLIP_TRAJECTORY_ON_RED);
                             yield SwerveStates.CHOREO_PATH;
                         } else {
-                            choreo_sample_to_apply_ =
-                                    desired_choreo_traj_.sampleAt(
-                                            choreo_timer_.get(), CONSTANTS.FLIP_TRAJECTORY_ON_RED);
                             yield SwerveStates.CHOREO_PATH;
                         }
                     }
@@ -282,13 +278,11 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
                             choreo_timer_.restart();
                             choreo_event_tracker_.start();
                             choreo_sample_to_apply_ =
-                                    desired_choreo_traj_.sampleAt(
-                                            choreo_timer_.get(), CONSTANTS.FLIP_TRAJECTORY_ON_RED);
+                                    desired_choreo_traj_.sampleAt(choreo_timer_.get(), false);
                             yield SwerveStates.CHOREO_PATH_ROTATION_LOCK;
                         } else {
                             choreo_sample_to_apply_ =
-                                    desired_choreo_traj_.sampleAt(
-                                            choreo_timer_.get(), CONSTANTS.FLIP_TRAJECTORY_ON_RED);
+                                    desired_choreo_traj_.sampleAt(choreo_timer_.get(), false);
                             yield SwerveStates.CHOREO_PATH_ROTATION_LOCK;
                         }
                     }
@@ -399,7 +393,8 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
             case IDLE:
             default:
                 desired_chassis_speeds_ = new ChassisSpeeds();
-                swerve_mech_.setChassisRequest(new ChassisRequest.Idle());
+                swerve_mech_.setChassisRequest(
+                        new ChassisRequest.ApplyChassisSpeeds().withSpeeds(new ChassisSpeeds()));
                 break;
         }
 
@@ -466,14 +461,12 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
         }
     }
 
-    /**
-     * Handles the CHOREO_PATH state by applying the appropriate chassis speeds based on the current
-     * trajectory sample and PID controller outputs.
-     */
-    private void choreoPathState() {
-        // Update event tracker with current time
-        choreo_event_tracker_.update(choreo_timer_.get());
+    private Pose2d choreoPathCommon() {
+        Pose2d pose = LocalizationSubsystem.getInstance().getFieldPose();
 
+        choreo_sample_to_apply_ = desired_choreo_traj_.sampleAt(choreo_timer_.get(), false);
+
+        choreo_event_tracker_.update(choreo_timer_.get());
         if (choreo_sample_to_apply_.isPresent()) {
             SwerveSample sample = choreo_sample_to_apply_.get();
             DogLog.log(getSubsystemKey() + "Choreo/TimerValue", choreo_timer_.get(), Seconds);
@@ -482,11 +475,31 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
                     getSubsystemKey() + "Choreo/TotalTime",
                     desired_choreo_traj_.getTotalTime(),
                     Seconds);
+            // if distance threshold is exceded stop the timer so you do not get so far ahead
+            if (sample.getPose().getTranslation().getDistance(pose.getTranslation())
+                    > CONSTANTS.CHOREO_LOOK_AHEAD) {
+                choreo_timer_.stop();
+            } else {
+                choreo_timer_.start();
+            }
+        }
+        return pose;
+    }
+
+    /**
+     * Handles the CHOREO_PATH state by applying the appropriate chassis speeds based on the current
+     * trajectory sample and PID controller outputs.
+     */
+    private void choreoPathState() {
+        Pose2d pose = choreoPathCommon();
+
+        if (choreo_sample_to_apply_.isPresent()) {
+            SwerveSample sample = choreo_sample_to_apply_.get();
             DogLog.log(getSubsystemKey() + "Choreo/sample/DesiredPose", sample.getPose());
             DogLog.log(
                     getSubsystemKey() + "Choreo/sample/DesiredChassisSpeeds",
                     sample.getChassisSpeeds());
-            Pose2d pose = LocalizationSubsystem.getInstance().getFieldPose();
+
             ChassisSpeeds target_speeds = sample.getChassisSpeeds();
             target_speeds.vxMetersPerSecond +=
                     choreo_x_controller_.calculate(pose.getX(), sample.x);
@@ -511,17 +524,10 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
      * trajectory sample, but overriding the rotation to a fixed desired rotation.
      */
     private void choreoPathRotationLockState() {
-        // Update event tracker with current time
-        choreo_event_tracker_.update(choreo_timer_.get());
+        Pose2d pose = choreoPathCommon();
 
         if (choreo_sample_to_apply_.isPresent()) {
             SwerveSample sample = choreo_sample_to_apply_.get();
-            DogLog.log(getSubsystemKey() + "Choreo/TimerValue", choreo_timer_.get(), Seconds);
-            DogLog.log(getSubsystemKey() + "Choreo/TrajName", desired_choreo_traj_.name());
-            DogLog.log(
-                    getSubsystemKey() + "Choreo/TotalTime",
-                    desired_choreo_traj_.getTotalTime(),
-                    Seconds);
             // Generate new pose with overridden rotation
             Pose2d overridden_pose =
                     new Pose2d(sample.getPose().getTranslation(), desired_rotation_lock_rot_);
@@ -530,7 +536,7 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
             ChassisSpeeds overridden_speeds = sample.getChassisSpeeds();
             overridden_speeds.omegaRadiansPerSecond = 0.0;
             DogLog.log(getSubsystemKey() + "Choreo/sample/DesiredChassisSpeeds", overridden_speeds);
-            Pose2d pose = LocalizationSubsystem.getInstance().getFieldPose();
+
             ChassisSpeeds target_speeds = overridden_speeds;
             target_speeds.vxMetersPerSecond +=
                     choreo_x_controller_.calculate(pose.getX(), sample.x);
@@ -609,13 +615,14 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
      *
      * @param trajectory the trajectory for the robot to follow
      */
-    public void setDesiredChoreoTrajectory(Trajectory<SwerveSample> trajectory) {
-        desired_choreo_traj_ = trajectory;
+    public void setDesiredChoreoTrajectory(ChoreoTrajectory trajectory) {
+        desired_choreo_traj_ = trajectory.getTrajectory();
 
         // Load events from the trajectory (passes trajectory so poses can be extracted)
-        choreo_event_tracker_.setEvents(trajectory, CONSTANTS.FLIP_TRAJECTORY_ON_RED);
+        choreo_event_tracker_.setEvents(trajectory);
 
-        // Reset the timer if we are already in a choreo path state to restart the new trajectory
+        // Reset the timer if we are already in a choreo path state to restart the new
+        // trajectory
         if (system_state_ == SwerveStates.CHOREO_PATH
                 || system_state_ == SwerveStates.CHOREO_PATH_ROTATION_LOCK) {
             choreo_timer_.reset();
@@ -626,20 +633,17 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
         }
 
         // Log the trajectory poses for debugging
-        DogLog.log(
-                getSubsystemKey() + "Choreo/Trajectory",
-                (CONSTANTS.FLIP_TRAJECTORY_ON_RED ? trajectory.flipped() : trajectory).getPoses());
+        DogLog.log(getSubsystemKey() + "Choreo/Trajectory", desired_choreo_traj_.getPoses());
     }
 
     /**
-     * Command version of {@link #setDesiredChoreoTrajectory(Trajectory)}
+     * Command version of {@link #setDesiredChoreoTrajectory(ChoreoTrajectory)}
      *
      * @param trajectory the trajectory for the robot to follow
      * @return A command that sets the desired choreo trajectory
      */
-    public Command setDesiredChoreoTrajectoryCommand(Trajectory<SwerveSample> trajectory) {
-        return Commands.runOnce(() -> setDesiredChoreoTrajectory(trajectory))
-                .withName("Set Choreo Trajectory : " + trajectory.name());
+    public Command setDesiredChoreoTrajectoryCommand(Supplier<ChoreoTrajectory> trajectory) {
+        return Commands.runOnce(() -> setDesiredChoreoTrajectory(trajectory.get()));
     }
 
     /**
@@ -859,8 +863,6 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
      */
     public void setOperatorForwardDirection(OperatorPerspective reference) {
         operator_forward_direction_ = reference.heading;
-        CONSTANTS.FLIP_TRAJECTORY_ON_RED =
-                (reference.heading == OperatorPerspective.RED_ALLIANCE.heading);
         DogLog.log(
                 getSubsystemKey() + "OperatorForwardDirection",
                 operator_forward_direction_.getDegrees(),
@@ -967,37 +969,26 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
             return false;
         }
         return MathUtil.isNear(
-                        desired_choreo_traj_
-                                .getFinalPose(CONSTANTS.FLIP_TRAJECTORY_ON_RED)
-                                .get()
-                                .getX(),
+                        desired_choreo_traj_.getFinalPose(false).get().getX(),
                         LocalizationSubsystem.getInstance().getFieldPose().getX(),
                         CONSTANTS.CHOREO_TRANSLATION_ERROR_MARGIN)
                 && MathUtil.isNear(
-                        desired_choreo_traj_
-                                .getFinalPose(CONSTANTS.FLIP_TRAJECTORY_ON_RED)
-                                .get()
-                                .getY(),
+                        desired_choreo_traj_.getFinalPose(false).get().getY(),
                         LocalizationSubsystem.getInstance().getFieldPose().getY(),
                         CONSTANTS.CHOREO_TRANSLATION_ERROR_MARGIN)
                 && MathUtil.isNear(
-                        desired_choreo_traj_
-                                .getFinalSample(CONSTANTS.FLIP_TRAJECTORY_ON_RED)
-                                .get()
-                                .vx,
+                        desired_choreo_traj_.getFinalSample(false).get().vx,
                         LocalizationSubsystem.getInstance()
                                 .getCurrentChassisSpeedsFieldRelative()
                                 .vxMetersPerSecond,
                         CONSTANTS.CHOREO_VELOCITY_ERROR_MARGIN)
                 && MathUtil.isNear(
-                        desired_choreo_traj_
-                                .getFinalSample(CONSTANTS.FLIP_TRAJECTORY_ON_RED)
-                                .get()
-                                .vy,
+                        desired_choreo_traj_.getFinalSample(false).get().vy,
                         LocalizationSubsystem.getInstance()
                                 .getCurrentChassisSpeedsFieldRelative()
                                 .vyMetersPerSecond,
-                        CONSTANTS.CHOREO_VELOCITY_ERROR_MARGIN);
+                        CONSTANTS.CHOREO_VELOCITY_ERROR_MARGIN)
+                && choreo_timer_.get() >= desired_choreo_traj_.getTotalTime();
     }
 
     /**
@@ -1009,17 +1000,11 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
     public boolean isAtEndOfChoreoTrajectoryOrTractorBeam() {
         if (desired_choreo_traj_ != null) {
             return (MathUtil.isNear(
-                                    desired_choreo_traj_
-                                            .getFinalPose(CONSTANTS.FLIP_TRAJECTORY_ON_RED)
-                                            .get()
-                                            .getX(),
+                                    desired_choreo_traj_.getFinalPose(false).get().getX(),
                                     LocalizationSubsystem.getInstance().getFieldPose().getX(),
                                     CONSTANTS.CHOREO_TRANSLATION_ERROR_MARGIN))
                             && MathUtil.isNear(
-                                    desired_choreo_traj_
-                                            .getFinalPose(CONSTANTS.FLIP_TRAJECTORY_ON_RED)
-                                            .get()
-                                            .getY(),
+                                    desired_choreo_traj_.getFinalPose(false).get().getY(),
                                     LocalizationSubsystem.getInstance().getFieldPose().getY(),
                                     CONSTANTS.CHOREO_TRANSLATION_ERROR_MARGIN)
                     || isAtTractorBeamSetpoint();
@@ -1037,7 +1022,7 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
         double distance =
                 Math.abs(
                         desired_choreo_traj_
-                                .getFinalPose(CONSTANTS.FLIP_TRAJECTORY_ON_RED)
+                                .getFinalPose(false)
                                 .get()
                                 .minus(LocalizationSubsystem.getInstance().getFieldPose())
                                 .getTranslation()

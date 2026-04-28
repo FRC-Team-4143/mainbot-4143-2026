@@ -14,29 +14,18 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.autos.Baymax_Destroy_Left;
-import frc.robot.autos.Baymax_Destroy_Right;
-import frc.robot.autos.Baymax_Destroy_Same_Side_Left;
-import frc.robot.autos.Baymax_Destroy_Same_Side_Right;
-import frc.robot.autos.Center_Depot_Climb;
-import frc.robot.autos.Center_Depot_No_Climb;
-import frc.robot.autos.Citrus_Left_Side;
-import frc.robot.autos.Citrus_Right_Side;
-import frc.robot.autos.Husky_Left_Side;
-import frc.robot.autos.Left_Bump_Depot_Climb;
-import frc.robot.autos.Left_Trench_Depot_Climb;
-import frc.robot.autos.Neutral_Cycles_Left;
-import frc.robot.autos.Neutral_Cycles_Right;
-import frc.robot.autos.Right_Start_Neutral_Depot_Climb;
+import frc.robot.autos.CitrusSynergy;
+import frc.robot.autos.CitrusSynergyFarBump;
+import frc.robot.autos.Left_Trench_Bump_Swipe;
+import frc.robot.autos.Left_Trench_Trench_Swipe;
+import frc.robot.autos.Right_Trench_Bump_Swipe;
+import frc.robot.autos.Right_Trench_Trench_Swipe;
 import frc.robot.autos.Shoot;
+import frc.robot.autos.Slop_Auto;
 import frc.robot.lib2026.FieldConstants;
 import frc.robot.lib2026.FieldRegions;
 import frc.robot.lib2026.FieldTargets;
 import frc.robot.lib2026.HubMonitor;
-import frc.robot.subsystems.climber.ClimberConstants.ClimberStates;
-import frc.robot.subsystems.climber.ClimberSubsystem;
-import frc.robot.subsystems.hopper.HopperConstants.HopperStates;
-import frc.robot.subsystems.hopper.HopperSubsystem;
 import frc.robot.subsystems.intake.IntakeConstants.IntakeStates;
 import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.localization.LocalizationSubsystem;
@@ -66,22 +55,14 @@ public class Robot extends TimedRobot {
         AutoManager.getInstance()
                 .registerAutos(
                         // Add your auto routines here as you create them
-                        // new Left_Start_Neutral_Outpost_Climb(),
-                        new Right_Start_Neutral_Depot_Climb(),
-                        new Neutral_Cycles_Right(),
-                        new Neutral_Cycles_Left(),
-                        new Center_Depot_Climb(),
-                        new Left_Bump_Depot_Climb(),
-                        new Left_Trench_Depot_Climb(),
-                        new Center_Depot_No_Climb(),
-                        new Citrus_Left_Side(),
-                        new Citrus_Right_Side(),
-                        new Baymax_Destroy_Left(),
-                        new Baymax_Destroy_Right(),
-                        new Baymax_Destroy_Same_Side_Left(),
-                        new Baymax_Destroy_Same_Side_Right(),
-                        new Husky_Left_Side(),
-                        new Shoot()
+                        new Left_Trench_Bump_Swipe(),
+                        new Left_Trench_Trench_Swipe(),
+                        new Right_Trench_Bump_Swipe(),
+                        new Right_Trench_Trench_Swipe(),
+                        new Shoot(),
+                        new CitrusSynergy(),
+                        new CitrusSynergyFarBump(),
+                        new Slop_Auto()
                         // new TestAuto()
                         );
 
@@ -118,6 +99,8 @@ public class Robot extends TimedRobot {
 
     @Override
     public void disabledPeriodic() {
+        AutoManager.getInstance().periodic();
+
         // Allow chaning alliance perspective while disabled
         if (hasAllianceChanged()) {
             SwerveSubsystem.getInstance()
@@ -149,8 +132,6 @@ public class Robot extends TimedRobot {
         CommandScheduler.getInstance().cancelAll();
         SwerveSubsystem.getInstance().setWantedState(SwerveStates.FIELD_CENTRIC);
         Elastic.selectTab("Teleoperated");
-        HopperSubsystem.getInstance().setWantedState(HopperStates.IDLE);
-        ClimberSubsystem.getInstance().setWantedState(ClimberStates.STOWED);
         ShooterSubsystem.getInstance().setWantedState(ShooterStates.IDLE);
     }
 
@@ -163,10 +144,9 @@ public class Robot extends TimedRobot {
     @Override
     public void testInit() {
         CommandScheduler.getInstance().cancelAll();
+        SwerveSubsystem.getInstance().setWantedState(SwerveStates.FIELD_CENTRIC);
         ShooterSubsystem.getInstance().setWantedState(ShooterStates.TUNING);
-        HopperSubsystem.getInstance().setWantedState(HopperStates.TUNING);
         IntakeSubsystem.getInstance().setWantedState(IntakeStates.TUNING);
-        ClimberSubsystem.getInstance().setWantedState(ClimberStates.TUNNING);
     }
 
     @Override

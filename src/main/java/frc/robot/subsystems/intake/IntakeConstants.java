@@ -1,6 +1,7 @@
 package frc.robot.subsystems.intake;
 
 import com.ctre.phoenix6.configs.Slot0Configs;
+import com.ctre.phoenix6.configs.Slot2Configs;
 import com.ctre.phoenix6.configs.SlotConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.marswars.mechanisms.MotorConfig;
@@ -18,16 +19,22 @@ public class IntakeConstants extends MwConstants {
     public enum IntakeStates {
         /** Intake stowed in robot */
         STORE,
-        /** Intake actively deploying to ground */
-        DEPLOYING,
         /** Intake deployed and ready */
         DEPLOYED,
+        /** Homing the pivot to its home position by driving until a current spike */
+        PIVOT_HOMING,
         /** Actively intaking game pieces */
         INTAKE,
         /** Ejecting game pieces out of intake */
         OUTTAKE,
         /** Idle state with intake mechanisms stopped */
         IDLE,
+        /** Intake squeezes the fuel into the shooter */
+        SQUEEZE,
+        /** SQUEEZE has been requested but will delay */
+        SQUEEZE_WAIT,
+        /** SQUEEZE is active, but end of ROM has been reached */
+        SQUEEZE_HOLD,
         /** Manual tuning mode for testing and calibration */
         TUNING
     }
@@ -45,32 +52,43 @@ public class IntakeConstants extends MwConstants {
     // MECHANICAL CONSTANTS - ROLLER
     // =============================================================================
 
-    public final boolean ROLLER_MOTOR_INVERTED = false;
-    public final boolean ROLLER_FOLLOWER_MOTOR_INVERTED = true;
+    public final boolean ROLLER_MOTOR_INVERTED = true;
+    public final boolean ROLLER_FOLLOWER_MOTOR_INVERTED = false;
     public final double ROLLER_GEAR_RATIO = 1.0;
     public final double INTAKE_DUTY_CYCLE = 1.0;
     public final double ROLLER_STATOR_CURRENT_LIMIT = 60;
+
     // =============================================================================
     // MECHANICAL CONSTANTS - PIVOT
     // =============================================================================
 
     public final boolean PIVOT_MOTOR_INVERTED = false;
-    public final double PIVOT_GEAR_RATIO = (40.0 / 12.0) * (56.0 / 24.0) * (32.0 / 14.0);
+    public final double PIVOT_GEAR_RATIO = (50.0 / 12.0) * (50.0 / 24.0) * (32.0 / 14.0);
     public final SlotConfigs PIVOT_POSITION_SLOT_CONFIG = new SlotConfigs();
-    public final double PIVOT_LENGTH = Units.inchesToMeters(11.5);
-    public final double PIVOT_MASS = Units.lbsToKilograms(8.38);
-    public final double PIVOT_MIN = Units.degreesToRadians(11);
-    public final double PIVOT_MAX = Units.degreesToRadians(98);
-    public final double PIVOT_HOME_POSITION = Units.degreesToRadians(11);
+    public final double PIVOT_LENGTH = Units.inchesToMeters(13.0);
+    public final double PIVOT_MASS = Units.lbsToKilograms(7.875);
+    public final double PIVOT_MIN = Units.degreesToRadians(-10);
+    public final double PIVOT_MAX = Units.degreesToRadians(140);
+    public final double PIVOT_HOME_POSITION = Units.degreesToRadians(0);
     public final double PIVOT_STATOR_CURRENT_LIMIT = 90;
-    public final double PIVOT_DEPLOY_POSITION = Units.degreesToRadians(11);
-    public final double PIVOT_RACKING_POSITION = Units.degreesToRadians(60);
-    public final double PIVOT_STORE_POSITION = Units.degreesToRadians(98);
-    public final double DEPLOY_PIVOT_TOLERANCE = Units.degreesToRadians(20);
-    public final Slot0Configs PIVOT_POSITION_GAINS = new Slot0Configs().withKG(3).withKP(200);
+    public final double PIVOT_DEPLOY_POSITION = Units.degreesToRadians(0);
+    public final double PIVOT_RACKING_POSITION = Units.degreesToRadians(105);
+    public final double PIVOT_STORE_POSITION = Units.degreesToRadians(105);
+    public final double DEPLOY_PIVOT_TOLERANCE = Units.degreesToRadians(10);
+    public final Slot0Configs PIVOT_POSITION_GAINS =
+            new Slot0Configs().withKG(0.45).withKP(15.0).withKD(0.0);
 
-    // Time to wait between cycling SHOOTING and RACKING modes (seconds)
-    public final double SHOOTING_CYCLE_TIME = 1.0;
+    public final double PIVOT_SQUEEZE_CURRENT = 15.0;
+    public final double PIVOT_SQUEEZE_MAX_POSITION = Units.degreesToRadians(80);
+    public final double PIVOT_SQUEEZE_HOLD_POSITION = Units.degreesToRadians(80);
+    public final Slot2Configs PIVOT_CURRENT_GAINS = new Slot2Configs().withKP(0.0).withKI(0.0166);
+
+    // Homing for pivot - drive with a small duty cycle until the motor current spikes
+    public final double PIVOT_HOMING_DUTY_CYCLE = -0.15;
+    public final double PIVOT_HOMING_WAIT_TIME = 0.5; // seconds
+    public final double PIVOT_HOMING_CURRENT_THRESHOLD =
+            10.0; // Amps, threshold for detecting stall during homing
+    public final double SQUEEZE_WAIT_TIME = 0.5;
 
     // =============================================================================
     // MOTOR CONFIGURATION OBJECTS
@@ -108,7 +126,7 @@ public class IntakeConstants extends MwConstants {
 
         // Configure Pivot Motor
         PIVOT_MOTOR_CONFIG.can_id = PIVOT_MOTOR_ID;
-        PIVOT_MOTOR_CONFIG.motor_type = TalonMotorType.X44;
+        PIVOT_MOTOR_CONFIG.motor_type = TalonMotorType.X60;
         PIVOT_MOTOR_CONFIG.canbus_name = "CANivore";
         TalonFXConfiguration pivot_config = new TalonFXConfiguration();
         pivot_config.Slot0 = Slot0Configs.from(PIVOT_POSITION_SLOT_CONFIG);
@@ -116,6 +134,7 @@ public class IntakeConstants extends MwConstants {
         pivot_config.CurrentLimits.StatorCurrentLimit = PIVOT_STATOR_CURRENT_LIMIT;
         pivot_config.CurrentLimits.StatorCurrentLimitEnable = true;
         pivot_config.Slot0 = PIVOT_POSITION_GAINS;
+        pivot_config.Slot2 = PIVOT_CURRENT_GAINS;
         PIVOT_MOTOR_CONFIG.apply(pivot_config);
     }
 }

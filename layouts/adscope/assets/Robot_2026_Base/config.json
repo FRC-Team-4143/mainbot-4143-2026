@@ -18,5 +18,79 @@
     0,
     0,
     0
+  ],
+  "cameras": [
+    {
+      "name": "Back-Camera",
+      "rotations": [
+        {
+          "axis": "x",
+          "degrees": 0
+        },
+        {
+          "axis": "y",
+          "degrees": -15
+        },
+        {
+          "axis": "z",
+          "degrees": 180
+        }
+      ],
+      "position": [
+        -0.339,
+        0.0,
+        0.319
+      ],
+      "resolution": [1280, 960],
+      "fov": 60
+    },
+    {
+      "name": "Left-Camera",
+      "rotations": [
+        {
+          "axis": "x",
+          "degrees": 0
+        },
+        {
+          "axis": "y",
+          "degrees": -15
+        },
+        {
+          "axis": "z",
+          "degrees": 90
+        }
+      ],
+      "position": [
+        -0.022,
+        0.360,
+        0.293
+      ],
+      "resolution": [1280, 960],
+      "fov": 60
+    },
+    {
+      "name": "Right-Camera",
+      "rotations": [
+        {
+          "axis": "x",
+          "degrees": 0
+        },
+        {
+          "axis": "y",
+          "degrees": -15
+        },
+        {
+          "axis": "z",
+          "degrees": -90
+        }
+      ],
+      "position": [
+        -0.022,
+        -0.360,
+        0.293
+      ],
+      "resolution": [1280, 960],
+      "fov": 60
+    }
   ]
 }
