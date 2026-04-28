@@ -256,7 +256,7 @@ public class ControlCommands {
                             IntakeSubsystem.getInstance().setWantedState(IntakeStates.INTAKE);
                         },
                         () -> {
-                            IntakeSubsystem.getInstance().setWantedState(IntakeStates.IDLE);
+                            IntakeSubsystem.getInstance().setWantedState(IntakeStates.DEPLOYED);
                         })
                 .withName("Intake Fuel")
                 .ignoringDisable(true);

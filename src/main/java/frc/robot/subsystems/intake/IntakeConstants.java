@@ -19,8 +19,6 @@ public class IntakeConstants extends MwConstants {
     public enum IntakeStates {
         /** Intake stowed in robot */
         STORE,
-        /** Intake actively deploying to ground */
-        DEPLOYING,
         /** Intake deployed and ready */
         DEPLOYED,
         /** Homing the pivot to its home position by driving until a current spike */
