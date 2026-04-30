@@ -4,7 +4,6 @@ import dev.doglog.DogLog;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
-import frc.robot.autos.Shoot;
 import frc.robot.lib2026.FieldTargets;
 import frc.robot.subsystems.gamestates.GameStatesConstants.GameStates;
 import frc.robot.subsystems.gamestates.GameStatesSubsystem;
@@ -136,14 +135,16 @@ public class ControlCommands {
                                     && SwerveSubsystem.getInstance().isChassisStationary()
                                     && should_squeeze) {
                                 IntakeSubsystem.getInstance().setWantedState(IntakeStates.SQUEEZE);
-                            } else if (GameStatesSubsystem.getInstance().getSystemState() == GameStates.PASS
+                            } else if (GameStatesSubsystem.getInstance().getSystemState()
+                                            == GameStates.PASS
                                     && !SwerveSubsystem.getInstance().isChassisStationary()) {
-                                        IntakeSubsystem.getInstance().setWantedState(IntakeStates.INTAKE);
+                                IntakeSubsystem.getInstance().setWantedState(IntakeStates.INTAKE);
                             } else {
                                 // hold - do nothing
                             }
 
-                            if (SwerveSubsystem.getInstance().isChassisStationary() && ShooterSubsystem.getInstance().isShooterReady()) {
+                            if (SwerveSubsystem.getInstance().isChassisStationary()
+                                    && ShooterSubsystem.getInstance().isShooterReady()) {
                                 SwerveSubsystem.getInstance().setWantedState(SwerveStates.BRAKE);
                             } else {
                                 SwerveSubsystem.getInstance()

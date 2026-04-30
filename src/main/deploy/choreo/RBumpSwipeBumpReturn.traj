@@ -265,6 +265,5 @@
   "splits":[0]
  },
  "events":[
-   {"name":"Intake Out", "from":{"target":2, "targetTimestamp":1.18004, "offset":{"exp":"0 s", "val":0.0}}, "event":null},
-   {"name":"Shoot", "from":{"target":7, "targetTimestamp":5.18685, "offset":{"exp":"-0.3 s", "val":-0.3}}, "event":null}]
+   {"name":"Intake Out", "from":{"target":2, "targetTimestamp":1.18004, "offset":{"exp":"0 s", "val":0.0}}, "event":null}]
 }
