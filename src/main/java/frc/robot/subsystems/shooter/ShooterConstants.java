@@ -178,8 +178,8 @@ public class ShooterConstants extends MwConstants {
     // =============================================================================
 
     // Hub shooting (close range)
-    public final double FLYWHEEL_MANUAL_HUB_VELOCITY = 142; // rad/s
-    public final double HOOD_MANUAL_HUB_ANGLE = 1.4 - 0.035; // radians
+    public final double FLYWHEEL_MANUAL_HUB_VELOCITY = 162.0; // rad/s
+    public final double HOOD_MANUAL_HUB_ANGLE = 1.335 - 0.035; // radians
 
     // Passing (long range)
     public final double FLYWHEEL_MANUAL_PASS_VELOCITY = 200.0; // rad/s
