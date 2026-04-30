@@ -139,6 +139,10 @@ public abstract class OI {
         return driver_controller_.getLeftY();
     }
 
+    public static boolean getDriverRightTrigger() {
+        return driver_controller_.getRightTriggerAxis() > 0.1;
+    }
+
     /**
      * @return driver controller right joystick x axis
      */

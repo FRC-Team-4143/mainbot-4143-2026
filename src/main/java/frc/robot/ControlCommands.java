@@ -50,11 +50,14 @@ public class ControlCommands {
                                     .setWantedState(LocalizationStates.SHOOTING_FOCUS);
                         },
                         () -> {
-                            ShooterSubsystem.getInstance().setWantedState(ShooterStates.TRACKING);
-                            SwerveSubsystem.getInstance()
-                                    .setWantedState(SwerveStates.FIELD_CENTRIC);
-                            LocalizationSubsystem.getInstance()
-                                    .setWantedState(LocalizationStates.FULL);
+                            if (!OI.getDriverRightTrigger()) {
+                                ShooterSubsystem.getInstance()
+                                        .setWantedState(ShooterStates.TRACKING);
+                                SwerveSubsystem.getInstance()
+                                        .setWantedState(SwerveStates.FIELD_CENTRIC);
+                                LocalizationSubsystem.getInstance()
+                                        .setWantedState(LocalizationStates.FULL);
+                            }
                         })
                 .withName("Aim At Target")
                 .ignoringDisable(true);
