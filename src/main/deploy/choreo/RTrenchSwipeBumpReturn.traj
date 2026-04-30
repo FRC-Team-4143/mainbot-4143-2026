@@ -339,6 +339,6 @@
   "splits":[0]
  },
  "events":[
-   {"name":"Intake Out", "from":{"target":2, "targetTimestamp":1.3464, "offset":{"exp":"0 s", "val":0.0}}, "event":null},
+   {"name":"Intake Out", "from":{"target":2, "targetTimestamp":1.3464, "offset":{"exp":"-0.6 s", "val":-0.6}}, "event":null},
    {"name":"Raise Hopper", "from":{"target":2, "targetTimestamp":1.3464, "offset":{"exp":"0.5 s", "val":0.5}}, "event":null}]
 }

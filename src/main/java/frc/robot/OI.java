@@ -122,6 +122,7 @@ public abstract class OI {
                                             .adjustHood(Units.degreesToRadians(1));
                                 }));
         operator_controller_.x().onTrue(ControlCommands.toggleIsAbleToRack());
+        driver_controller_.leftTrigger().whileTrue(ControlCommands.aimAtTargetCommand());
     }
 
     /**
