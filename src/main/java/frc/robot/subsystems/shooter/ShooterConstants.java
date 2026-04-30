@@ -167,7 +167,7 @@ public class ShooterConstants extends MwConstants {
     public final double HOOD_HOMING_CURRENT_THRESHOLD = 5.0; // Amps, stall detection threshold
 
     // Shooter ready detection
-    public final double SHOOTER_READY_DEBOUNCE_TIME = 0.0; // seconds
+    public final double SHOOTER_READY_DEBOUNCE_TIME = 0.1; // seconds
 
     // Shot detection (for detecting when a game piece has left the shooter)
     public final double SHOOTING_DETECTION_VELOCITY_FACTOR = 0.99; // Velocity threshold factor
@@ -237,9 +237,9 @@ public class ShooterConstants extends MwConstants {
         HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(1.78, 162);
         HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(2.17, 166);
         HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(2.81, 174);
-        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(3.82, 186);
-        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(4.40, 194);
-        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(4.77, 196);
+        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(3.82, 190);
+        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(4.40, 198);
+        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(4.77, 200);
         HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(5.60, 226);
         HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(6.50, 256);
 
