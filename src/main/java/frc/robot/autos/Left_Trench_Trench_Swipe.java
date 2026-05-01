@@ -88,7 +88,7 @@ public class Left_Trench_Trench_Swipe extends Auto {
                 Commands.runOnce(
                         () -> {
                             ShooterSubsystem.getInstance().setWantedState(ShooterStates.TRACKING);
-                            IntakeSubsystem.getInstance().setWantedState(IntakeStates.SQUEEZE_HOLD);
+                            IntakeSubsystem.getInstance().setWantedState(IntakeStates.INTAKE);
                         }),
                 // Set the second trajectory for the second pass
                 SwerveSubsystem.getInstance()
@@ -122,7 +122,7 @@ public class Left_Trench_Trench_Swipe extends Auto {
                 Commands.runOnce(
                         () -> {
                             ShooterSubsystem.getInstance().setWantedState(ShooterStates.TRACKING);
-                            IntakeSubsystem.getInstance().setWantedState(IntakeStates.SQUEEZE_HOLD);
+                            IntakeSubsystem.getInstance().setWantedState(IntakeStates.INTAKE);
                         }),
                 // Set the second trajectory for the second pass
                 SwerveSubsystem.getInstance()
