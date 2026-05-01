@@ -16,7 +16,8 @@ import java.util.List;
 public class IntakeSubsystem extends MwSubsystem<IntakeStates, IntakeConstants> {
     private static IntakeSubsystem instance_ = null;
 
-    private RollerMech roller_;
+    private RollerMech roller_0_;
+    private RollerMech roller_1_;
     private ArmMech pivot_;
     private Timer timer = new Timer();
     private Debouncer homeDebouncer =
@@ -33,13 +34,17 @@ public class IntakeSubsystem extends MwSubsystem<IntakeStates, IntakeConstants> 
     // Constructor
     public IntakeSubsystem() {
         super(IntakeStates.STORE, new IntakeConstants());
-        roller_ =
+        roller_0_ =
                 new RollerMech(
                         getSubsystemKey(),
-                        "Roller",
-                        List.of(
-                                CONSTANTS.ROLLER_MOTOR_CONFIG,
-                                CONSTANTS.ROLLER_FOLLOWER_MOTOR_CONFIG),
+                        "Roller0",
+                        List.of(CONSTANTS.ROLLER_MOTOR_CONFIG),
+                        CONSTANTS.ROLLER_GEAR_RATIO);
+        roller_1_ =
+                new RollerMech(
+                        getSubsystemKey(),
+                        "Roller1",
+                        List.of(CONSTANTS.ROLLER_FOLLOWER_MOTOR_CONFIG),
                         CONSTANTS.ROLLER_GEAR_RATIO);
 
         pivot_ =
@@ -74,7 +79,7 @@ public class IntakeSubsystem extends MwSubsystem<IntakeStates, IntakeConstants> 
     // getIos
     @Override
     public List<SubsystemIoBase> getIos() {
-        return Arrays.asList(roller_, pivot_);
+        return Arrays.asList(roller_0_, roller_1_, pivot_);
     }
 
     // handleStateTransition
@@ -109,45 +114,54 @@ public class IntakeSubsystem extends MwSubsystem<IntakeStates, IntakeConstants> 
     public void updateLogic(double timestamp) {
         switch (system_state_) {
             case STORE:
-                roller_.setTargetDutyCycle(0.1);
+                roller_0_.setTargetDutyCycle(0.1);
+                roller_1_.setTargetDutyCycle(0.1);
                 pivot_.setTargetPosition(CONSTANTS.PIVOT_STORE_POSITION);
                 break;
             case DEPLOYED:
-                roller_.setTargetDutyCycle(0.0);
+                roller_0_.setTargetDutyCycle(0.0);
+                roller_1_.setTargetDutyCycle(0.0);
                 pivot_.setTargetPosition(CONSTANTS.PIVOT_DEPLOY_POSITION);
                 break;
             case INTAKE:
-                roller_.setTargetDutyCycle(CONSTANTS.INTAKE_DUTY_CYCLE);
+                roller_0_.setTargetDutyCycle(CONSTANTS.INTAKE_DUTY_CYCLE);
+                roller_1_.setTargetDutyCycle(CONSTANTS.INTAKE_DUTY_CYCLE);
                 pivot_.setTargetPosition(CONSTANTS.PIVOT_DEPLOY_POSITION);
                 break;
             case OUTTAKE:
-                roller_.setTargetDutyCycle(-CONSTANTS.INTAKE_DUTY_CYCLE);
+                roller_0_.setTargetDutyCycle(-CONSTANTS.INTAKE_DUTY_CYCLE);
+                roller_1_.setTargetDutyCycle(-CONSTANTS.INTAKE_DUTY_CYCLE);
                 pivot_.setTargetDutyCycle(0.0);
                 break;
             case PIVOT_HOMING:
                 // Drive the pivot slowly outward until the motor current indicates a
                 // stall/contact
-                roller_.setTargetDutyCycle(0.0);
+                roller_0_.setTargetDutyCycle(0.0);
+                roller_1_.setTargetDutyCycle(0.0);
                 pivot_.setTargetDutyCycle(CONSTANTS.PIVOT_HOMING_DUTY_CYCLE);
                 break;
             case SQUEEZE:
                 timer.stop();
-                roller_.setTargetDutyCycle(0.0);
+                roller_0_.setTargetDutyCycle(0.0);
+                roller_1_.setTargetDutyCycle(0.0);
                 pivot_.setTargetCurrent(CONSTANTS.PIVOT_SQUEEZE_CURRENT);
                 break;
             case SQUEEZE_WAIT:
-                roller_.setTargetDutyCycle(0.0);
+                roller_0_.setTargetDutyCycle(0.0);
+                roller_1_.setTargetDutyCycle(0.0);
                 break;
             case SQUEEZE_HOLD:
                 pivot_.setTargetPosition(CONSTANTS.PIVOT_SQUEEZE_HOLD_POSITION);
-                roller_.setTargetDutyCycle(0.15);
+                roller_0_.setTargetDutyCycle(0.15);
+                roller_1_.setTargetDutyCycle(0.15);
                 break;
             case TUNING:
                 // No default behavior for tuning mode
                 break;
             default:
             case IDLE:
-                roller_.setTargetDutyCycle(0.0);
+                roller_0_.setTargetDutyCycle(0.0);
+                roller_1_.setTargetDutyCycle(0.0);
                 pivot_.setTargetDutyCycle(0.0);
                 break;
         }
