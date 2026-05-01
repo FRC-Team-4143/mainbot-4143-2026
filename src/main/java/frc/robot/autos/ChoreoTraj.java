@@ -132,9 +132,9 @@ public record ChoreoTraj(
 	public static final ChoreoTraj SynergyFarBumpP3 = new ChoreoTraj(
 	    "SynergyFarBumpP3",
 	    OptionalInt.empty(),
-	    2.5323,
+	    1.91045,
 	    new Pose2d(6.062, 2.517, Rotation2d.fromRadians(-3.142)),
-	    new Pose2d(1.532, 5.406, Rotation2d.fromRadians(2.678))
+	    new Pose2d(2.443, 3.957, Rotation2d.fromRadians(-3.142))
 	);
 	public static final ChoreoTraj SynergyP1 = new ChoreoTraj(
 	    "SynergyP1",
@@ -153,9 +153,9 @@ public record ChoreoTraj(
 	public static final ChoreoTraj SynergyP3 = new ChoreoTraj(
 	    "SynergyP3",
 	    OptionalInt.empty(),
-	    1.60916,
+	    1.84859,
 	    new Pose2d(6.215, 5.368, Rotation2d.fromRadians(3.142)),
-	    new Pose2d(1.532, 5.406, Rotation2d.fromRadians(2.678))
+	    new Pose2d(2.443, 4.074, Rotation2d.fromRadians(3.134))
 	);
 	public static final ChoreoTraj SynergyP4 = new ChoreoTraj(
 	    "SynergyP4",
