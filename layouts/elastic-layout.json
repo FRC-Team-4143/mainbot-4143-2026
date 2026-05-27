@@ -118,26 +118,6 @@
                 }
               },
               {
-                "title": "Roof",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Large Text Display",
-                "properties": {
-                  "topic": "/Robot/Subsystem/Roof/State",
-                  "period": 0.06,
-                  "data_type": "enum",
-                  "struct_meta": {
-                    "path": [
-                      "variant"
-                    ],
-                    "schema_name": "RoofStates",
-                    "type": "enum"
-                  }
-                }
-              },
-              {
                 "title": "Simulation",
                 "x": 640.0,
                 "y": 512.0,
@@ -468,26 +448,6 @@
                 }
               },
               {
-                "title": "Roof",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Large Text Display",
-                "properties": {
-                  "topic": "/Robot/Subsystem/Roof/State",
-                  "period": 0.06,
-                  "data_type": "enum",
-                  "struct_meta": {
-                    "path": [
-                      "variant"
-                    ],
-                    "schema_name": "RoofStates",
-                    "type": "enum"
-                  }
-                }
-              },
-              {
                 "title": "Simulation",
                 "x": 640.0,
                 "y": 512.0,
@@ -505,6 +465,88 @@
                     "schema_name": "SimulationStates",
                     "type": "enum"
                   }
+                }
+              }
+            ]
+          },
+          {
+            "title": "Citrus Synergy Far Bump Values",
+            "x": 896.0,
+            "y": 512.0,
+            "width": 256.0,
+            "height": 256.0,
+            "type": "List Layout",
+            "properties": {
+              "label_position": "TOP"
+            },
+            "children": [
+              {
+                "title": "BeforeAllianceZoneWaitTime",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/CitrusSynergyFarBump/BeforeAllianceZoneWaitTime",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": true
+                }
+              },
+              {
+                "title": "MiddleWaitTime",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/CitrusSynergyFarBump/MiddleWaitTime",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": true
+                }
+              }
+            ]
+          },
+          {
+            "title": "Citrus Synergy Values",
+            "x": 1152.0,
+            "y": 512.0,
+            "width": 256.0,
+            "height": 256.0,
+            "type": "List Layout",
+            "properties": {
+              "label_position": "TOP"
+            },
+            "children": [
+              {
+                "title": "BeforeAllianceZoneWaitTime",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/CitrusSynergy/BeforeAllianceZoneWaitTime",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": true
+                }
+              },
+              {
+                "title": "MiddleWaitTime",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/CitrusSynergy/MiddleWaitTime",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": true
                 }
               }
             ]
@@ -760,26 +802,6 @@
                       "variant"
                     ],
                     "schema_name": "IntakeStates",
-                    "type": "enum"
-                  }
-                }
-              },
-              {
-                "title": "Roof",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Large Text Display",
-                "properties": {
-                  "topic": "/Robot/Subsystem/Roof/State",
-                  "period": 0.06,
-                  "data_type": "enum",
-                  "struct_meta": {
-                    "path": [
-                      "variant"
-                    ],
-                    "schema_name": "RoofStates",
                     "type": "enum"
                   }
                 }

@@ -81,14 +81,14 @@ public class Right_Trench_Bump_Swipe extends Auto {
                             IntakeSubsystem.getInstance().setWantedState(IntakeStates.SQUEEZE);
                         }),
                 // Shoot for 2 seconds
-                new WaitCommand(3),
+                new WaitCommand(2.5),
                 // Continue to shoot for 2 more seconds
                 new WaitCommand(1),
                 // Stop shooting
                 Commands.runOnce(
                         () -> {
                             ShooterSubsystem.getInstance().setWantedState(ShooterStates.TRACKING);
-                            IntakeSubsystem.getInstance().setWantedState(IntakeStates.SQUEEZE_HOLD);
+                            IntakeSubsystem.getInstance().setWantedState(IntakeStates.INTAKE);
                         }),
                 // Set the second trajectory for the second pass
                 SwerveSubsystem.getInstance()
@@ -115,6 +115,32 @@ public class Right_Trench_Bump_Swipe extends Auto {
                             IntakeSubsystem.getInstance().setWantedState(IntakeStates.SQUEEZE);
                         }),
                 // Shoot for 2 seconds
-                new WaitCommand(3));
+                new WaitCommand(2.5),
+                // Continue to shoot for 2 more seconds
+                new WaitCommand(1),
+                // Stop shooting
+                Commands.runOnce(
+                        () -> {
+                            ShooterSubsystem.getInstance().setWantedState(ShooterStates.TRACKING);
+                            IntakeSubsystem.getInstance().setWantedState(IntakeStates.INTAKE);
+                        }),
+                // Set the second trajectory for the second pass
+                SwerveSubsystem.getInstance()
+                        .setDesiredChoreoTrajectoryCommand(
+                                getTrajectory(ChoreoTraj.RTrenchSwipeBumpReturn.name())),
+                // Start Choreo following
+                Commands.startEnd(
+                                () ->
+                                        SwerveSubsystem.getInstance()
+                                                .setWantedState(SwerveStates.CHOREO_PATH),
+                                () ->
+                                        SwerveSubsystem.getInstance()
+                                                .setWantedState(
+                                                        SwerveStates.FIELD_CENTRIC_ROTATION_LOCK))
+                        .until(
+                                () ->
+                                        SwerveSubsystem.getInstance().isAtChoreoSetpoint()
+                                                && SwerveSubsystem.getInstance()
+                                                        .hasChoreoTimeElapsed(1)));
     }
 }

@@ -24,26 +24,40 @@ public record ChoreoTraj(
     Pose2d initialPoseBlue,
     Pose2d endPoseBlue
 ) {
-    public static final ChoreoTraj LTrenchStartBumpReturn = new ChoreoTraj(
+    public static final ChoreoTraj LBumpStartBumpReturn = new ChoreoTraj(
+	    "LBumpStartBumpReturn",
+	    OptionalInt.empty(),
+	    5.08267,
+	    new Pose2d(3.571, 2.57, Rotation2d.fromRadians(0)),
+	    new Pose2d(2.817, 2.565, Rotation2d.fromRadians(-2.441))
+	);
+	public static final ChoreoTraj LBumpSwipeBumpReturn = new ChoreoTraj(
+	    "LBumpSwipeBumpReturn",
+	    OptionalInt.empty(),
+	    5.52876,
+	    new Pose2d(2.872, 2.495, Rotation2d.fromRadians(-2.451)),
+	    new Pose2d(2.86, 2.478, Rotation2d.fromRadians(-2.421))
+	);
+	public static final ChoreoTraj LTrenchStartBumpReturn = new ChoreoTraj(
 	    "LTrenchStartBumpReturn",
 	    OptionalInt.empty(),
-	    5.78885,
+	    4.43682,
 	    new Pose2d(4.416, 7.48, Rotation2d.fromRadians(0.005)),
-	    new Pose2d(2.872, 5.535, Rotation2d.fromRadians(3.14))
+	    new Pose2d(2.872, 5.535, Rotation2d.fromRadians(2.402))
 	);
 	public static final ChoreoTraj LTrenchStartTrenchReturn = new ChoreoTraj(
 	    "LTrenchStartTrenchReturn",
 	    OptionalInt.empty(),
-	    6.04543,
+	    4.9943,
 	    new Pose2d(4.416, 7.48, Rotation2d.fromRadians(0.006)),
 	    new Pose2d(3.019, 7.213, Rotation2d.fromRadians(3.141))
 	);
 	public static final ChoreoTraj LTrenchSwipeBumpReturn = new ChoreoTraj(
 	    "LTrenchSwipeBumpReturn",
 	    OptionalInt.empty(),
-	    5.49732,
+	    5.74263,
 	    new Pose2d(2.887, 5.604, Rotation2d.fromRadians(2.165)),
-	    new Pose2d(2.872, 5.535, Rotation2d.fromRadians(-3.122))
+	    new Pose2d(2.872, 5.535, Rotation2d.fromRadians(2.356))
 	);
 	public static final ChoreoTraj LTrenchSwipeTrenchReturn = new ChoreoTraj(
 	    "LTrenchSwipeTrenchReturn",
@@ -52,26 +66,40 @@ public record ChoreoTraj(
 	    new Pose2d(3.027, 7.212, Rotation2d.fromRadians(0.006)),
 	    new Pose2d(3.019, 7.213, Rotation2d.fromRadians(3.141))
 	);
+	public static final ChoreoTraj RBumpStartBumpReturn = new ChoreoTraj(
+	    "RBumpStartBumpReturn",
+	    OptionalInt.empty(),
+	    5.00785,
+	    new Pose2d(3.571, 5.523, Rotation2d.fromRadians(0)),
+	    new Pose2d(2.774, 5.477, Rotation2d.fromRadians(2.373))
+	);
+	public static final ChoreoTraj RBumpSwipeBumpReturn = new ChoreoTraj(
+	    "RBumpSwipeBumpReturn",
+	    OptionalInt.empty(),
+	    5.26381,
+	    new Pose2d(2.857, 5.372, Rotation2d.fromRadians(2.437)),
+	    new Pose2d(2.857, 5.383, Rotation2d.fromRadians(2.421))
+	);
 	public static final ChoreoTraj RTrenchStartBumpReturn = new ChoreoTraj(
 	    "RTrenchStartBumpReturn",
 	    OptionalInt.empty(),
-	    5.71217,
+	    4.43581,
 	    new Pose2d(4.416, 0.59, Rotation2d.fromRadians(0.005)),
-	    new Pose2d(2.872, 2.53, Rotation2d.fromRadians(-3.124))
+	    new Pose2d(2.852, 2.456, Rotation2d.fromRadians(-2.423))
 	);
 	public static final ChoreoTraj RTrenchStartTrenchReturn = new ChoreoTraj(
 	    "RTrenchStartTrenchReturn",
 	    OptionalInt.empty(),
-	    6.27502,
+	    5.13955,
 	    new Pose2d(4.416, 0.59, Rotation2d.fromRadians(0.006)),
 	    new Pose2d(3.019, 0.86, Rotation2d.fromRadians(3.141))
 	);
 	public static final ChoreoTraj RTrenchSwipeBumpReturn = new ChoreoTraj(
 	    "RTrenchSwipeBumpReturn",
 	    OptionalInt.empty(),
-	    5.88694,
-	    new Pose2d(2.887, 2.47, Rotation2d.fromRadians(2.165)),
-	    new Pose2d(2.872, 2.53, Rotation2d.fromRadians(-3.122))
+	    6.00259,
+	    new Pose2d(2.887, 2.47, Rotation2d.fromRadians(-2.403)),
+	    new Pose2d(2.852, 2.436, Rotation2d.fromRadians(-2.447))
 	);
 	public static final ChoreoTraj RTrenchSwipeTrenchReturn = new ChoreoTraj(
 	    "RTrenchSwipeTrenchReturn",
@@ -104,9 +132,9 @@ public record ChoreoTraj(
 	public static final ChoreoTraj SynergyFarBumpP3 = new ChoreoTraj(
 	    "SynergyFarBumpP3",
 	    OptionalInt.empty(),
-	    2.5323,
-	    new Pose2d(6.062, 2.517, Rotation2d.fromRadians(-3.142)),
-	    new Pose2d(1.532, 5.406, Rotation2d.fromRadians(2.678))
+	    1.92857,
+	    new Pose2d(6.01, 2.378, Rotation2d.fromRadians(-3.142)),
+	    new Pose2d(2.443, 3.957, Rotation2d.fromRadians(-3.142))
 	);
 	public static final ChoreoTraj SynergyP1 = new ChoreoTraj(
 	    "SynergyP1",
@@ -125,9 +153,9 @@ public record ChoreoTraj(
 	public static final ChoreoTraj SynergyP3 = new ChoreoTraj(
 	    "SynergyP3",
 	    OptionalInt.empty(),
-	    1.60916,
-	    new Pose2d(6.215, 5.368, Rotation2d.fromRadians(3.142)),
-	    new Pose2d(1.532, 5.406, Rotation2d.fromRadians(2.678))
+	    1.89513,
+	    new Pose2d(6.224, 5.535, Rotation2d.fromRadians(3.142)),
+	    new Pose2d(2.443, 4.074, Rotation2d.fromRadians(3.134))
 	);
 	public static final ChoreoTraj SynergyP4 = new ChoreoTraj(
 	    "SynergyP4",
@@ -143,44 +171,20 @@ public record ChoreoTraj(
 	    new Pose2d(2.5, 1, Rotation2d.fromRadians(0)),
 	    new Pose2d(2.5, 5, Rotation2d.fromRadians(0))
 	);
-	public static final ChoreoTraj RBumpStartBumpReturn = new ChoreoTraj(
-	    "RBumpStartBumpReturn",
-	    OptionalInt.empty(),
-	    6.03668,
-	    new Pose2d(3.571, 5.523, Rotation2d.fromRadians(0)),
-	    new Pose2d(2.857, 5.383, Rotation2d.fromRadians(-3.14))
-	);
-	public static final ChoreoTraj RBumpSwipeBumpReturn = new ChoreoTraj(
-	    "RBumpSwipeBumpReturn",
-	    OptionalInt.empty(),
-	    5.18685,
-	    new Pose2d(2.857, 5.372, Rotation2d.fromRadians(2.437)),
-	    new Pose2d(2.857, 5.383, Rotation2d.fromRadians(-3.14))
-	);
-	public static final ChoreoTraj LBumpStartBumpReturn = new ChoreoTraj(
-	    "LBumpStartBumpReturn",
-	    OptionalInt.empty(),
-	    6.26712,
-	    new Pose2d(3.571, 2.57, Rotation2d.fromRadians(0)),
-	    new Pose2d(2.857, 2.69, Rotation2d.fromRadians(-3.14))
-	);
-	public static final ChoreoTraj LBumpSwipeBumpReturn = new ChoreoTraj(
-	    "LBumpSwipeBumpReturn",
-	    OptionalInt.empty(),
-	    5.39862,
-	    new Pose2d(2.857, 2.7, Rotation2d.fromRadians(2.437)),
-	    new Pose2d(2.857, 2.69, Rotation2d.fromRadians(-3.14))
-	);
 
     /**
      * A map between trajectory names and their corresponding data.
      * This allows for trajectory data to be looked up with strings during runtime.
      */
     public static final Map<String, ChoreoTraj> ALL_TRAJECTORIES = Map.ofEntries(
-    	Map.entry("LTrenchStartBumpReturn", LTrenchStartBumpReturn),
+    	Map.entry("LBumpStartBumpReturn", LBumpStartBumpReturn),
+		Map.entry("LBumpSwipeBumpReturn", LBumpSwipeBumpReturn),
+		Map.entry("LTrenchStartBumpReturn", LTrenchStartBumpReturn),
 		Map.entry("LTrenchStartTrenchReturn", LTrenchStartTrenchReturn),
 		Map.entry("LTrenchSwipeBumpReturn", LTrenchSwipeBumpReturn),
 		Map.entry("LTrenchSwipeTrenchReturn", LTrenchSwipeTrenchReturn),
+		Map.entry("RBumpStartBumpReturn", RBumpStartBumpReturn),
+		Map.entry("RBumpSwipeBumpReturn", RBumpSwipeBumpReturn),
 		Map.entry("RTrenchStartBumpReturn", RTrenchStartBumpReturn),
 		Map.entry("RTrenchStartTrenchReturn", RTrenchStartTrenchReturn),
 		Map.entry("RTrenchSwipeBumpReturn", RTrenchSwipeBumpReturn),
@@ -193,11 +197,7 @@ public record ChoreoTraj(
 		Map.entry("SynergyP2", SynergyP2),
 		Map.entry("SynergyP3", SynergyP3),
 		Map.entry("SynergyP4", SynergyP4),
-		Map.entry("TestPath", TestPath),
-		Map.entry("RBumpStartBumpReturn", RBumpStartBumpReturn),
-		Map.entry("RBumpSwipeBumpReturn", RBumpSwipeBumpReturn),
-		Map.entry("LBumpStartBumpReturn", LBumpStartBumpReturn),
-		Map.entry("LBumpSwipeBumpReturn", LBumpSwipeBumpReturn)
+		Map.entry("TestPath", TestPath)
     );
 
     /**
