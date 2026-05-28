@@ -18,6 +18,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -32,6 +33,7 @@ import frc.robot.subsystems.simulation.SimulationSubsystem;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -53,6 +55,7 @@ public class LocalizationSubsystem extends MwSubsystem<LocalizationStates, Local
     // Timer to prevent continuous gyro updates while disabled
     private final Timer disabled_gyro_update_timer_ = new Timer();
 
+
     // getInstance
     // Singleton Accessor
     public static LocalizationSubsystem getInstance() {
@@ -70,15 +73,18 @@ public class LocalizationSubsystem extends MwSubsystem<LocalizationStates, Local
         SwerveDriveKinematics kinematics = SwerveSubsystem.getInstance().getKinematics();
         Rotation2d gyro_angle = SwerveSubsystem.getInstance().getGyroYaw();
         SwerveModulePosition[] module_positions =
-                SwerveSubsystem.getInstance().getModulePositions();
+                SwerveSubsystem.getInstance().getcurrentModulePositions();
 
-        // No covariance on the smooth estimator since it's only used for short-term smoothing and
-        // shouldn't be fed any vision measurements that could cause large jumps in the pose
+        // No covariance on the smooth estimator since it's only used for short-term
+        // smoothing and
+        // shouldn't be fed any vision measurements that could cause large jumps in the
+        // pose
         // estimate
         smooth_pose_estimator_ =
                 new SwerveDrivePoseEstimator(
                         kinematics, gyro_angle, module_positions, Pose2d.kZero);
-        // Adjusted covariance on the field estimator to better reflect the expected accuracy of the
+        // Adjusted covariance on the field estimator to better reflect the expected
+        // accuracy of the
         // odometry and vision measurements, which should improve the Kalman filter
         field_pose_estimator_ =
                 new SwerveDrivePoseEstimator(
@@ -92,6 +98,7 @@ public class LocalizationSubsystem extends MwSubsystem<LocalizationStates, Local
         // Put the field visualizer on SmartDashboard once during initialization
         SmartDashboard.putData("Field", field_visualizer_);
         MwLog.log(getSubsystemKey() + "SwerveNoise", false);
+
 
         // Start the timer for disabled gyro updates
         disabled_gyro_update_timer_.start();
@@ -153,19 +160,20 @@ public class LocalizationSubsystem extends MwSubsystem<LocalizationStates, Local
         // Update field visualizer with the latest field-relative pose
         field_visualizer_.setRobotPose(getFieldPose());
 
-        // If the robot is disabled and there is a client connection with valid vision data,
+        // If the robot is disabled and there is a client connection with valid vision
+        // data,
         // periodically update the gyro yaw to correct for drift. This is done AFTER all
         // measurements are applied to prevent feedback loops.
         // if (RobotState.isDisabled()
-        //         && ProxyServerThread.getInstance().hasClientConnection()
-        //         && !vision_measurements.isEmpty()
-        //         && disabled_gyro_update_timer_.hasElapsed(1.0)) {
-        //     SwerveSubsystem.getInstance()
-        //             .setGyroYaw(field_pose_estimator_.getEstimatedPosition().getRotation());
-        //     disabled_gyro_update_timer_.restart();
+        // && ProxyServerThread.getInstance().hasClientConnection()
+        // && !vision_measurements.isEmpty()
+        // && disabled_gyro_update_timer_.hasElapsed(1.0)) {
+        // SwerveSubsystem.getInstance()
+        // .setGyroYaw(field_pose_estimator_.getEstimatedPosition().getRotation());
+        // disabled_gyro_update_timer_.restart();
         // } else if (!RobotState.isDisabled()) {
-        //     // Reset timer when robot is enabled
-        //     disabled_gyro_update_timer_.restart();
+        // // Reset timer when robot is enabled
+        // disabled_gyro_update_timer_.restart();
         // }
 
         // Log the pose estimates
@@ -278,7 +286,8 @@ public class LocalizationSubsystem extends MwSubsystem<LocalizationStates, Local
      */
     private void applyVisionMeasurements(
             SwerveDrivePoseEstimator pose_estimator, List<TagSolutionData> vision_measurements) {
-        // Use filtered method with empty filter set - all measurements use default covariance
+        // Use filtered method with empty filter set - all measurements use default
+        // covariance
         applyFilteredVisionMeasurements(
                 pose_estimator,
                 vision_measurements,
@@ -314,8 +323,10 @@ public class LocalizationSubsystem extends MwSubsystem<LocalizationStates, Local
 
         for (TagSolutionData vision_data : vision_measurements) {
             // Skip measurement with no detected tags
-            // Additionally, if the robot is enabled and in the alliance zone, checks the required
-            // minimum number of detected tags to prevent bad vision updates from partial detections
+            // Additionally, if the robot is enabled and in the alliance zone, checks the
+            // required
+            // minimum number of detected tags to prevent bad vision updates from partial
+            // detections
             // while moving through the alliance zone
             if (!DriverStation.isDisabled()
                     && FieldRegions.ALLIANCE_ZONE.contains(getFieldPose())
@@ -416,5 +427,6 @@ public class LocalizationSubsystem extends MwSubsystem<LocalizationStates, Local
 
         return true;
     }
-    ;
+
+    
 }

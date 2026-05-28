@@ -142,6 +142,11 @@ public class SwerveConstants extends MwConstants {
     public final double TRACTOR_BEAM_CONTROLLER_KD = 0.0;
 
     // =============================================================================
+    // SKID DETECTION CONSTANTS
+    // =============================================================================
+     public final double SKID_DETEC_MAX_RANGE = 0.3;
+        
+    // =============================================================================
     // SWERVE MODULE CONFIGURATION OBJECTS
     // =============================================================================
 

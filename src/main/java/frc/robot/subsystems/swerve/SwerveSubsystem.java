@@ -40,6 +40,7 @@ import frc.robot.subsystems.localization.LocalizationSubsystem;
 import frc.robot.subsystems.swerve.SwerveConstants.OperatorPerspective;
 import frc.robot.subsystems.swerve.SwerveConstants.SwerveStates;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -81,6 +82,8 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
     private Translation2d desired_rotation_lock_cor_ = new Translation2d();
     private double desired_rotation_lock_feedforward_ = 0.0;
     private ChassisSpeeds desired_chassis_speeds_ = new ChassisSpeeds(0, 0, 0);
+    private double skid_range = CONSTANTS.SKID_DETEC_MAX_RANGE;
+
 
     // Telop Smoothness controllers and scalars
     private double tele_op_velocity_scalar_ = 1.0;
@@ -193,6 +196,10 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
                 getSubsystemKey() + "VelocityRLScalar",
                 tele_op_velocity_rl_scalar_,
                 this::setTeleOpVelocityRateLimitScalar);
+        MwLog.tunable(
+                getSubsystemKey() + "Skid Range",
+                CONSTANTS.SKID_DETEC_MAX_RANGE,
+                (newRange) -> skid_range = newRange);
     }
 
     // reset
@@ -1158,7 +1165,7 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
     }
 
     /** Returns the module positions (turn angles and drive positions) for all of the modules. */
-    public SwerveModulePosition[] getModulePositions() {
+    public SwerveModulePosition[] getcurrentModulePositions() {
         return swerve_mech_.getModulePositions();
     }
 
@@ -1175,6 +1182,9 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
     /** Returns the desired chassis speeds of the robot (target speeds from commands). */
     public ChassisSpeeds getDesiredChassisSpeeds() {
         return desired_chassis_speeds_;
+    }
+    public double getDesiredChassisSpeedsNorm(){
+        return Math.hypot(desired_chassis_speeds_.vxMetersPerSecond, desired_chassis_speeds_.vyMetersPerSecond);
     }
 
     /** Returns the raw gyro rotation */
@@ -1200,5 +1210,32 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
         Translation2d tmp = new Translation2d(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond);
         tmp = tmp.rotateBy(operator_forward_direction_);
         return new ChassisSpeeds(tmp.getX(), tmp.getY(), speeds.omegaRadiansPerSecond);
+    }
+    private boolean isSkidding() {
+        SwerveModuleState[] current = SwerveSubsystem.getInstance().getCurrentModuleStates();
+        
+        SwerveModuleState[] rotationalVelocity = getKinematics().toSwerveModuleStates(new ChassisSpeeds(0,0,getChassisAngularVelocity()));
+        double min = Double.MAX_VALUE;
+        double max = -Double.MAX_VALUE;
+        for(int i =0; i < current.length; i++){
+            Translation2d measuredVector = new Translation2d(current[i].speedMetersPerSecond, current[i].angle);
+            Translation2d rotationalVectors = new Translation2d(rotationalVelocity[i].speedMetersPerSecond, rotationalVelocity[i].angle);
+            double normVel = measuredVector.minus(rotationalVectors).getNorm();
+            min = Math.min(min, normVel);
+            max = Math.max(max, normVel);
+        }
+        double range = max - min;
+        double realSkidRange = 0.0;
+        if(getDesiredChassisSpeedsNorm() < 0.1){
+            realSkidRange = skid_range;
+        }else{
+            realSkidRange = skid_range*getDesiredChassisSpeedsNorm();
+        }
+
+        if (range > realSkidRange) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }
