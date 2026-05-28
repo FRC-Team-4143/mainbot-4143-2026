@@ -21,7 +21,7 @@ public class CitrusSynergyFarBump extends Auto {
         loadTrajectory(ChoreoTraj.SynergyP1.name());
         loadTrajectory(ChoreoTraj.SynergyFarBumpP2.name());
         loadTrajectory(ChoreoTraj.SynergyFarBumpP3.name());
-        loadTrajectory(ChoreoTraj.SynergyP4.name());
+        //loadTrajectory(ChoreoTraj.SynergyP4.name());
 
         // =============================================================================
         // EVENT TRIGGER BINDING
@@ -100,23 +100,26 @@ public class CitrusSynergyFarBump extends Auto {
                 Commands.runOnce(
                         () -> {
                             ShooterSubsystem.getInstance().setWantedState(ShooterStates.SHOOT);
+                            IntakeSubsystem.getInstance().setWantedState(IntakeStates.SQUEEZE);
                         }),
                 // Shoot for 2 seconds
-                new WaitCommand(2),
-                // Set the fourth trajectory for the fourth part
-                SwerveSubsystem.getInstance()
-                        .setDesiredChoreoTrajectoryCommand(
-                                getTrajectory(ChoreoTraj.SynergyP4.name())),
-                // Start Choreo following
-                Commands.startEnd(
-                                () ->
-                                        SwerveSubsystem.getInstance()
-                                                .setWantedState(
-                                                        SwerveStates.CHOREO_PATH_ROTATION_LOCK),
-                                () ->
-                                        SwerveSubsystem.getInstance()
-                                                .setWantedState(
-                                                        SwerveStates.FIELD_CENTRIC_ROTATION_LOCK))
-                        .until(SwerveSubsystem.getInstance()::isAtChoreoSetpoint));
+                new WaitCommand(2)
+                // ,
+                // // Set the fourth trajectory for the fourth part
+                // SwerveSubsystem.getInstance()
+                //         .setDesiredChoreoTrajectoryCommand(
+                //                 getTrajectory(ChoreoTraj.SynergyP4.name())),
+                // // Start Choreo following
+                // Commands.startEnd(
+                //                 () ->
+                //                         SwerveSubsystem.getInstance()
+                //                                 .setWantedState(
+                //                                         SwerveStates.CHOREO_PATH_ROTATION_LOCK),
+                //                 () ->
+                //                         SwerveSubsystem.getInstance()
+                //                                 .setWantedState(
+                //                                         SwerveStates.FIELD_CENTRIC_ROTATION_LOCK))
+                //         .until(SwerveSubsystem.getInstance()::isAtChoreoSetpoint)
+                );
     }
 }

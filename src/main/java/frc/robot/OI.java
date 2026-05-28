@@ -122,6 +122,7 @@ public abstract class OI {
                                             .adjustHood(Units.degreesToRadians(1));
                                 }));
         operator_controller_.x().onTrue(ControlCommands.toggleIsAbleToRack());
+        driver_controller_.leftTrigger().whileTrue(ControlCommands.aimAtTargetCommand());
     }
 
     /**
@@ -136,6 +137,10 @@ public abstract class OI {
      */
     public static double getDriverJoystickLeftY() {
         return driver_controller_.getLeftY();
+    }
+
+    public static boolean getDriverRightTrigger() {
+        return driver_controller_.getRightTriggerAxis() > 0.1;
     }
 
     /**

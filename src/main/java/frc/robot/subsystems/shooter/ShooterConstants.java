@@ -167,7 +167,7 @@ public class ShooterConstants extends MwConstants {
     public final double HOOD_HOMING_CURRENT_THRESHOLD = 5.0; // Amps, stall detection threshold
 
     // Shooter ready detection
-    public final double SHOOTER_READY_DEBOUNCE_TIME = 0.0; // seconds
+    public final double SHOOTER_READY_DEBOUNCE_TIME = 0.1; // seconds
 
     // Shot detection (for detecting when a game piece has left the shooter)
     public final double SHOOTING_DETECTION_VELOCITY_FACTOR = 0.99; // Velocity threshold factor
@@ -178,8 +178,8 @@ public class ShooterConstants extends MwConstants {
     // =============================================================================
 
     // Hub shooting (close range)
-    public final double FLYWHEEL_MANUAL_HUB_VELOCITY = 142; // rad/s
-    public final double HOOD_MANUAL_HUB_ANGLE = 1.4 - 0.035; // radians
+    public final double FLYWHEEL_MANUAL_HUB_VELOCITY = 162.0; // rad/s
+    public final double HOOD_MANUAL_HUB_ANGLE = 1.335 - 0.035; // radians
 
     // Passing (long range)
     public final double FLYWHEEL_MANUAL_PASS_VELOCITY = 200.0; // rad/s
@@ -223,7 +223,7 @@ public class ShooterConstants extends MwConstants {
         HUB_LAUNCH_CALCULATOR.addHoodAnglePoint(1.34, 1.4 - 0.035);
         HUB_LAUNCH_CALCULATOR.addHoodAnglePoint(1.78, 1.38 - 0.035);
         HUB_LAUNCH_CALCULATOR.addHoodAnglePoint(2.17, 1.335 - 0.035);
-        HUB_LAUNCH_CALCULATOR.addHoodAnglePoint(2.81, 1.335 - 0.035);
+        HUB_LAUNCH_CALCULATOR.addHoodAnglePoint(2.81, 1.3 - 0.035);
         HUB_LAUNCH_CALCULATOR.addHoodAnglePoint(3.82, 1.23 - 0.035);
         HUB_LAUNCH_CALCULATOR.addHoodAnglePoint(4.40, 1.2 - 0.035);
         HUB_LAUNCH_CALCULATOR.addHoodAnglePoint(4.77, 1.15 - 0.035);
@@ -233,13 +233,13 @@ public class ShooterConstants extends MwConstants {
         // Populate flywheel speed map (distance in meters -> speed in rad/s)
         // Empirically determined values from testing
         HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(0.75, 145);
-        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(1.34, 142);
-        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(1.78, 164);
-        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(2.17, 164);
+        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(1.34, 148);
+        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(1.78, 162);
+        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(2.17, 166);
         HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(2.81, 174);
-        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(3.82, 186);
-        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(4.40, 194);
-        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(4.77, 196);
+        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(3.82, 190);
+        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(4.40, 198);
+        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(4.77, 200);
         HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(5.60, 226);
         HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(6.50, 256);
 
