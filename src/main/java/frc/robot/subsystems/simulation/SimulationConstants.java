@@ -49,6 +49,14 @@ public class SimulationConstants extends MwConstants {
                             0.0, Units.degreesToRadians(-10.0), Units.degreesToRadians(90.0)));
 
     // =============================================================================
+    // PIECE DETECTION SIMULATION
+    // =============================================================================
+    public final boolean SIM_PIECE_DETECTION_ENABLED = true;
+    public final Transform3d PIECE_CAMERA_TRANSFORM =
+            new Transform3d(
+                    0.330, 0.0, 0.293, new Rotation3d(0.0, Units.degreesToRadians(-10.0), 0.0));
+
+    // =============================================================================
     // SHOOTER SIMULATION
     // =============================================================================
     public final Translation3d SHOOTER_LAUNCH_OFFSET =
@@ -76,7 +84,7 @@ public class SimulationConstants extends MwConstants {
     // =============================================================================
     // INTAKE SIMULATION
     // =============================================================================
-    public final boolean SIM_FUEL_ENABLED = true;
+    public final boolean SIM_FUEL_ENABLED = false;
     public final double BASE_LENGTH =
             Units.inchesToMeters(LOADER.getDoubleValue("swerve", "com", "base_length"));
     public final double BASE_WIDTH =

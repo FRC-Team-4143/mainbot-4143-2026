@@ -7,6 +7,7 @@ import com.marswars.proxy_server.ProxyServerThread;
 import com.marswars.subsystem.MwSubsystem;
 import com.marswars.subsystem.SubsystemIoBase;
 import com.marswars.swerve_lib.SwerveMeasurements.SwerveMeasurement;
+import com.marswars.vision.MwPieceDetectionSim;
 import com.marswars.vision.MwVisionSim;
 import dev.doglog.DogLog;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -32,6 +33,7 @@ public class SimulationSubsystem extends MwSubsystem<SimulationStates, Simulatio
     private static SimulationSubsystem instance_ = null;
 
     private MwVisionSim vision_sim_;
+    private MwPieceDetectionSim piece_sim_;
     private FuelSim fuel_sim_;
     private int hopper_fuel_count_ = 0;
     private boolean outpost_full = false;
@@ -59,6 +61,13 @@ public class SimulationSubsystem extends MwSubsystem<SimulationStates, Simulatio
             vision_sim_.addCamera("Left-Camera", CONSTANTS.LEFT_CAMERA_TRANSFORM);
             vision_sim_.addCamera("Right-Camera", CONSTANTS.RIGHT_CAMERA_TRANSFORM);
             LocalizationSubsystem.getInstance().enableSwerveMeasurementNoise();
+        }
+
+        if (CONSTANTS.SIM_PIECE_DETECTION_ENABLED) {
+            piece_sim_ = ProxyServerThread.getInstance().initializePieceDetectionSimulation();
+            piece_sim_.addCamera("Piece-Camera", CONSTANTS.PIECE_CAMERA_TRANSFORM);
+            piece_sim_.addGamePiece(0, new Pose2d(4.0, 4.0, Rotation2d.kZero));
+            piece_sim_.addGamePiece(0, new Pose2d(6.0, 2.0, Rotation2d.kZero));
         }
 
         // Setup Fuel Simulation
@@ -117,6 +126,13 @@ public class SimulationSubsystem extends MwSubsystem<SimulationStates, Simulatio
         if (CONSTANTS.SIM_VISION_ENABLED) {
             Pose2d robot_pose = LocalizationSubsystem.getInstance().getSmoothPose();
             ProxyServerThread.getInstance().updateVisionSimulation(robot_pose);
+        }
+
+        // Piece Detection Simulation
+        if (CONSTANTS.SIM_PIECE_DETECTION_ENABLED) {
+            ProxyServerThread.getInstance()
+                    .updatePieceDetectionSimulation(
+                            LocalizationSubsystem.getInstance().getFieldPose());
         }
 
         // Get Fuel from the Outpost
