@@ -21,7 +21,7 @@ public class CitrusSynergyFarBump extends Auto {
         loadTrajectory(ChoreoTraj.SynergyP1.name());
         loadTrajectory(ChoreoTraj.SynergyFarBumpP2.name());
         loadTrajectory(ChoreoTraj.SynergyFarBumpP3.name());
-        //loadTrajectory(ChoreoTraj.SynergyP4.name());
+        // loadTrajectory(ChoreoTraj.SynergyP4.name());
 
         // =============================================================================
         // EVENT TRIGGER BINDING
@@ -118,7 +118,8 @@ public class CitrusSynergyFarBump extends Auto {
                 //                 () ->
                 //                         SwerveSubsystem.getInstance()
                 //                                 .setWantedState(
-                //                                         SwerveStates.FIELD_CENTRIC_ROTATION_LOCK))
+                //
+                // SwerveStates.FIELD_CENTRIC_ROTATION_LOCK))
                 //         .until(SwerveSubsystem.getInstance()::isAtChoreoSetpoint)
                 );
     }

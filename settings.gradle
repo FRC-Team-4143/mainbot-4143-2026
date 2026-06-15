@@ -28,3 +28,12 @@ pluginManagement {
 
 Properties props = System.getProperties();
 props.setProperty("org.gradle.internal.native.headers.unresolved.dependencies.ignore", "true");
+
+// During the AdvantageKit migration, build MW-Lib from source instead of the published artifact.
+// Explicit substitution is required because MW-Lib's group id is only set in its publication.
+// Remove this block and bump the published version once the migration ships.
+includeBuild('../MW-Lib') {
+    dependencySubstitution {
+        substitute module('com.github.frc-team-4143:mw-lib-java') using project(':')
+    }
+}

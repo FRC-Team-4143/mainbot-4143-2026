@@ -21,7 +21,7 @@ public class CitrusSynergy extends Auto {
         loadTrajectory(ChoreoTraj.SynergyP1.name());
         loadTrajectory(ChoreoTraj.SynergyP2.name());
         loadTrajectory(ChoreoTraj.SynergyP3.name());
-        //loadTrajectory(ChoreoTraj.SynergyP4.name());
+        // loadTrajectory(ChoreoTraj.SynergyP4.name());
 
         // =============================================================================
         // EVENT TRIGGER BINDING
@@ -117,8 +117,9 @@ public class CitrusSynergy extends Auto {
                 //                 () ->
                 //                         SwerveSubsystem.getInstance()
                 //                                 .setWantedState(
-                //                                         SwerveStates.FIELD_CENTRIC_ROTATION_LOCK))
+                //
+                // SwerveStates.FIELD_CENTRIC_ROTATION_LOCK))
                 //         .until(SwerveSubsystem.getInstance()::isAtChoreoSetpoint)
-                        );
+                );
     }
 }

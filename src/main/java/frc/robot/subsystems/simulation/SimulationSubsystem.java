@@ -3,12 +3,12 @@ package frc.robot.subsystems.simulation;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.Radians;
 
+import com.marswars.logging.MwLog;
 import com.marswars.proxy_server.ProxyServerThread;
 import com.marswars.subsystem.MwSubsystem;
 import com.marswars.subsystem.SubsystemIoBase;
 import com.marswars.swerve_lib.SwerveMeasurements.SwerveMeasurement;
 import com.marswars.vision.MwVisionSim;
-import dev.doglog.DogLog;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation3d;
@@ -135,8 +135,8 @@ public class SimulationSubsystem extends MwSubsystem<SimulationStates, Simulatio
         // FuelSim
         launchFuel(timestamp);
         fuel_sim_.updateSim();
-        DogLog.log(getSubsystemKey() + "FuelSim/Fuel", fuel_sim_.getLoggableFuel());
-        DogLog.log(getSubsystemKey() + "FuelSim/HopperCount", hopper_fuel_count_);
+        MwLog.log(getSubsystemKey() + "FuelSim/Fuel", fuel_sim_.getLoggableFuel());
+        MwLog.log(getSubsystemKey() + "FuelSim/HopperCount", hopper_fuel_count_);
     }
 
     // =============================================================================

@@ -94,6 +94,12 @@ def includeDesktopSupport = false
 
 repositories {
     maven {
+        url = "https://shenzhen-robotics-alliance.github.io/maple-sim/vendordep/repos/releases"
+    }
+    maven {
+        url = "https://storage.googleapis.com/grapple-frc-maven"
+    }
+    maven {
         url = uri('https://maven.pkg.github.com/FRC-Team-4143/MW-Lib')
         credentials {
             username = '4143-Software-Student'

@@ -8,10 +8,9 @@ import com.marswars.auto.Auto;
 import com.marswars.auto.AutoManager;
 import com.marswars.geometry.AllianceFlipUtil;
 import com.marswars.logging.Elastic;
-import dev.doglog.DogLog;
+import com.marswars.logging.MwLog;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.autos.CitrusSynergy;
@@ -35,8 +34,9 @@ import frc.robot.subsystems.swerve.SwerveConstants;
 import frc.robot.subsystems.swerve.SwerveConstants.SwerveStates;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 import java.util.Optional;
+import org.littletonrobotics.junction.LoggedRobot;
 
-public class Robot extends TimedRobot {
+public class Robot extends LoggedRobot {
 
     private Alliance alliance_ = Alliance.Blue; // Current alliance, used to set driver perspective
     private RobotContainer robot_container_;
@@ -72,6 +72,7 @@ public class Robot extends TimedRobot {
 
     @Override
     public void robotInit() {
+        if (MwLog.isReplay()) setUseTiming(false);
         Elastic.selectTab("Autonomous");
         SmartDashboard.putData(CommandScheduler.getInstance());
     }
@@ -85,7 +86,7 @@ public class Robot extends TimedRobot {
 
         // Update the hub active status
         HubMonitor.isHubActive(DriverStation.getMatchTime());
-        DogLog.log("Match Time", DriverStation.getMatchTime());
+        MwLog.log("Match Time", DriverStation.getMatchTime());
 
         // Visualize the 3D Robot
         Mechanism3dViz.publish();

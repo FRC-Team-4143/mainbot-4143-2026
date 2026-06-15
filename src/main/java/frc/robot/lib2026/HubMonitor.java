@@ -1,6 +1,6 @@
 package frc.robot.lib2026;
 
-import dev.doglog.DogLog;
+import com.marswars.logging.MwLog;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.util.Color;
@@ -54,7 +54,7 @@ public class HubMonitor {
      */
     public static void seedActiveAlliance(ActiveAlliance alliance) {
         first_active_alliance_ = alliance;
-        DogLog.log("HubMonitor/GameData", first_active_alliance_);
+        MwLog.log("HubMonitor/GameData", first_active_alliance_);
     }
 
     /**
@@ -114,9 +114,9 @@ public class HubMonitor {
                             : active == ActiveAlliance.RED_ACTIVE;
         }
 
-        DogLog.log(
+        MwLog.log(
                 "HubMonitor/Active", status ? HubMonitor.ACTIVE_COLOR : HubMonitor.INACTIVE_COLOR);
-        DogLog.log("HubMonitor/Alliance", getActiveColor(active));
+        MwLog.log("HubMonitor/Alliance", getActiveColor(active));
 
         // Log countdown timer for current stage
         logStageCountdown(match_time);
@@ -227,7 +227,7 @@ public class HubMonitor {
             }
         }
 
-        DogLog.log("HubMonitor/CurrentShift", stageName);
-        DogLog.log("HubMonitor/StatusTimeRemaining", timeRemaining);
+        MwLog.log("HubMonitor/CurrentShift", stageName);
+        MwLog.log("HubMonitor/StatusTimeRemaining", timeRemaining);
     }
 }
