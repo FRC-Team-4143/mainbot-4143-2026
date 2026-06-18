@@ -106,7 +106,7 @@ public class IntakeConstants extends MwConstants {
         // Configure Roller Motor
         ROLLER_MOTOR_CONFIG.can_id = ROLLER_MOTOR_ID;
         ROLLER_MOTOR_CONFIG.motor_type = TalonMotorType.X60;
-        ROLLER_MOTOR_CONFIG.canbus_name = "rio";
+        ROLLER_MOTOR_CONFIG.canbus_name = "can_s0";
         TalonFXConfiguration roller_config = new TalonFXConfiguration();
         roller_config.MotorOutput.Inverted = PhoenixUtil.toInvertedValue(ROLLER_MOTOR_INVERTED);
         roller_config.CurrentLimits.StatorCurrentLimit = ROLLER_STATOR_CURRENT_LIMIT;
@@ -116,7 +116,7 @@ public class IntakeConstants extends MwConstants {
         // Configure Roller Follower Motor
         ROLLER_FOLLOWER_MOTOR_CONFIG.can_id = ROLLER_FOLLOWER_MOTOR_ID;
         ROLLER_FOLLOWER_MOTOR_CONFIG.motor_type = TalonMotorType.X60;
-        ROLLER_FOLLOWER_MOTOR_CONFIG.canbus_name = "rio";
+        ROLLER_FOLLOWER_MOTOR_CONFIG.canbus_name = "can_s0";
         TalonFXConfiguration roller_follower_fx_config = new TalonFXConfiguration();
         roller_follower_fx_config.MotorOutput.Inverted =
                 PhoenixUtil.toInvertedValue(ROLLER_FOLLOWER_MOTOR_INVERTED);

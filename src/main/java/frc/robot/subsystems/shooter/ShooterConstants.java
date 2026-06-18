@@ -282,7 +282,7 @@ public class ShooterConstants extends MwConstants {
         // Configure Indexer Leader Motor
         INDEXER_MOTOR_CONFIG.can_id = INDEXER_ID;
         INDEXER_MOTOR_CONFIG.motor_type = TalonMotorType.X44;
-        INDEXER_MOTOR_CONFIG.canbus_name = "rio";
+        INDEXER_MOTOR_CONFIG.canbus_name = "can_s0";
         TalonFXConfiguration indexer_leader_config = new TalonFXConfiguration();
         indexer_leader_config.MotorOutput.Inverted = PhoenixUtil.toInvertedValue(INDEXER_INVERTED);
         // indexer_leader_config.Voltage.PeakForwardVoltage = 8.0;
@@ -292,7 +292,7 @@ public class ShooterConstants extends MwConstants {
 
         ACCELERATOR_MOTOR_CONFIG.can_id = ACCELERATOR_ID;
         ACCELERATOR_MOTOR_CONFIG.motor_type = TalonMotorType.X44;
-        ACCELERATOR_MOTOR_CONFIG.canbus_name = "rio";
+        ACCELERATOR_MOTOR_CONFIG.canbus_name = "can_s0";
         TalonFXConfiguration accelerator_config = new TalonFXConfiguration();
         accelerator_config.MotorOutput.Inverted = PhoenixUtil.toInvertedValue(ACCELERATOR_INVERTED);
         // accelerator_config.Voltage.PeakForwardVoltage = 8.0;
@@ -303,7 +303,7 @@ public class ShooterConstants extends MwConstants {
         // Configure Shooter Leader Motor
         SHOOTER_LEADER_MOTOR_CONFIG.can_id = SHOOTER_LEADER_ID;
         SHOOTER_LEADER_MOTOR_CONFIG.motor_type = TalonMotorType.X60;
-        SHOOTER_LEADER_MOTOR_CONFIG.canbus_name = "rio";
+        SHOOTER_LEADER_MOTOR_CONFIG.canbus_name = "can_s0";
         TalonFXConfiguration shooter_leader_config = new TalonFXConfiguration();
         shooter_leader_config.MotorOutput.Inverted =
                 PhoenixUtil.toInvertedValue(FLYWHEEL_LEADER_INVERTED);
@@ -324,7 +324,7 @@ public class ShooterConstants extends MwConstants {
         // Configure Shooter Follower 1 Motor
         SHOOTER_FOLLOWER_MOTOR_1_CONFIG.can_id = SHOOTER_FOLLOWER_1_ID;
         SHOOTER_FOLLOWER_MOTOR_1_CONFIG.motor_type = TalonMotorType.X60;
-        SHOOTER_FOLLOWER_MOTOR_1_CONFIG.canbus_name = "rio";
+        SHOOTER_FOLLOWER_MOTOR_1_CONFIG.canbus_name = "can_s0";
         TalonFXConfiguration shooter_follower_1_config = new TalonFXConfiguration();
         shooter_follower_1_config.MotorOutput.Inverted =
                 PhoenixUtil.toInvertedValue(FLYWHEEL_FOLLOWER_1_INVERTED);
@@ -339,7 +339,7 @@ public class ShooterConstants extends MwConstants {
         // Configure Shooter Follower 2 Motor
         SHOOTER_FOLLOWER_MOTOR_2_CONFIG.can_id = SHOOTER_FOLLOWER_2_ID;
         SHOOTER_FOLLOWER_MOTOR_2_CONFIG.motor_type = TalonMotorType.X60;
-        SHOOTER_FOLLOWER_MOTOR_2_CONFIG.canbus_name = "rio";
+        SHOOTER_FOLLOWER_MOTOR_2_CONFIG.canbus_name = "can_s0";
         TalonFXConfiguration shooter_follower_2_config = new TalonFXConfiguration();
         shooter_follower_2_config.MotorOutput.Inverted =
                 PhoenixUtil.toInvertedValue(FLYWHEEL_FOLLOWER_2_INVERTED);
@@ -354,7 +354,7 @@ public class ShooterConstants extends MwConstants {
         // Configure Shooter Follower 3 Motor
         SHOOTER_FOLLOWER_MOTOR_3_CONFIG.can_id = SHOOTER_FOLLOWER_3_ID;
         SHOOTER_FOLLOWER_MOTOR_3_CONFIG.motor_type = TalonMotorType.X60;
-        SHOOTER_FOLLOWER_MOTOR_3_CONFIG.canbus_name = "rio";
+        SHOOTER_FOLLOWER_MOTOR_3_CONFIG.canbus_name = "can_s0";
         TalonFXConfiguration shooter_follower_3_config = new TalonFXConfiguration();
         shooter_follower_3_config.MotorOutput.Inverted =
                 PhoenixUtil.toInvertedValue(FLYWHEEL_FOLLOWER_3_INVERTED);
@@ -369,7 +369,7 @@ public class ShooterConstants extends MwConstants {
         // Configure Hood Motor
         HOOD_MOTOR_CONFIGS.can_id = HOOD_ID;
         HOOD_MOTOR_CONFIGS.motor_type = TalonMotorType.X44;
-        HOOD_MOTOR_CONFIGS.canbus_name = "rio";
+        HOOD_MOTOR_CONFIGS.canbus_name = "can_s0";
         TalonFXConfiguration hood_config = new TalonFXConfiguration();
         hood_config.MotorOutput.Inverted = PhoenixUtil.toInvertedValue(HOOD_INVERTED);
         hood_config.Slot0 = HOOD_POSITION_GAINS;
@@ -381,7 +381,7 @@ public class ShooterConstants extends MwConstants {
         // Configure Hopper Motor
         HOPPER_MOTOR_CONFIG.can_id = HOPPER_MOTOR_ID;
         HOPPER_MOTOR_CONFIG.motor_type = TalonMotorType.X44;
-        HOPPER_MOTOR_CONFIG.canbus_name = "rio";
+        HOPPER_MOTOR_CONFIG.canbus_name = "can_s0";
         TalonFXConfiguration hopper_config = new TalonFXConfiguration();
         hopper_config.Slot1 = HOPPER_VELOCITY_GAINS;
         HOPPER_MOTOR_CONFIG.apply(hopper_config);
