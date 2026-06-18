@@ -2,7 +2,7 @@ package frc.robot.lib2026;
 
 import com.marswars.geometry.AllianceFlipUtil;
 import com.marswars.geometry.PolygonRegion;
-import edu.wpi.first.math.geometry.Translation2d;
+import org.wpilib.math.geometry.Translation2d;
 import java.util.ArrayList;
 import java.util.List;
 

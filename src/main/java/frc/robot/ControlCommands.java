@@ -1,9 +1,9 @@
 package frc.robot;
 
 import dev.doglog.DogLog;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.FunctionalCommand;
+import org.wpilib.command2.Command;
+import org.wpilib.command2.Commands;
+import org.wpilib.command2.FunctionalCommand;
 import frc.robot.lib2026.FieldTargets;
 import frc.robot.subsystems.gamestates.GameStatesConstants.GameStates;
 import frc.robot.subsystems.gamestates.GameStatesSubsystem;

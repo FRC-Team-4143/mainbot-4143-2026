@@ -7,9 +7,9 @@ import com.marswars.swerve_lib.SwerveDriveConfig;
 import com.marswars.swerve_lib.module.ModuleType;
 import com.marswars.swerve_lib.module.SwerveModuleConfig;
 import com.marswars.util.PhoenixUtil;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.util.Units;
+import org.wpilib.math.geometry.Rotation2d;
+import org.wpilib.math.geometry.Translation2d;
+import org.wpilib.math.util.Units;
 
 public class SwerveConstants extends MwConstants {
 
@@ -27,7 +27,7 @@ public class SwerveConstants extends MwConstants {
         CHOREO_PATH,
         /** Drive towards a target pose using feedback control. */
         TRACTOR_BEAM,
-        /** Drive using raw ChassisSpeeds including rotation. */
+        /** Drive using raw ChassisVelocities including rotation. */
         CHASSIS_SPEEDS,
         /** Slow precision movement relative to robot orientation using POV/D-pad. */
         CRAWL_ROBOT_CENTRIC,
@@ -39,7 +39,7 @@ public class SwerveConstants extends MwConstants {
         FIELD_CENTRIC_ROTATION_LOCK,
         /** Follow a Choreo trajectory path with rotation locked to a target heading. */
         CHOREO_PATH_ROTATION_LOCK,
-        /** Drive using raw ChassisSpeeds with rotation locked to a target heading. */
+        /** Drive using raw ChassisVelocities with rotation locked to a target heading. */
         CHASSIS_SPEEDS_ROTATION_LOCK,
         /** Slow precision movement relative to robot with rotation locked to a target heading. */
         CRAWL_ROBOT_CENTRIC_ROTATION_LOCK,

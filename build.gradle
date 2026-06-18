@@ -1,89 +1,51 @@
 plugins {
     id "java"
-    id "edu.wpi.first.GradleRIO" version "2026.2.1"
-    id "com.peterabeles.gversion" version "1.10"
-    id "com.diffplug.spotless" version "6.25.0"
+    id "org.wpilib.GradleRIO" version "2027.0.0-alpha-6"
+    id "com.gradleup.shadow" version "9.3.0"
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
+    sourceCompatibility = JavaVersion.VERSION_25
+    targetCompatibility = JavaVersion.VERSION_25
 }
 
-def ROBOT_MAIN_CLASS = "frc.robot.Main"
+def ROBOT_MAIN_CLASS = "first.Main"
 
-// Configure Spotless for code formatting
-spotless {
-    java {
-        target 'src/**/*.java'
-        targetExclude 'src/main/java/frc/robot/autos/ChoreoTraj.java', 'src/main/java/frc/robot/autos/ChoreoVars.java'
-        googleJavaFormat('1.23.0').aosp().reflowLongStrings()
-        removeUnusedImports()
-        trimTrailingWhitespace()
-        endWithNewline()
-    }
-    groovyGradle {
-        target '*.gradle'
-        greclipse()
-        indentWithSpaces(4)
-        trimTrailingWhitespace()
-        endWithNewline()
-    }
-    json {
-        target 'src/**/*.json', 'vendordeps/*.json'
-        jackson()
-    }
-    format 'misc', {
-        target '**/*.md', '**/*.xml'
-        trimTrailingWhitespace()
-        endWithNewline()
-    }
-}
-
-// Suppress Spotless verbose output during builds
-tasks.withType(com.diffplug.gradle.spotless.SpotlessTask) {
-    logging.captureStandardOutput LogLevel.INFO
-}
-
-// Define my targets (RoboRIO) and artifacts (deployable files)
+// Define my targets (SystemCore) and artifacts (deployable files)
 // This is added by GradleRIO's backing project DeployUtils.
 deploy {
     targets {
-        roborio(getTargetTypeClass('RoboRIO')) {
+        systemcore(getTargetTypeClass('SystemCore')) {
             // Team number is loaded either from the .wpilib/wpilib_preferences.json
             // or from command line. If not found an exception will be thrown.
             // You can use getTeamOrDefault(team) instead of getTeamNumber if you
             // want to store a team number in this file.
-            team = project.frc.getTeamNumber()
-            debug = project.frc.getDebugOrDefault(false)
+            team = project.wpilib.getTeamNumber()
+            // Use the default systemcore host name. This must be called after setting team
+            // as happens on the line above
+            useDefaultSystemcoreHostName()
+            debug = project.wpilib.getDebugOrDefault(false)
 
             artifacts {
                 // First part is artifact name, 2nd is artifact type
                 // getTargetTypeClass is a shortcut to get the class type using a string
 
-                frcJava(getArtifactTypeClass('FRCJavaArtifact')) {
-                    // Enable VisualVM connection
-                    // jvmArgs.add("-Dcom.sun.management.jmxremote=true")
-                    // jvmArgs.add("-Dcom.sun.management.jmxremote.port=1198")
-                    // jvmArgs.add("-Dcom.sun.management.jmxremote.local.only=false")
-                    // jvmArgs.add("-Dcom.sun.management.jmxremote.ssl=false")
-                    // jvmArgs.add("-Dcom.sun.management.jmxremote.authenticate=false")
-                    // jvmArgs.add("-Djava.rmi.server.hostname=10.41.43.2") // Replace TE.AM with team number
+                wpilibJava(getArtifactTypeClass('WPILibJavaArtifact')) {
                 }
 
                 // Static files artifact
-                frcStaticFileDeploy(getArtifactTypeClass('FileTreeArtifact')) {
+                wpilibStaticFileDeploy(getArtifactTypeClass('FileTreeArtifact')) {
                     files = project.fileTree('src/main/deploy')
-                    directory = '/home/lvuser/deploy'
-                    deleteOldFiles = false // Change to true to delete files on roboRIO that no
-                    // longer exist in deploy directory of this project
+                    directory = '/home/systemcore/deploy'
+                    deleteOldFiles = false // Change to true to delete files on systemcore that no
+                                           // longer exist in deploy directory of this project
                 }
             }
         }
     }
 }
 
-def deployArtifact = deploy.targets.roborio.artifacts.frcJava
+def deployArtifact = deploy.targets.systemcore.artifacts.wpilibJava
 
 // Set to true to use debug for all targets including JNI, which will drastically impact
 // performance.
@@ -92,17 +54,34 @@ wpi.java.debugJni = false
 // Set this to true to enable desktop support.
 def includeDesktopSupport = false
 
-repositories {
-    maven {
-        url = uri('https://maven.pkg.github.com/FRC-Team-4143/MW-Lib')
-        credentials {
-            username = '4143-Software-Student'
-            password = '\u0067\u0068\u0070\u005f\u004d\u006b\u0076\u006c\u0074\u0073\u0049\u0045\u004a\u0070\u006c\u0078\u0073\u0069\u0031\u0076\u0037\u0049\u0070\u0047\u0039\u0030\u004b\u0062\u006f\u0068\u0050\u0034\u0047\u0032\u0032\u0044\u0030\u0059\u0032\u0064'
+// MW-Lib source inclusion
+sourceSets {
+    main {
+        java {
+            srcDir '/home/ubuntu/MW-Lib-Alpha5/src/main/java'
         }
     }
-    // flatDir{
-    //     dirs 'C:/Users/FIRSTMentor/Documents/MW-Lib/build/libs'
-    // }
+}
+
+// Additional vendor library repositories
+repositories {
+    maven { url = "https://maven.ctr-electronics.com/release/" }
+    maven { url = "https://frcmaven.wpi.edu/artifactory/sleipnirgroup-mvn-release/" }
+    maven {
+        url = "https://maven.photonvision.org/repository/internal"
+        content { includeGroup "org.photonvision" }
+    }
+    maven {
+        url = "https://maven.photonvision.org/repository/snapshots"
+        content { includeGroup "org.photonvision" }
+    }
+    maven {
+        url = "https://shenzhen-robotics-alliance.github.io/maple-sim/vendordep/repos/releases"
+    }
+    maven { url = "https://www.playingwithfusion.com/frc/maven/" }
+    maven { url = "https://storage.googleapis.com/grapple-frc-maven" }
+    maven { url = "https://jitpack.io" }
+    mavenCentral()
 }
 
 // Defining my dependencies. In this case, WPILib (+ friends), and vendor libraries.
@@ -112,11 +91,36 @@ dependencies {
     implementation wpi.java.deps.wpilib()
     implementation wpi.java.vendor.java()
 
-    roborioDebug wpi.java.deps.wpilibJniDebug(wpi.platforms.roborio)
-    roborioDebug wpi.java.vendor.jniDebug(wpi.platforms.roborio)
+    // Vendor library JARs (added directly since not all have alpha-5 vendordep JSONs)
+    //implementation "com.ctre.phoenix6:wpiapi-java:26.1.1"
+    implementation "choreo:ChoreoLib-java:2027.0.0-alpha-1"
+    //implementation "org.photonvision:photonlib-java:v2026.2.2"
+    //implementation "org.photonvision:photontargeting-java:v2026.2.2"
+    //implementation "org.ironmaple:maplesim-java:0.4.0-beta"
+    //implementation "com.playingwithfusion.frc:PlayingWithFusion-java:2026.2.25"
+    implementation "au.grapplerobotics:libgrapplefrcjava:2025.1.3"
+    implementation "com.google.code.gson:gson:2.13.2"
+    implementation "org.dyn4j:dyn4j:5.0.2"
+    implementation "com.fasterxml.jackson.core:jackson-databind:2.19.2"
+    implementation "com.fasterxml.jackson.core:jackson-core:2.19.2"
+    implementation "com.fasterxml.jackson.core:jackson-annotations:2.19.2"
 
-    roborioRelease wpi.java.deps.wpilibJniRelease(wpi.platforms.roborio)
-    roborioRelease wpi.java.vendor.jniRelease(wpi.platforms.roborio)
+    // Old WPILib alpha-1 jars as compileOnly so CTRE/MapleSim/PhotonVision can resolve edu.wpi.first.* types
+    compileOnly files(
+        '/home/ubuntu/wpilib/2027_alpha1/maven/edu/wpi/first/wpiunits/wpiunits-java/2027.0.0-alpha-2/wpiunits-java-2027.0.0-alpha-2.jar',
+        '/home/ubuntu/wpilib/2027_alpha1/maven/edu/wpi/first/wpimath/wpimath-java/2027.0.0-alpha-2/wpimath-java-2027.0.0-alpha-2.jar',
+        '/home/ubuntu/wpilib/2027_alpha1/maven/edu/wpi/first/wpiutil/wpiutil-java/2027.0.0-alpha-2/wpiutil-java-2027.0.0-alpha-2.jar',
+        '/home/ubuntu/wpilib/2027_alpha1/maven/edu/wpi/first/apriltag/apriltag-java/2027.0.0-alpha-2/apriltag-java-2027.0.0-alpha-2.jar',
+        '/home/ubuntu/wpilib/2027_alpha1/maven/edu/wpi/first/hal/hal-java/2027.0.0-alpha-2/hal-java-2027.0.0-alpha-2.jar',
+        '/home/ubuntu/wpilib/2027_alpha1/maven/edu/wpi/first/wpilibj/wpilibj-java/2027.0.0-alpha-2/wpilibj-java-2027.0.0-alpha-2.jar',
+        '/home/ubuntu/wpilib/2027_alpha1/maven/edu/wpi/first/ntcore/ntcore-java/2027.0.0-alpha-2/ntcore-java-2027.0.0-alpha-2.jar'
+    )
+
+    systemcoreDebug wpi.java.deps.wpilibJniDebug(wpi.platforms.systemcore)
+    systemcoreDebug wpi.java.vendor.jniDebug(wpi.platforms.systemcore)
+
+    systemcoreRelease wpi.java.deps.wpilibJniRelease(wpi.platforms.systemcore)
+    systemcoreRelease wpi.java.vendor.jniRelease(wpi.platforms.systemcore)
 
     nativeDebug wpi.java.deps.wpilibJniDebug(wpi.platforms.desktop)
     nativeDebug wpi.java.vendor.jniDebug(wpi.platforms.desktop)
@@ -128,8 +132,6 @@ dependencies {
 
     testImplementation 'org.junit.jupiter:junit-jupiter:5.10.1'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-    implementation 'com.github.frc-team-4143:mw-lib-java:26.15.2'
-    //implementation name: 'MW-Lib', version: '', ext: 'jar'
 }
 
 test {
@@ -141,77 +143,24 @@ test {
 wpi.sim.addGui().defaultEnabled = true
 wpi.sim.addDriverstation()
 
-// Setting up my Jar File. In this case, adding all libraries into the main jar ('fat jar')
-// in order to make them all available at runtime. Also adding the manifest so WPILib
-// knows where to look for our Robot Class.
-jar {
-    from {
-        configurations.runtimeClasspath.collect {
-            it.isDirectory() ? it : zipTree(it)
-        }
-    }
+// Setting up my Jar File. In this case, adding all libraries into the main jar ('fat/shaded jar')
+// in order to make them all available at runtime and merging service files to make JSON work.
+// Also adding the manifest so WPILib knows where to look for our Robot Class.
+shadowJar {
+    mergeServiceFiles()
     from('src') { into 'backup/src' }
     from('vendordeps') { into 'backup/vendordeps' }
     from('build.gradle') { into 'backup' }
-    manifest edu.wpi.first.gradlerio.GradleRIOPlugin.javaManifest(ROBOT_MAIN_CLASS)
+    manifest org.wpilib.gradlerio.GradleRIOPlugin.javaManifest(ROBOT_MAIN_CLASS)
     duplicatesStrategy = DuplicatesStrategy.INCLUDE
 }
 
 // Configure jar and deploy tasks
-deployArtifact.jarTask = jar
-wpi.java.configureExecutableTasks(jar)
+deployArtifact.jarTask = shadowJar
+wpi.java.configureExecutableTasks(shadowJar)
 wpi.java.configureTestTasks(test)
-
-// Auto-format code after successful build
-build.finalizedBy spotlessApply
-// Only check formatting on explicit check task
-check.dependsOn spotlessCheck
 
 // Configure string concat to always inline compile
 tasks.withType(JavaCompile) {
     options.compilerArgs.add '-XDstringConcat=inline'
-}
-
-// Create commit with working changes on event branches
-task(eventDeploy) {
-    doLast {
-        if (project.gradle.startParameter.taskNames.any({ it.toLowerCase().contains("deploy") })) {
-            def branchPrefix = "event"
-            def branch = 'git branch --show-current'.execute().text.trim()
-            def commitMessage = "Update at '${new Date().toString()}'"
-
-            if (branch.startsWith(branchPrefix)) {
-                exec {
-                    workingDir(projectDir)
-                    executable 'git'
-                    args 'add', '-A'
-                }
-                exec {
-                    workingDir(projectDir)
-                    executable 'git'
-                    args 'commit', '-m', commitMessage
-                    ignoreExitValue = true
-                }
-
-                println "Committed to branch: '$branch'"
-                println "Commit message: '$commitMessage'"
-            } else {
-                println "Not on an event branch, skipping commit"
-            }
-        } else {
-            println "Not running deploy task, skipping commit"
-        }
-    }
-}
-createVersionFile.dependsOn(eventDeploy)
-
-// Create version file
-project.compileJava.dependsOn(createVersionFile)
-gversion {
-    srcDir       = "src/main/java/"
-    classPackage = "frc.robot"
-    className    = "BuildConstants"
-    dateFormat   = "yyyy-MM-dd HH:mm:ss z"
-    timeZone     = "America/Chicago" // Use preferred time zone
-    indent       = "  "
 }

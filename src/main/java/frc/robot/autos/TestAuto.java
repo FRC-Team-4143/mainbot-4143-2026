@@ -1,7 +1,7 @@
 package frc.robot.autos;
 
 import com.marswars.auto.Auto;
-import edu.wpi.first.wpilibj2.command.Commands;
+import org.wpilib.command2.Commands;
 import frc.robot.subsystems.swerve.SwerveConstants.SwerveStates;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 

@@ -8,23 +8,24 @@ import com.marswars.subsystem.SubsystemIoBase;
 import com.marswars.swerve_lib.PhoenixOdometryThread;
 import com.marswars.swerve_lib.SwerveMeasurements.SwerveMeasurement;
 import dev.doglog.DogLog;
-import edu.wpi.first.apriltag.AprilTagFieldLayout;
-import edu.wpi.first.math.Matrix;
-import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.kinematics.SwerveModulePosition;
-import edu.wpi.first.math.numbers.N1;
-import edu.wpi.first.math.numbers.N3;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import org.wpilib.vision.apriltag.AprilTagFieldLayout;
+import org.wpilib.math.linalg.Matrix;
+import org.wpilib.math.estimator.SwerveDrivePoseEstimator;
+import org.wpilib.math.geometry.Pose2d;
+import org.wpilib.math.geometry.Pose3d;
+import org.wpilib.math.geometry.Rotation2d;
+import org.wpilib.math.geometry.Translation2d;
+import org.wpilib.math.kinematics.ChassisVelocities;
+import org.wpilib.math.kinematics.SwerveDriveKinematics;
+import org.wpilib.math.kinematics.SwerveModulePosition;
+import org.wpilib.math.numbers.N1;
+import org.wpilib.math.numbers.N3;
+import org.wpilib.driverstation.DriverStation;
+import org.wpilib.driverstation.Alliance;
+import org.wpilib.driverstation.RobotState;
+import org.wpilib.system.Timer;
+import org.wpilib.smartdashboard.Field2d;
+import org.wpilib.smartdashboard.SmartDashboard;
 import frc.robot.lib2026.FieldConstants;
 import frc.robot.lib2026.FieldRegions;
 import frc.robot.subsystems.localization.LocalizationConstants.LocalizationStates;
@@ -232,10 +233,10 @@ public class LocalizationSubsystem extends MwSubsystem<LocalizationStates, Local
     /**
      * @return The current chassis speeds in field-relative vectors
      */
-    public ChassisSpeeds getCurrentChassisSpeedsFieldRelative() {
-        return ChassisSpeeds.fromRobotRelativeSpeeds(
-                SwerveSubsystem.getInstance().getCurrentChassisSpeeds(),
-                getFieldPose().getRotation());
+    public ChassisVelocities getCurrentChassisSpeedsFieldRelative() {
+        return SwerveSubsystem.getInstance()
+                .getCurrentChassisSpeeds()
+                .toFieldRelative(getFieldPose().getRotation());
     }
 
     /**
@@ -256,7 +257,7 @@ public class LocalizationSubsystem extends MwSubsystem<LocalizationStates, Local
      * @param alliance The alliance color (Red or Blue)
      */
     public void setTagFocus(Alliance alliance) {
-        if (alliance == Alliance.Blue) {
+        if (alliance == Alliance.BLUE) {
             shooting_focus_tags_ = CONSTANTS.SHOOTING_FOCUS_TAG_IDS_BLUE;
             climbing_focus_tags_ = CONSTANTS.CLIMBING_FOCUS_TAG_IDS_BLUE;
         } else {
@@ -317,7 +318,7 @@ public class LocalizationSubsystem extends MwSubsystem<LocalizationStates, Local
             // Additionally, if the robot is enabled and in the alliance zone, checks the required
             // minimum number of detected tags to prevent bad vision updates from partial detections
             // while moving through the alliance zone
-            if (!DriverStation.isDisabled()
+            if (!RobotState.isDisabled()
                     && FieldRegions.ALLIANCE_ZONE.contains(getFieldPose())
                     && vision_data.detectedIds.size() < CONSTANTS.MIN_TAG_COUNT_FOR_VISION_UPDATE)
                 continue;
@@ -347,7 +348,7 @@ public class LocalizationSubsystem extends MwSubsystem<LocalizationStates, Local
                                     .minus(vision_data.pose.getRotation())
                                     .getRadians());
             if (rotation_difference > CONSTANTS.MAX_ROTATION_DIFFERENCE
-                    && DriverStation.isEnabled()) {
+                    && RobotState.isEnabled()) {
                 continue;
             }
 

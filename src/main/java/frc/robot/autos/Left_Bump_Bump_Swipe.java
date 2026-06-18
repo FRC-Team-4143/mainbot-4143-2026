@@ -1,8 +1,8 @@
 package frc.robot.autos;
 
 import com.marswars.auto.Auto;
-import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
+import org.wpilib.command2.Commands;
+import org.wpilib.command2.WaitCommand;
 import frc.robot.lib2026.FieldTargets;
 import frc.robot.subsystems.intake.IntakeConstants.IntakeStates;
 import frc.robot.subsystems.intake.IntakeSubsystem;

@@ -1,9 +1,9 @@
 package frc.robot.lib2026;
 
 import dev.doglog.DogLog;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.util.Color;
+import org.wpilib.driverstation.Alliance;
+import org.wpilib.driverstation.MatchState;
+import org.wpilib.util.Color;
 import java.util.Optional;
 
 public class HubMonitor {
@@ -74,7 +74,7 @@ public class HubMonitor {
      */
     private static ActiveAlliance firstActiveAlliance() {
 
-        game_data_ = DriverStation.getGameSpecificMessage();
+        game_data_ = MatchState.getGameData().orElse("");
         if (game_data_.length() > 0) {
             switch (game_data_.charAt(0)) {
                 case 'B':
@@ -106,10 +106,10 @@ public class HubMonitor {
             status = true;
         }
         // Determine active status based on current allaince
-        Optional<Alliance> alliance = DriverStation.getAlliance();
+        Optional<Alliance> alliance = MatchState.getAlliance();
         if (alliance.isPresent() && status != true) {
             status =
-                    (alliance.get() == Alliance.Blue)
+                    (alliance.get() == Alliance.BLUE)
                             ? active == ActiveAlliance.BLUE_ACTIVE
                             : active == ActiveAlliance.RED_ACTIVE;
         }
@@ -207,12 +207,12 @@ public class HubMonitor {
         }
 
         // Check if we're first active (our alliance matches first active alliance)
-        Optional<Alliance> currentAlliance = DriverStation.getAlliance();
+        Optional<Alliance> currentAlliance = MatchState.getAlliance();
         if (currentAlliance.isPresent() && first_active_alliance_ != ActiveAlliance.INVALID) {
             boolean isFirstActive =
-                    (currentAlliance.get() == Alliance.Red
+                    (currentAlliance.get() == Alliance.RED
                                     && first_active_alliance_ == ActiveAlliance.RED_ACTIVE)
-                            || (currentAlliance.get() == Alliance.Blue
+                            || (currentAlliance.get() == Alliance.BLUE
                                     && first_active_alliance_ == ActiveAlliance.BLUE_ACTIVE);
 
             // Combine shifts: TRANSITION+SHIFT1 if first active, SHIFT4+ENDGAME if second active

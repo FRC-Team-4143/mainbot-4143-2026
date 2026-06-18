@@ -1,10 +1,10 @@
 package frc.robot.subsystems.shooter;
 
-import static edu.wpi.first.units.Units.Meters;
-import static edu.wpi.first.units.Units.Radians;
-import static edu.wpi.first.units.Units.RadiansPerSecond;
-import static edu.wpi.first.units.Units.Seconds;
-import static edu.wpi.first.units.Units.Volts;
+import static org.wpilib.units.Units.Meters;
+import static org.wpilib.units.Units.Radians;
+import static org.wpilib.units.Units.RadiansPerSecond;
+import static org.wpilib.units.Units.Seconds;
+import static org.wpilib.units.Units.Volts;
 
 import com.marswars.geometry.AllianceFlipUtil;
 import com.marswars.geometry.LaunchCalculator;
@@ -13,19 +13,19 @@ import com.marswars.mechanisms.RollerMech;
 import com.marswars.subsystem.MwSubsystem;
 import com.marswars.subsystem.SubsystemIoBase;
 import dev.doglog.DogLog;
-import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.filter.Debouncer;
-import edu.wpi.first.math.filter.Debouncer.DebounceType;
-import edu.wpi.first.math.filter.LinearFilter;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.geometry.Translation3d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Commands;
+import org.wpilib.math.util.MathUtil;
+import org.wpilib.math.filter.Debouncer;
+import org.wpilib.math.filter.Debouncer.DebounceType;
+import org.wpilib.math.filter.LinearFilter;
+import org.wpilib.math.geometry.Pose2d;
+import org.wpilib.math.geometry.Rotation2d;
+import org.wpilib.math.geometry.Translation2d;
+import org.wpilib.math.geometry.Translation3d;
+import org.wpilib.math.kinematics.ChassisVelocities;
+import org.wpilib.driverstation.Alliance;
+import org.wpilib.driverstation.MatchState;
+import org.wpilib.smartdashboard.SmartDashboard;
+import org.wpilib.command2.Commands;
 import frc.robot.lib2026.FieldTargets;
 import frc.robot.subsystems.localization.LocalizationSubsystem;
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterStates;
@@ -201,7 +201,7 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
         // This matches 6328's approach and is more predictive than measured velocity.
         // Use field-relative version to ensure motion compensation works correctly on both
         // blue and red alliances (LaunchCalculator needs global coordinate system velocities)
-        ChassisSpeeds robot_velocity = SwerveSubsystem.getInstance().getDesiredChassisSpeeds();
+        ChassisVelocities robot_velocity = SwerveSubsystem.getInstance().getDesiredChassisSpeeds();
 
         // Calculate launch parameters using the LaunchCalculator
         launch_params_ =
@@ -237,7 +237,7 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
         flywheel_omega_ += flywheel_adj_;
         hood_angle_ += hood_adj_;
         hood_angle_ =
-                MathUtil.clamp(hood_angle_, CONSTANTS.HOOD_MIN_ANGLE, CONSTANTS.HOOD_MAX_ANGLE);
+                Math.clamp(hood_angle_, CONSTANTS.HOOD_MIN_ANGLE, CONSTANTS.HOOD_MAX_ANGLE);
         is_shooting_ = false;
 
         // Execute state-specific behavior
@@ -486,8 +486,8 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
      *     of the target relative to the field
      */
     public void setTarget(Translation3d target) {
-        Optional<Alliance> alliance = DriverStation.getAlliance();
-        if (alliance.isPresent() && alliance.get() == Alliance.Red) {
+        Optional<Alliance> alliance = MatchState.getAlliance();
+        if (alliance.isPresent() && alliance.get() == Alliance.RED) {
             target = AllianceFlipUtil.apply(target);
         }
         target_ = target;

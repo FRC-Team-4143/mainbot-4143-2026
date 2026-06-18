@@ -1,13 +1,13 @@
 package frc.robot.subsystems.localization;
 
 import com.marswars.subsystem.MwConstants;
-import edu.wpi.first.apriltag.AprilTagFieldLayout;
-import edu.wpi.first.apriltag.AprilTagFields;
-import edu.wpi.first.math.Matrix;
-import edu.wpi.first.math.VecBuilder;
-import edu.wpi.first.math.numbers.N1;
-import edu.wpi.first.math.numbers.N3;
-import edu.wpi.first.math.util.Units;
+import org.wpilib.vision.apriltag.AprilTagFieldLayout;
+import org.wpilib.vision.apriltag.AprilTagFields;
+import org.wpilib.math.linalg.Matrix;
+import org.wpilib.math.linalg.VecBuilder;
+import org.wpilib.math.numbers.N1;
+import org.wpilib.math.numbers.N3;
+import org.wpilib.math.util.Units;
 import java.util.Set;
 
 public class LocalizationConstants extends MwConstants {
@@ -27,7 +27,7 @@ public class LocalizationConstants extends MwConstants {
     // =============================================================================
 
     public final AprilTagFieldLayout APRIL_TAG_LAYOUT =
-            AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltWelded);
+            AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
     public final Set<Integer> SHOOTING_FOCUS_TAG_IDS_RED = Set.of(2, 3, 4, 5, 8, 9, 10, 11);
     public final Set<Integer> CLIMBING_FOCUS_TAG_IDS_RED = Set.of(15, 16);
     public final Set<Integer> SHOOTING_FOCUS_TAG_IDS_BLUE = Set.of(18, 19, 20, 21, 24, 25, 26, 27);

@@ -1,18 +1,18 @@
 package frc.robot.lib2026;
 
-import static edu.wpi.first.units.Units.MetersPerSecond;
-import static edu.wpi.first.units.Units.Radians;
+import static org.wpilib.units.Units.MetersPerSecond;
+import static org.wpilib.units.Units.Radians;
 
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.geometry.Translation3d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.units.measure.LinearVelocity;
+import org.wpilib.math.geometry.Pose2d;
+import org.wpilib.math.geometry.Pose3d;
+import org.wpilib.math.geometry.Rotation2d;
+import org.wpilib.math.geometry.Rotation3d;
+import org.wpilib.math.geometry.Transform3d;
+import org.wpilib.math.geometry.Translation2d;
+import org.wpilib.math.geometry.Translation3d;
+import org.wpilib.math.kinematics.ChassisVelocities;
+import org.wpilib.units.measure.Angle;
+import org.wpilib.units.measure.LinearVelocity;
 import java.util.ArrayList;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
@@ -47,6 +47,19 @@ public class FuelSim {
             0.5 * AIR_DENSITY * DRAG_COF * FUEL_CROSS_AREA;
 
     protected static FuelSim instance = null;
+
+    // Translation2d/Translation3d no longer expose dot()/getSquaredNorm() in WPILib 2027.
+    protected static double dot(Translation2d a, Translation2d b) {
+        return a.getX() * b.getX() + a.getY() * b.getY();
+    }
+
+    protected static double dot(Translation3d a, Translation3d b) {
+        return a.getX() * b.getX() + a.getY() * b.getY() + a.getZ() * b.getZ();
+    }
+
+    protected static double squaredNorm(Translation2d v) {
+        return dot(v, v);
+    }
 
     protected static final Translation3d[] FIELD_XZ_LINE_STARTS = {
         new Translation3d(0, 0, 0),
@@ -154,7 +167,7 @@ public class FuelSim {
             Translation2d projected =
                     start2d.plus(
                             lineVec.times(
-                                    pos2d.minus(start2d).dot(lineVec) / lineVec.getSquaredNorm()));
+                                    dot(pos2d.minus(start2d), lineVec) / squaredNorm(lineVec)));
 
             if (projected.getDistance(start2d) + projected.getDistance(end2d) > lineVec.getNorm())
                 return; // projected point not on line
@@ -166,8 +179,8 @@ public class FuelSim {
 
             // Apply collision response
             pos = pos.plus(normal.times(FUEL_RADIUS - dist));
-            if (vel.dot(normal) > 0) return; // already moving away from line
-            vel = vel.minus(normal.times((1 + FIELD_COR) * vel.dot(normal)));
+            if (dot(vel, normal) > 0) return; // already moving away from line
+            vel = vel.minus(normal.times((1 + FIELD_COR) * dot(vel, normal)));
         }
 
         protected void handleFieldCollisions(int subticks) {
@@ -280,7 +293,7 @@ public class FuelSim {
             distance = 1;
         }
         normal = normal.div(distance);
-        double impulse = 0.5 * (1 + FUEL_COR) * (b.vel.minus(a.vel).dot(normal));
+        double impulse = 0.5 * (1 + FUEL_COR) * dot(b.vel.minus(a.vel), normal);
         double intersection = FUEL_RADIUS * 2 - distance;
         a.pos = a.pos.plus(normal.times(intersection / 2));
         b.pos = b.pos.minus(normal.times(intersection / 2));
@@ -344,7 +357,7 @@ public class FuelSim {
     protected boolean running = false;
     protected boolean simulateAirResistance = false;
     protected Supplier<Pose2d> robotPoseSupplier = null;
-    protected Supplier<ChassisSpeeds> robotFieldSpeedsSupplier = null;
+    protected Supplier<ChassisVelocities> robotFieldSpeedsSupplier = null;
     protected double robotWidth; // size along the robot's y axis
     protected double robotLength; // size along the robot's x axis
     protected double bumperHeight;
@@ -474,14 +487,14 @@ public class FuelSim {
      * @param length from front to back (x-axis)
      * @param bumperHeight
      * @param poseSupplier
-     * @param fieldSpeedsSupplier field-relative `ChassisSpeeds` supplier
+     * @param fieldSpeedsSupplier field-relative `ChassisVelocities` supplier
      */
     public void registerRobot(
             double width,
             double length,
             double bumperHeight,
             Supplier<Pose2d> poseSupplier,
-            Supplier<ChassisSpeeds> fieldSpeedsSupplier) {
+            Supplier<ChassisVelocities> fieldSpeedsSupplier) {
         this.robotPoseSupplier = poseSupplier;
         this.robotFieldSpeedsSupplier = fieldSpeedsSupplier;
         this.robotWidth = width;
@@ -547,15 +560,15 @@ public class FuelSim {
         Pose3d launchPose =
                 new Pose3d(this.robotPoseSupplier.get())
                         .plus(new Transform3d(launchOffset, Rotation3d.kZero));
-        ChassisSpeeds fieldSpeeds = this.robotFieldSpeedsSupplier.get();
+        ChassisVelocities fieldSpeeds = this.robotFieldSpeedsSupplier.get();
 
         double horizontalVel = Math.cos(hoodAngle.in(Radians)) * launchVelocity.in(MetersPerSecond);
         double verticalVel = Math.sin(hoodAngle.in(Radians)) * launchVelocity.in(MetersPerSecond);
         double xVel = horizontalVel * Math.cos(turretYaw.in(Radians));
         double yVel = horizontalVel * Math.sin(turretYaw.in(Radians));
 
-        xVel += fieldSpeeds.vxMetersPerSecond;
-        yVel += fieldSpeeds.vyMetersPerSecond;
+        xVel += fieldSpeeds.vx;
+        yVel += fieldSpeeds.vy;
 
         spawnFuel(launchPose.getTranslation(), new Translation3d(xVel, yVel, verticalVel));
     }
@@ -597,20 +610,20 @@ public class FuelSim {
         posOffset = posOffset.rotateBy(robot.getRotation());
         fuel.pos = fuel.pos.plus(new Translation3d(posOffset));
         Translation2d normal = posOffset.div(posOffset.getNorm());
-        if (fuel.vel.toTranslation2d().dot(normal) < 0)
+        if (dot(fuel.vel.toTranslation2d(), normal) < 0)
             fuel.addImpulse(
                     new Translation3d(
                             normal.times(
-                                    -fuel.vel.toTranslation2d().dot(normal) * (1 + ROBOT_COR))));
-        if (robotVel.dot(normal) > 0)
-            fuel.addImpulse(new Translation3d(normal.times(robotVel.dot(normal))));
+                                    -dot(fuel.vel.toTranslation2d(), normal) * (1 + ROBOT_COR))));
+        if (dot(robotVel, normal) > 0)
+            fuel.addImpulse(new Translation3d(normal.times(dot(robotVel, normal))));
     }
 
     protected void handleRobotCollisions(ArrayList<Fuel> fuels) {
         Pose2d robot = robotPoseSupplier.get();
-        ChassisSpeeds speeds = robotFieldSpeedsSupplier.get();
+        ChassisVelocities speeds = robotFieldSpeedsSupplier.get();
         Translation2d robotVel =
-                new Translation2d(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond);
+                new Translation2d(speeds.vx, speeds.vy);
 
         for (Fuel fuel : fuels) {
             handleRobotCollision(fuel, robot, robotVel);

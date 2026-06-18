@@ -2,11 +2,11 @@ package frc.robot.subsystems.simulation;
 
 import com.marswars.subsystem.MwConstants;
 import com.marswars.util.ConstantsLoader;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.math.geometry.Translation3d;
-import edu.wpi.first.math.util.Units;
+import org.wpilib.math.geometry.Rotation2d;
+import org.wpilib.math.geometry.Rotation3d;
+import org.wpilib.math.geometry.Transform3d;
+import org.wpilib.math.geometry.Translation3d;
+import org.wpilib.math.util.Units;
 
 public class SimulationConstants extends MwConstants {
 
@@ -76,7 +76,7 @@ public class SimulationConstants extends MwConstants {
     // =============================================================================
     // INTAKE SIMULATION
     // =============================================================================
-    public final boolean SIM_FUEL_ENABLED = true;
+    public final boolean SIM_FUEL_ENABLED = false;
     public final double BASE_LENGTH =
             Units.inchesToMeters(LOADER.getDoubleValue("swerve", "com", "base_length"));
     public final double BASE_WIDTH =

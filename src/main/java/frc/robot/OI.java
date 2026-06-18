@@ -4,13 +4,12 @@
 
 package frc.robot;
 
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import org.wpilib.math.geometry.Rotation2d;
+import org.wpilib.math.util.Units;
+import org.wpilib.smartdashboard.SendableChooser;
+import org.wpilib.smartdashboard.SmartDashboard;
+import org.wpilib.command2.Commands;
+import org.wpilib.command2.button.CommandNiDsXboxController;
 import frc.robot.lib2026.HubMonitor;
 import frc.robot.subsystems.gamestates.GameStatesSubsystem;
 import frc.robot.subsystems.localization.LocalizationSubsystem;
@@ -22,15 +21,13 @@ import java.util.Optional;
 public abstract class OI {
 
     // Sets up both controllers
-    private static final CommandXboxController driver_controller_ = new CommandXboxController(0);
-    private static final CommandXboxController operator_controller_ = new CommandXboxController(1);
+    private static final CommandNiDsXboxController driver_controller_ = new CommandNiDsXboxController(0);
+    private static final CommandNiDsXboxController operator_controller_ = new CommandNiDsXboxController(1);
 
     private static final SendableChooser<HubMonitor.ActiveAlliance> hub_first_alliance_chooser_ =
             new SendableChooser<>();
 
     public static void configureBindings() {
-        DriverStation.silenceJoystickConnectionWarning(true);
-
         // =============================================================================
         // SMARTDASHBOARD COMMANDS
         // =============================================================================
@@ -175,15 +172,13 @@ public abstract class OI {
      * @return driver controller joystick pov angle in degrees, empty if nothing is pressed
      */
     public static Optional<Rotation2d> getDriverJoystickPOV() {
-        int pov = driver_controller_.getHID().getPOV();
-        return (pov != -1) ? Optional.of(Rotation2d.fromDegrees(pov)) : Optional.empty();
+        return driver_controller_.getHID().getPOV().getAngle();
     }
 
     /**
      * @return operator controller joystick pov angle in degrees, empty if nothing is pressed
      */
     public static Optional<Rotation2d> getOperatorJoystickPOV() {
-        int pov = operator_controller_.getHID().getPOV();
-        return (pov != -1) ? Optional.of(Rotation2d.fromDegrees(pov)) : Optional.empty();
+        return operator_controller_.getHID().getPOV().getAngle();
     }
 }

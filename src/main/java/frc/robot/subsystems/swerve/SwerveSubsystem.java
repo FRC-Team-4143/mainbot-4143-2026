@@ -1,10 +1,10 @@
 package frc.robot.subsystems.swerve;
 
-import static edu.wpi.first.units.Units.Degrees;
-import static edu.wpi.first.units.Units.Meters;
-import static edu.wpi.first.units.Units.MetersPerSecond;
-import static edu.wpi.first.units.Units.Radians;
-import static edu.wpi.first.units.Units.Seconds;
+import static org.wpilib.units.Units.Degrees;
+import static org.wpilib.units.Units.Meters;
+import static org.wpilib.units.Units.MetersPerSecond;
+import static org.wpilib.units.Units.Radians;
+import static org.wpilib.units.Units.Seconds;
 
 import choreo.trajectory.SwerveSample;
 import choreo.trajectory.Trajectory;
@@ -20,21 +20,21 @@ import com.marswars.swerve_lib.module.Module.SteerControlMode;
 import com.marswars.util.DynamicSlewRateLimiter;
 import com.marswars.util.TunablePid;
 import dev.doglog.DogLog;
-import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.kinematics.SwerveModulePosition;
-import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
+import org.wpilib.math.util.MathUtil;
+import org.wpilib.math.controller.PIDController;
+import org.wpilib.math.geometry.Pose2d;
+import org.wpilib.math.geometry.Rotation2d;
+import org.wpilib.math.geometry.Translation2d;
+import org.wpilib.math.kinematics.ChassisVelocities;
+import org.wpilib.math.kinematics.SwerveDriveKinematics;
+import org.wpilib.math.kinematics.SwerveModulePosition;
+import org.wpilib.math.kinematics.SwerveModuleVelocity;
+import org.wpilib.math.util.Units;
+import org.wpilib.driverstation.MatchState;
+import org.wpilib.system.Timer;
+import org.wpilib.command2.Command;
+import org.wpilib.command2.Commands;
+import org.wpilib.command2.button.Trigger;
 import frc.robot.OI;
 import frc.robot.subsystems.localization.LocalizationSubsystem;
 import frc.robot.subsystems.swerve.SwerveConstants.OperatorPerspective;
@@ -80,7 +80,7 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
     private Rotation2d desired_rotation_lock_rot_ = new Rotation2d();
     private Translation2d desired_rotation_lock_cor_ = new Translation2d();
     private double desired_rotation_lock_feedforward_ = 0.0;
-    private ChassisSpeeds desired_chassis_speeds_ = new ChassisSpeeds(0, 0, 0);
+    private ChassisVelocities desired_chassis_speeds_ = new ChassisVelocities(0, 0, 0);
 
     // Telop Smoothness controllers and scalars
     private double tele_op_velocity_scalar_ = 1.0;
@@ -300,7 +300,7 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
     // updateLogic
     @Override
     public void updateLogic(double timestamp) {
-        ChassisSpeeds controller_inputs = calculateSpeedsBasedOnJoystickInputs();
+        ChassisVelocities controller_inputs = calculateSpeedsBasedOnJoystickInputs();
         // Update the request to apply based on the system state
         switch (system_state_) {
             case ROBOT_CENTRIC:
@@ -392,9 +392,9 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
                 break;
             case IDLE:
             default:
-                desired_chassis_speeds_ = new ChassisSpeeds();
+                desired_chassis_speeds_ = new ChassisVelocities();
                 swerve_mech_.setChassisRequest(
-                        new ChassisRequest.ApplyChassisSpeeds().withSpeeds(new ChassisSpeeds()));
+                        new ChassisRequest.ApplyChassisSpeeds().withSpeeds(new ChassisVelocities()));
                 break;
         }
 
@@ -446,7 +446,7 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
                 Radians);
         DogLog.log(getSubsystemKey() + "TractorBeam/DesiredPose", desired_tractor_beam_pose_);
 
-        desired_chassis_speeds_ = new ChassisSpeeds(x_component, y_component, 0.0);
+        desired_chassis_speeds_ = new ChassisVelocities(x_component, y_component, 0.0);
         if (Double.isNaN(max_ang_vel_for_tractor_beam_)) {
             swerve_mech_.setChassisRequest(
                     field_centric_rotation_lock_request_
@@ -476,7 +476,7 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
                     desired_choreo_traj_.getTotalTime(),
                     Seconds);
             // if distance threshold is exceded stop the timer so you do not get so far ahead
-            if (sample.getPose().getTranslation().getDistance(pose.getTranslation())
+            if (Math.hypot(sample.x - pose.getX(), sample.y - pose.getY())
                     > CONSTANTS.CHOREO_LOOK_AHEAD) {
                 choreo_timer_.stop();
             } else {
@@ -495,17 +495,17 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
 
         if (choreo_sample_to_apply_.isPresent()) {
             SwerveSample sample = choreo_sample_to_apply_.get();
-            DogLog.log(getSubsystemKey() + "Choreo/sample/DesiredPose", sample.getPose());
-            DogLog.log(
-                    getSubsystemKey() + "Choreo/sample/DesiredChassisSpeeds",
-                    sample.getChassisSpeeds());
+            DogLog.log(getSubsystemKey() + "Choreo/sample/DesiredPose",
+                    new Pose2d(sample.x, sample.y, new Rotation2d(sample.heading)));
+            DogLog.log(getSubsystemKey() + "Choreo/sample/DesiredChassisSpeeds",
+                    new ChassisVelocities(sample.vx, sample.vy, sample.omega));
 
-            ChassisSpeeds target_speeds = sample.getChassisSpeeds();
-            target_speeds.vxMetersPerSecond +=
+            ChassisVelocities target_speeds = new ChassisVelocities(sample.vx, sample.vy, sample.omega);
+            target_speeds.vx +=
                     choreo_x_controller_.calculate(pose.getX(), sample.x);
-            target_speeds.vyMetersPerSecond +=
+            target_speeds.vy +=
                     choreo_y_controller_.calculate(pose.getY(), sample.y);
-            target_speeds.omegaRadiansPerSecond +=
+            target_speeds.omega +=
                     choreo_theta_controller_.calculate(
                             pose.getRotation().getRadians(), sample.heading);
 
@@ -514,7 +514,7 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
                     field_speeds_request_.withSpeeds(desired_chassis_speeds_));
         } else {
             // If no sample is available, we will just stop the robot
-            desired_chassis_speeds_ = new ChassisSpeeds();
+            desired_chassis_speeds_ = new ChassisVelocities();
             swerve_mech_.setChassisRequest(new ChassisRequest.Idle());
         }
     }
@@ -530,17 +530,17 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
             SwerveSample sample = choreo_sample_to_apply_.get();
             // Generate new pose with overridden rotation
             Pose2d overridden_pose =
-                    new Pose2d(sample.getPose().getTranslation(), desired_rotation_lock_rot_);
+                    new Pose2d(new Translation2d(sample.x, sample.y), desired_rotation_lock_rot_);
             DogLog.log(getSubsystemKey() + "Choreo/sample/DesiredPose", overridden_pose);
             // Generate new chassis speeds with overridden rotation speed
-            ChassisSpeeds overridden_speeds = sample.getChassisSpeeds();
-            overridden_speeds.omegaRadiansPerSecond = 0.0;
+            ChassisVelocities overridden_speeds = new ChassisVelocities(sample.vx, sample.vy, sample.omega);
+            overridden_speeds.omega = 0.0;
             DogLog.log(getSubsystemKey() + "Choreo/sample/DesiredChassisSpeeds", overridden_speeds);
 
-            ChassisSpeeds target_speeds = overridden_speeds;
-            target_speeds.vxMetersPerSecond +=
+            ChassisVelocities target_speeds = overridden_speeds;
+            target_speeds.vx +=
                     choreo_x_controller_.calculate(pose.getX(), sample.x);
-            target_speeds.vyMetersPerSecond +=
+            target_speeds.vy +=
                     choreo_y_controller_.calculate(pose.getY(), sample.y);
 
             desired_chassis_speeds_ = target_speeds;
@@ -550,7 +550,7 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
                             .withTargetHeading(desired_rotation_lock_rot_));
         } else {
             // If no sample is available, we will just stop the robot
-            desired_chassis_speeds_ = new ChassisSpeeds();
+            desired_chassis_speeds_ = new ChassisVelocities();
             swerve_mech_.setChassisRequest(new ChassisRequest.Idle());
         }
     }
@@ -632,8 +632,6 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
             choreo_theta_controller_.reset();
         }
 
-        // Log the trajectory poses for debugging
-        DogLog.log(getSubsystemKey() + "Choreo/Trajectory", desired_choreo_traj_.getPoses());
     }
 
     /**
@@ -701,7 +699,7 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
      * @param speeds desired chassis speeds
      * @param rotation desired rotation to lock to
      */
-    public void setDesiredChassisSpeed(ChassisSpeeds speeds) {
+    public void setDesiredChassisSpeed(ChassisVelocities speeds) {
         desired_chassis_speeds_ = speeds;
     }
 
@@ -744,13 +742,13 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
     }
 
     /**
-     * Command version of {@link #setDesiredChassisSpeed(ChassisSpeeds)} that sets the desired
+     * Command version of {@link #setDesiredChassisSpeed(ChassisVelocities)} that sets the desired
      * chassis speeds for tuning purposes.
      *
      * @param speeds desired chassis speeds (robot relative)
      * @return a command that sets the desired chassis speeds
      */
-    public Command chassisTuningCommand(ChassisSpeeds speeds) {
+    public Command chassisTuningCommand(ChassisVelocities speeds) {
         return Commands.startEnd(
                         () -> {
                             setDesiredChassisSpeed(speeds);
@@ -761,11 +759,11 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
                         })
                 .withName(
                         "Chassis Tuning : X="
-                                + speeds.vxMetersPerSecond
+                                + speeds.vx
                                 + " Y="
-                                + speeds.vyMetersPerSecond
+                                + speeds.vy
                                 + " Omega="
-                                + speeds.omegaRadiansPerSecond);
+                                + speeds.omega);
     }
 
     /**
@@ -794,12 +792,12 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
     /**
      * Calculates chassis speeds based on joystick inputs.
      *
-     * @return the controller inputs as a ChassisSpeeds object, where the x and y components
+     * @return the controller inputs as a ChassisVelocities object, where the x and y components
      *     represent the translation speeds and the omega component represents the angular speed
      */
-    private ChassisSpeeds calculateSpeedsBasedOnJoystickInputs() {
-        if (DriverStation.getAlliance().isEmpty()) {
-            return new ChassisSpeeds();
+    private ChassisVelocities calculateSpeedsBasedOnJoystickInputs() {
+        if (MatchState.getAlliance().isEmpty()) {
+            return new ChassisVelocities();
         }
 
         double x_magnitude =
@@ -811,7 +809,7 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
                         OI.getDriverJoystickRightX(), CONSTANTS.CONTROLLER_DEADBAND);
         DogLog.log(
                 getSubsystemKey() + "JoystickRaw",
-                new ChassisSpeeds(x_magnitude, y_magnitude, angular_magnitude));
+                new ChassisVelocities(x_magnitude, y_magnitude, angular_magnitude));
 
         // Calculate base inputs as velocities (apply scalar)
         x_magnitude = x_magnitude * CONSTANTS.MAX_TRANSLATION_RATE * tele_op_velocity_scalar_;
@@ -822,7 +820,7 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
         x_magnitude = x_tele_op_velocity_slew_limiter_.calculate(x_magnitude);
         y_magnitude = y_tele_op_velocity_slew_limiter_.calculate(y_magnitude);
 
-        ChassisSpeeds speeds = new ChassisSpeeds(x_magnitude, y_magnitude, angular_magnitude);
+        ChassisVelocities speeds = new ChassisVelocities(x_magnitude, y_magnitude, angular_magnitude);
         DogLog.log(getSubsystemKey() + "JoystickFiltered", speeds);
         return speeds;
     }
@@ -831,13 +829,13 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
      * Calculates chassis speeds based on POV inputs. The POV angle is used to determine the
      * direction
      *
-     * @return the controller inputs as a ChassisSpeeds object, where the x and y components
+     * @return the controller inputs as a ChassisVelocities object, where the x and y components
      *     represent the translation speeds and the omega component represents the angular speed
      */
-    private ChassisSpeeds calculateSpeedBasedOnPOVInputs() {
+    private ChassisVelocities calculateSpeedBasedOnPOVInputs() {
         Optional<Rotation2d> pov = OI.getDriverJoystickPOV();
         if (pov.isEmpty()) {
-            return new ChassisSpeeds();
+            return new ChassisVelocities();
         }
 
         // Calculate the x and y magnitudes based on the POV angle
@@ -847,8 +845,8 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
                 -MathUtil.applyDeadband(
                         OI.getDriverJoystickRightX(), CONSTANTS.CONTROLLER_DEADBAND);
 
-        ChassisSpeeds speeds =
-                new ChassisSpeeds(
+        ChassisVelocities speeds =
+                new ChassisVelocities(
                         x_magnitude * CONSTANTS.MAX_CRAWL_RATE,
                         y_magnitude * CONSTANTS.MAX_CRAWL_RATE,
                         angular_magnitude * CONSTANTS.MAX_ANGULAR_RATE);
@@ -875,7 +873,7 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
      * @param scalar the scalar value to set, clamped between 0 and 1
      */
     public void setTeleOpVelocityScalar(double scalar) {
-        tele_op_velocity_scalar_ = MathUtil.clamp(scalar, 0, 1);
+        tele_op_velocity_scalar_ = Math.clamp(scalar, 0, 1);
     }
 
     /**
@@ -885,7 +883,7 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
      * @param rate_limit_scalar the scalar to apply to the max translation rate for slew limiting
      */
     public void setTeleOpVelocityRateLimitScalar(double rate_limit_scalar) {
-        tele_op_velocity_rl_scalar_ = MathUtil.clamp(rate_limit_scalar, 0.0, 1.0);
+        tele_op_velocity_rl_scalar_ = Math.clamp(rate_limit_scalar, 0.0, 1.0);
         // Update the rate limits dynamically without losing state
         x_tele_op_velocity_slew_limiter_.setRateLimit(
                 CONSTANTS.MAX_TRANSLATION_ACCEL * tele_op_velocity_rl_scalar_);
@@ -980,13 +978,13 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
                         desired_choreo_traj_.getFinalSample(false).get().vx,
                         LocalizationSubsystem.getInstance()
                                 .getCurrentChassisSpeedsFieldRelative()
-                                .vxMetersPerSecond,
+                                .vx,
                         CONSTANTS.CHOREO_VELOCITY_ERROR_MARGIN)
                 && MathUtil.isNear(
                         desired_choreo_traj_.getFinalSample(false).get().vy,
                         LocalizationSubsystem.getInstance()
                                 .getCurrentChassisSpeedsFieldRelative()
-                                .vyMetersPerSecond,
+                                .vy,
                         CONSTANTS.CHOREO_VELOCITY_ERROR_MARGIN)
                 && choreo_timer_.get() >= desired_choreo_traj_.getTotalTime();
     }
@@ -1019,14 +1017,11 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
      * @return the distance from the choreo endpoint in meters
      */
     public double getDistanceFromChoreoEndpoint() {
-        double distance =
-                Math.abs(
-                        desired_choreo_traj_
-                                .getFinalPose(false)
-                                .get()
-                                .minus(LocalizationSubsystem.getInstance().getFieldPose())
-                                .getTranslation()
-                                .getNorm());
+        var final_pose = desired_choreo_traj_.getFinalPose(false).get();
+        Pose2d field_pose = LocalizationSubsystem.getInstance().getFieldPose();
+        double distance = Math.hypot(
+                final_pose.getX() - field_pose.getX(),
+                final_pose.getY() - field_pose.getY());
         return distance;
     }
 
@@ -1092,8 +1087,8 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
      * @return the chassis translation velocity in meters per second
      */
     private double getChassisTranslationVelocity() {
-        ChassisSpeeds current_speeds = getDesiredChassisSpeeds();
-        return Math.hypot(current_speeds.vxMetersPerSecond, current_speeds.vyMetersPerSecond);
+        ChassisVelocities current_speeds = getDesiredChassisSpeeds();
+        return Math.hypot(current_speeds.vx, current_speeds.vy);
     }
 
     /**
@@ -1102,7 +1097,7 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
      * @return the chassis angular velocity in radians per second
      */
     private double getChassisAngularVelocity() {
-        return swerve_mech_.getCurrentChassisSpeeds().omegaRadiansPerSecond;
+        return swerve_mech_.getCurrentChassisSpeeds().omega;
     }
 
     /**
@@ -1147,14 +1142,14 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
     /**
      * Returns the current module states (turn angles and drive velocities) for all of the modules.
      */
-    public SwerveModuleState[] getCurrentModuleStates() {
+    public SwerveModuleVelocity[] getCurrentModuleStates() {
         return swerve_mech_.getCurrentModuleStates();
     }
 
     /**
      * Returns the setpoint module states (turn angles and drive velocities) for all of the modules.
      */
-    public SwerveModuleState[] getSetpointModuleStates() {
+    public SwerveModuleVelocity[] getSetpointModuleStates() {
         return swerve_mech_.getSetpointModuleStates();
     }
 
@@ -1164,17 +1159,17 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
     }
 
     /** Returns the measured chassis speeds of the robot. */
-    public ChassisSpeeds getCurrentChassisSpeeds() {
+    public ChassisVelocities getCurrentChassisSpeeds() {
         return swerve_mech_.getCurrentChassisSpeeds();
     }
 
     /** Returns the setpoint chassis speeds of the robot. */
-    public ChassisSpeeds getSetpointChassisSpeeds() {
+    public ChassisVelocities getSetpointChassisSpeeds() {
         return swerve_mech_.getSetpointChassisSpeeds();
     }
 
     /** Returns the desired chassis speeds of the robot (target speeds from commands). */
-    public ChassisSpeeds getDesiredChassisSpeeds() {
+    public ChassisVelocities getDesiredChassisSpeeds() {
         return desired_chassis_speeds_;
     }
 
@@ -1197,9 +1192,9 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
         return swerve_mech_.getKinematics();
     }
 
-    private ChassisSpeeds removeOperatorPerspective(ChassisSpeeds speeds) {
-        Translation2d tmp = new Translation2d(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond);
+    private ChassisVelocities removeOperatorPerspective(ChassisVelocities speeds) {
+        Translation2d tmp = new Translation2d(speeds.vx, speeds.vy);
         tmp = tmp.rotateBy(operator_forward_direction_);
-        return new ChassisSpeeds(tmp.getX(), tmp.getY(), speeds.omegaRadiansPerSecond);
+        return new ChassisVelocities(tmp.getX(), tmp.getY(), speeds.omega);
     }
 }

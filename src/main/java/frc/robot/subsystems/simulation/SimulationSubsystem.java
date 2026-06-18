@@ -1,21 +1,21 @@
 package frc.robot.subsystems.simulation;
 
-import static edu.wpi.first.units.Units.MetersPerSecond;
-import static edu.wpi.first.units.Units.Radians;
+import static org.wpilib.units.Units.MetersPerSecond;
+import static org.wpilib.units.Units.Radians;
 
 import com.marswars.proxy_server.ProxyServerThread;
 import com.marswars.subsystem.MwSubsystem;
 import com.marswars.subsystem.SubsystemIoBase;
 import com.marswars.swerve_lib.SwerveMeasurements.SwerveMeasurement;
-import com.marswars.vision.MwVisionSim;
+//import com.marswars.vision.MwVisionSim;
 import dev.doglog.DogLog;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation3d;
-import edu.wpi.first.math.kinematics.SwerveModulePosition;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
+import org.wpilib.math.geometry.Pose2d;
+import org.wpilib.math.geometry.Rotation2d;
+import org.wpilib.math.geometry.Translation3d;
+import org.wpilib.math.kinematics.SwerveModulePosition;
+import org.wpilib.driverstation.RobotState;
+import org.wpilib.command2.Commands;
+import org.wpilib.command2.button.RobotModeTriggers;
 import frc.robot.lib2026.FieldRegions;
 import frc.robot.lib2026.FuelSim;
 import frc.robot.subsystems.intake.IntakeConstants.IntakeStates;
@@ -31,7 +31,7 @@ import java.util.Random;
 public class SimulationSubsystem extends MwSubsystem<SimulationStates, SimulationConstants> {
     private static SimulationSubsystem instance_ = null;
 
-    private MwVisionSim vision_sim_;
+    //private MwVisionSim vision_sim_;
     private FuelSim fuel_sim_;
     private int hopper_fuel_count_ = 0;
     private boolean outpost_full = false;
@@ -50,16 +50,16 @@ public class SimulationSubsystem extends MwSubsystem<SimulationStates, Simulatio
     public SimulationSubsystem() {
         super(SimulationStates.ACTIVE, new SimulationConstants());
 
-        if (CONSTANTS.SIM_VISION_ENABLED) {
-            vision_sim_ =
-                    ProxyServerThread.getInstance()
-                            .initializeVisionSimulation(
-                                    LocalizationSubsystem.getInstance().getAprilTagLayout());
-            vision_sim_.addCamera("Back-Camera", CONSTANTS.BACK_CAMERA_TRANSFORM);
-            vision_sim_.addCamera("Left-Camera", CONSTANTS.LEFT_CAMERA_TRANSFORM);
-            vision_sim_.addCamera("Right-Camera", CONSTANTS.RIGHT_CAMERA_TRANSFORM);
-            LocalizationSubsystem.getInstance().enableSwerveMeasurementNoise();
-        }
+        // if (CONSTANTS.SIM_VISION_ENABLED) {
+        //     vision_sim_ =
+        //             ProxyServerThread.getInstance()
+        //                     .initializeVisionSimulation(
+        //                             LocalizationSubsystem.getInstance().getAprilTagLayout());
+        //     vision_sim_.addCamera("Back-Camera", CONSTANTS.BACK_CAMERA_TRANSFORM);
+        //     vision_sim_.addCamera("Left-Camera", CONSTANTS.LEFT_CAMERA_TRANSFORM);
+        //     vision_sim_.addCamera("Right-Camera", CONSTANTS.RIGHT_CAMERA_TRANSFORM);
+        //     LocalizationSubsystem.getInstance().enableSwerveMeasurementNoise();
+        // }
 
         // Setup Fuel Simulation
         fuel_sim_ = new FuelSim();
@@ -114,13 +114,13 @@ public class SimulationSubsystem extends MwSubsystem<SimulationStates, Simulatio
     @Override
     public void updateLogic(double timestamp) {
         // Vision Simulation
-        if (CONSTANTS.SIM_VISION_ENABLED) {
-            Pose2d robot_pose = LocalizationSubsystem.getInstance().getSmoothPose();
-            ProxyServerThread.getInstance().updateVisionSimulation(robot_pose);
-        }
+        // if (CONSTANTS.SIM_VISION_ENABLED) {
+        //     Pose2d robot_pose = LocalizationSubsystem.getInstance().getSmoothPose();
+        //     ProxyServerThread.getInstance().updateVisionSimulation(robot_pose);
+        // }
 
         // Get Fuel from the Outpost
-        if (DriverStation.isAutonomousEnabled()
+        if (RobotState.isAutonomousEnabled()
                 && FieldRegions.OUTPOST_REGION.contains(
                         LocalizationSubsystem.getInstance().getFieldPose())
                 && outpost_full) {
@@ -240,7 +240,7 @@ public class SimulationSubsystem extends MwSubsystem<SimulationStates, Simulatio
                     noise_generator_.nextGaussian() * CONSTANTS.MODULE_POSITION_NOISE_STD_DEV;
             noisy_positions[i] =
                     new SwerveModulePosition(
-                            clean_positions[i].distanceMeters + distance_noise,
+                            clean_positions[i].distance + distance_noise,
                             clean_positions[i].angle);
         }
         return noisy_positions;

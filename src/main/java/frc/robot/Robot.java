@@ -9,11 +9,12 @@ import com.marswars.auto.AutoManager;
 import com.marswars.geometry.AllianceFlipUtil;
 import com.marswars.logging.Elastic;
 import dev.doglog.DogLog;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import org.wpilib.driverstation.Alliance;
+import org.wpilib.driverstation.DriverStation;
+import org.wpilib.driverstation.MatchState;
+import org.wpilib.framework.TimedRobot;
+import org.wpilib.smartdashboard.SmartDashboard;
+import org.wpilib.command2.CommandScheduler;
 import frc.robot.autos.CitrusSynergy;
 import frc.robot.autos.CitrusSynergyFarBump;
 import frc.robot.autos.Left_Trench_Bump_Swipe;
@@ -38,7 +39,7 @@ import java.util.Optional;
 
 public class Robot extends TimedRobot {
 
-    private Alliance alliance_ = Alliance.Blue; // Current alliance, used to set driver perspective
+    private Alliance alliance_ = Alliance.BLUE; // Current alliance, used to set driver perspective
     private RobotContainer robot_container_;
 
     public Robot() {
@@ -68,10 +69,8 @@ public class Robot extends TimedRobot {
 
         // Set the default target for the shooter to be the hub
         ShooterSubsystem.getInstance().setTarget(FieldTargets.Shooter.HUB);
-    }
 
-    @Override
-    public void robotInit() {
+        // Initialization formerly in robotInit()
         Elastic.selectTab("Autonomous");
         SmartDashboard.putData(CommandScheduler.getInstance());
     }
@@ -84,8 +83,8 @@ public class Robot extends TimedRobot {
         robot_container_.doControlLoop();
 
         // Update the hub active status
-        HubMonitor.isHubActive(DriverStation.getMatchTime());
-        DogLog.log("Match Time", DriverStation.getMatchTime());
+        HubMonitor.isHubActive(MatchState.getMatchTime());
+        DogLog.log("Match Time", MatchState.getMatchTime());
 
         // Visualize the 3D Robot
         Mechanism3dViz.publish();
@@ -105,7 +104,7 @@ public class Robot extends TimedRobot {
         if (hasAllianceChanged()) {
             SwerveSubsystem.getInstance()
                     .setOperatorForwardDirection(
-                            alliance_ == Alliance.Blue
+                            alliance_ == Alliance.BLUE
                                     ? SwerveConstants.OperatorPerspective.BLUE_ALLIANCE
                                     : SwerveConstants.OperatorPerspective.RED_ALLIANCE);
             FieldRegions.flipRegions();
@@ -142,7 +141,7 @@ public class Robot extends TimedRobot {
     }
 
     @Override
-    public void testInit() {
+    public void utilityInit() {
         CommandScheduler.getInstance().cancelAll();
         SwerveSubsystem.getInstance().setWantedState(SwerveStates.FIELD_CENTRIC);
         ShooterSubsystem.getInstance().setWantedState(ShooterStates.TUNING);
@@ -150,10 +149,10 @@ public class Robot extends TimedRobot {
     }
 
     @Override
-    public void testPeriodic() {}
+    public void utilityPeriodic() {}
 
     @Override
-    public void testExit() {}
+    public void utilityExit() {}
 
     /**
      * Check if the alliance has changed since the last check
@@ -161,7 +160,7 @@ public class Robot extends TimedRobot {
      * @return true if the alliance has changed, false otherwise
      */
     public boolean hasAllianceChanged() {
-        Optional<Alliance> current_alliance = DriverStation.getAlliance();
+        Optional<Alliance> current_alliance = MatchState.getAlliance();
         if (alliance_ == null && current_alliance.isPresent()) {
             alliance_ = current_alliance.get();
             return true;

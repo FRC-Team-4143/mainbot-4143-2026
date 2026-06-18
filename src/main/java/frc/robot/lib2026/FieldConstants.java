@@ -8,12 +8,12 @@
 package frc.robot.lib2026;
 
 import com.marswars.geometry.AllianceFlipUtil.SymmetryType;
-import edu.wpi.first.apriltag.AprilTagFieldLayout;
-import edu.wpi.first.apriltag.AprilTagFields;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.geometry.Translation3d;
-import edu.wpi.first.math.util.Units;
+import org.wpilib.vision.apriltag.AprilTagFieldLayout;
+import org.wpilib.vision.apriltag.AprilTagFields;
+import org.wpilib.math.geometry.Pose2d;
+import org.wpilib.math.geometry.Translation2d;
+import org.wpilib.math.geometry.Translation3d;
+import org.wpilib.math.util.Units;
 
 /**
  * Contains information for location of field element and other useful reference points.
@@ -344,7 +344,9 @@ public class FieldConstants {
         }
 
         public AprilTagFieldLayout getLayout() {
-            return AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltWelded);
+            // TODO: k2026RebuiltWelded isn't available in apriltag-java 2027.0.0-alpha-2;
+            // swap back to the real 2026/2027 field layout once the toolchain ships it.
+            return AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
         }
 
         public String getLayoutString() {
