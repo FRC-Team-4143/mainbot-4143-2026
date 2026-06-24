@@ -69,8 +69,8 @@ public class SwerveConstants extends MwConstants {
     // =============================================================================
 
     public final int PIGEON2_ID = 0;
-    public final String PIGEON2_CANBUS_NAME = "CANivore";
-    public final String MODULE_CANBUS_NAME = "CANivore";
+    public final String PIGEON2_CANBUS_NAME = "can_s1";
+    public final String MODULE_CANBUS_NAME = "can_s1";
 
     // =============================================================================
     // PHYSICAL ROBOT CONSTANTS
