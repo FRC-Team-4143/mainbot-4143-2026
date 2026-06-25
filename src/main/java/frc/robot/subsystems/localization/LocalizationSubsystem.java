@@ -18,7 +18,6 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
-import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -33,7 +32,6 @@ import frc.robot.subsystems.simulation.SimulationSubsystem;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -54,7 +52,6 @@ public class LocalizationSubsystem extends MwSubsystem<LocalizationStates, Local
 
     // Timer to prevent continuous gyro updates while disabled
     private final Timer disabled_gyro_update_timer_ = new Timer();
-
 
     // getInstance
     // Singleton Accessor
@@ -98,7 +95,6 @@ public class LocalizationSubsystem extends MwSubsystem<LocalizationStates, Local
         // Put the field visualizer on SmartDashboard once during initialization
         SmartDashboard.putData("Field", field_visualizer_);
         MwLog.log(getSubsystemKey() + "SwerveNoise", false);
-
 
         // Start the timer for disabled gyro updates
         disabled_gyro_update_timer_.start();
@@ -427,6 +423,4 @@ public class LocalizationSubsystem extends MwSubsystem<LocalizationStates, Local
 
         return true;
     }
-
-    
 }

@@ -40,8 +40,6 @@ public class LocalizationConstants extends MwConstants {
     // =============================================================================
     public final Matrix<N3, N1> DEFAULT_ODOM_COVARIANCE = VecBuilder.fill(0.1, 0.1, 0.1);
 
-    
-   
     // =============================================================================
     // VISION FILTER CONFIGURATION
     // =============================================================================

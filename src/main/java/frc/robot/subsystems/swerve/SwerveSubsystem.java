@@ -40,7 +40,6 @@ import frc.robot.subsystems.localization.LocalizationSubsystem;
 import frc.robot.subsystems.swerve.SwerveConstants.OperatorPerspective;
 import frc.robot.subsystems.swerve.SwerveConstants.SwerveStates;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -83,7 +82,7 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
     private double desired_rotation_lock_feedforward_ = 0.0;
     private ChassisSpeeds desired_chassis_speeds_ = new ChassisSpeeds(0, 0, 0);
     private double skid_range = CONSTANTS.SKID_DETEC_MAX_RANGE;
-
+    private SwerveDriveKinematics skidKinematics;
 
     // Telop Smoothness controllers and scalars
     private double tele_op_velocity_scalar_ = 1.0;
@@ -124,6 +123,7 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
         super(SwerveStates.IDLE, new SwerveConstants());
 
         swerve_mech_ = new SwerveMech(getSubsystemKey(), CONSTANTS.SWERVE_DRIVE_CONFIG);
+        skidKinematics = new SwerveDriveKinematics(swerve_mech_.getModuleTranslations());
 
         // Initialize event tracker with pose supplier
         choreo_event_tracker_ =
@@ -403,15 +403,18 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
                         new ChassisRequest.ApplyChassisSpeeds().withSpeeds(new ChassisSpeeds()));
                 break;
         }
-
+        MwLog.log(getSubsystemKey() + "isSkidding",isSkidding());
         // Set state static request parameters
         swerve_mech_.setChassisRequestParameters(
                 LocalizationSubsystem.getInstance().getFieldPose(), operator_forward_direction_);
         MwLog.log(getSubsystemKey() + "DesiredChassisSpeeds", desired_chassis_speeds_);
+        //
+        
     }
 
     // =============================================================================
     // PUBLIC HELPER METHODS
+
     // =============================================================================
 
     /**
@@ -1183,8 +1186,11 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
     public ChassisSpeeds getDesiredChassisSpeeds() {
         return desired_chassis_speeds_;
     }
-    public double getDesiredChassisSpeedsNorm(){
-        return Math.hypot(desired_chassis_speeds_.vxMetersPerSecond, desired_chassis_speeds_.vyMetersPerSecond);
+
+    public double getDesiredChassisSpeedsNorm() {
+        return Math.hypot(
+                desired_chassis_speeds_.vxMetersPerSecond,
+                desired_chassis_speeds_.vyMetersPerSecond);
     }
 
     /** Returns the raw gyro rotation */
@@ -1211,25 +1217,32 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
         tmp = tmp.rotateBy(operator_forward_direction_);
         return new ChassisSpeeds(tmp.getX(), tmp.getY(), speeds.omegaRadiansPerSecond);
     }
+
     private boolean isSkidding() {
         SwerveModuleState[] current = SwerveSubsystem.getInstance().getCurrentModuleStates();
-        
-        SwerveModuleState[] rotationalVelocity = getKinematics().toSwerveModuleStates(new ChassisSpeeds(0,0,getChassisAngularVelocity()));
+
+        SwerveModuleState[] rotationalVelocity =
+                skidKinematics
+                        .toSwerveModuleStates(new ChassisSpeeds(0, 0, getChassisAngularVelocity()));
         double min = Double.MAX_VALUE;
         double max = -Double.MAX_VALUE;
-        for(int i =0; i < current.length; i++){
-            Translation2d measuredVector = new Translation2d(current[i].speedMetersPerSecond, current[i].angle);
-            Translation2d rotationalVectors = new Translation2d(rotationalVelocity[i].speedMetersPerSecond, rotationalVelocity[i].angle);
+        for (int i = 0; i < current.length; i++) {
+            Translation2d measuredVector =
+                    new Translation2d(current[i].speedMetersPerSecond, current[i].angle);
+            Translation2d rotationalVectors =
+                    new Translation2d(
+                            rotationalVelocity[i].speedMetersPerSecond,
+                            rotationalVelocity[i].angle);
             double normVel = measuredVector.minus(rotationalVectors).getNorm();
             min = Math.min(min, normVel);
             max = Math.max(max, normVel);
         }
         double range = max - min;
         double realSkidRange = 0.0;
-        if(getDesiredChassisSpeedsNorm() < 0.1){
+        if (getDesiredChassisSpeedsNorm() < 0.1) {
             realSkidRange = skid_range;
-        }else{
-            realSkidRange = skid_range*getDesiredChassisSpeedsNorm();
+        } else {
+            realSkidRange = skid_range * getDesiredChassisSpeedsNorm();
         }
 
         if (range > realSkidRange) {

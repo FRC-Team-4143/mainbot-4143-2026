@@ -144,8 +144,8 @@ public class SwerveConstants extends MwConstants {
     // =============================================================================
     // SKID DETECTION CONSTANTS
     // =============================================================================
-     public final double SKID_DETEC_MAX_RANGE = 0.3;
-        
+    public final double SKID_DETEC_MAX_RANGE = 0.3;
+
     // =============================================================================
     // SWERVE MODULE CONFIGURATION OBJECTS
     // =============================================================================
