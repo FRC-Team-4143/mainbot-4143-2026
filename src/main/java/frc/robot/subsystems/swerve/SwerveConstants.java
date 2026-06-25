@@ -142,11 +142,6 @@ public class SwerveConstants extends MwConstants {
     public final double TRACTOR_BEAM_CONTROLLER_KD = 0.0;
 
     // =============================================================================
-    // SKID DETECTION CONSTANTS
-    // =============================================================================
-    public final double SKID_DETEC_MAX_RANGE = 0.3;
-
-    // =============================================================================
     // SWERVE MODULE CONFIGURATION OBJECTS
     // =============================================================================
 
@@ -164,6 +159,9 @@ public class SwerveConstants extends MwConstants {
     public final Translation2d BR_MODULE_TRANSLATION;
 
     public final SwerveDriveConfig SWERVE_DRIVE_CONFIG;
+
+    // Skid-detection threshold (max allowed spread of per-module velocities).
+    public final double SKID_DETECTION_RANGE = 0.3;
 
     // =============================================================================
     // CONSTRUCTOR - SWERVE CONFIGURATION INITIALIZATION
@@ -285,6 +283,7 @@ public class SwerveConstants extends MwConstants {
                         BL_MODULE_CONFIG,
                         BR_MODULE_CONFIG,
                         PIGEON2_ID,
-                        PIGEON2_CANBUS_NAME);
+                        PIGEON2_CANBUS_NAME,
+                        SKID_DETECTION_RANGE);
     }
 }
