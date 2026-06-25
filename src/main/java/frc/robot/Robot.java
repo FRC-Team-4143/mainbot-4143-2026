@@ -83,6 +83,9 @@ public class Robot extends TimedRobot {
         // run the main robot loop for each subsystem
         robot_container_.doControlLoop();
 
+        // Update controller disconnection alerts
+        OI.checkControllerConnections();
+
         // Update the hub active status
         HubMonitor.isHubActive(DriverStation.getMatchTime());
         DogLog.log("Match Time", DriverStation.getMatchTime());
