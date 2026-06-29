@@ -144,6 +144,7 @@ public abstract class OI {
      * @return driver controller right joystick x axis
      */
     public static double getDriverJoystickRightX() {
+        //SmartDashboard.putNumber("Right X", driver_controller_.getRightX());
         return driver_controller_.getRightX();
     }
 
