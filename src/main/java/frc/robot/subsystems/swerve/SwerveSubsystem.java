@@ -396,7 +396,6 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
                         new ChassisRequest.ApplyChassisSpeeds().withSpeeds(new ChassisSpeeds()));
                 break;
         }
-
         // Set state static request parameters
         swerve_mech_.setChassisRequestParameters(
                 LocalizationSubsystem.getInstance().getFieldPose(), operator_forward_direction_);
@@ -405,6 +404,7 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
 
     // =============================================================================
     // PUBLIC HELPER METHODS
+
     // =============================================================================
 
     /**
@@ -1158,7 +1158,7 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
     }
 
     /** Returns the module positions (turn angles and drive positions) for all of the modules. */
-    public SwerveModulePosition[] getModulePositions() {
+    public SwerveModulePosition[] getcurrentModulePositions() {
         return swerve_mech_.getModulePositions();
     }
 

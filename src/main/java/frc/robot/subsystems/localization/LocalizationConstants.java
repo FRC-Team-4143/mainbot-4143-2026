@@ -1,6 +1,7 @@
 package frc.robot.subsystems.localization;
 
 import com.marswars.subsystem.MwConstants;
+import com.marswars.util.ConstantsLoader;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.Matrix;
@@ -11,6 +12,7 @@ import edu.wpi.first.math.util.Units;
 import java.util.Set;
 
 public class LocalizationConstants extends MwConstants {
+    private final ConstantsLoader LOADER = ConstantsLoader.getInstance();
 
     // =============================================================================
     // ENUMS AND STATE DEFINITIONS
