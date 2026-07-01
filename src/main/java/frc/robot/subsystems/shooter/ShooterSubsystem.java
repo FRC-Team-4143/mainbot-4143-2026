@@ -167,7 +167,7 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
     // handleStateTransition
     @Override
     public void handleStateTransition(ShooterStates wanted) {
-        if (hood_.getLeaderCurrent() > CONSTANTS.HOOD_HOMING_CURRENT_THRESHOLD
+        if (hood_.getLeaderSupplyCurrent() > CONSTANTS.HOOD_HOMING_CURRENT_THRESHOLD
                 && system_state_ == ShooterStates.HOOD_HOMING) {
             hood_.setCurrentPosition(CONSTANTS.HOOD_HOME_POSITION);
             setWantedState(ShooterStates.IDLE);
