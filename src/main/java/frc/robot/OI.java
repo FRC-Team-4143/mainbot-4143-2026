@@ -6,6 +6,8 @@ package frc.robot;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.Alert;
+import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -24,6 +26,11 @@ public abstract class OI {
     // Sets up both controllers
     private static final CommandXboxController driver_controller_ = new CommandXboxController(0);
     private static final CommandXboxController operator_controller_ = new CommandXboxController(1);
+
+    private static final Alert driver_disconnected_alert_ =
+            new Alert("Driver controller disconnected (port 0).", AlertType.kError);
+    private static final Alert operator_disconnected_alert_ =
+            new Alert("Operator controller disconnected (port 1).", AlertType.kError);
 
     private static final SendableChooser<HubMonitor.ActiveAlliance> hub_first_alliance_chooser_ =
             new SendableChooser<>();
@@ -123,6 +130,14 @@ public abstract class OI {
                                 }));
         operator_controller_.x().onTrue(ControlCommands.toggleIsAbleToRack());
         driver_controller_.leftTrigger().whileTrue(ControlCommands.aimAtTargetCommand());
+    }
+
+    /** Updates the controller disconnection alerts. Call once per robot loop. */
+    public static void checkControllerConnections() {
+        driver_disconnected_alert_.set(
+                !DriverStation.isJoystickConnected(driver_controller_.getHID().getPort()));
+        operator_disconnected_alert_.set(
+                !DriverStation.isJoystickConnected(operator_controller_.getHID().getPort()));
     }
 
     /**
