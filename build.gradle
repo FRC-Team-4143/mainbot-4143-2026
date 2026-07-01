@@ -94,6 +94,12 @@ def includeDesktopSupport = false
 
 repositories {
     maven {
+        url = "https://shenzhen-robotics-alliance.github.io/maple-sim/vendordep/repos/releases"
+    }
+    maven {
+        url = "https://storage.googleapis.com/grapple-frc-maven"
+    }
+    maven {
         url = uri('https://maven.pkg.github.com/FRC-Team-4143/MW-Lib')
         credentials {
             username = '4143-Software-Student'
@@ -128,7 +134,7 @@ dependencies {
 
     testImplementation 'org.junit.jupiter:junit-jupiter:5.10.1'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-    implementation 'com.github.frc-team-4143:mw-lib-java:26.15.2'
+    implementation 'com.github.frc-team-4143:mw-lib-java:26.16.1'
     //implementation name: 'MW-Lib', version: '', ext: 'jar'
 }
 
@@ -138,8 +144,9 @@ test {
 }
 
 // Simulation configuration (e.g. environment variables).
-wpi.sim.addGui().defaultEnabled = true
-wpi.sim.addDriverstation()
+def isReplay = System.getenv("AKIT_LOG_PATH") != null
+wpi.sim.addGui().defaultEnabled = !isReplay
+wpi.sim.addDriverstation().defaultEnabled = !isReplay
 
 // Setting up my Jar File. In this case, adding all libraries into the main jar ('fat jar')
 // in order to make them all available at runtime. Also adding the manifest so WPILib

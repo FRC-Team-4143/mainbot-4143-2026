@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import com.marswars.logging.MwLog;
 import com.marswars.subsystem.SubsystemManager;
 import edu.wpi.first.wpilibj.RobotBase;
 import frc.robot.subsystems.gamestates.GameStatesSubsystem;
@@ -32,8 +33,8 @@ public class RobotContainer extends SubsystemManager {
         registerSubsystem(IntakeSubsystem.getInstance());
         registerSubsystem(GameStatesSubsystem.getInstance());
 
-        // Only enable the simulation subsystem if we are in simulation
-        if (RobotBase.isSimulation()) {
+        // Only enable the simulation subsystem if we are in simulation (not replay)
+        if (RobotBase.isSimulation() && !MwLog.isReplay()) {
             registerSubsystem(SimulationSubsystem.getInstance());
         }
 

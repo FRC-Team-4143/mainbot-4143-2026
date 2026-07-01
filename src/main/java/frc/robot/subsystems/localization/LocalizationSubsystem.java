@@ -1,13 +1,13 @@
 package frc.robot.subsystems.localization;
 
 import com.marswars.auto.AutoManager;
+import com.marswars.logging.MwLog;
 import com.marswars.proxy_server.ProxyServerThread;
 import com.marswars.proxy_server.TagSolutionPacket.TagSolutionData;
 import com.marswars.subsystem.MwSubsystem;
 import com.marswars.subsystem.SubsystemIoBase;
 import com.marswars.swerve_lib.PhoenixOdometryThread;
 import com.marswars.swerve_lib.SwerveMeasurements.SwerveMeasurement;
-import dev.doglog.DogLog;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
@@ -91,7 +91,7 @@ public class LocalizationSubsystem extends MwSubsystem<LocalizationStates, Local
 
         // Put the field visualizer on SmartDashboard once during initialization
         SmartDashboard.putData("Field", field_visualizer_);
-        DogLog.log(getSubsystemKey() + "SwerveNoise", false);
+        MwLog.log(getSubsystemKey() + "SwerveNoise", false);
 
         // Start the timer for disabled gyro updates
         disabled_gyro_update_timer_.start();
@@ -169,14 +169,14 @@ public class LocalizationSubsystem extends MwSubsystem<LocalizationStates, Local
         // }
 
         // Log the pose estimates
-        DogLog.log(getSubsystemKey() + "SmoothPose", getSmoothPose());
-        DogLog.log(getSubsystemKey() + "FieldPose", getFieldPose());
+        MwLog.log(getSubsystemKey() + "SmoothPose", getSmoothPose());
+        MwLog.log(getSubsystemKey() + "FieldPose", getFieldPose());
 
         // Log vision detections
-        DogLog.log(
+        MwLog.log(
                 getSubsystemKey() + "DetectedTagPoses",
                 detected_tag_poses_.toArray(new Pose3d[detected_tag_poses_.size()]));
-        DogLog.log(
+        MwLog.log(
                 getSubsystemKey() + "EstimatedVisionPoses",
                 estimated_vision_poses_.toArray(new Pose2d[estimated_vision_poses_.size()]));
         // Clear logged lists for next cycle
@@ -245,7 +245,7 @@ public class LocalizationSubsystem extends MwSubsystem<LocalizationStates, Local
      * data.
      */
     public void enableSwerveMeasurementNoise() {
-        DogLog.log(getSubsystemKey() + "SwerveNoise", true);
+        MwLog.log(getSubsystemKey() + "SwerveNoise", true);
         swerve_noise_enabled_ = true;
     }
 

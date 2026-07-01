@@ -8,11 +8,11 @@ import static edu.wpi.first.units.Units.Volts;
 
 import com.marswars.geometry.AllianceFlipUtil;
 import com.marswars.geometry.LaunchCalculator;
+import com.marswars.logging.MwLog;
 import com.marswars.mechanisms.FlywheelMech;
 import com.marswars.mechanisms.RollerMech;
 import com.marswars.subsystem.MwSubsystem;
 import com.marswars.subsystem.SubsystemIoBase;
-import dev.doglog.DogLog;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
@@ -140,7 +140,7 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
         hood_.setCurrentPosition(CONSTANTS.HOOD_HOME_POSITION);
 
         // Setup tunable for hood feedforward gain
-        DogLog.tunable(
+        MwLog.tunable(
                 getSubsystemKey() + "Hood/kV", CONSTANTS.HOOD_KV, (newKv) -> hood_kv_ = newKv);
 
         SmartDashboard.putData(
@@ -167,7 +167,7 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
     // handleStateTransition
     @Override
     public void handleStateTransition(ShooterStates wanted) {
-        if (hood_.getLeaderCurrent() > CONSTANTS.HOOD_HOMING_CURRENT_THRESHOLD
+        if (hood_.getLeaderSupplyCurrent() > CONSTANTS.HOOD_HOMING_CURRENT_THRESHOLD
                 && system_state_ == ShooterStates.HOOD_HOMING) {
             hood_.setCurrentPosition(CONSTANTS.HOOD_HOME_POSITION);
             setWantedState(ShooterStates.IDLE);
@@ -349,76 +349,76 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
         }
 
         // LaunchCalculator Logging
-        DogLog.log(getSubsystemKey() + "LaunchCalculator/Valid", launch_params_.is_valid);
-        DogLog.log(
+        MwLog.log(getSubsystemKey() + "LaunchCalculator/Valid", launch_params_.is_valid);
+        MwLog.log(
                 getSubsystemKey() + "LaunchCalculator/Hood/Angle",
                 launch_params_.hood_angle,
                 Radians);
-        DogLog.log(
+        MwLog.log(
                 getSubsystemKey() + "LaunchCalculator/Hood/Velocity",
                 launch_params_.hood_velocity,
                 RadiansPerSecond);
-        DogLog.log(
+        MwLog.log(
                 getSubsystemKey() + "LaunchCalculator/Heading/Angle",
                 launch_params_.heading_angle.getRadians(),
                 Radians);
-        DogLog.log(
+        MwLog.log(
                 getSubsystemKey() + "LaunchCalculator/Heading/Velocity",
                 launch_params_.heading_velocity,
                 RadiansPerSecond);
-        DogLog.log(
+        MwLog.log(
                 getSubsystemKey() + "LaunchCalculator/FlywheelSpeed",
                 launch_params_.flywheel_speed,
                 RadiansPerSecond);
-        DogLog.log(getSubsystemKey() + "LaunchCalculator/Target", target_);
-        DogLog.log(
+        MwLog.log(getSubsystemKey() + "LaunchCalculator/Target", target_);
+        MwLog.log(
                 getSubsystemKey() + "LaunchCalculator/Distance/Lookahead",
                 launch_params_.distance,
                 Meters);
-        DogLog.log(
+        MwLog.log(
                 getSubsystemKey() + "LaunchCalculator/Distance/Raw",
                 launch_params_.distance_no_lookahead,
                 Meters);
-        DogLog.log(
+        MwLog.log(
                 getSubsystemKey() + "LaunchCalculator/TimeOfFlight",
                 launch_params_.time_of_flight,
                 Seconds);
 
-        DogLog.log(
+        MwLog.log(
                 getSubsystemKey() + "Flywheel/FilteredVelocity",
                 filtered_flywheel_velocity_,
                 RadiansPerSecond);
 
         // Setpoint Logging
-        DogLog.log(getSubsystemKey() + "Setpoint/FlywheelOmega", flywheel_omega_, RadiansPerSecond);
-        DogLog.log(getSubsystemKey() + "Setpoint/HoodAngle", hood_angle_, Radians);
-        DogLog.log(getSubsystemKey() + "Setpoint/HeadingAngle", heading_angle_, Radians);
+        MwLog.log(getSubsystemKey() + "Setpoint/FlywheelOmega", flywheel_omega_, RadiansPerSecond);
+        MwLog.log(getSubsystemKey() + "Setpoint/HoodAngle", hood_angle_, Radians);
+        MwLog.log(getSubsystemKey() + "Setpoint/HeadingAngle", heading_angle_, Radians);
 
         // Hood Feedforward Logging
-        DogLog.log(
+        MwLog.log(
                 getSubsystemKey() + "LaunchCalculator/Hood/Feedforward", hood_feedforward_, Volts);
 
         // Heading Feedforward Logging
-        DogLog.log(
+        MwLog.log(
                 getSubsystemKey() + "LaunchCalculator/Heading/Feedforward",
                 heading_feedforward_,
                 RadiansPerSecond);
 
         // System at Desired Setpoints
-        DogLog.log(getSubsystemKey() + "ShooterIsReady/Hood", isHoodAtPosition());
-        DogLog.log(getSubsystemKey() + "ShooterIsReady/Flywheel", isFlywheelAtSpeed());
-        DogLog.log(getSubsystemKey() + "ShooterIsReady/Rotation", isRotationAtPosition());
-        DogLog.log(getSubsystemKey() + "ShooterIsReady/Full", isShooterReady());
+        MwLog.log(getSubsystemKey() + "ShooterIsReady/Hood", isHoodAtPosition());
+        MwLog.log(getSubsystemKey() + "ShooterIsReady/Flywheel", isFlywheelAtSpeed());
+        MwLog.log(getSubsystemKey() + "ShooterIsReady/Rotation", isRotationAtPosition());
+        MwLog.log(getSubsystemKey() + "ShooterIsReady/Full", isShooterReady());
 
         // Active Tolerances
-        DogLog.log(
+        MwLog.log(
                 getSubsystemKey() + "Tolerance/FlywheelVelocity",
                 flywheel_vel_tol_,
                 RadiansPerSecond);
-        DogLog.log(getSubsystemKey() + "Tolerance/HoodAngle", hood_pos_tol_, Radians);
-        DogLog.log(getSubsystemKey() + "Tolerance/HeadingAngle", rot_pos_tol_, Radians);
+        MwLog.log(getSubsystemKey() + "Tolerance/HoodAngle", hood_pos_tol_, Radians);
+        MwLog.log(getSubsystemKey() + "Tolerance/HeadingAngle", rot_pos_tol_, Radians);
 
-        DogLog.log(getSubsystemKey() + "IsShooting", is_shooting_);
+        MwLog.log(getSubsystemKey() + "IsShooting", is_shooting_);
     }
 
     // =============================================================================
@@ -533,7 +533,7 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
      */
     public void adjustFlywheel(double adj) {
         flywheel_adj_ += adj;
-        DogLog.log(getSubsystemKey() + "Setpoint/Flywheel Adjust", flywheel_adj_);
+        MwLog.log(getSubsystemKey() + "Setpoint/Flywheel Adjust", flywheel_adj_);
     }
 
     /**
@@ -543,7 +543,7 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
      */
     public void adjustHood(double adj) {
         hood_adj_ += adj;
-        DogLog.log(getSubsystemKey() + "Setpoint/Hood Adjust", hood_adj_);
+        MwLog.log(getSubsystemKey() + "Setpoint/Hood Adjust", hood_adj_);
     }
 
     // =============================================================================

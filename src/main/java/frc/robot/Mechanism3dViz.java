@@ -1,6 +1,6 @@
 package frc.robot;
 
-import dev.doglog.DogLog;
+import com.marswars.logging.MwLog;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
@@ -35,10 +35,10 @@ public class Mechanism3dViz {
         updateHoodPose();
         updateIntakePose();
 
-        DogLog.log("Mechanism3dViz/BasePose", robot_pose_);
-        DogLog.log("Mechanism3dViz/HoodPose", hood_pose_);
-        DogLog.log("Mechanism3dViz/IntakePose", intake_pose_);
-        DogLog.log("Mechanism3dViz/ClimberPose", climber_pose_);
+        MwLog.log("Mechanism3dViz/BasePose", robot_pose_);
+        MwLog.log("Mechanism3dViz/HoodPose", hood_pose_);
+        MwLog.log("Mechanism3dViz/IntakePose", intake_pose_);
+        MwLog.log("Mechanism3dViz/ClimberPose", climber_pose_);
     }
 
     /**
