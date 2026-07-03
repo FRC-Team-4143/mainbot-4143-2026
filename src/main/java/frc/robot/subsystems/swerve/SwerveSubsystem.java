@@ -118,7 +118,7 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
      */
     // Constructor
     public SwerveSubsystem() {
-        super(SwerveStates.IDLE, new SwerveConstants());
+        super(SwerveStates.IDLE, SwerveConstants.create());
 
         swerve_mech_ = new SwerveMech(getSubsystemKey(), CONSTANTS.SWERVE_DRIVE_CONFIG);
 

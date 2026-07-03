@@ -25,7 +25,7 @@ public class RobotContainer extends SubsystemManager {
     }
 
     public RobotContainer() {
-        super(BuildConstants.class);
+        super(BuildConstants.class, RobotId.current().disabled_subsystems);
         // !!!!!! ALL SUBSYSTEMS MUST BE REGISTERED HERE TO RUN !!!!!!!
         registerSubsystem(SwerveSubsystem.getInstance());
         registerSubsystem(LocalizationSubsystem.getInstance());
