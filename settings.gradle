@@ -28,3 +28,56 @@ pluginManagement {
 
 Properties props = System.getProperties();
 props.setProperty("org.gradle.internal.native.headers.unresolved.dependencies.ignore", "true");
+
+// ---------------------------------------------------------------------------------------------
+// Opt-in local MWLib development (Gradle composite build).
+//   Persistent: create local.properties (git-ignored, this project only) with:
+//                   mwlibLocal=true
+//                   mwlibPath=../MW-Lib      # optional; defaults to ../MW-Lib
+//   One-off:    ./gradlew <task> -PmwlibLocal   (a -P flag overrides local.properties)
+//   Disable:    ./gradlew <task> -PmwlibLocal=false
+// When off (the default, and always in CI) mainbot uses the published mw-lib-java artifact.
+// See build.gradle: the com.github.frc-team-4143:mw-lib-java dependency is what gets substituted.
+// ---------------------------------------------------------------------------------------------
+def mwlibProps = new Properties()
+def mwlibPropsFile = new File(rootDir, 'local.properties')
+if (mwlibPropsFile.exists()) {
+    mwlibPropsFile.withInputStream { mwlibProps.load(it) }
+}
+// -P command-line flag wins over local.properties; then fall back to the file.
+def mwlibProp = { String name -> settings.hasProperty(name) ? settings."${name}" : mwlibProps.getProperty(name) }
+
+def mwlibLocalRaw = mwlibProp('mwlibLocal')
+def mwlibLocal = mwlibLocalRaw != null && mwlibLocalRaw != 'false'
+if (mwlibLocal) {
+    def mwlibPath = mwlibProp('mwlibPath') ?: '../MW-Lib'
+    includeBuild(mwlibPath) {
+        dependencySubstitution {
+            // Explicit so it doesn't depend on MWLib advertising its publication coordinates.
+            substitute module('com.github.frc-team-4143:mw-lib-java') using project(':')
+        }
+    }
+
+    // Loud, impossible-to-miss banner. esc holds the 0x1B escape char, built from an int so no raw
+    // control byte lives in this file; the ANSI codes degrade to plain text where color is
+    // unsupported. Printed at configuration time AND re-printed at the end of every
+    // build/deploy/simulate run (buildFinished) so it can never scroll off screen.
+    def esc = Character.toString((char) 27)
+    def yellow = { s -> "${esc}[1;33m${s}${esc}[0m" }
+    def mwlibResolved = file(mwlibPath).canonicalPath
+    def w = 78
+    def pad = { s -> s.length() > w ? s.substring(0, w - 1) + '…' : s.padRight(w) }
+    def mwlibBanner = [
+        '',
+        yellow('╔' + ('═' * w) + '╗'),
+        yellow('║' + pad('   !!!   LOCAL MWLib IN USE  —  NOT the published mw-lib-java artifact   !!!') + '║'),
+        yellow('║' + pad('   source:  ' + mwlibResolved) + '║'),
+        yellow('║' + pad('   disable: -PmwlibLocal=false  (or edit local.properties)') + '║'),
+        yellow('╚' + ('═' * w) + '╝'),
+        '',
+    ].join('\n')
+
+    gradle.rootProject { println mwlibBanner }
+    // Re-emit as the final lines of output for build / deploy / simulateJava.
+    gradle.buildFinished { println mwlibBanner }
+}

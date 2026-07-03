@@ -190,3 +190,6 @@ compile_commands.json
 
 # Build related files
 BuildConstants.java
+
+# Per-developer local settings (e.g. local MWLib development toggle). Never committed.
+local.properties

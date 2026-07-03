@@ -106,9 +106,6 @@ repositories {
             password = '\u0067\u0068\u0070\u005f\u004d\u006b\u0076\u006c\u0074\u0073\u0049\u0045\u004a\u0070\u006c\u0078\u0073\u0069\u0031\u0076\u0037\u0049\u0070\u0047\u0039\u0030\u004b\u0062\u006f\u0068\u0050\u0034\u0047\u0032\u0032\u0044\u0030\u0059\u0032\u0064'
         }
     }
-    // flatDir{
-    //     dirs 'C:/Users/FIRSTMentor/Documents/MW-Lib/build/libs'
-    // }
 }
 
 // Defining my dependencies. In this case, WPILib (+ friends), and vendor libraries.
@@ -134,8 +131,9 @@ dependencies {
 
     testImplementation 'org.junit.jupiter:junit-jupiter:5.10.1'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    // Substituted with a live build of ../MW-Lib when local mode is on (see settings.gradle,
+    // -PmwlibLocal). Otherwise resolved from the published GitHub Packages / jitpack artifact.
     implementation 'com.github.frc-team-4143:mw-lib-java:26.16.1'
-    //implementation name: 'MW-Lib', version: '', ext: 'jar'
 }
 
 test {
