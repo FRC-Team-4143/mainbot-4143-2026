@@ -127,7 +127,7 @@ public class IntakeConstants extends MwConstants {
         // Configure Pivot Motor
         PIVOT_MOTOR_CONFIG.can_id = PIVOT_MOTOR_ID;
         PIVOT_MOTOR_CONFIG.motor_type = TalonMotorType.X60;
-        PIVOT_MOTOR_CONFIG.canbus_name = "CANivore";
+        PIVOT_MOTOR_CONFIG.canbus_name = "can_s0";
         TalonFXConfiguration pivot_config = new TalonFXConfiguration();
         pivot_config.Slot0 = Slot0Configs.from(PIVOT_POSITION_SLOT_CONFIG);
         pivot_config.MotorOutput.Inverted = PhoenixUtil.toInvertedValue(PIVOT_MOTOR_INVERTED);

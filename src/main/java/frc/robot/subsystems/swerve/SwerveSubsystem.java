@@ -967,11 +967,11 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
             return false;
         }
         return MathUtil.isNear(
-                        desired_choreo_traj_.getFinalPose(false).get().getX(),
+                        desired_choreo_traj_.getFinalSample(false).get().x,
                         LocalizationSubsystem.getInstance().getFieldPose().getX(),
                         CONSTANTS.CHOREO_TRANSLATION_ERROR_MARGIN)
                 && MathUtil.isNear(
-                        desired_choreo_traj_.getFinalPose(false).get().getY(),
+                        desired_choreo_traj_.getFinalSample(false).get().y,
                         LocalizationSubsystem.getInstance().getFieldPose().getY(),
                         CONSTANTS.CHOREO_TRANSLATION_ERROR_MARGIN)
                 && MathUtil.isNear(
@@ -998,11 +998,11 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
     public boolean isAtEndOfChoreoTrajectoryOrTractorBeam() {
         if (desired_choreo_traj_ != null) {
             return (MathUtil.isNear(
-                                    desired_choreo_traj_.getFinalPose(false).get().getX(),
+                                    desired_choreo_traj_.getFinalSample(false).get().x,
                                     LocalizationSubsystem.getInstance().getFieldPose().getX(),
                                     CONSTANTS.CHOREO_TRANSLATION_ERROR_MARGIN))
                             && MathUtil.isNear(
-                                    desired_choreo_traj_.getFinalPose(false).get().getY(),
+                                    desired_choreo_traj_.getFinalSample(false).get().y,
                                     LocalizationSubsystem.getInstance().getFieldPose().getY(),
                                     CONSTANTS.CHOREO_TRANSLATION_ERROR_MARGIN)
                     || isAtTractorBeamSetpoint();
@@ -1017,11 +1017,11 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
      * @return the distance from the choreo endpoint in meters
      */
     public double getDistanceFromChoreoEndpoint() {
-        var final_pose = desired_choreo_traj_.getFinalPose(false).get();
+        var final_sample = desired_choreo_traj_.getFinalSample(false).get();
         Pose2d field_pose = LocalizationSubsystem.getInstance().getFieldPose();
         double distance = Math.hypot(
-                final_pose.getX() - field_pose.getX(),
-                final_pose.getY() - field_pose.getY());
+                final_sample.x - field_pose.getX(),
+                final_sample.y - field_pose.getY());
         return distance;
     }
 

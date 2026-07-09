@@ -2,6 +2,7 @@ plugins {
     id "java"
     id "org.wpilib.GradleRIO" version "2027.0.0-alpha-6"
     id "com.gradleup.shadow" version "9.3.0"
+    id "com.peterabeles.gversion" version "1.10"
 }
 
 java {
@@ -58,7 +59,7 @@ def includeDesktopSupport = false
 sourceSets {
     main {
         java {
-            srcDir '/home/ubuntu/MW-Lib-Alpha5/src/main/java'
+            srcDir 'C:/Users/bensh/Downloads/MW-Lib/src/main/java'
         }
     }
 }
@@ -163,4 +164,15 @@ wpi.java.configureTestTasks(test)
 // Configure string concat to always inline compile
 tasks.withType(JavaCompile) {
     options.compilerArgs.add '-XDstringConcat=inline'
+}
+
+// Create version file
+project.compileJava.dependsOn(createVersionFile)
+gversion {
+    srcDir       = "src/main/java/"
+    classPackage = "frc.robot"
+    className    = "BuildConstants"
+    dateFormat   = "yyyy-MM-dd HH:mm:ss z"
+    timeZone     = "America/Chicago" // Use preferred time zone
+    indent       = "  "
 }
