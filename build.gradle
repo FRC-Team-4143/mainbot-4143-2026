@@ -59,7 +59,8 @@ def includeDesktopSupport = false
 sourceSets {
     main {
         java {
-            srcDir 'C:/Users/bensh/Downloads/MW-Lib/src/main/java'
+            //srcDir 'C:/Users/bensh/Downloads/MW-Lib/src/main/java'
+            srcDir '/home/ubuntu/MW-Lib-Alpha5/src/main/java'
         }
     }
 }

@@ -79,3 +79,48 @@ All `edu.wpi.first.*` → `org.wpilib.*`. Key renames beyond that:
 
 ## DogLog Stub
 The compile stubs (`dev/doglog/DogLog.java` and `DogLogOptions.java`) have been **removed** from both mainbot and MW-Lib. The real DogLog `2027.1.0` library is used instead.
+
+## Roaming Chatbot (Sparky)
+
+The robot supports an LLM-driven roam mode where an AI coprocessor ("Sparky") drives the swerve base via NetworkTables. The integration is:
+
+### Architecture
+- **Coprocessor scripts**: `/home/ubuntu/aichatbot/chatbot_roam.py` (roam-capable) and `chatbot.py` (stationary greeter)
+- **LLM**: Qwen/Qwen3.6-35B-A3B-FP8 served locally via vLLM at `http://localhost:8000/v1`
+- **Robot-side bridge**: `frc/robot/subsystems/roam/RoamDriveInterface.java` — reads NT and drives swerve
+- **Robot connection**: NT4 client (`"Sparky"`) connects to `robot.local` / `10.41.43.2` / USB addresses
+
+### NetworkTables Protocol
+NT4 table: `Sparky/Drive` — all topics are `Double` or `Integer`:
+
+| Topic | Type | Description |
+|-------|------|-------------|
+| `cmd_vx` | Double | Forward velocity (m/s, robot-relative, positive = forward) |
+| `cmd_vy` | Double | Lateral velocity (m/s, robot-relative, positive = left) |
+| `cmd_omega` | Double | Rotation rate (rad/s, positive = counter-clockwise) |
+| `cmd_seq` | Integer | Heartbeat — must increment each publish cycle |
+
+### Coordinate Frame
+Commands are **robot-relative** (not field-relative). The coprocessor publishes in the FRC robot convention: `vx` forward, `vy` left, `omega` CCW. The `CHASSIS_SPEEDS` swerve state applies these directly via `ApplyChassisSpeeds` (no coordinate conversion).
+
+### Speed Limits (matched on both sides)
+- Max linear: **1.0 m/s**
+- Max angular: **π/2 rad/s ≈ 1.5708 rad/s**
+
+### Safety Model
+- **Staleness watchdog** (Java): stops the robot if `cmd_seq` doesn't advance within 0.25 s
+- **Heartbeat loop** (Python): republishes velocities every 0.1 s for the duration of each drive command, then zeroes all values
+- **Driver override**: any joystick input > 0.15 on leftX/leftY/rightX cancels roam mode and returns to `FIELD_CENTRIC`
+- **Teleop-only**: `RoamDriveInterface.periodic()` is a no-op outside of teleop
+- **Mode switch to greeter**: Python calls `drive_robot("stop")` synchronously before switching modes, immediately zeroing NT values
+
+### LLM Tool: `drive_robot`
+The LLM calls `drive_robot(direction, speed, duration_sec)` where:
+- `direction`: `forward`, `backward`, `left`, `right`, `rotate_left`, `rotate_right`, `stop`
+- `speed`: fraction of max roam speed (0–1)
+- `duration_sec`: capped at 2.0 s per call
+
+This tool is only exposed to the LLM in Roam Mode (not Greeter Mode). During a conversation in Roam Mode, it is also available so a person can ask Sparky to move.
+
+### Wiring in Robot.java
+`RoamDriveInterface.getInstance().periodic()` is called from `Robot.robotPeriodic()` — it is not a registered MwSubsystem.
