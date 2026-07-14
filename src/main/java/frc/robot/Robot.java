@@ -123,7 +123,8 @@ public class Robot extends TimedRobot {
     public void autonomousInit() {
         Elastic.selectTab("Autonomous");
         Auto selected_auto = AutoManager.getInstance().getSelectedAuto();
-        CommandScheduler.getInstance().schedule(selected_auto);
+        //SwerveSubsystem.getInstance().setWantedState(SwerveStates.CHASSIS_SPEEDS);
+        //CommandScheduler.getInstance().schedule(selected_auto);
     }
 
     @Override

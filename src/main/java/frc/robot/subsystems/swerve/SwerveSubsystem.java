@@ -101,6 +101,7 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
     private ChassisRequest.RobotCentricFacingAngle robot_centric_rotation_lock_request_;
     private ChassisRequest.ApplyFieldSpeeds field_speeds_request_;
     private ChassisRequest.ApplyChassisSpeeds chassis_speeds_request_;
+    private ChassisRequest.ApplyChassisSpeeds roam_chassis_speeds_request_;
     private ChassisRequest.SwerveDriveBrake brake_request_;
 
     // getInstance
@@ -172,6 +173,12 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
         chassis_speeds_request_ =
                 new ChassisRequest.ApplyChassisSpeeds()
                         .withDriveRequestType(DriveControlMode.CLOSED_LOOP)
+                        .withSteerRequestType(SteerControlMode.CLOSED_LOOP);
+        // OPEN_LOOP drive avoids the CLOSED_LOOP velocity controller fighting the
+        // drive-steer coupling when steer motors are moving to align wheels.
+        roam_chassis_speeds_request_ =
+                new ChassisRequest.ApplyChassisSpeeds()
+                        .withDriveRequestType(DriveControlMode.OPEN_LOOP)
                         .withSteerRequestType(SteerControlMode.CLOSED_LOOP);
         brake_request_ = new ChassisRequest.SwerveDriveBrake();
 
@@ -321,7 +328,7 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
                 break;
             case CHASSIS_SPEEDS:
                 swerve_mech_.setChassisRequest(
-                        chassis_speeds_request_.withSpeeds(desired_chassis_speeds_));
+                        roam_chassis_speeds_request_.withSpeeds(desired_chassis_speeds_));
                 break;
             case CRAWL_ROBOT_CENTRIC:
                 handleCrawlState(false);

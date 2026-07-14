@@ -83,9 +83,9 @@ public class RoamDriveInterface {
         boolean driver_override = isDriverOverriding();
         boolean should_drive =
                 cmd_fresh
-                        && !driver_override
+                        //&& !driver_override
                         && RobotState.isEnabled()
-                        && !RobotState.isAutonomous();
+                        && RobotState.isAutonomous();
 
         if (should_drive) {
             double vx = clamp(vx_sub_.get(), -MAX_LINEAR_MPS, MAX_LINEAR_MPS);
