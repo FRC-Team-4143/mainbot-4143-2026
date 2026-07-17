@@ -48,7 +48,7 @@ public class CitrusSynergyFarBump extends Auto {
                 Commands.runOnce(
                         () -> {
                             ShooterSubsystem.getInstance().setTarget(FieldTargets.Shooter.HUB);
-                            ShooterSubsystem.getInstance().setWantedState(ShooterStates.TRACKING);
+                            ShooterSubsystem.getInstance().setWantedState(ShooterStates.IDLE);
                         }),
 
                 // Set the initial trajectory
