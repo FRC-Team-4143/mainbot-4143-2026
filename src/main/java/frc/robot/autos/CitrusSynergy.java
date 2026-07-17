@@ -51,6 +51,8 @@ public class CitrusSynergy extends Auto {
                             ShooterSubsystem.getInstance().setWantedState(ShooterStates.IDLE);
                         }),
 
+                new WaitCommand(1),
+
                 // Set the initial trajectory
                 SwerveSubsystem.getInstance()
                         .setDesiredChoreoTrajectoryCommand(
@@ -65,7 +67,7 @@ public class CitrusSynergy extends Auto {
                                                 .setWantedState(SwerveStates.IDLE))
                         .until(SwerveSubsystem.getInstance()::isAtChoreoSetpoint),
                 // Wait for 4 seconds for other robots to clear the middle
-                new DynamicWaitCommand(getName() + "/MiddleWaitTime", 4),
+                new DynamicWaitCommand(getName() + "/MiddleWaitTime", 3),
                 // Set the second trajectory for the second part
                 SwerveSubsystem.getInstance()
                         .setDesiredChoreoTrajectoryCommand(
