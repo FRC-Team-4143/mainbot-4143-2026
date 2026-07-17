@@ -50,7 +50,6 @@ public class CitrusSynergy extends Auto {
                             ShooterSubsystem.getInstance().setTarget(FieldTargets.Shooter.HUB);
                             ShooterSubsystem.getInstance().setWantedState(ShooterStates.IDLE);
                         }),
-
                 new WaitCommand(1),
 
                 // Set the initial trajectory
