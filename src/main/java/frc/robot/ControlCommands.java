@@ -325,4 +325,14 @@ public class ControlCommands {
                 .withName("Squeeze")
                 .ignoringDisable(true);
     }
+    static Command crossWheelsCommand() {
+        return Commands.startEnd(
+                            () -> {
+                                SwerveSubsystem.getInstance().setWantedState(SwerveStates.BRAKE);
+                            },
+                            () -> {
+                                SwerveSubsystem.getInstance().setWantedState(SwerveStates.FIELD_CENTRIC);
+                            })
+                    .withName("Cross Wheels");
+    }
 }
