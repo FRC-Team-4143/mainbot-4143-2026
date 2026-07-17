@@ -139,23 +139,23 @@ public record ChoreoTraj(
 	public static final ChoreoTraj SynergyP1 = new ChoreoTraj(
 	    "SynergyP1",
 	    OptionalInt.empty(),
-	    1.5254,
+	    1.60943,
 	    new Pose2d(3.548, 7.404, Rotation2d.fromRadians(-1.571)),
-	    new Pose2d(7.823, 7.402, Rotation2d.fromRadians(-1.571))
+	    new Pose2d(8.235, 7.392, Rotation2d.fromRadians(-1.571))
 	);
 	public static final ChoreoTraj SynergyP2 = new ChoreoTraj(
 	    "SynergyP2",
 	    OptionalInt.empty(),
-	    2.66678,
-	    new Pose2d(7.823, 7.404, Rotation2d.fromRadians(-1.571)),
+	    2.27296,
+	    new Pose2d(8.277, 7.406, Rotation2d.fromRadians(-1.571)),
 	    new Pose2d(6.215, 5.368, Rotation2d.fromRadians(3.142))
 	);
 	public static final ChoreoTraj SynergyP3 = new ChoreoTraj(
 	    "SynergyP3",
 	    OptionalInt.empty(),
-	    1.89513,
+	    1.88145,
 	    new Pose2d(6.224, 5.535, Rotation2d.fromRadians(3.142)),
-	    new Pose2d(2.443, 4.074, Rotation2d.fromRadians(3.134))
+	    new Pose2d(2.351, 4.093, Rotation2d.fromRadians(3.134))
 	);
 	public static final ChoreoTraj SynergyP4 = new ChoreoTraj(
 	    "SynergyP4",

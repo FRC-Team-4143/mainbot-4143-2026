@@ -81,7 +81,7 @@ public class CitrusSynergy extends Auto {
                         .until(SwerveSubsystem.getInstance()::isAtChoreoSetpoint),
                 // Wait for 1 second to allow the other bots to get out of the way in the alliance
                 // zone
-                new DynamicWaitCommand(getName() + "/BeforeAllianceZoneWaitTime", 1),
+                new DynamicWaitCommand(getName() + "/BeforeAllianceZoneWaitTime", 0.5),
                 // Set the third trajectory for the third part
                 SwerveSubsystem.getInstance()
                         .setDesiredChoreoTrajectoryCommand(
