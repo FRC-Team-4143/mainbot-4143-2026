@@ -146,7 +146,7 @@ public record ChoreoTraj(
 	public static final ChoreoTraj SynergyP2 = new ChoreoTraj(
 	    "SynergyP2",
 	    OptionalInt.empty(),
-	    2.27296,
+	    2.6108,
 	    new Pose2d(8.277, 7.406, Rotation2d.fromRadians(-1.571)),
 	    new Pose2d(6.215, 5.368, Rotation2d.fromRadians(3.142))
 	);
