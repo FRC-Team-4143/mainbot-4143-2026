@@ -146,9 +146,9 @@ public record ChoreoTraj(
 	public static final ChoreoTraj SynergyP2 = new ChoreoTraj(
 	    "SynergyP2",
 	    OptionalInt.empty(),
-	    2.6108,
+	    4.06613,
 	    new Pose2d(8.277, 7.406, Rotation2d.fromRadians(-1.571)),
-	    new Pose2d(6.215, 5.368, Rotation2d.fromRadians(3.142))
+	    new Pose2d(2.188, 4.045, Rotation2d.fromRadians(3.14))
 	);
 	public static final ChoreoTraj SynergyP3 = new ChoreoTraj(
 	    "SynergyP3",
@@ -170,6 +170,27 @@ public record ChoreoTraj(
 	    4.13803,
 	    new Pose2d(2.5, 1, Rotation2d.fromRadians(0)),
 	    new Pose2d(2.5, 5, Rotation2d.fromRadians(0))
+	);
+	public static final ChoreoTraj SynergyP1Right = new ChoreoTraj(
+	    "SynergyP1Right",
+	    OptionalInt.empty(),
+	    1.60714,
+	    new Pose2d(3.601, 0.54, Rotation2d.fromRadians(1.582)),
+	    new Pose2d(8.277, 0.498, Rotation2d.fromRadians(1.571))
+	);
+	public static final ChoreoTraj SynergyP2Right = new ChoreoTraj(
+	    "SynergyP2Right",
+	    OptionalInt.empty(),
+	    3.90067,
+	    new Pose2d(8.249, 0.54, Rotation2d.fromRadians(1.571)),
+	    new Pose2d(2.315, 3.988, Rotation2d.fromRadians(3.142))
+	);
+	public static final ChoreoTraj SynergyP3Right = new ChoreoTraj(
+	    "SynergyP3Right",
+	    OptionalInt.empty(),
+	    1.85764,
+	    new Pose2d(6.034, 2.534, Rotation2d.fromRadians(3.142)),
+	    new Pose2d(2.351, 4.093, Rotation2d.fromRadians(3.134))
 	);
 
     /**
@@ -197,7 +218,10 @@ public record ChoreoTraj(
 		Map.entry("SynergyP2", SynergyP2),
 		Map.entry("SynergyP3", SynergyP3),
 		Map.entry("SynergyP4", SynergyP4),
-		Map.entry("TestPath", TestPath)
+		Map.entry("TestPath", TestPath),
+		Map.entry("SynergyP1Right", SynergyP1Right),
+		Map.entry("SynergyP2Right", SynergyP2Right),
+		Map.entry("SynergyP3Right", SynergyP3Right)
     );
 
     /**
