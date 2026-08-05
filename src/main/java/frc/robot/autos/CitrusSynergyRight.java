@@ -20,7 +20,7 @@ public class CitrusSynergyRight extends Auto {
         // =============================================================================
         loadTrajectory(ChoreoTraj.SynergyP1Right.name());
         loadTrajectory(ChoreoTraj.SynergyP2Right.name());
-        loadTrajectory(ChoreoTraj.SynergyP3Right.name());
+        //loadTrajectory(ChoreoTraj.SynergyP3Right.name());
 
         // =============================================================================
         // EVENT TRIGGER BINDING

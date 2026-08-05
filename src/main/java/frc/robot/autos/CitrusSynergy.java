@@ -20,7 +20,7 @@ public class CitrusSynergy extends Auto {
         // =============================================================================
         loadTrajectory(ChoreoTraj.SynergyP1.name());
         loadTrajectory(ChoreoTraj.SynergyP2.name());
-        loadTrajectory(ChoreoTraj.SynergyP3.name());
+        //loadTrajectory(ChoreoTraj.SynergyP3.name());
         // loadTrajectory(ChoreoTraj.SynergyP4.name());
 
         // =============================================================================
