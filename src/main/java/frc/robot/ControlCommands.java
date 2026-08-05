@@ -174,11 +174,13 @@ public class ControlCommands {
                             SwerveSubsystem.getInstance().setWantedState(SwerveStates.BRAKE);
                         },
                         () -> {
-                            SwerveSubsystem.getInstance().setWantedState(SwerveStates.FIELD_CENTRIC);
+                            SwerveSubsystem.getInstance()
+                                    .setWantedState(SwerveStates.FIELD_CENTRIC);
                         })
                 .withName("Lock Wheels")
                 .ignoringDisable(true);
     }
+
     /**
      * This command shoots fuel at the target with a fixed flywheel speed, used for teleop control
      * while shooting when the vision tracking is not working.

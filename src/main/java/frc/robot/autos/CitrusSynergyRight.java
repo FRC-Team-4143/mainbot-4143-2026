@@ -20,7 +20,7 @@ public class CitrusSynergyRight extends Auto {
         // =============================================================================
         loadTrajectory(ChoreoTraj.SynergyP1Right.name());
         loadTrajectory(ChoreoTraj.SynergyP2Right.name());
-        //loadTrajectory(ChoreoTraj.SynergyP3Right.name());
+        // loadTrajectory(ChoreoTraj.SynergyP3Right.name());
 
         // =============================================================================
         // EVENT TRIGGER BINDING
@@ -82,7 +82,7 @@ public class CitrusSynergyRight extends Auto {
                         .until(SwerveSubsystem.getInstance()::isAtChoreoSetpoint),
                 // Wait for 1 second to allow the other bots to get out of the way in the alliance
                 // zone
-                //new DynamicWaitCommand(getName() + "/BeforeAllianceZoneWaitTime", 0.5),
+                // new DynamicWaitCommand(getName() + "/BeforeAllianceZoneWaitTime", 0.5),
                 // Set the third trajectory for the third part
                 // SwerveSubsystem.getInstance()
                 //         .setDesiredChoreoTrajectoryCommand(
@@ -95,7 +95,8 @@ public class CitrusSynergyRight extends Auto {
                 //                 () ->
                 //                         SwerveSubsystem.getInstance()
                 //                                 .setWantedState(
-                //                                         SwerveStates.FIELD_CENTRIC_ROTATION_LOCK))
+                //
+                // SwerveStates.FIELD_CENTRIC_ROTATION_LOCK))
                 //         .until(SwerveSubsystem.getInstance()::isAtChoreoSetpoint),
                 // Start shooting here
                 Commands.runOnce(
