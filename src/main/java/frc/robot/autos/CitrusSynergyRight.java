@@ -11,17 +11,16 @@ import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.swerve.SwerveConstants.SwerveStates;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 
-public class CitrusSynergy extends Auto {
+public class CitrusSynergyRight extends Auto {
 
-    public CitrusSynergy() {
+    public CitrusSynergyRight() {
         // =============================================================================
         // TRAJECTORY LOADING
         // These should be loaded in the order they will be used to ensure correct start poses
         // =============================================================================
-        loadTrajectory(ChoreoTraj.SynergyP1.name());
-        loadTrajectory(ChoreoTraj.SynergyP2.name());
-        // loadTrajectory(ChoreoTraj.SynergyP3.name());
-        // loadTrajectory(ChoreoTraj.SynergyP4.name());
+        loadTrajectory(ChoreoTraj.SynergyP1Right.name());
+        loadTrajectory(ChoreoTraj.SynergyP2Right.name());
+        // loadTrajectory(ChoreoTraj.SynergyP3Right.name());
 
         // =============================================================================
         // EVENT TRIGGER BINDING
@@ -56,7 +55,7 @@ public class CitrusSynergy extends Auto {
                 // Set the initial trajectory
                 SwerveSubsystem.getInstance()
                         .setDesiredChoreoTrajectoryCommand(
-                                getTrajectory(ChoreoTraj.SynergyP1.name())),
+                                getTrajectory(ChoreoTraj.SynergyP1Right.name())),
                 // Start Choreo following
                 Commands.startEnd(
                                 () ->
@@ -71,7 +70,7 @@ public class CitrusSynergy extends Auto {
                 // Set the second trajectory for the second part
                 SwerveSubsystem.getInstance()
                         .setDesiredChoreoTrajectoryCommand(
-                                getTrajectory(ChoreoTraj.SynergyP2.name())),
+                                getTrajectory(ChoreoTraj.SynergyP2Right.name())),
                 // Start Choreo following
                 Commands.startEnd(
                                 () ->
@@ -87,7 +86,7 @@ public class CitrusSynergy extends Auto {
                 // Set the third trajectory for the third part
                 // SwerveSubsystem.getInstance()
                 //         .setDesiredChoreoTrajectoryCommand(
-                //                 getTrajectory(ChoreoTraj.SynergyP3.name())),
+                //                 getTrajectory(ChoreoTraj.SynergyP3Right.name())),
                 // // Start Choreo following
                 // Commands.startEnd(
                 //                 () ->

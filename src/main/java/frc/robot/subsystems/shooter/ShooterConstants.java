@@ -317,7 +317,7 @@ public class ShooterConstants extends MwConstants {
         shooter_leader_config.MotionMagic.MotionMagicJerk = 80.0;
         // shooter_leader_config.CurrentLimits.StatorCurrentLimit = 120.0;
         // shooter_leader_config.CurrentLimits.StatorCurrentLimitEnable = true;
-        shooter_leader_config.CurrentLimits.SupplyCurrentLimit = 40.0;
+        shooter_leader_config.CurrentLimits.SupplyCurrentLimit = 30.0;
         shooter_leader_config.CurrentLimits.SupplyCurrentLimitEnable = true;
         SHOOTER_LEADER_MOTOR_CONFIG.apply(shooter_leader_config);
 
@@ -332,7 +332,7 @@ public class ShooterConstants extends MwConstants {
         shooter_follower_1_config.Voltage.PeakReverseVoltage = 0.0;
         // shooter_follower_1_config.CurrentLimits.StatorCurrentLimit = 120.0;
         // shooter_follower_1_config.CurrentLimits.StatorCurrentLimitEnable = true;
-        shooter_follower_1_config.CurrentLimits.SupplyCurrentLimit = 40.0;
+        shooter_follower_1_config.CurrentLimits.SupplyCurrentLimit = 30.0;
         shooter_follower_1_config.CurrentLimits.SupplyCurrentLimitEnable = true;
         SHOOTER_FOLLOWER_MOTOR_1_CONFIG.apply(shooter_follower_1_config);
 
@@ -347,7 +347,7 @@ public class ShooterConstants extends MwConstants {
         shooter_follower_2_config.Voltage.PeakReverseVoltage = 0.0;
         // shooter_follower_2_config.CurrentLimits.StatorCurrentLimit = 120.0;
         // shooter_follower_2_config.CurrentLimits.StatorCurrentLimitEnable = true;
-        shooter_follower_2_config.CurrentLimits.SupplyCurrentLimit = 40.0;
+        shooter_follower_2_config.CurrentLimits.SupplyCurrentLimit = 30.0;
         shooter_follower_2_config.CurrentLimits.SupplyCurrentLimitEnable = true;
         SHOOTER_FOLLOWER_MOTOR_2_CONFIG.apply(shooter_follower_2_config);
 
@@ -362,7 +362,7 @@ public class ShooterConstants extends MwConstants {
         shooter_follower_3_config.Voltage.PeakReverseVoltage = 0.0;
         // shooter_follower_3_config.CurrentLimits.StatorCurrentLimit = 120.0;
         // shooter_follower_3_config.CurrentLimits.StatorCurrentLimitEnable = true;
-        shooter_follower_3_config.CurrentLimits.SupplyCurrentLimit = 40.0;
+        shooter_follower_3_config.CurrentLimits.SupplyCurrentLimit = 30.0;
         shooter_follower_3_config.CurrentLimits.SupplyCurrentLimitEnable = true;
         SHOOTER_FOLLOWER_MOTOR_3_CONFIG.apply(shooter_follower_3_config);
 

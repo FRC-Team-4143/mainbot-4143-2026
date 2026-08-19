@@ -149,6 +149,7 @@ public class IntakeSubsystem extends MwSubsystem<IntakeStates, IntakeConstants> 
             case SQUEEZE_WAIT:
                 roller_0_.setTargetDutyCycle(0.0);
                 roller_1_.setTargetDutyCycle(0.0);
+                pivot_.setTargetDutyCycle(0);
                 break;
             case SQUEEZE_HOLD:
                 pivot_.setTargetPosition(CONSTANTS.PIVOT_SQUEEZE_HOLD_POSITION);

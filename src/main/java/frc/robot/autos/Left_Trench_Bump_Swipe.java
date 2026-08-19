@@ -58,7 +58,7 @@ public class Left_Trench_Bump_Swipe extends Auto {
                 Commands.runOnce(
                         () -> {
                             ShooterSubsystem.getInstance().setTarget(FieldTargets.Shooter.HUB);
-                            ShooterSubsystem.getInstance().setWantedState(ShooterStates.TRACKING);
+                            ShooterSubsystem.getInstance().setWantedState(ShooterStates.IDLE);
                         }),
                 // Set the initial trajectory
                 SwerveSubsystem.getInstance()
@@ -87,7 +87,7 @@ public class Left_Trench_Bump_Swipe extends Auto {
                 // Stop shooting
                 Commands.runOnce(
                         () -> {
-                            ShooterSubsystem.getInstance().setWantedState(ShooterStates.TRACKING);
+                            ShooterSubsystem.getInstance().setWantedState(ShooterStates.IDLE);
                             IntakeSubsystem.getInstance().setWantedState(IntakeStates.INTAKE);
                         }),
                 // Set the second trajectory for the second pass
@@ -121,7 +121,7 @@ public class Left_Trench_Bump_Swipe extends Auto {
                 // Stop shooting
                 Commands.runOnce(
                         () -> {
-                            ShooterSubsystem.getInstance().setWantedState(ShooterStates.TRACKING);
+                            ShooterSubsystem.getInstance().setWantedState(ShooterStates.IDLE);
                             IntakeSubsystem.getInstance().setWantedState(IntakeStates.INTAKE);
                         }),
                 // Set the second trajectory for the second pass

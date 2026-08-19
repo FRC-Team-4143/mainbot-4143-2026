@@ -42,12 +42,12 @@
         },
         "supply_limit": {
           "enabled": true,
-          "current_limit": 40,
+          "current_limit": 35,
           "trigger_time": 0.1
         },
         "stator_limit": {
           "enabled": true,
-          "current_limit": 40
+          "current_limit": 105
         }
       },
       "steer_motor": {
@@ -82,12 +82,12 @@
         },
         "supply_limit": {
           "enabled": true,
-          "current_limit": 40,
+          "current_limit": 20,
           "trigger_time": 0.1
         },
         "stator_limit": {
           "enabled": true,
-          "current_limit": 40
+          "current_limit": 60
         }
       }
     },

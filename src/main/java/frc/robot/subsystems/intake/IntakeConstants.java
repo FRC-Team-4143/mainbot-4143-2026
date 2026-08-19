@@ -57,6 +57,7 @@ public class IntakeConstants extends MwConstants {
     public final double ROLLER_GEAR_RATIO = 1.0;
     public final double INTAKE_DUTY_CYCLE = 1.0;
     public final double ROLLER_STATOR_CURRENT_LIMIT = 60;
+    public final double ROLLER_SUPPLY_CURRENT_LIMIT = 30;
 
     // =============================================================================
     // MECHANICAL CONSTANTS - PIVOT
@@ -78,10 +79,10 @@ public class IntakeConstants extends MwConstants {
     public final Slot0Configs PIVOT_POSITION_GAINS =
             new Slot0Configs().withKG(0.45).withKP(15.0).withKD(0.0);
 
-    public final double PIVOT_SQUEEZE_CURRENT = 15.0;
+    public final double PIVOT_SQUEEZE_CURRENT = 45.0;
     public final double PIVOT_SQUEEZE_MAX_POSITION = Units.degreesToRadians(80);
     public final double PIVOT_SQUEEZE_HOLD_POSITION = Units.degreesToRadians(80);
-    public final Slot2Configs PIVOT_CURRENT_GAINS = new Slot2Configs().withKP(0.0).withKI(0.0166);
+    public final Slot2Configs PIVOT_CURRENT_GAINS = new Slot2Configs().withKP(0.01).withKI(0.06);
 
     // Homing for pivot - drive with a small duty cycle until the motor current spikes
     public final double PIVOT_HOMING_DUTY_CYCLE = -0.15;
@@ -110,7 +111,9 @@ public class IntakeConstants extends MwConstants {
         TalonFXConfiguration roller_config = new TalonFXConfiguration();
         roller_config.MotorOutput.Inverted = PhoenixUtil.toInvertedValue(ROLLER_MOTOR_INVERTED);
         roller_config.CurrentLimits.StatorCurrentLimit = ROLLER_STATOR_CURRENT_LIMIT;
+        roller_config.CurrentLimits.SupplyCurrentLimit = ROLLER_SUPPLY_CURRENT_LIMIT;
         roller_config.CurrentLimits.StatorCurrentLimitEnable = true;
+        roller_config.CurrentLimits.SupplyCurrentLimitEnable = true;
         ROLLER_MOTOR_CONFIG.apply(roller_config);
 
         // Configure Roller Follower Motor
@@ -121,7 +124,9 @@ public class IntakeConstants extends MwConstants {
         roller_follower_fx_config.MotorOutput.Inverted =
                 PhoenixUtil.toInvertedValue(ROLLER_FOLLOWER_MOTOR_INVERTED);
         roller_follower_fx_config.CurrentLimits.StatorCurrentLimit = ROLLER_STATOR_CURRENT_LIMIT;
+        roller_follower_fx_config.CurrentLimits.SupplyCurrentLimit = ROLLER_SUPPLY_CURRENT_LIMIT;
         roller_follower_fx_config.CurrentLimits.StatorCurrentLimitEnable = true;
+        roller_follower_fx_config.CurrentLimits.SupplyCurrentLimitEnable = true;
         ROLLER_FOLLOWER_MOTOR_CONFIG.apply(roller_follower_fx_config);
 
         // Configure Pivot Motor

@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.autos.CitrusSynergy;
 import frc.robot.autos.CitrusSynergyFarBump;
+import frc.robot.autos.CitrusSynergyRight;
 import frc.robot.autos.Left_Trench_Bump_Swipe;
 import frc.robot.autos.Left_Trench_Trench_Swipe;
 import frc.robot.autos.Right_Trench_Bump_Swipe;
@@ -62,7 +63,8 @@ public class Robot extends LoggedRobot {
                         new Shoot(),
                         new CitrusSynergy(),
                         new CitrusSynergyFarBump(),
-                        new Slop_Auto()
+                        new Slop_Auto(),
+                        new CitrusSynergyRight()
                         // new TestAuto()
                         );
 
