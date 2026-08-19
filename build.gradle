@@ -133,7 +133,7 @@ dependencies {
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     // Substituted with a live build of ../MW-Lib when local mode is on (see settings.gradle,
     // -PmwlibLocal). Otherwise resolved from the published GitHub Packages / jitpack artifact.
-    implementation 'com.github.frc-team-4143:mw-lib-java:26.16.3-current-testing-6'
+    implementation 'com.github.frc-team-4143:mw-lib-java:26.16.3'
 }
 
 test {
