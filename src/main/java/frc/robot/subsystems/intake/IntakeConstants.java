@@ -71,7 +71,7 @@ public class IntakeConstants extends MwConstants {
     public final double PIVOT_MIN = Units.degreesToRadians(-10);
     public final double PIVOT_MAX = Units.degreesToRadians(140);
     public final double PIVOT_HOME_POSITION = Units.degreesToRadians(0);
-    public final double PIVOT_STATOR_CURRENT_LIMIT = 90;
+    public final double PIVOT_STATOR_CURRENT_LIMIT = 120;
     public final double PIVOT_DEPLOY_POSITION = Units.degreesToRadians(0);
     public final double PIVOT_RACKING_POSITION = Units.degreesToRadians(105);
     public final double PIVOT_STORE_POSITION = Units.degreesToRadians(105);
@@ -79,7 +79,7 @@ public class IntakeConstants extends MwConstants {
     public final Slot0Configs PIVOT_POSITION_GAINS =
             new Slot0Configs().withKG(0.45).withKP(15.0).withKD(0.0);
 
-    public final double PIVOT_SQUEEZE_CURRENT = 45.0;
+    public final double PIVOT_SQUEEZE_CURRENT = 75.0;
     public final double PIVOT_SQUEEZE_MAX_POSITION = Units.degreesToRadians(80);
     public final double PIVOT_SQUEEZE_HOLD_POSITION = Units.degreesToRadians(80);
     public final Slot2Configs PIVOT_CURRENT_GAINS = new Slot2Configs().withKP(0.01).withKI(0.06);
