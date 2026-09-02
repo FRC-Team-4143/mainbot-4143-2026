@@ -55,9 +55,9 @@ public class ObserverTemplate {
             new DashboardBridge(CONFIG, LEFT_ROCKET_CARGO, LEFT_ROCKET_HATCH, RIGHT_ROCKET_CARGO, RIGHT_ROCKET_HATCH, CARGO_SHIP_CARGO, CARGO_SHIP_HATCH);
 
     private boolean[] left_rocket_hatch = new boolean[6];
-    private int[] left_rocket_cargo = new int[3];
+    private boolean[] left_rocket_cargo = new boolean[6];
     private boolean[] right_rocket_hatch = new boolean[6];
-    private int[] right_rocket_cargo = new int[3];
+    private boolean[] right_rocket_cargo = new boolean[6];
     private boolean[] cargo_ship_hatch = new boolean[8];
     private boolean[] cargo_ship_cargo = new boolean[8];
 
@@ -75,16 +75,36 @@ public class ObserverTemplate {
 
         // TODO: for each bidirectional channel, react to a dashboard-originated change.
         bridge_
-                .getIntIfChanged(EXAMPLE_BITFIELD)
-                .ifPresent(bits -> example_bits_ = NumUtil.unpackBits(bits, example_bits_.length));
-        bridge_.getBoolIfChanged(EXAMPLE_FLAG).ifPresent(value -> example_flag_ = value);
+                .getIntIfChanged(LEFT_ROCKET_CARGO)
+                .ifPresent(bits -> left_rocket_cargo = NumUtil.unpackBits(bits, left_rocket_cargo.length));
+        bridge_
+                .getIntIfChanged(RIGHT_ROCKET_CARGO)
+                .ifPresent(bits -> right_rocket_cargo = NumUtil.unpackBits(bits, right_rocket_cargo.length));
+        bridge_
+                .getIntIfChanged(LEFT_ROCKET_HATCH)
+                .ifPresent(bits -> left_rocket_hatch = NumUtil.unpackBits(bits, left_rocket_hatch.length));
+        bridge_
+                .getIntIfChanged(RIGHT_ROCKET_HATCH)
+                .ifPresent(bits -> right_rocket_hatch = NumUtil.unpackBits(bits, right_rocket_hatch.length));
+        bridge_
+                .getIntIfChanged(CARGO_SHIP_CARGO)
+                .ifPresent(bits -> cargo_ship_cargo = NumUtil.unpackBits(bits, cargo_ship_cargo.length));
+        bridge_
+                .getIntIfChanged(CARGO_SHIP_HATCH)
+                .ifPresent(bits -> cargo_ship_hatch = NumUtil.unpackBits(bits, cargo_ship_hatch.length));
+        //bridge_.getBoolIfChanged(EXAMPLE_FLAG).ifPresent(value -> example_flag_ = value);
 
         // TODO: your own game logic updates example_bits_/example_flag_ here too, independent of
         // the dashboard -- e.g. the robot auto-scoring something without a human tapping anything.
 
         // Mirror the current authoritative state back out every loop -- DashboardBridge no-ops if
         // nothing actually changed since the last publish, so this is safe to call unconditionally.
-        bridge_.set(EXAMPLE_BITFIELD, NumUtil.packBits(example_bits_));
-        bridge_.set(EXAMPLE_FLAG, example_flag_);
+        bridge_.set(LEFT_ROCKET_CARGO, NumUtil.packBits(left_rocket_cargo));
+        bridge_.set(RIGHT_ROCKET_CARGO, NumUtil.packBits(right_rocket_cargo));
+        bridge_.set(LEFT_ROCKET_HATCH, NumUtil.packBits(left_rocket_hatch));
+        bridge_.set(RIGHT_ROCKET_HATCH, NumUtil.packBits(right_rocket_hatch));
+        bridge_.set(CARGO_SHIP_CARGO, NumUtil.packBits(cargo_ship_cargo));
+        bridge_.set(CARGO_SHIP_HATCH, NumUtil.packBits(cargo_ship_hatch));
+        //bridge_.set(EXAMPLE_FLAG, example_flag_);
     }
 }
