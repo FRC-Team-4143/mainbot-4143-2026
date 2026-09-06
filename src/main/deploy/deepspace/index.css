@@ -1,0 +1,175 @@
+/*
+  Deep Space (2019) dashboard styling -- intentionally plain.
+  Landscape layout, arranged like the field: Left Rocket | Cargo Ship | Right Rocket.
+  Sizes in vh/vw so it scales to the tablet it is opened on.
+*/
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 1.4vh;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2vh;
+  overflow: hidden;
+  overscroll-behavior: none;
+  font-family: Helvetica, Arial, sans-serif;
+  user-select: none;
+  -webkit-user-select: none;
+  cursor: default;
+  color: #fff;
+
+  /* Show the disconnected state until index.js proves otherwise. */
+  background-color: #7f1d1d;
+}
+
+body.connected {
+  background-color: #1e293b;
+}
+
+/* ***** STATUS BAR ***** */
+
+.status-bar {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 2.8vh;
+  font-weight: bold;
+  letter-spacing: 0.08em;
+}
+
+.status-label::after {
+  content: "DISCONNECTED";
+}
+body.connected .status-label::after {
+  content: "CONNECTED";
+}
+
+.points {
+  font-variant-numeric: tabular-nums;
+}
+
+/* ***** FIELD: three structures side by side ***** */
+
+.field {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: row;
+  gap: 1.4vh;
+}
+
+.structure {
+  background-color: rgba(255, 255, 255, 0.06);
+  border-radius: 2vh;
+  padding: 1.2vh 1.4vh;
+  flex: 1.15; /* rockets get more width than the center column */
+  min-width: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8vh;
+}
+
+.structure.cargo-ship {
+  flex: 0.75;
+}
+
+.structure h2 {
+  margin: 0;
+  flex: none;
+  font-size: 2.2vh;
+  font-weight: 600;
+  text-align: center;
+}
+
+.bays {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8vh;
+}
+
+/* Column headers over the rockets (NEAR / FAR). Same flex shape as a .bay-row so the labels line
+   up with the bay columns below: an empty .level-label gutter, then one flexed cell per column. */
+.col-headers {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+  gap: 0.8vh;
+}
+
+.col-header {
+  flex: 1 1 0;
+  min-width: 0;
+  text-align: center;
+  font-size: 1.8vh;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: #94a3b8;
+}
+
+.bay-row {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+  gap: 0.8vh;
+}
+
+.level-label {
+  flex: none;
+  width: 4vh;
+  text-align: center;
+  font-size: 2.4vh;
+  font-weight: 700;
+  color: #94a3b8;
+}
+
+/* ***** BAY = donut (hatch ring) + center dot (cargo) *****
+   .bay is a square sized by the row height; flexbox shrinks it (aspect-ratio keeps it square) when
+   two won't fit the row width, so the donut is always the largest circle that fits. The ring is a
+   radial-gradient so its thickness scales with the donut. */
+
+.bay {
+  flex: 1 1 0;
+  min-width: 0;
+  aspect-ratio: 1;
+  max-height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bay .hatch {
+  width: 94%;
+  height: 94%;
+  border-radius: 50%;
+  background: radial-gradient(circle at center, #0000 0 44%, #64748b 46% 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.bay .hatch.on {
+  background: radial-gradient(circle at center, #0000 0 44%, #fbbf24 46% 100%);
+}
+
+.bay .cargo {
+  width: 48%;
+  height: 48%;
+  border-radius: 50%;
+  border: 0.4vh solid #64748b;
+  background: #1e293b;
+}
+.bay .cargo.on {
+  background: #f97316; /* scored cargo */
+  border-color: #f97316;
+}

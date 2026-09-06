@@ -1,0 +1,42 @@
+<!--
+  Charged Up (2023) dashboard web app -- served off the RoboRIO by DashboardBridge.startWebServer(),
+  paired with frc.robot.subsystems.chargedupobserver.ChargedUpObserver. NT4.js / msgpack.js are
+  vendored verbatim from FRC 6328 (Mechanical-Advantage) and need no changes.
+
+  The alliance community grid: 3 rows of 9 nodes. index.js fills each .grid-row with 9 .node
+  buttons -- cube nodes in columns 1/4/7 of the top and middle rows, cone nodes elsewhere, hybrid
+  across the bottom row. Tap a node to toggle it. The center 3 columns are the coopertition zone.
+  Row channels (grid_top / grid_middle / grid_bottom) are 9-bit bitfield ints; coopertition is a
+  bool the human toggles; links is read-only (the robot counts three-in-a-row).
+-->
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <link rel="stylesheet" href="index.css" />
+    <script src="index.js" type="module"></script>
+    <title>Charged Up &mdash; FRC 4143</title>
+  </head>
+  <body>
+    <div class="status-bar">
+      <span class="status-label"></span>
+      <span class="readouts">
+        <span class="links">0 links</span>
+        <span class="points">0 pts</span>
+      </span>
+    </div>
+
+    <div class="grid">
+      <div class="grid-row" data-row="top"><span class="row-label">TOP</span></div>
+      <div class="grid-row" data-row="middle"><span class="row-label">MID</span></div>
+      <div class="grid-row" data-row="bottom"><span class="row-label">HYBRID</span></div>
+    </div>
+
+    <div class="controls">
+      <button class="coop">Coopertition</button>
+    </div>
+  </body>
+</html>

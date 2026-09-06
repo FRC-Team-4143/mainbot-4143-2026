@@ -1,0 +1,67 @@
+<!--
+  Deep Space (2019) dashboard web app -- served off the RoboRIO by DashboardBridge.startWebServer(),
+  paired with frc.robot.subsystems.deepspaceobserver.DeepSpaceObserver. NT4.js / msgpack.js are
+  vendored verbatim from FRC 6328 (Mechanical-Advantage) and need no changes.
+
+  Laid out like the field: Left Rocket on the left, Cargo Ship in the center, Right Rocket on the
+  right. Each bay is a donut whose RING is the hatch panel and whose CENTER DOT is the cargo -- tap
+  the ring to toggle that bay's hatch bit, tap the dot to toggle its cargo bit. index.js reads
+  data-hatch / data-cargo / data-levels|data-rows / data-cols off each .structure and builds the
+  bays; keep data-hatch / data-cargo in sync with the DashboardChannel names in
+  DeepSpaceObserver.java.
+-->
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <link rel="stylesheet" href="index.css" />
+    <script src="index.js" type="module"></script>
+    <title>Deep Space &mdash; FRC 4143</title>
+  </head>
+  <body>
+    <div class="status-bar">
+      <span class="status-label"></span>
+      <span class="points">0 pts</span>
+    </div>
+
+    <div class="field">
+      <section
+        class="structure"
+        data-hatch="left_rocket_hatch"
+        data-cargo="left_rocket_cargo"
+        data-levels="3"
+        data-cols="2"
+        data-columns="NEAR,FAR"
+      >
+        <h2>Left Rocket</h2>
+        <div class="bays"></div>
+      </section>
+
+      <section
+        class="structure cargo-ship"
+        data-hatch="cargo_ship_hatch"
+        data-cargo="cargo_ship_cargo"
+        data-rows="4"
+        data-cols="2"
+      >
+        <h2>Cargo Ship</h2>
+        <div class="bays"></div>
+      </section>
+
+      <section
+        class="structure"
+        data-hatch="right_rocket_hatch"
+        data-cargo="right_rocket_cargo"
+        data-levels="3"
+        data-cols="2"
+        data-columns="FAR,NEAR"
+      >
+        <h2>Right Rocket</h2>
+        <div class="bays"></div>
+      </section>
+    </div>
+  </body>
+</html>

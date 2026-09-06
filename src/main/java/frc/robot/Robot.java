@@ -6,8 +6,8 @@ package frc.robot;
 
 import com.marswars.auto.Auto;
 import com.marswars.auto.AutoManager;
-import com.marswars.geometry.AllianceFlipUtil;
 import com.marswars.dashboard.Elastic;
+import com.marswars.geometry.AllianceFlipUtil;
 import com.marswars.logging.MwLog;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -26,9 +26,12 @@ import frc.robot.lib2026.FieldConstants;
 import frc.robot.lib2026.FieldRegions;
 import frc.robot.lib2026.FieldTargets;
 import frc.robot.lib2026.HubMonitor;
+import frc.robot.subsystems.chargedupobserver.ChargedUpObserver;
+import frc.robot.subsystems.deepspaceobserver.DeepSpaceObserver;
 import frc.robot.subsystems.intake.IntakeConstants.IntakeStates;
 import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.localization.LocalizationSubsystem;
+import frc.robot.subsystems.reefscapeobserver.ReefscapeObserver;
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterStates;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.swerve.SwerveConstants;
@@ -92,6 +95,12 @@ public class Robot extends LoggedRobot {
 
         // Visualize the 3D Robot
         Mechanism3dViz.publish();
+
+        // Browser dashboard observers. First tick of each starts its web server; in sim open
+        // http://localhost:5802/ (Deep Space), :5803/ (Charged Up), :5804/ (Reefscape).
+        DeepSpaceObserver.getInstance().periodic();
+        ChargedUpObserver.getInstance().periodic();
+        ReefscapeObserver.getInstance().periodic();
     }
 
     @Override

@@ -1,0 +1,55 @@
+<!--
+  Reefscape (2025) dashboard web app -- served off the RoboRIO by DashboardBridge.startWebServer(),
+  paired with frc.robot.subsystems.reefscapeobserver.ReefscapeObserver. NT4.js / msgpack.js are
+  vendored verbatim from FRC 6328 (Mechanical-Advantage) and need no changes.
+
+  The reef: pick a level (L4 / L3 / L2), tap a branch to toggle coral on that level, tap an algae
+  marker to toggle algae. L1 (trough) is a count on the right, with coop / RP-focus toggles. The
+  robot reports IS_ELIMS and RP-complete back read-only and can override coop / rp_focus. index.js
+  generates the 12 branches + 6 algae; keep the topic names in sync with ReefscapeObserver.java.
+-->
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <link rel="stylesheet" href="index.css" />
+    <script src="index.js" type="module"></script>
+    <title>Reefscape &mdash; FRC 4143</title>
+  </head>
+  <body>
+    <div class="status-bar">
+      <span class="status-label"></span>
+      <span class="readouts">
+        <span class="elims" hidden>ELIMS</span>
+        <span class="rp">RP &mdash;</span>
+        <span class="coral-count">0 coral</span>
+      </span>
+    </div>
+
+    <div class="main">
+      <div class="levels">
+        <button class="level" data-level="l4">L4</button>
+        <button class="level" data-level="l3">L3</button>
+        <button class="level" data-level="l2">L2</button>
+      </div>
+
+      <div class="reef"></div>
+
+      <div class="side">
+        <div class="l1">
+          <div class="l1-label">L1 trough</div>
+          <div class="l1-counter">
+            <button class="l1-minus">&minus;</button>
+            <span class="l1-value">0</span>
+            <button class="l1-plus">+</button>
+          </div>
+        </div>
+        <button class="toggle coop">Coop</button>
+        <button class="toggle rp-focus">RP Focus</button>
+      </div>
+    </div>
+  </body>
+</html>

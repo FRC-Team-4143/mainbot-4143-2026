@@ -1,0 +1,208 @@
+/*
+  Reefscape (2025) dashboard styling -- intentionally plain.
+  Level selector | reef (12 branches + 6 algae around a circle) | L1 counter + toggles.
+  Sizes in vh/vw so it scales to the tablet it is opened on.
+*/
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 1.4vh;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2vh;
+  overflow: hidden;
+  overscroll-behavior: none;
+  font-family: Helvetica, Arial, sans-serif;
+  user-select: none;
+  -webkit-user-select: none;
+  cursor: default;
+  color: #fff;
+
+  /* Show the disconnected state until index.js proves otherwise. */
+  background-color: #7f1d1d;
+}
+
+body.connected {
+  background-color: #1e293b;
+}
+
+/* ***** STATUS BAR ***** */
+
+.status-bar {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 2.6vh;
+  font-weight: bold;
+  letter-spacing: 0.08em;
+}
+
+.status-label::after {
+  content: "DISCONNECTED";
+}
+body.connected .status-label::after {
+  content: "CONNECTED";
+}
+
+.readouts {
+  display: flex;
+  align-items: center;
+  gap: 2.5vh;
+}
+
+.coral-count {
+  font-variant-numeric: tabular-nums;
+}
+
+.elims {
+  padding: 0.4vh 1.6vh;
+  border-radius: 0.8vh;
+  background: #ef4444;
+}
+
+.rp {
+  padding: 0.4vh 1.6vh;
+  border-radius: 0.8vh;
+  border: 0.3vh solid #64748b;
+  color: #94a3b8;
+}
+.rp.met {
+  border-color: #22c55e;
+  background: #22c55e;
+  color: #0b1120;
+}
+
+/* ***** MAIN: levels | reef | side ***** */
+
+.main {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  gap: 2vh;
+}
+
+.levels,
+.side {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  gap: 1.4vh;
+  justify-content: center;
+}
+
+.level {
+  font: inherit;
+  font-size: 3.4vh;
+  font-weight: 700;
+  color: #fff;
+  width: 12vh;
+  padding: 1.6vh 0;
+  border-radius: 1.4vh;
+  border: 0.4vh solid #64748b;
+  background: transparent;
+}
+.level.active {
+  background: #c026d3;
+  border-color: #c026d3;
+}
+
+/* ***** REEF ***** */
+
+/* the reef must be a true square (branches are circles), so size it off the smaller dimension:
+   height fills .main, width follows the ratio, max-width clamps and aspect-ratio recomputes. */
+.reef {
+  flex: 0 1 auto;
+  height: 100%;
+  aspect-ratio: 1;
+  max-width: 100%;
+  position: relative;
+  margin: 0 auto;
+}
+
+.branch,
+.algae {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  aspect-ratio: 1;
+}
+
+.branch {
+  width: 14%;
+  border: 0.5vh solid #64748b;
+  background: transparent;
+}
+.branch.on {
+  background: #c026d3; /* coral scored on the selected level */
+  border-color: #d946ef;
+}
+
+.algae {
+  width: 11%;
+  border: 0.5vh solid #475569;
+  background: transparent;
+}
+.algae.on {
+  background: #0891b2;
+  border-color: #22d3ee;
+}
+
+/* ***** SIDE: L1 counter + toggles ***** */
+
+.l1 {
+  text-align: center;
+}
+.l1-label {
+  font-size: 2vh;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #94a3b8;
+  margin-bottom: 0.8vh;
+}
+.l1-counter {
+  display: flex;
+  align-items: center;
+  gap: 1vh;
+}
+.l1-counter button {
+  font: inherit;
+  font-size: 4vh;
+  font-weight: 700;
+  color: #fff;
+  width: 7vh;
+  height: 7vh;
+  border-radius: 1.2vh;
+  border: 0.4vh solid #64748b;
+  background: transparent;
+}
+.l1-value {
+  font-size: 5vh;
+  font-weight: 700;
+  min-width: 4vh;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.toggle {
+  font: inherit;
+  font-size: 2.4vh;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: #fff;
+  width: 22vh;
+  padding: 1.4vh 0;
+  border-radius: 1.4vh;
+  border: 0.4vh solid #64748b;
+  background: transparent;
+}
+.toggle.active {
+  background: #22c55e;
+  border-color: #22c55e;
+  color: #0b1120;
+}

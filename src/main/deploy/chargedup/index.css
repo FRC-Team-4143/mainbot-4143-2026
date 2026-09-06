@@ -1,0 +1,158 @@
+/*
+  Charged Up (2023) dashboard styling -- intentionally plain.
+  The community grid: 3 rows of 9 nodes. Cube = square, cone = triangle, hybrid = pill.
+  Sizes in vh/vw so it scales to the tablet it is opened on.
+*/
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 1.4vh;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2vh;
+  overflow: hidden;
+  overscroll-behavior: none;
+  font-family: Helvetica, Arial, sans-serif;
+  user-select: none;
+  -webkit-user-select: none;
+  cursor: default;
+  color: #fff;
+
+  /* Show the disconnected state until index.js proves otherwise. */
+  background-color: #7f1d1d;
+}
+
+body.connected {
+  background-color: #1e293b;
+}
+
+/* ***** STATUS BAR ***** */
+
+.status-bar {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 2.8vh;
+  font-weight: bold;
+  letter-spacing: 0.08em;
+}
+
+.status-label::after {
+  content: "DISCONNECTED";
+}
+body.connected .status-label::after {
+  content: "CONNECTED";
+}
+
+.readouts {
+  display: flex;
+  gap: 3vh;
+}
+
+.links,
+.points {
+  font-variant-numeric: tabular-nums;
+}
+
+/* ***** GRID ***** */
+
+.grid {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1vh;
+}
+
+.grid-row {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  gap: 1vh;
+}
+
+.row-label {
+  flex: none;
+  width: 8vh;
+  font-size: 2vh;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: #94a3b8;
+  text-align: right;
+}
+
+/* ***** NODES ***** */
+
+.node {
+  flex: 1 1 0;
+  min-width: 0;
+  aspect-ratio: 1;
+  max-height: 100%;
+}
+
+/* cube -- square, columns 1/4/7 of the top and middle rows */
+.node.cube {
+  border-radius: 1vh;
+  border: 0.4vh solid #7c5cff;
+  background: transparent;
+}
+.node.cube.on {
+  background: #7c5cff;
+}
+
+/* cone -- triangle (clip-path clips borders, so it carries a faint fill even when off) */
+.node.cone {
+  clip-path: polygon(50% 6%, 6% 94%, 94% 94%);
+  background: #3b4252;
+}
+.node.cone.on {
+  background: #f2c94c;
+}
+
+/* hybrid -- pill, the whole bottom row */
+.node.hybrid {
+  border-radius: 999px;
+  border: 0.4vh solid #64748b;
+  background: transparent;
+}
+.node.hybrid.on {
+  background: #64748b;
+}
+
+/* the three center columns are the coopertition zone */
+.node.coop-zone {
+  outline: 0.25vh dashed rgba(148, 163, 184, 0.45);
+  outline-offset: -0.5vh;
+}
+
+/* ***** CONTROLS ***** */
+
+.controls {
+  flex: none;
+  display: flex;
+  justify-content: center;
+}
+
+.coop {
+  font: inherit;
+  font-size: 2.4vh;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #fff;
+  padding: 1vh 6vh;
+  border-radius: 1.5vh;
+  border: 0.4vh solid #64748b;
+  background: transparent;
+}
+.coop.active {
+  background: #22c55e;
+  border-color: #22c55e;
+  color: #0b1120;
+}
