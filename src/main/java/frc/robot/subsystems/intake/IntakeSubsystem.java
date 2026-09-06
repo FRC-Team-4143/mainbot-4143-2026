@@ -83,29 +83,95 @@ public class IntakeSubsystem extends MwSubsystem<IntakeStates, IntakeConstants> 
     }
 
     // handleStateTransition
+    //
+    // Explicit (current state, request) -> next-state table, grouped by state. This
+    // method fully describes the intake's state graph with no reference to command
+    // / auto code; a request with no matching arm is ignored.
     @Override
     protected void handleStateTransition(IntakeStates wantedState) {
-        // If pivot current spikes while in homing state, set current position as home
-        if (homeDebouncer.calculate(
-                        pivot_.getLeaderSupplyCurrent() > CONSTANTS.PIVOT_HOMING_CURRENT_THRESHOLD)
-                && system_state_ == IntakeStates.PIVOT_HOMING) {
-            pivot_.setCurrentPosition(CONSTANTS.PIVOT_HOME_POSITION);
-            setWantedState(IntakeStates.DEPLOYED);
-            system_state_ = IntakeStates.DEPLOYED;
-        } else if (wantedState == IntakeStates.SQUEEZE && system_state_ == IntakeStates.DEPLOYED) {
-            system_state_ = IntakeStates.SQUEEZE_WAIT;
-            timer.reset();
-            timer.start();
-        } else if (system_state_ == IntakeStates.SQUEEZE_WAIT) {
-            if (timer.get() > CONSTANTS.SQUEEZE_WAIT_TIME) {
-                system_state_ = IntakeStates.SQUEEZE;
-            }
-        } else if (wantedState == IntakeStates.SQUEEZE
-                && pivot_.getCurrentPosition() > CONSTANTS.PIVOT_SQUEEZE_MAX_POSITION) {
-            system_state_ = IntakeStates.SQUEEZE_HOLD;
-            setWantedState(IntakeStates.SQUEEZE_HOLD);
-        } else {
-            system_state_ = wantedState;
+        switch (system_state_) {
+            case IDLE:
+                if (wantedState == IntakeStates.STORE) system_state_ = IntakeStates.STORE;
+                else if (wantedState == IntakeStates.DEPLOYED) system_state_ = IntakeStates.DEPLOYED;
+                else if (wantedState == IntakeStates.PIVOT_HOMING) system_state_ = IntakeStates.PIVOT_HOMING;
+                else if (wantedState == IntakeStates.TUNING) system_state_ = IntakeStates.TUNING;
+                break;
+
+            case STORE:
+                if (wantedState == IntakeStates.DEPLOYED) system_state_ = IntakeStates.DEPLOYED;
+                else if (wantedState == IntakeStates.PIVOT_HOMING) system_state_ = IntakeStates.PIVOT_HOMING;
+                else if (wantedState == IntakeStates.IDLE) system_state_ = IntakeStates.IDLE;
+                break;
+
+            case DEPLOYED:
+                if (wantedState == IntakeStates.STORE) system_state_ = IntakeStates.STORE;
+                else if (wantedState == IntakeStates.INTAKE) system_state_ = IntakeStates.INTAKE;
+                else if (wantedState == IntakeStates.OUTTAKE) system_state_ = IntakeStates.OUTTAKE;
+                else if (wantedState == IntakeStates.PIVOT_HOMING) system_state_ = IntakeStates.PIVOT_HOMING;
+                else if (wantedState == IntakeStates.IDLE) system_state_ = IntakeStates.IDLE;
+                else if (wantedState == IntakeStates.SQUEEZE) {
+                    system_state_ = IntakeStates.SQUEEZE_WAIT;
+                    timer.reset();
+                    timer.start();
+                }
+                break;
+
+            case INTAKE:
+                if (wantedState == IntakeStates.DEPLOYED) system_state_ = IntakeStates.DEPLOYED;
+                else if (wantedState == IntakeStates.OUTTAKE) system_state_ = IntakeStates.OUTTAKE;
+                else if (wantedState == IntakeStates.STORE) system_state_ = IntakeStates.STORE;
+                else if (wantedState == IntakeStates.IDLE) system_state_ = IntakeStates.IDLE;
+                break;
+
+            case OUTTAKE:
+                if (wantedState == IntakeStates.DEPLOYED) system_state_ = IntakeStates.DEPLOYED;
+                else if (wantedState == IntakeStates.INTAKE) system_state_ = IntakeStates.INTAKE;
+                else if (wantedState == IntakeStates.STORE) system_state_ = IntakeStates.STORE;
+                else if (wantedState == IntakeStates.IDLE) system_state_ = IntakeStates.IDLE;
+                break;
+
+            case PIVOT_HOMING:
+                // Drive the pivot until its current spikes, then treat that as home.
+                if (homeDebouncer.calculate(
+                        pivot_.getLeaderSupplyCurrent() > CONSTANTS.PIVOT_HOMING_CURRENT_THRESHOLD)) {
+                    pivot_.setCurrentPosition(CONSTANTS.PIVOT_HOME_POSITION);
+                    setWantedState(IntakeStates.DEPLOYED);
+                    system_state_ = IntakeStates.DEPLOYED;
+                } else if (wantedState == IntakeStates.IDLE) {
+                    system_state_ = IntakeStates.IDLE;
+                }
+                break;
+
+            case SQUEEZE_WAIT:
+                // Settle delay before the squeeze engages.
+                if (timer.get() > CONSTANTS.SQUEEZE_WAIT_TIME) system_state_ = IntakeStates.SQUEEZE;
+                else if (wantedState == IntakeStates.DEPLOYED) system_state_ = IntakeStates.DEPLOYED;
+                else if (wantedState == IntakeStates.STORE) system_state_ = IntakeStates.STORE;
+                break;
+
+            case SQUEEZE:
+                if (pivot_.getCurrentPosition() > CONSTANTS.PIVOT_SQUEEZE_MAX_POSITION) {
+                    system_state_ = IntakeStates.SQUEEZE_HOLD;
+                    setWantedState(IntakeStates.SQUEEZE_HOLD);
+                } else if (wantedState == IntakeStates.DEPLOYED) {
+                    system_state_ = IntakeStates.DEPLOYED;
+                } else if (wantedState == IntakeStates.STORE) {
+                    system_state_ = IntakeStates.STORE;
+                }
+                break;
+
+            case SQUEEZE_HOLD:
+                if (wantedState == IntakeStates.DEPLOYED) system_state_ = IntakeStates.DEPLOYED;
+                else if (wantedState == IntakeStates.STORE) system_state_ = IntakeStates.STORE;
+                else if (wantedState == IntakeStates.IDLE) system_state_ = IntakeStates.IDLE;
+                break;
+
+            case TUNING:
+                if (wantedState == IntakeStates.IDLE) system_state_ = IntakeStates.IDLE;
+                break;
+
+            default:
+                break;
         }
     }
 

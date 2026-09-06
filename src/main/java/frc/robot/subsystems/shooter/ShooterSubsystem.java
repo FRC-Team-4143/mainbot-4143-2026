@@ -165,29 +165,105 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
     }
 
     // handleStateTransition
+    //
+    // Explicit (current state, request) -> next-state table, grouped by state. The
+    // SHOOT request routes through SHOOT_WAIT, which self-advances to SHOOT once
+    // isShooterReady(); with no default arm, an unmatched request is ignored.
     @Override
     public void handleStateTransition(ShooterStates wanted) {
-        if (hood_.getLeaderSupplyCurrent() > CONSTANTS.HOOD_HOMING_CURRENT_THRESHOLD
-                && system_state_ == ShooterStates.HOOD_HOMING) {
-            hood_.setCurrentPosition(CONSTANTS.HOOD_HOME_POSITION);
-            setWantedState(ShooterStates.IDLE);
-            system_state_ = ShooterStates.IDLE;
-        } else if (wanted == ShooterStates.SHOOT
-                && system_state_ != ShooterStates.SHOOT_WAIT
-                && system_state_ != ShooterStates.SHOOT) {
-            system_state_ = ShooterStates.SHOOT_WAIT;
-        } else if (system_state_ == ShooterStates.SHOOT_WAIT
-                && isShooterReady()
-                && wanted == ShooterStates.SHOOT) {
-            system_state_ = ShooterStates.SHOOT;
-        } else if (system_state_ == ShooterStates.SHOOT_WAIT
-                && !isShooterReady()
-                && wanted == ShooterStates.SHOOT) {
-            // Nap time : Blocks default transition from occurring
-        } else if (system_state_ == ShooterStates.SHOOT && !isShooterReady()) {
-            system_state_ = ShooterStates.SHOOT_WAIT;
-        } else {
-            system_state_ = wanted;
+        switch (system_state_) {
+            case IDLE:
+                if (wanted == ShooterStates.TRACKING) system_state_ = ShooterStates.TRACKING;
+                else if (wanted == ShooterStates.AIMING) system_state_ = ShooterStates.AIMING;
+                else if (wanted == ShooterStates.DUMP) system_state_ = ShooterStates.DUMP;
+                else if (wanted == ShooterStates.MANUAL_HUB) system_state_ = ShooterStates.MANUAL_HUB;
+                else if (wanted == ShooterStates.MANUAL_PASS) system_state_ = ShooterStates.MANUAL_PASS;
+                else if (wanted == ShooterStates.SPIN_DOWN) system_state_ = ShooterStates.SPIN_DOWN;
+                else if (wanted == ShooterStates.HOOD_HOMING) system_state_ = ShooterStates.HOOD_HOMING;
+                else if (wanted == ShooterStates.TUNING) system_state_ = ShooterStates.TUNING;
+                else if (wanted == ShooterStates.SHOOT) system_state_ = ShooterStates.SHOOT_WAIT;
+                break;
+
+            case TRACKING:
+                if (wanted == ShooterStates.AIMING) system_state_ = ShooterStates.AIMING;
+                else if (wanted == ShooterStates.IDLE) system_state_ = ShooterStates.IDLE;
+                else if (wanted == ShooterStates.SPIN_DOWN) system_state_ = ShooterStates.SPIN_DOWN;
+                else if (wanted == ShooterStates.SHOOT) system_state_ = ShooterStates.SHOOT_WAIT;
+                break;
+
+            case AIMING:
+                if (wanted == ShooterStates.TRACKING) system_state_ = ShooterStates.TRACKING;
+                else if (wanted == ShooterStates.IDLE) system_state_ = ShooterStates.IDLE;
+                else if (wanted == ShooterStates.SPIN_DOWN) system_state_ = ShooterStates.SPIN_DOWN;
+                else if (wanted == ShooterStates.SHOOT) system_state_ = ShooterStates.SHOOT_WAIT;
+                break;
+
+            case SHOOT_WAIT:
+                // spin up and settle, then fire
+                if (isShooterReady() && wanted == ShooterStates.SHOOT) {
+                    system_state_ = ShooterStates.SHOOT;
+                } else if (wanted == ShooterStates.AIMING) {
+                    system_state_ = ShooterStates.AIMING;
+                } else if (wanted == ShooterStates.TRACKING) {
+                    system_state_ = ShooterStates.TRACKING;
+                } else if (wanted == ShooterStates.IDLE) {
+                    system_state_ = ShooterStates.IDLE;
+                }
+                break;
+
+            case SHOOT:
+                // drop back to settle if the solution goes stale
+                if (!isShooterReady()) {
+                    system_state_ = ShooterStates.SHOOT_WAIT;
+                } else if (wanted == ShooterStates.AIMING) {
+                    system_state_ = ShooterStates.AIMING;
+                } else if (wanted == ShooterStates.TRACKING) {
+                    system_state_ = ShooterStates.TRACKING;
+                } else if (wanted == ShooterStates.IDLE) {
+                    system_state_ = ShooterStates.IDLE;
+                }
+                break;
+
+            case DUMP:
+                if (wanted == ShooterStates.IDLE) system_state_ = ShooterStates.IDLE;
+                else if (wanted == ShooterStates.SPIN_DOWN) system_state_ = ShooterStates.SPIN_DOWN;
+                break;
+
+            case MANUAL_HUB:
+                if (wanted == ShooterStates.MANUAL_PASS) system_state_ = ShooterStates.MANUAL_PASS;
+                else if (wanted == ShooterStates.IDLE) system_state_ = ShooterStates.IDLE;
+                else if (wanted == ShooterStates.SPIN_DOWN) system_state_ = ShooterStates.SPIN_DOWN;
+                break;
+
+            case MANUAL_PASS:
+                if (wanted == ShooterStates.MANUAL_HUB) system_state_ = ShooterStates.MANUAL_HUB;
+                else if (wanted == ShooterStates.IDLE) system_state_ = ShooterStates.IDLE;
+                else if (wanted == ShooterStates.SPIN_DOWN) system_state_ = ShooterStates.SPIN_DOWN;
+                break;
+
+            case SPIN_DOWN:
+                if (wanted == ShooterStates.IDLE) system_state_ = ShooterStates.IDLE;
+                else if (wanted == ShooterStates.TRACKING) system_state_ = ShooterStates.TRACKING;
+                else if (wanted == ShooterStates.AIMING) system_state_ = ShooterStates.AIMING;
+                break;
+
+            case HOOD_HOMING:
+                // Drive the hood until its current spikes, then take that as home.
+                if (hood_.getLeaderSupplyCurrent() > CONSTANTS.HOOD_HOMING_CURRENT_THRESHOLD) {
+                    hood_.setCurrentPosition(CONSTANTS.HOOD_HOME_POSITION);
+                    setWantedState(ShooterStates.IDLE);
+                    system_state_ = ShooterStates.IDLE;
+                } else if (wanted == ShooterStates.IDLE) {
+                    system_state_ = ShooterStates.IDLE;
+                }
+                break;
+
+            case TUNING:
+                if (wanted == ShooterStates.IDLE) system_state_ = ShooterStates.IDLE;
+                break;
+
+            default:
+                break;
         }
     }
 
