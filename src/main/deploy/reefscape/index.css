@@ -116,13 +116,35 @@ body.connected .status-label::after {
 
 /* the reef must be a true square (branches are circles), so size it off the smaller dimension:
    height fills .main, width follows the ratio, max-width clamps and aspect-ratio recomputes. */
+/* .reef fills the middle of .main and centres the square .reef-inner inside it. */
 .reef {
-  flex: 0 1 auto;
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.reef-inner {
   height: 100%;
   aspect-ratio: 1;
   max-width: 100%;
   position: relative;
-  margin: 0 auto;
+}
+
+/* the hexagon outline -- the 6 reef faces */
+.reef-outline {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.reef-outline polygon {
+  fill: none;
+  stroke: #475569;
+  stroke-width: 1;
+  stroke-linejoin: round;
 }
 
 .branch,
@@ -134,9 +156,9 @@ body.connected .status-label::after {
 }
 
 .branch {
-  width: 14%;
-  border: 0.5vh solid #64748b;
-  background: transparent;
+  width: 11%;
+  border: 0.5vh solid #94a3b8;
+  background: #1e293b; /* opaque so it reads as sitting on the face line */
 }
 .branch.on {
   background: #c026d3; /* coral scored on the selected level */
@@ -144,9 +166,9 @@ body.connected .status-label::after {
 }
 
 .algae {
-  width: 11%;
+  width: 9%;
   border: 0.5vh solid #475569;
-  background: transparent;
+  background: #1e293b;
 }
 .algae.on {
   background: #0891b2;

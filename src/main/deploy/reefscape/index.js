@@ -1,6 +1,6 @@
 // Reefscape (2025) dashboard logic. Round-trips the reef with ReefscapeObserver.java over NT4:
 //
-//   l2 / l3 / l4   int   12-bit branch bitfields (bit i = branch i, clockwise from the top)
+//   l2 / l3 / l4   int   12-bit branch bitfields (bit face*2+k = branch k of hexagon face)
 //   l1             int   trough count (scalar, not a bitfield)
 //   algae          int   6-bit bitfield
 //   coop / rp_focus bool  human toggles
@@ -49,39 +49,64 @@ const ntClient = new NT4_Client(
 );
 
 // ***** REEF GENERATION *****
-// 12 branches evenly around a circle (bit 0 at the top, clockwise); 6 algae on an inner circle,
-// offset to sit between branch pairs.
+// The reef is a flat-top regular hexagon (6 faces). Each face carries 2 coral branches, set in
+// from the corners; one algae marker sits on each face, pulled toward the centre. bit (face*2 + k)
+// is branch k of that face; bit (face) of `algae` is that face's algae.
 
-function place(el, angleDeg, radiusPct) {
-  const a = (angleDeg - 90) * (Math.PI / 180);
-  el.style.left = 50 + radiusPct * Math.cos(a) + "%";
-  el.style.top = 50 + radiusPct * Math.sin(a) + "%";
+const SVG_NS = "http://www.w3.org/2000/svg";
+const R = 45; // hexagon circumradius, % of the square reef box
+const HEX = [0, 1, 2, 3, 4, 5].map((i) => {
+  const a = (i * 60) * (Math.PI / 180); // vertex 0 at +x, so left/right points, flat top/bottom
+  return [50 + R * Math.cos(a), 50 + R * Math.sin(a)];
+});
+const lerp = (a, b, t) => [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t];
+
+function place(el, x, y) {
+  el.style.left = x + "%";
+  el.style.top = y + "%";
 }
 
 function buildReef() {
-  const reef = document.querySelector(".reef");
+  const reef = document.querySelector(".reef-inner");
 
-  for (let i = 0; i < 12; i++) {
-    const branch = document.createElement("div");
-    branch.className = "branch";
-    branch.dataset.idx = i;
-    place(branch, i * 30, 40);
-    bind(branch, () =>
-      ntClient.addSample(
-        toRobotPrefix + selectedLevel,
-        state[selectedLevel] ^ (1 << i)
-      )
-    );
-    reef.appendChild(branch);
-  }
+  // hexagon outline
+  const svg = document.createElementNS(SVG_NS, "svg");
+  svg.setAttribute("class", "reef-outline");
+  svg.setAttribute("viewBox", "0 0 100 100");
+  const poly = document.createElementNS(SVG_NS, "polygon");
+  poly.setAttribute("points", HEX.map((v) => v.join(",")).join(" "));
+  svg.appendChild(poly);
+  reef.appendChild(svg);
 
-  for (let i = 0; i < 6; i++) {
+  for (let face = 0; face < 6; face++) {
+    const a = HEX[face];
+    const b = HEX[(face + 1) % 6];
+
+    // 2 branches per face, inset from the corners
+    [0.3, 0.7].forEach((t, k) => {
+      const idx = face * 2 + k;
+      const [x, y] = lerp(a, b, t);
+      const branch = document.createElement("div");
+      branch.className = "branch";
+      branch.dataset.idx = idx;
+      place(branch, x, y);
+      bind(branch, () =>
+        ntClient.addSample(
+          toRobotPrefix + selectedLevel,
+          state[selectedLevel] ^ (1 << idx)
+        )
+      );
+      reef.appendChild(branch);
+    });
+
+    // one algae on the face, pulled toward the centre
+    const mid = lerp(a, b, 0.5);
     const algae = document.createElement("div");
     algae.className = "algae";
-    algae.dataset.idx = i;
-    place(algae, 15 + i * 60, 19);
+    algae.dataset.idx = face;
+    place(algae, 50 + (mid[0] - 50) * 0.58, 50 + (mid[1] - 50) * 0.58);
     bind(algae, () =>
-      ntClient.addSample(toRobotPrefix + "algae", state.algae ^ (1 << i))
+      ntClient.addSample(toRobotPrefix + "algae", state.algae ^ (1 << face))
     );
     reef.appendChild(algae);
   }
