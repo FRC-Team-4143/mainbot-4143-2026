@@ -61,9 +61,7 @@ public class ChargedUpObserver {
             new DashboardBridge(CONFIG, GRID_BOTTOM, GRID_MIDDLE, GRID_TOP, COOPERTITION, LINKS);
 
     // The robot's authoritative copy of the grid. Element c is column c (0..8).
-    private boolean[] grid_bottom_ = new boolean[9];
-    private boolean[] grid_middle_ = new boolean[9];
-    private boolean[] grid_top_ = new boolean[9];
+    private boolean[][] grid_ = new boolean[3][9];
     private boolean coopertition_ = false;
     private int links_ = 0;
 
@@ -77,21 +75,20 @@ public class ChargedUpObserver {
 
         // --- Inbound: apply dashboard-originated changes. ----------------------------------
         bridge_.getIntIfChanged(GRID_BOTTOM)
-                .ifPresent(bits -> grid_bottom_ = NumUtil.unpackBits(bits, 9));
+                .ifPresent(bits -> grid_[0] = NumUtil.unpackBits(bits, 9));
         bridge_.getIntIfChanged(GRID_MIDDLE)
-                .ifPresent(bits -> grid_middle_ = NumUtil.unpackBits(bits, 9));
+                .ifPresent(bits -> grid_[1] = NumUtil.unpackBits(bits, 9));
         bridge_.getIntIfChanged(GRID_TOP)
-                .ifPresent(bits -> grid_top_ = NumUtil.unpackBits(bits, 9));
+                .ifPresent(bits -> grid_[2] = NumUtil.unpackBits(bits, 9));
         bridge_.getBoolIfChanged(COOPERTITION).ifPresent(value -> coopertition_ = value);
 
         // --- Robot-side logic: recompute derived state before the mirror-out. --------------
-        links_ = linksInRow(grid_bottom_) + linksInRow(grid_middle_) + linksInRow(grid_top_);
-
+        links_ = linksInRow(grid_[0]) + linksInRow(grid_[1]) + linksInRow(grid_[2]);
         // --- Outbound: mirror authoritative state (including the OUTPUT_ONLY links) back out.
         //     Safe to call every loop -- DashboardBridge no-ops when nothing changed. --------
-        bridge_.set(GRID_BOTTOM, NumUtil.packBits(grid_bottom_));
-        bridge_.set(GRID_MIDDLE, NumUtil.packBits(grid_middle_));
-        bridge_.set(GRID_TOP, NumUtil.packBits(grid_top_));
+        bridge_.set(GRID_BOTTOM, NumUtil.packBits(grid_[0]));
+        bridge_.set(GRID_MIDDLE, NumUtil.packBits(grid_[1]));
+        bridge_.set(GRID_TOP, NumUtil.packBits(grid_[2]));
         bridge_.set(COOPERTITION, coopertition_);
         bridge_.set(LINKS, links_);
     }
@@ -100,7 +97,7 @@ public class ChargedUpObserver {
 
     /** Total filled nodes across all three grid rows. */
     public int totalNodes() {
-        return count(grid_bottom_) + count(grid_middle_) + count(grid_top_);
+        return count(grid_[0]) + count(grid_[1]) + count(grid_[2]);
     }
 
     /** Number of Links (three filled nodes in a row), summed across the three rows. */
@@ -112,11 +109,34 @@ public class ChargedUpObserver {
      * Teleop point value of the grid state (2 / 3 / 5 per node by row, +5 per Link). Approximate.
      */
     public int totalPoints() {
-        return 2 * count(grid_bottom_)
-                + 3 * count(grid_middle_)
-                + 5 * count(grid_top_)
+        return 2 * count(grid_[0])
+                + 3 * count(grid_[1])
+                + 5 * count(grid_[2])
                 + 5 * links_;
     }
+    public boolean canSuperCharge(){
+        return totalNodes() == 27;
+    }
+
+    public int getRPRequirement() {
+        int count = 0;
+        for(int j=0; j==3; j++){
+            for(int i=3; i==6; i++){
+            if(grid_[j][i]){
+                count++;
+            }
+        }
+        }
+        if(coopertition_ && count >=3){
+            return 5;
+        }
+        return 6;
+    }
+    public boolean hasRP(){
+        return links_ >= getRPRequirement();
+        
+    }
+
 
     /** Greedy, non-overlapping: a node belongs to at most one Link. Max 3 per 9-wide row. */
     private static int linksInRow(boolean[] row) {
