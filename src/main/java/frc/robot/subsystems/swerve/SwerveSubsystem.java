@@ -208,24 +208,33 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
 
     // handleStateTransition
     /**
-     * Gets the current system state of the Swerve subsystem.
-     *
-     * @return the current system state
+     * Resolves a requested drive mode into {@code system_state_}. Every mode is
+     * reachable from every state; the only state-dependent rule is the Choreo
+     * trajectory bookkeeping (stop the timers on the way out, reset the path
+     * controllers on the way in from a non-trajectory state). Holding the driver
+     * POV snaps any request to the matching crawl mode.
      */
     @Override
     protected void handleStateTransition(SwerveStates wanted_state) {
-        // Stop event tracker if leaving choreo states
-        if ((system_state_ == SwerveStates.CHOREO_PATH
-                        || system_state_ == SwerveStates.CHOREO_PATH_ROTATION_LOCK)
-                && wanted_state != SwerveStates.CHOREO_PATH
-                && wanted_state != SwerveStates.CHOREO_PATH_ROTATION_LOCK) {
-            choreo_timer_.stop();
-            choreo_event_tracker_.stop();
+        boolean entering_trajectory =
+                wanted_state == SwerveStates.CHOREO_PATH
+                        || wanted_state == SwerveStates.CHOREO_PATH_ROTATION_LOCK;
+
+        // The only state-dependent rule: leaving a Choreo trajectory stops its timers.
+        switch (system_state_) {
+            case CHOREO_PATH:
+            case CHOREO_PATH_ROTATION_LOCK:
+                if (!entering_trajectory) {
+                    choreo_timer_.stop();
+                    choreo_event_tracker_.stop();
+                }
+                break;
+            default:
+                break;
         }
 
-        // switch to CRAWL or CRAWL_ROTATION_LOCK if POV is being used
+        // Holding the driver POV snaps any request to the matching crawl mode.
         if (OI.getDriverJoystickPOV().isPresent()) {
-            // Determine which crawl state to use based on the wanted state
             if (wanted_state == SwerveStates.FIELD_CENTRIC_ROTATION_LOCK) {
                 system_state_ = SwerveStates.CRAWL_FIELD_CENTRIC_ROTATION_LOCK;
             } else if (wanted_state == SwerveStates.ROBOT_CENTRIC_ROTATION_LOCK
@@ -234,67 +243,67 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
             } else if (wanted_state == SwerveStates.FIELD_CENTRIC) {
                 system_state_ = SwerveStates.CRAWL_FIELD_CENTRIC;
             } else {
-                // Default to robot-centric crawl for all other states
                 system_state_ = SwerveStates.CRAWL_ROBOT_CENTRIC;
             }
             return;
         }
 
-        system_state_ =
-                switch (wanted_state) {
-                    case ROBOT_CENTRIC -> SwerveStates.ROBOT_CENTRIC;
-                    case FIELD_CENTRIC -> SwerveStates.FIELD_CENTRIC;
-                    case CHOREO_PATH -> {
-                        // If we are not already in a choreo path state, restart the timer
-                        // The additional check is needed to prevent resetting the timer when
-                        // switching between the two choreo states
-                        if (system_state_ != SwerveStates.CHOREO_PATH
-                                && system_state_ != SwerveStates.CHOREO_PATH_ROTATION_LOCK) {
-                            choreo_x_controller_.reset();
-                            choreo_y_controller_.reset();
-                            choreo_theta_controller_.reset();
-                            choreo_timer_.restart();
-                            choreo_event_tracker_.start();
-                            yield SwerveStates.CHOREO_PATH;
-                        } else {
-                            yield SwerveStates.CHOREO_PATH;
-                        }
-                    }
-                    case TRACTOR_BEAM -> SwerveStates.TRACTOR_BEAM;
-                    case CHASSIS_SPEEDS -> SwerveStates.CHASSIS_SPEEDS;
-                    case CRAWL_ROBOT_CENTRIC -> SwerveStates.CRAWL_ROBOT_CENTRIC;
-                    case CRAWL_FIELD_CENTRIC -> SwerveStates.CRAWL_FIELD_CENTRIC;
-                    case ROBOT_CENTRIC_ROTATION_LOCK -> SwerveStates.ROBOT_CENTRIC_ROTATION_LOCK;
-                    case FIELD_CENTRIC_ROTATION_LOCK -> SwerveStates.FIELD_CENTRIC_ROTATION_LOCK;
-                    case CHOREO_PATH_ROTATION_LOCK -> {
-                        // If we are not already in a choreo path state, restart the timer
-                        // The additional check is needed to prevent resetting the timer when
-                        // switching between the two choreo states
-                        if (system_state_ != SwerveStates.CHOREO_PATH_ROTATION_LOCK
-                                && system_state_ != SwerveStates.CHOREO_PATH) {
-                            choreo_x_controller_.reset();
-                            choreo_y_controller_.reset();
-                            choreo_theta_controller_.reset();
-                            choreo_timer_.restart();
-                            choreo_event_tracker_.start();
-                            choreo_sample_to_apply_ =
-                                    desired_choreo_traj_.sampleAt(choreo_timer_.get(), false);
-                            yield SwerveStates.CHOREO_PATH_ROTATION_LOCK;
-                        } else {
-                            choreo_sample_to_apply_ =
-                                    desired_choreo_traj_.sampleAt(choreo_timer_.get(), false);
-                            yield SwerveStates.CHOREO_PATH_ROTATION_LOCK;
-                        }
-                    }
-                    case CRAWL_ROBOT_CENTRIC_ROTATION_LOCK ->
-                            SwerveStates.CRAWL_ROBOT_CENTRIC_ROTATION_LOCK;
-                    case CRAWL_FIELD_CENTRIC_ROTATION_LOCK ->
-                            SwerveStates.CRAWL_FIELD_CENTRIC_ROTATION_LOCK;
-                    case CHASSIS_SPEEDS_ROTATION_LOCK -> SwerveStates.CHASSIS_SPEEDS_ROTATION_LOCK;
-                    case TUNING -> SwerveStates.TUNING;
-                    case BRAKE -> SwerveStates.BRAKE;
-                    default -> SwerveStates.IDLE;
-                };
+        // Explicit request table: any mode, from any state. Entering a Choreo
+        // trajectory from a non-trajectory state resets the path controllers
+        // (the switch above already stopped the timers on the way out).
+        boolean in_trajectory =
+                system_state_ == SwerveStates.CHOREO_PATH
+                        || system_state_ == SwerveStates.CHOREO_PATH_ROTATION_LOCK;
+
+        if (wanted_state == SwerveStates.CHOREO_PATH) {
+            if (!in_trajectory) {
+                choreo_x_controller_.reset();
+                choreo_y_controller_.reset();
+                choreo_theta_controller_.reset();
+                choreo_timer_.restart();
+                choreo_event_tracker_.start();
+            }
+            system_state_ = SwerveStates.CHOREO_PATH;
+        } else if (wanted_state == SwerveStates.CHOREO_PATH_ROTATION_LOCK) {
+            if (!in_trajectory) {
+                choreo_x_controller_.reset();
+                choreo_y_controller_.reset();
+                choreo_theta_controller_.reset();
+                choreo_timer_.restart();
+                choreo_event_tracker_.start();
+            }
+            choreo_sample_to_apply_ =
+                    desired_choreo_traj_.sampleAt(choreo_timer_.get(), false);
+            system_state_ = SwerveStates.CHOREO_PATH_ROTATION_LOCK;
+        } else if (wanted_state == SwerveStates.ROBOT_CENTRIC) {
+            system_state_ = SwerveStates.ROBOT_CENTRIC;
+        } else if (wanted_state == SwerveStates.FIELD_CENTRIC) {
+            system_state_ = SwerveStates.FIELD_CENTRIC;
+        } else if (wanted_state == SwerveStates.TRACTOR_BEAM) {
+            system_state_ = SwerveStates.TRACTOR_BEAM;
+        } else if (wanted_state == SwerveStates.CHASSIS_SPEEDS) {
+            system_state_ = SwerveStates.CHASSIS_SPEEDS;
+        } else if (wanted_state == SwerveStates.CRAWL_ROBOT_CENTRIC) {
+            system_state_ = SwerveStates.CRAWL_ROBOT_CENTRIC;
+        } else if (wanted_state == SwerveStates.CRAWL_FIELD_CENTRIC) {
+            system_state_ = SwerveStates.CRAWL_FIELD_CENTRIC;
+        } else if (wanted_state == SwerveStates.ROBOT_CENTRIC_ROTATION_LOCK) {
+            system_state_ = SwerveStates.ROBOT_CENTRIC_ROTATION_LOCK;
+        } else if (wanted_state == SwerveStates.FIELD_CENTRIC_ROTATION_LOCK) {
+            system_state_ = SwerveStates.FIELD_CENTRIC_ROTATION_LOCK;
+        } else if (wanted_state == SwerveStates.CRAWL_ROBOT_CENTRIC_ROTATION_LOCK) {
+            system_state_ = SwerveStates.CRAWL_ROBOT_CENTRIC_ROTATION_LOCK;
+        } else if (wanted_state == SwerveStates.CRAWL_FIELD_CENTRIC_ROTATION_LOCK) {
+            system_state_ = SwerveStates.CRAWL_FIELD_CENTRIC_ROTATION_LOCK;
+        } else if (wanted_state == SwerveStates.CHASSIS_SPEEDS_ROTATION_LOCK) {
+            system_state_ = SwerveStates.CHASSIS_SPEEDS_ROTATION_LOCK;
+        } else if (wanted_state == SwerveStates.TUNING) {
+            system_state_ = SwerveStates.TUNING;
+        } else if (wanted_state == SwerveStates.BRAKE) {
+            system_state_ = SwerveStates.BRAKE;
+        } else {
+            system_state_ = SwerveStates.IDLE;
+        }
     }
 
     // updateLogic
