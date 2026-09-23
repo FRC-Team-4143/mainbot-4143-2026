@@ -1,5 +1,6 @@
 package frc.robot.subsystems.intake;
 
+import com.marswars.logging.MwLog;
 import com.marswars.mechanisms.ArmMech;
 import com.marswars.mechanisms.RollerMech;
 import com.marswars.subsystem.MwSubsystem;
@@ -22,6 +23,8 @@ public class IntakeSubsystem extends MwSubsystem<IntakeStates, IntakeConstants> 
     private Timer timer = new Timer();
     private Debouncer homeDebouncer =
             new Debouncer(CONSTANTS.PIVOT_HOMING_WAIT_TIME, DebounceType.kFalling);
+    private double pivot_current_kG_ = CONSTANTS.PIVOT_kG;
+    private double pivot_current_test = 0;
 
     // getInstance
     public static IntakeSubsystem getInstance() {
@@ -58,6 +61,14 @@ public class IntakeSubsystem extends MwSubsystem<IntakeStates, IntakeConstants> 
                         CONSTANTS.PIVOT_MIN,
                         CONSTANTS.PIVOT_MAX);
         pivot_.setCurrentPosition(CONSTANTS.PIVOT_HOME_POSITION);
+        MwLog.tunable(
+                getSubsystemKey() + "Pivot/kG",
+                CONSTANTS.PIVOT_kG,
+                (newKg) -> pivot_current_kG_ = newKg);
+        MwLog.tunable(
+                getSubsystemKey() + "Pivot/test_squzze_current",
+                pivot_current_test,
+                (newTest) -> pivot_current_test = newTest);
 
         SmartDashboard.putData(
                 "Home Pivot",
@@ -112,6 +123,8 @@ public class IntakeSubsystem extends MwSubsystem<IntakeStates, IntakeConstants> 
     // updateLogic
     @Override
     public void updateLogic(double timestamp) {
+        double feedforward = pivot_current_kG_ * Math.cos(pivot_.getCurrentPosition());
+
         switch (system_state_) {
             case STORE:
                 roller_0_.setTargetDutyCycle(0.1);
@@ -144,7 +157,7 @@ public class IntakeSubsystem extends MwSubsystem<IntakeStates, IntakeConstants> 
                 timer.stop();
                 roller_0_.setTargetDutyCycle(0.0);
                 roller_1_.setTargetDutyCycle(0.0);
-                pivot_.setTargetCurrent(CONSTANTS.PIVOT_SQUEEZE_CURRENT);
+                pivot_.setTargetCurrentWithFF(CONSTANTS.PIVOT_SQUEEZE_CURRENT, feedforward);
                 break;
             case SQUEEZE_WAIT:
                 roller_0_.setTargetDutyCycle(0.0);
@@ -157,7 +170,6 @@ public class IntakeSubsystem extends MwSubsystem<IntakeStates, IntakeConstants> 
                 roller_1_.setTargetDutyCycle(0.15);
                 break;
             case TUNING:
-                // No default behavior for tuning mode
                 break;
             default:
             case IDLE:
