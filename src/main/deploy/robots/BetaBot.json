@@ -43,7 +43,8 @@
         "supply_limit": {
           "enabled": true,
           "current_limit": 35,
-          "trigger_time": 0.1
+          "trigger_time": 0.1,
+          "current_lower_limit": 30
         },
         "stator_limit": {
           "enabled": true,
@@ -83,7 +84,8 @@
         "supply_limit": {
           "enabled": true,
           "current_limit": 20,
-          "trigger_time": 0.1
+          "trigger_time": 0.1,
+          "current_lower_limit": 10
         },
         "stator_limit": {
           "enabled": true,

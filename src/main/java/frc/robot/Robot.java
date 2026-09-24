@@ -7,7 +7,7 @@ package frc.robot;
 import com.marswars.auto.Auto;
 import com.marswars.auto.AutoManager;
 import com.marswars.geometry.AllianceFlipUtil;
-import com.marswars.logging.Elastic;
+import com.marswars.dashboard.Elastic;
 import com.marswars.logging.MwLog;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;

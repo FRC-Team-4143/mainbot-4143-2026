@@ -25,7 +25,7 @@
                 "height": 128.0,
                 "type": "Large Text Display",
                 "properties": {
-                  "topic": "/Robot/Subsystem/GameStates/State",
+                  "topic": "/AdvantageKit/RealOutputs/Subsystem/GameStates/State",
                   "period": 0.06,
                   "data_type": "enum",
                   "struct_meta": {
@@ -45,7 +45,7 @@
                 "height": 128.0,
                 "type": "Large Text Display",
                 "properties": {
-                  "topic": "/Robot/Subsystem/Swerve/State",
+                  "topic": "/AdvantageKit/RealOutputs/Subsystem/Swerve/State",
                   "period": 0.06,
                   "data_type": "enum",
                   "struct_meta": {
@@ -65,7 +65,7 @@
                 "height": 128.0,
                 "type": "Large Text Display",
                 "properties": {
-                  "topic": "/Robot/Subsystem/Shooter/State",
+                  "topic": "/AdvantageKit/RealOutputs/Subsystem/Shooter/State",
                   "period": 0.06,
                   "data_type": "enum",
                   "struct_meta": {
@@ -85,7 +85,7 @@
                 "height": 128.0,
                 "type": "Large Text Display",
                 "properties": {
-                  "topic": "/Robot/Subsystem/Localization/State",
+                  "topic": "/AdvantageKit/RealOutputs/Subsystem/Localization/State",
                   "period": 0.06,
                   "data_type": "enum",
                   "struct_meta": {
@@ -105,7 +105,7 @@
                 "height": 128.0,
                 "type": "Large Text Display",
                 "properties": {
-                  "topic": "/Robot/Subsystem/Intake/State",
+                  "topic": "/AdvantageKit/RealOutputs/Subsystem/Intake/State",
                   "period": 0.06,
                   "data_type": "enum",
                   "struct_meta": {
@@ -125,7 +125,7 @@
                 "height": 128.0,
                 "type": "Large Text Display",
                 "properties": {
-                  "topic": "/Robot/Subsystem/Simulation/State",
+                  "topic": "/AdvantageKit/RealOutputs/Subsystem/Simulation/State",
                   "period": 0.06,
                   "data_type": "enum",
                   "struct_meta": {
@@ -151,19 +151,6 @@
             "properties": {
               "topic": "/SmartDashboard/Alerts",
               "period": 0.06
-            }
-          },
-          {
-            "title": "Hub - Alliance",
-            "x": 896.0,
-            "y": 256.0,
-            "width": 256.0,
-            "height": 128.0,
-            "type": "Multi Color View",
-            "properties": {
-              "topic": "/Robot/HubMonitor/Alliance",
-              "period": 0.06,
-              "data_type": "string[]"
             }
           },
           {
@@ -200,25 +187,12 @@
             "height": 128.0,
             "type": "Match Time",
             "properties": {
-              "topic": "/Robot/Match Time",
+              "topic": "/AdvantageKit/RealOutputs/Match Time",
               "period": 0.06,
               "data_type": "double",
               "time_display_mode": "Minutes and Seconds",
               "red_start_time": 20,
               "yellow_start_time": 30
-            }
-          },
-          {
-            "title": "Hub - Current Shift",
-            "x": 1152.0,
-            "y": 256.0,
-            "width": 256.0,
-            "height": 128.0,
-            "type": "Large Text Display",
-            "properties": {
-              "topic": "/Robot/HubMonitor/CurrentShift",
-              "period": 0.06,
-              "data_type": "string"
             }
           },
           {
@@ -262,7 +236,7 @@
             "height": 128.0,
             "type": "Large Text Display",
             "properties": {
-              "topic": "/Robot/HubMonitor/GameData",
+              "topic": "/AdvantageKit/RealOutputs/HubMonitor/GameData",
               "period": 0.06,
               "data_type": "enum",
               "struct_meta": {
@@ -294,39 +268,65 @@
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "/Robot/Subsystem/Shooter/LaunchCalculator/Distance/Raw",
+              "topic": "/AdvantageKit/RealOutputs/Subsystem/Shooter/LaunchCalculator/Distance/Raw",
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": false
             }
           },
           {
-            "title": "Hub - Active",
+            "title": "Active",
             "x": 896.0,
             "y": 0.0,
             "width": 256.0,
             "height": 256.0,
             "type": "Single Color View",
             "properties": {
-              "topic": "/Robot/HubMonitor/Active",
+              "topic": "/AdvantageKit/RealOutputs/HubMonitor/Active",
               "period": 0.06,
               "data_type": "string"
             }
           },
           {
-            "title": "Hub - Shift Time Remaining",
+            "title": "Alliance",
+            "x": 896.0,
+            "y": 256.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Multi Color View",
+            "properties": {
+              "topic": "/AdvantageKit/RealOutputs/HubMonitor/Alliance",
+              "period": 0.06,
+              "data_type": "string[]"
+            }
+          },
+          {
+            "title": "StatusTimeRemaining",
             "x": 1152.0,
             "y": 0.0,
             "width": 256.0,
             "height": 256.0,
             "type": "Match Time",
             "properties": {
-              "topic": "/Robot/HubMonitor/StatusTimeRemaining",
+              "topic": "/AdvantageKit/RealOutputs/HubMonitor/StatusTimeRemaining",
               "period": 0.06,
               "data_type": "double",
               "time_display_mode": "Minutes and Seconds",
-              "red_start_time": 20,
-              "yellow_start_time": 30
+              "red_start_time": 15,
+              "yellow_start_time": 5
+            }
+          },
+          {
+            "title": "CurrentShift",
+            "x": 1152.0,
+            "y": 256.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Large Text Display",
+            "properties": {
+              "topic": "/AdvantageKit/RealOutputs/HubMonitor/CurrentShift",
+              "period": 0.06,
+              "data_type": "string"
             }
           }
         ]
@@ -355,7 +355,7 @@
                 "height": 128.0,
                 "type": "Large Text Display",
                 "properties": {
-                  "topic": "/Robot/Subsystem/GameStates/State",
+                  "topic": "/AdvantageKit/RealOutputs/Subsystem/GameStates/State",
                   "period": 0.06,
                   "data_type": "enum",
                   "struct_meta": {
@@ -375,7 +375,7 @@
                 "height": 128.0,
                 "type": "Large Text Display",
                 "properties": {
-                  "topic": "/Robot/Subsystem/Swerve/State",
+                  "topic": "/AdvantageKit/RealOutputs/Subsystem/Swerve/State",
                   "period": 0.06,
                   "data_type": "enum",
                   "struct_meta": {
@@ -395,7 +395,7 @@
                 "height": 128.0,
                 "type": "Large Text Display",
                 "properties": {
-                  "topic": "/Robot/Subsystem/Shooter/State",
+                  "topic": "/AdvantageKit/RealOutputs/Subsystem/Shooter/State",
                   "period": 0.06,
                   "data_type": "enum",
                   "struct_meta": {
@@ -415,7 +415,7 @@
                 "height": 128.0,
                 "type": "Large Text Display",
                 "properties": {
-                  "topic": "/Robot/Subsystem/Localization/State",
+                  "topic": "/AdvantageKit/RealOutputs/Subsystem/Localization/State",
                   "period": 0.06,
                   "data_type": "enum",
                   "struct_meta": {
@@ -435,7 +435,7 @@
                 "height": 128.0,
                 "type": "Large Text Display",
                 "properties": {
-                  "topic": "/Robot/Subsystem/Intake/State",
+                  "topic": "/AdvantageKit/RealOutputs/Subsystem/Intake/State",
                   "period": 0.06,
                   "data_type": "enum",
                   "struct_meta": {
@@ -448,6 +448,26 @@
                 }
               },
               {
+                "title": "Roof",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Large Text Display",
+                "properties": {
+                  "topic": "/AdvantageKit/RealOutputs/Subsystem/Roof/State",
+                  "period": 0.06,
+                  "data_type": "enum",
+                  "struct_meta": {
+                    "path": [
+                      "variant"
+                    ],
+                    "schema_name": "RoofStates",
+                    "type": "enum"
+                  }
+                }
+              },
+              {
                 "title": "Simulation",
                 "x": 640.0,
                 "y": 512.0,
@@ -455,7 +475,7 @@
                 "height": 128.0,
                 "type": "Large Text Display",
                 "properties": {
-                  "topic": "/Robot/Subsystem/Simulation/State",
+                  "topic": "/AdvantageKit/RealOutputs/Subsystem/Simulation/State",
                   "period": 0.06,
                   "data_type": "enum",
                   "struct_meta": {
@@ -465,88 +485,6 @@
                     "schema_name": "SimulationStates",
                     "type": "enum"
                   }
-                }
-              }
-            ]
-          },
-          {
-            "title": "Citrus Synergy Far Bump Values",
-            "x": 896.0,
-            "y": 512.0,
-            "width": 256.0,
-            "height": 256.0,
-            "type": "List Layout",
-            "properties": {
-              "label_position": "TOP"
-            },
-            "children": [
-              {
-                "title": "BeforeAllianceZoneWaitTime",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Text Display",
-                "properties": {
-                  "topic": "/SmartDashboard/CitrusSynergyFarBump/BeforeAllianceZoneWaitTime",
-                  "period": 0.06,
-                  "data_type": "double",
-                  "show_submit_button": true
-                }
-              },
-              {
-                "title": "MiddleWaitTime",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Text Display",
-                "properties": {
-                  "topic": "/SmartDashboard/CitrusSynergyFarBump/MiddleWaitTime",
-                  "period": 0.06,
-                  "data_type": "double",
-                  "show_submit_button": true
-                }
-              }
-            ]
-          },
-          {
-            "title": "Citrus Synergy Values",
-            "x": 1152.0,
-            "y": 512.0,
-            "width": 256.0,
-            "height": 256.0,
-            "type": "List Layout",
-            "properties": {
-              "label_position": "TOP"
-            },
-            "children": [
-              {
-                "title": "BeforeAllianceZoneWaitTime",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Text Display",
-                "properties": {
-                  "topic": "/SmartDashboard/CitrusSynergy/BeforeAllianceZoneWaitTime",
-                  "period": 0.06,
-                  "data_type": "double",
-                  "show_submit_button": true
-                }
-              },
-              {
-                "title": "MiddleWaitTime",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Text Display",
-                "properties": {
-                  "topic": "/SmartDashboard/CitrusSynergy/MiddleWaitTime",
-                  "period": 0.06,
-                  "data_type": "double",
-                  "show_submit_button": true
                 }
               }
             ]
@@ -668,7 +606,7 @@
             "height": 128.0,
             "type": "Match Time",
             "properties": {
-              "topic": "/Robot/Match Time",
+              "topic": "/AdvantageKit/RealOutputs/Match Time",
               "period": 0.06,
               "data_type": "double",
               "time_display_mode": "Minutes and Seconds",
@@ -714,7 +652,7 @@
                 "height": 128.0,
                 "type": "Large Text Display",
                 "properties": {
-                  "topic": "/Robot/Subsystem/GameStates/State",
+                  "topic": "/AdvantageKit/RealOutputs/Subsystem/GameStates/State",
                   "period": 0.06,
                   "data_type": "enum",
                   "struct_meta": {
@@ -734,7 +672,7 @@
                 "height": 128.0,
                 "type": "Large Text Display",
                 "properties": {
-                  "topic": "/Robot/Subsystem/Swerve/State",
+                  "topic": "/AdvantageKit/RealOutputs/Subsystem/Swerve/State",
                   "period": 0.06,
                   "data_type": "enum",
                   "struct_meta": {
@@ -754,7 +692,7 @@
                 "height": 128.0,
                 "type": "Large Text Display",
                 "properties": {
-                  "topic": "/Robot/Subsystem/Shooter/State",
+                  "topic": "/AdvantageKit/RealOutputs/Subsystem/Shooter/State",
                   "period": 0.06,
                   "data_type": "enum",
                   "struct_meta": {
@@ -774,7 +712,7 @@
                 "height": 128.0,
                 "type": "Large Text Display",
                 "properties": {
-                  "topic": "/Robot/Subsystem/Localization/State",
+                  "topic": "/AdvantageKit/RealOutputs/Subsystem/Localization/State",
                   "period": 0.06,
                   "data_type": "enum",
                   "struct_meta": {
@@ -794,7 +732,7 @@
                 "height": 128.0,
                 "type": "Large Text Display",
                 "properties": {
-                  "topic": "/Robot/Subsystem/Intake/State",
+                  "topic": "/AdvantageKit/RealOutputs/Subsystem/Intake/State",
                   "period": 0.06,
                   "data_type": "enum",
                   "struct_meta": {
@@ -814,7 +752,7 @@
                 "height": 128.0,
                 "type": "Large Text Display",
                 "properties": {
-                  "topic": "/Robot/Subsystem/Simulation/State",
+                  "topic": "/AdvantageKit/RealOutputs/Subsystem/Simulation/State",
                   "period": 0.06,
                   "data_type": "enum",
                   "struct_meta": {
@@ -1042,7 +980,7 @@
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/Metadata/ROBOT_NAME",
+                  "topic": "/Metadata/AdvantageKit/RealOutputs_NAME",
                   "period": 0.06,
                   "data_type": "string",
                   "show_submit_button": false
