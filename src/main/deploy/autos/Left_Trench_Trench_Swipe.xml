@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Left trench start: shoot preload, then swipe through the trench twice, shooting after each. -->
 <root BTCPP_format="4" main_tree_to_execute="Left_Trench_Trench_Swipe">
-  <include path="lib/common.xml"/>
-
   <BehaviorTree ID="Left_Trench_Trench_Swipe">
     <Sequence>
       <SetShooterTarget target="HUB"/>
@@ -10,16 +8,23 @@
 
       <ParallelDeadline name="Drive LTrenchStartTrenchReturn">
         <FollowTrajectory trajectory="LTrenchStartTrenchReturn" end_state="FIELD_CENTRIC_ROTATION_LOCK"/>
-        <SubTree ID="IntakeOnEvent" event="Intake Out" state="INTAKE"/>
+        <Sequence name="On Intake Out">
+          <WaitForChoreoEvent event="Intake Out"/>
+          <SetIntakeState state="INTAKE"/>
+        </Sequence>
       </ParallelDeadline>
 
-      <SubTree ID="ShootFor" duration_msec="3500"/>
+      <SetShooterState state="SHOOT"/>
+      <SetIntakeState state="SQUEEZE"/>
+      <Sleep name="ShootFor" msec="3500"/>
       <SetShooterState state="IDLE"/>
       <SetIntakeState state="INTAKE"/>
 
       <FollowTrajectory trajectory="LTrenchSwipeTrenchReturn" end_state="FIELD_CENTRIC_ROTATION_LOCK" min_time="1"/>
 
-      <SubTree ID="ShootFor" duration_msec="3500"/>
+      <SetShooterState state="SHOOT"/>
+      <SetIntakeState state="SQUEEZE"/>
+      <Sleep name="ShootFor" msec="3500"/>
       <SetShooterState state="IDLE"/>
       <SetIntakeState state="INTAKE"/>
 

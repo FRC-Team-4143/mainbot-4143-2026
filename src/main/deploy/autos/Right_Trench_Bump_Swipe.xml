@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Right trench start, bump return: shoot preload, then swipe twice, shooting after each. -->
 <root BTCPP_format="4" main_tree_to_execute="Right_Trench_Bump_Swipe">
-  <include path="lib/common.xml"/>
-
   <BehaviorTree ID="Right_Trench_Bump_Swipe">
     <Sequence>
       <SetShooterTarget target="HUB"/>
@@ -10,16 +8,23 @@
 
       <ParallelDeadline name="Drive RTrenchStartBumpReturn">
         <FollowTrajectory trajectory="RTrenchStartBumpReturn" end_state="FIELD_CENTRIC_ROTATION_LOCK"/>
-        <SubTree ID="IntakeOnEvent" event="Intake Out" state="INTAKE"/>
+        <Sequence name="On Intake Out">
+          <WaitForChoreoEvent event="Intake Out"/>
+          <SetIntakeState state="INTAKE"/>
+        </Sequence>
       </ParallelDeadline>
 
-      <SubTree ID="ShootFor" duration_msec="3500"/>
+      <SetShooterState state="SHOOT"/>
+      <SetIntakeState state="SQUEEZE"/>
+      <Sleep name="ShootFor" msec="3500"/>
       <SetShooterState state="IDLE"/>
       <SetIntakeState state="INTAKE"/>
 
       <FollowTrajectory trajectory="RTrenchSwipeBumpReturn" end_state="FIELD_CENTRIC_ROTATION_LOCK" min_time="1"/>
 
-      <SubTree ID="ShootFor" duration_msec="3500"/>
+      <SetShooterState state="SHOOT"/>
+      <SetIntakeState state="SQUEEZE"/>
+      <Sleep name="ShootFor" msec="3500"/>
       <SetShooterState state="IDLE"/>
       <SetIntakeState state="INTAKE"/>
 

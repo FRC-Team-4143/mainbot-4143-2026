@@ -7,7 +7,7 @@ in this directory is an option in the dashboard Auto Chooser, named after the fi
 | Path | What it is |
 |---|---|
 | `*.xml` | Autos in the chooser |
-| `lib/common.xml` | Shared subtrees (`IntakeOnEvent`, `ShootFor`), pulled in with `<include path="lib/common.xml"/>` |
+| `lib/nodes.xml` | Node palette for the editor and Groot2 (generated; see below) |
 | `unlisted/*.xml` | Autos kept out of the chooser. They're still checked by tests. Move one up a level to list it |
 
 The engine is MW-Lib `com.marswars.bt`. The robot nodes are registered in
@@ -67,18 +67,21 @@ read it from the blackboard with `{name}`:
 
 ## Choreo events
 
-Run event handlers in a `Parallel` next to the path. Only the path should be able to finish it:
+Handle events next to the path in a `ParallelDeadline`, with the path first. The path decides
+when the group ends, and halts any handler still waiting:
 
 ```xml
 <ParallelDeadline>
   <FollowTrajectory trajectory="SynergyP1"/>
-  <SubTree ID="IntakeOnEvent" event="Intake Out" state="INTAKE"/>
+  <Sequence name="On Intake Out">
+    <WaitForChoreoEvent event="Intake Out"/>
+    <SetIntakeState state="INTAKE"/>
+  </Sequence>
 </ParallelDeadline>
 ```
 
-`IntakeOnEvent` waits for the marker, sets the intake state, then stays RUNNING until the path
-ends. For other actions, copy its pattern: `WaitForChoreoEvent`, then the actions, then a parked
-`KeepRunningUntilFailure`/`AlwaysSuccess`.
+Each auto file is self-contained, with no includes. If a file repeats a block often, you can
+define a `<BehaviorTree>` for it in the same file and use `<SubTree ID="...">`.
 
 ## Checking and debugging
 
