@@ -1,8 +1,8 @@
 package frc.robot.autos;
 
 import com.marswars.auto.Auto;
+import com.marswars.swerve_lib.SwerveStates;
 import edu.wpi.first.wpilibj2.command.Commands;
-import frc.robot.subsystems.swerve.SwerveConstants.SwerveStates;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 
 public class TestAuto extends Auto {

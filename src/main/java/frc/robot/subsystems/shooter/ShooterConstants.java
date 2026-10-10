@@ -136,13 +136,20 @@ public class ShooterConstants extends MwConstants {
     // CONTROL AND OPERATIONAL CONSTANTS
     // =============================================================================
 
-    // Shooter geometry and positioning
+    // Shooter geometry and positioning (mount is identical on every robot; statics are
+    // shared with SimulationConstants)
+    public static final double SHOOTER_MOUNT_X_INCHES = -10.5;
+    public static final double SHOOTER_MOUNT_Y_INCHES = 0.0;
+    public static final double SHOOTER_MOUNT_Z_INCHES = 19.25;
+    public static final double SHOOTER_MOUNT_YAW_DEGREES = 180.0;
+    public static final double SHOOTER_WIDTH_INCHES = 19.75;
+
     public final Transform2d SHOOTER_CENTER =
             new Transform2d(
                     new Translation2d(
-                            Units.inchesToMeters(getDoubleConstant("translation", "x")),
-                            Units.inchesToMeters(getDoubleConstant("translation", "y"))),
-                    Rotation2d.fromDegrees(getDoubleConstant("rotation", "z")));
+                            Units.inchesToMeters(SHOOTER_MOUNT_X_INCHES),
+                            Units.inchesToMeters(SHOOTER_MOUNT_Y_INCHES)),
+                    Rotation2d.fromDegrees(SHOOTER_MOUNT_YAW_DEGREES));
 
     // Flywheel control
     public final double FLYWHEEL_FILTER_TIME_CONSTANT = 0.15; // seconds for velocity smoothing

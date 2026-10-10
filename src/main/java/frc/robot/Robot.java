@@ -6,9 +6,11 @@ package frc.robot;
 
 import com.marswars.auto.Auto;
 import com.marswars.auto.AutoManager;
+import com.marswars.dashboard.Elastic;
 import com.marswars.geometry.AllianceFlipUtil;
-import com.marswars.logging.Elastic;
 import com.marswars.logging.MwLog;
+import com.marswars.swerve_lib.OperatorPerspective;
+import com.marswars.swerve_lib.SwerveStates;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -31,8 +33,6 @@ import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.localization.LocalizationSubsystem;
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterStates;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
-import frc.robot.subsystems.swerve.SwerveConstants;
-import frc.robot.subsystems.swerve.SwerveConstants.SwerveStates;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 import java.util.Optional;
 import org.littletonrobotics.junction.LoggedRobot;
@@ -109,8 +109,8 @@ public class Robot extends LoggedRobot {
             SwerveSubsystem.getInstance()
                     .setOperatorForwardDirection(
                             alliance_ == Alliance.Blue
-                                    ? SwerveConstants.OperatorPerspective.BLUE_ALLIANCE
-                                    : SwerveConstants.OperatorPerspective.RED_ALLIANCE);
+                                    ? OperatorPerspective.BLUE_ALLIANCE
+                                    : OperatorPerspective.RED_ALLIANCE);
             FieldRegions.flipRegions();
             LocalizationSubsystem.getInstance().setTagFocus(alliance_);
             HubMonitor.seedActiveAlliance(HubMonitor.ActiveAlliance.INVALID);

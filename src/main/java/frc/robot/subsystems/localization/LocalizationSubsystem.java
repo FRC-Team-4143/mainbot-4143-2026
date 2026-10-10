@@ -70,7 +70,7 @@ public class LocalizationSubsystem extends MwSubsystem<LocalizationStates, Local
         SwerveDriveKinematics kinematics = SwerveSubsystem.getInstance().getKinematics();
         Rotation2d gyro_angle = SwerveSubsystem.getInstance().getGyroYaw();
         SwerveModulePosition[] module_positions =
-                SwerveSubsystem.getInstance().getcurrentModulePositions();
+                SwerveSubsystem.getInstance().getCurrentModulePositions();
 
         // No covariance on the smooth estimator since it's only used for short-term
         // smoothing and
