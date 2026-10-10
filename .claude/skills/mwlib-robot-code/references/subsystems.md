@@ -9,8 +9,9 @@ subsystems/<name>/
 └── <Name>Constants.java   // public final constants + the state enum + MotorConfigs
 ```
 
-Canonical examples: `subsystems/intake/` (mechanism-driven) and
-`subsystems/gamestates/GameStatesSubsystem.java` (logic-only, no motors).
+Canonical example: `subsystems/intake/` (mechanism-driven). Logic that coordinates several
+subsystems is not a subsystem: it is a robot state in `RobotContainer` (see
+`references/robot-states-and-oi.md`).
 
 ## Subsystem skeleton (keep methods in this order)
 
@@ -103,7 +104,7 @@ public class IntakeSubsystem extends MwSubsystem<IntakeStates, IntakeConstants> 
 ### Rules that matter
 
 - **`getInstance()` is a lazy singleton** (`private static instance_`). Constructor is either public
-  (as in `IntakeSubsystem`) or `private` (as in `GameStatesSubsystem`) — both patterns exist; prefer
+  (as in `IntakeSubsystem`) or `private` — both patterns exist; prefer
   `private` for new code so nothing constructs a second instance.
 - **`super(DEFAULT_STATE, new XConstants())`** sets the initial state and injects the constants (the
   base stores them in the `CONSTANTS` field).
@@ -241,7 +242,7 @@ A subsystem that isn't registered never ticks. Add it in `RobotContainer`'s cons
 
 ```java
 public RobotContainer() {
-    super(BuildConstants.class);
+    super(RobotStates.IDLE, BuildConstants.class, RobotId.current().disabled_subsystems);
     // !!!!!! ALL SUBSYSTEMS MUST BE REGISTERED HERE TO RUN !!!!!!!
     registerSubsystem(SwerveSubsystem.getInstance());
     registerSubsystem(IntakeSubsystem.getInstance());
@@ -256,8 +257,8 @@ public RobotContainer() {
 
 ## Requesting states from elsewhere
 
-External code (commands, `Robot` mode inits, other subsystems) drives a subsystem only by requesting
-a state:
+`RobotContainer` (the robot state machine) drives a subsystem only by requesting a state. Buttons,
+autos and `Robot` mode inits ask RobotContainer for a robot state instead of touching subsystems:
 
 ```java
 IntakeSubsystem.getInstance().setWantedState(IntakeStates.INTAKE);

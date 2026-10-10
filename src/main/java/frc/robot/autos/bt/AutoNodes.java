@@ -1,9 +1,12 @@
 package frc.robot.autos.bt;
 
+import com.marswars.bt.RobotStateNodes;
 import com.marswars.bt.core.BehaviorTreeFactory;
 import com.marswars.bt.core.PortInfo;
 import com.marswars.bt.swerve.SwerveNodes;
 import edu.wpi.first.math.geometry.Translation3d;
+import frc.robot.RobotContainer;
+import frc.robot.RobotStates;
 import frc.robot.lib2026.FieldTargets;
 import frc.robot.subsystems.intake.IntakeConstants.IntakeStates;
 import frc.robot.subsystems.intake.IntakeSubsystem;
@@ -44,7 +47,13 @@ public final class AutoNodes {
     }
 
     public static void registerNodes(BehaviorTreeFactory factory) {
-        // ---------------------------------------------------------------- state requests
+        // ---------------------------------------------------------------- robot states
+        // SetWantedState / IsSystemState: the same robot states (and sequences) teleop uses, from
+        // the RobotContainer super state machine. Prefer these over the subsystem nodes below.
+        RobotStateNodes.register(factory, RobotContainer::getInstance, RobotStates.class);
+
+        // ---------------------------------------------------------------- subsystem states
+        // For small one-off moves (an intake state on a path event) that aren't a robot state.
         factory.registerSetState(
                 "SetIntakeState",
                 "Request an intake state",

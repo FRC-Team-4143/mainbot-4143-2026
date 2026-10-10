@@ -36,6 +36,14 @@
     </Condition>
 
     <!-- Robot nodes -->
+    <Action ID="SetWantedState">
+      <input_port name="state" type="RobotStates">Robot state to request</input_port>
+      <description>Request a robot state and wait until the robot is in it (SUCCESS) or the state fails (FAILURE)</description>
+    </Action>
+    <Condition ID="IsSystemState">
+      <input_port name="state" type="RobotStates">Robot state to check</input_port>
+      <description>The robot is in the given state</description>
+    </Condition>
     <Action ID="SetIntakeState">
       <input_port name="state" type="IntakeStates">State to request</input_port>
       <description>Request an intake state</description>

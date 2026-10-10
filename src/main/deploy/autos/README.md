@@ -107,7 +107,9 @@ BT.CPP scripting (`Script`, `_skipIf`, `Precondition`, and so on) isn't supporte
 
 | Node | Ports | What it does |
 |---|---|---|
-| `SetIntakeState` / `SetShooterState` | `state` | `setWantedState(state)` |
+| `SetWantedState` | `state` (a `RobotStates`) | `RobotContainer.setWantedState(state)`, then RUNNING until the robot is in the state (SUCCESS) or the state fails (FAILURE). Use it for anything teleop also does, so the sequence is written once |
+| `IsSystemState` | `state` | The robot (RobotContainer) is in `state` |
+| `SetIntakeState` / `SetShooterState` | `state` | `setWantedState(state)` on that subsystem, for small one-off moves |
 | `SetShooterTarget` | `target`=HUB (HUB, LEFT_PASS, RIGHT_PASS) | `ShooterSubsystem.setTarget(...)` |
 | `IsShooterReady` | | Condition |
 
@@ -138,7 +140,7 @@ in the chooser.
 | Subtree | Ports | What it does |
 |---|---|---|
 | `IntakeOnEvent` | `event`, `state`=INTAKE | Waits for a Choreo event on the running path, then sets the intake state |
-| `ShootFor` | `duration_msec`=2000 | Shooter `SHOOT`, intake `SQUEEZE`, then waits `duration_msec` |
+| `ShootFor` | `duration_msec`=2000 | Robot `SHOOT` (the driver's right trigger: feeds once the shooter is ready) for `duration_msec`, then robot `AUTO` |
 
 To add one, write a `<BehaviorTree ID="...">` in `lib/common.xml` that reads its inputs as
 `{name}`. Declare those inputs in the file's `<TreeNodesModel>` as a `<SubTree ID="...">` with

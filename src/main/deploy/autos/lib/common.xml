@@ -14,12 +14,14 @@
     </Sequence>
   </BehaviorTree>
 
-  <!-- Shoots for a fixed time: shooter SHOOT, intake SQUEEZE, then wait. -->
+  <!-- Shoots for a fixed time with the robot's SHOOT state, the same one the driver's right
+       trigger uses: spin up, aim, and feed (intake SQUEEZE) once the shooter is ready. Then back
+       to AUTO, which stops the shooter and redeploys the intake. -->
   <BehaviorTree ID="ShootFor">
     <Sequence>
-      <SetShooterState state="SHOOT"/>
-      <SetIntakeState state="SQUEEZE"/>
+      <SetWantedState state="SHOOT"/>
       <Sleep msec="{duration_msec}"/>
+      <SetWantedState state="AUTO"/>
     </Sequence>
   </BehaviorTree>
 
@@ -31,7 +33,7 @@
     </SubTree>
     <SubTree ID="ShootFor">
       <input_port name="duration_msec" type="int" default="2000">How long to shoot</input_port>
-      <description>Shooter SHOOT + intake SQUEEZE, then wait</description>
+      <description>Robot SHOOT for a fixed time (feeds once the shooter is ready), then back to AUTO</description>
     </SubTree>
   </TreeNodesModel>
 </root>

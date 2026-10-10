@@ -20,25 +20,53 @@ shift timer for the back half of the match. [`HubMonitor`](src/main/java/frc/rob
 tracks whose hub is currently live from the FMS game-specific message (with a dashboard chooser fallback for
 practice) so the rest of the robot code can reason about it.
 
-## Game State Machine (GSM)
+## Robot state machine (RobotContainer)
 
-[`GameStatesSubsystem`](src/main/java/frc/robot/subsystems/gamestates/GameStatesSubsystem.java) is the
-top-level coordinator that decides what the robot is trying to do based on its field pose, and pushes wanted
-states down to Shooter/Swerve/Localization. It does not run during autonomous.
+[`RobotContainer`](src/main/java/frc/robot/RobotContainer.java) is the robot's **super state machine**.
+It extends MW-Lib's `MwSuperStateMachine<RobotStates>`, and it is the only place that coordinates
+subsystems:
+- Buttons (`OI`) and autos ask for a robot state with `setWantedState(RobotStates.X)`.
+- RobotContainer then requests the matching subsystem states.
+- It runs every loop **before** the subsystems.
+
+There are no command files.
 
 | State | Meaning |
 | ----- | ------- |
-| `HOLD` | Holding fuel, not committed to scoring or passing yet |
-| `SCORE` | In the alliance zone — aim at and shoot into the hub |
-| `PASS` | In a neutral/opponent-side pass region — aim at a pass target instead of the hub |
-| `TELEOP_CLIMB` | Operator has commanded a climb |
-| `DOWN_CLIMB` | Descending from a climb |
-| `AUTO` | Autonomous period — GSM is inert and auto routines drive everything directly |
+| `IDLE` | Disabled: shooter idle |
+| `DRIVE` | Teleop driving with no button held (from `IDLE`/`AUTO` it starts field-centric driving) |
+| `AUTO` | Autonomous: autos drive and set states |
+| `AIM` | Aim at the target without shooting (driver LT) |
+| `SHOOT` | Spin up and aim. The intake feeds (`SQUEEZE`) only once the shooter is ready, and the robot brakes once stopped and ready (driver RT; autos' `ShootFor`) |
+| `MANUAL_HUB` / `MANUAL_PASS` | Fixed flywheel speed shot or pass, for when vision is down (driver Y / B) |
+| `INTAKE` / `OUTTAKE` | Run the intake in / out (driver RB / A) |
+| `BRAKE` | Cross the wheels (driver X) |
+| `TUNING` | Test mode: shooter and intake tuning |
 
-Transitions are driven by [`FieldRegions`](src/main/java/frc/robot/lib2026/FieldRegions.java) polygons
-(alliance zone, left/right pass regions, hold zones, tower, depot/outpost, neutral zone), which are alliance-
-flipped at match start. The operator can also hold a dead-man override (left bumper) to force a pass target
-selection while still standing in the alliance zone.
+How RobotContainer requests subsystem states:
+- **When the robot state changes**, it undoes what the old state asked for and asks for what the new
+  state needs. This leaves dashboard buttons (homing, spin down) and autos free to set subsystems in
+  between.
+- **`SHOOT`'s feed and brake gating** is also checked every loop.
+
+Autos use the same states as teleop through the `SetWantedState` behavior-tree node. It waits until
+the robot is in the state (SUCCESS) or the state fails (FAILURE). A scoring sequence is written once,
+in RobotContainer, and used by both teleop and autos.
+
+**Scoring mode.** Every loop RobotContainer also works out a **scoring mode** from the robot's pose:
+
+| Mode | Meaning |
+| ---- | ------- |
+| `HOLD` | Holding fuel, not committed to scoring or passing yet |
+| `SCORE` | In the alliance zone: aim at and shoot into the hub |
+| `PASS` | In a neutral/opponent-side pass region: aim at a pass target instead of the hub |
+| `AUTO` | Autonomous period: the auto picks the target |
+
+The scoring mode picks the shooter target and decides when `SHOOT` feeds. Mode changes are driven by
+[`FieldRegions`](src/main/java/frc/robot/lib2026/FieldRegions.java) polygons (alliance zone, left/right
+pass regions, hold zones, tower, depot/outpost, neutral zone), which are alliance-flipped at match
+start. The operator can also hold a dead-man override (left bumper) to force a pass target while
+still standing in the alliance zone.
 
 ## Subsystems
 
@@ -48,35 +76,36 @@ selection while still standing in the alliance zone.
 | `ShooterSubsystem` | Flywheel + hood + indexer/accelerator. States: `IDLE`, `TRACKING`, `AIMING`, `SHOOT_WAIT`, `SHOOT`, `MANUAL_HUB`, `MANUAL_PASS`, `DUMP`, `TUNING`. Targets either `HUB` or `PASS`. |
 | `IntakeSubsystem` | Pivoting roller intake. States: `STORE`, `DEPLOYED`, `PIVOT_HOMING`, `INTAKE`, `OUTTAKE`, `SQUEEZE` (feeds fuel into the shooter), `IDLE`. |
 | `LocalizationSubsystem` | Pose estimation. States: `FULL` (normal), `SHOOTING_FOCUS` / `CLIMBING_FOCUS` (weight specific AprilTag sets while aiming or climbing). |
-| `GameStatesSubsystem` | See above. |
 | `SimulationSubsystem` | Only registered in simulation (and never during log replay) — drives physics sim of game pieces/mechanisms. |
 
 All subsystems are registered in [`RobotContainer`](src/main/java/frc/robot/RobotContainer.java), which
-extends MW-Lib's `SubsystemManager`.
+extends MW-Lib's `MwSuperStateMachine` (a `SubsystemManager`).
 
 ## Controller Bindings
 
 Two Xbox controllers: Driver (port 0) and Operator (port 1). See
-[`OI`](src/main/java/frc/robot/OI.java) / [`ControlCommands`](src/main/java/frc/robot/ControlCommands.java).
+[`OI`](src/main/java/frc/robot/OI.java). Held buttons ask for a robot state, and releasing them goes back to
+`DRIVE`.
 
 **Driver**
 
 | Button | Action |
 | ------ | ------ |
-| Right Trigger | Shoot fuel at the current target (hub or pass, per GSM) |
-| Left Trigger | Aim at target without shooting (lines up shooter/rotation/localization) |
-| Right Bumper | Intake fuel |
+| Right Trigger | `SHOOT`: shoot fuel at the current target (hub or pass, per scoring mode) |
+| Left Trigger | `AIM`: aim at target without shooting (lines up shooter/rotation/localization) |
+| Right Bumper | `INTAKE`: intake fuel |
 | Left Bumper (on release) | Toggle intake stow/deploy |
 | Right Stick (click) | Toggle field-centric / robot-centric driving |
-| Y | Manual shoot at hub (fixed flywheel speed, for when vision tracking is unavailable) |
-| B | Manual pass (fixed flywheel speed + hood, for when vision tracking is unavailable) |
-| A | Outtake fuel |
+| Y | `MANUAL_HUB`: manual shoot at hub (fixed flywheel speed, for when vision tracking is unavailable) |
+| B | `MANUAL_PASS`: manual pass (fixed flywheel speed + hood, for when vision tracking is unavailable) |
+| A | `OUTTAKE`: outtake fuel |
+| X | `BRAKE`: cross the wheels |
 
 **Operator**
 
 | Button | Action |
 | ------ | ------ |
-| Left Bumper (hold) | Dead-man pass override — force GSM to a pass target while inside the alliance zone |
+| Left Bumper (hold) | Dead-man pass override — force a pass target while inside the alliance zone |
 | POV Up / Down | Nudge flywheel speed +/- |
 | POV Left / Right | Nudge hood angle +/- |
 | X | Toggle "able to rack" (allows/blocks auto-squeeze into the shooter while shooting) |

@@ -3,7 +3,7 @@ name: mwlib-robot-code
 description: >-
   Team 4143's conventions and MW-Lib framework for writing this robot's Java code. Use whenever
   creating or editing anything under src/main/java/frc/robot — subsystems, constants classes, state
-  machines, mechanisms (ArmMech/ElevatorMech/FlywheelMech/RollerMech/TurretMech), commands,
+  machines, mechanisms (ArmMech/ElevatorMech/FlywheelMech/RollerMech/TurretMech), the robot state machine (RobotContainer),
   OI/controller bindings, autonomous routines, Choreo paths, or MwLog logging/telemetry/tunables.
   MW-Lib is a custom state-machine framework, NOT stock WPILib command-based, so generic FRC/WPILib
   answers usually do not apply here.
@@ -18,12 +18,13 @@ stock WPILib patterns.
 
 ## The mental model
 
-Data flows in one direction: **OI → Commands → Subsystems → Mechanisms**.
+Data flows in one direction: **OI / Autos → RobotContainer → Subsystems → Mechanisms**.
 
 ```
- OI.java            Reads operator input, binds buttons/axes to Commands. Bindings only.
-   │
- ControlCommands    Command factories. Coordinate subsystems by requesting states. No hardware.
+ OI.java / autos    Reads operator input; buttons and BT autos ask for a robot state.
+   │  robot.setWantedState(RobotStates.X)
+ RobotContainer     The robot's super state machine (MwSuperStateMachine<RobotStates>). The only
+   │                place that coordinates subsystems. No command files.
    │  setWantedState(...)
  Subsystems         Singleton state machines: MwSubsystem<States, Constants>.
    │                Each loop: readInputs → updateLogic (switch on state) → writeOutputs → logData.
@@ -33,14 +34,17 @@ Data flows in one direction: **OI → Commands → Subsystems → Mechanisms**.
 
 Two schedulers run each 20 ms in `Robot.robotPeriodic()`:
 - `CommandScheduler.getInstance().run()` — WPILib, drives OI bindings + autos.
-- `robot_container_.doControlLoop()` — MW-Lib, ticks every registered subsystem's IO + state machine.
+- `robot_container_.doControlLoop()` — MW-Lib: runs the robot state machine, then ticks every
+  registered subsystem's IO + state machine.
 
-`RobotContainer extends SubsystemManager`; `Robot extends LoggedRobot` (AdvantageKit).
+`RobotContainer extends MwSuperStateMachine<RobotStates>` (a `SubsystemManager`); `Robot extends
+LoggedRobot` (AdvantageKit).
 
 ## The subsystem control loop (per tick, per subsystem)
 
 `SubsystemManager.doControlLoop()` runs, in strict order:
-1. `MwLog.periodic()` — poll live tunables.
+1. `MwLog.periodic()` — poll live tunables, then the robot state machine (RobotContainer's
+   `handleStateTransition` + `updateLogic`) once.
 2. `io.readInputs(timestamp)` for each mechanism (sensor reads, captured for replay).
 3. `subsystem.update(timestamp)` — base method (DO NOT OVERRIDE); auto-logs `WantedState`/`State`,
    then calls your `handleStateTransition()` and `updateLogic()`.
@@ -55,7 +59,8 @@ Two schedulers run each 20 ms in `Robot.robotPeriodic()`:
 - Never override `MwSubsystem.update()`.
 - Log with `MwLog` (DogLog-compatible facade over AdvantageKit), keyed off `getSubsystemKey()` —
   never `DogLog` or raw `SmartDashboard`/`Logger`.
-- Commands never `require()` a subsystem; joysticks are read only in `OI`.
+- No command files: coordination between subsystems is a robot state in `RobotContainer`; buttons
+  and autos only call `setWantedState(...)` on the robot. Joysticks are read only in `OI`.
 - `*Subsystem` / `*Constants` / `*Mech` name suffixes are reflected into logging keys.
 
 ## Formatting
@@ -70,10 +75,10 @@ Fields are `snake_case_` (trailing underscore); constants `UPPER_SNAKE_CASE` via
 | --- | --- |
 | Create/edit a subsystem or its `*Constants` (state machine, singleton skeleton, registration, per-robot variants) | `references/subsystems.md` |
 | Use a mechanism (`ArmMech`/`ElevatorMech`/`FlywheelMech`/`RollerMech`/`TurretMech`) — constructors, setters, getters | `references/mechanisms.md` |
-| Add a command or a controller/dashboard binding | `references/commands-and-oi.md` |
+| Add a robot behaviour/sequence, or a controller/dashboard binding | `references/robot-states-and-oi.md` |
 | Write an autonomous routine (behavior-tree XML, Choreo paths, events, tunable waits) | `references/autonomous.md` |
 | Log data, add a live tunable, or handle replay | `references/logging.md` |
 
 Canonical code examples to imitate: `subsystems/intake/IntakeSubsystem.java` +
-`IntakeConstants.java` (mechanism-driven), `subsystems/gamestates/GameStatesSubsystem.java`
-(logic-only), `ControlCommands.java` + `OI.java`, `src/main/deploy/autos/Right_Trench_Trench_Swipe.xml`.
+`IntakeConstants.java` (mechanism-driven), `RobotContainer.java` (robot state machine) + `OI.java`,
+`src/main/deploy/autos/Right_Trench_Trench_Swipe.xml`.

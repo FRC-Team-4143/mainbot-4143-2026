@@ -10,7 +10,7 @@ autonomous, and logging in depth.
 
 ## Architecture in one breath
 
-Data flows **OI → Commands → Subsystems → Mechanisms**:
+Data flows **OI / Autos → RobotContainer (robot state machine) → Subsystems → Mechanisms**:
 
 - **Subsystems** are singleton state machines that extend `MwSubsystem<StatesEnum, ConstantsClass>`.
   They are ticked by `RobotContainer.doControlLoop()` (our scheduler), **not** the WPILib
@@ -18,8 +18,14 @@ Data flows **OI → Commands → Subsystems → Mechanisms**:
 - **Mechanisms** (`ArmMech`, `ElevatorMech`, `FlywheelMech`, `RollerMech`, `TurretMech`) are the
   hardware IO layer. Subsystems **compose** them (has-a), never extend them. They abstract the motors
   and make sim vs. real transparent.
-- **Commands** (in `ControlCommands`) and **OI** (bindings) run through the normal WPILib
-  `CommandScheduler`. `Robot.robotPeriodic()` calls **both** `CommandScheduler.getInstance().run()`
+- **`RobotContainer` is the robot's super state machine** (`MwSuperStateMachine<RobotStates>`). OI
+  buttons and BT autos ask for a robot state with `RobotContainer.getInstance().setWantedState(...)`;
+  RobotContainer requests the subsystem states (enter/exit actions in `handleStateTransition`, per-loop
+  gating in `updateLogic`). It runs before the subsystems every loop. **There are no command files**:
+  anything that coordinates more than one subsystem is a robot state in RobotContainer, shared by
+  teleop and autos.
+- **OI** bindings are plain `Commands.startEnd/runOnce` lambdas around `setWantedState`, run by the
+  WPILib `CommandScheduler`. `Robot.robotPeriodic()` calls **both** `CommandScheduler.getInstance().run()`
   **and** `robot_container_.doControlLoop()`.
 - `Robot extends LoggedRobot` (AdvantageKit), not `TimedRobot`.
 
@@ -38,9 +44,10 @@ Data flows **OI → Commands → Subsystems → Mechanisms**:
 - **Use the `timestamp` passed into `updateLogic(double timestamp)`.** Never call
   `Timer.getFPGATimestamp()` in the control loop — the passed timestamp is log-sourced and replays
   deterministically.
-- **Commands never `require()` a subsystem** (deadlock/preemption risk). They coordinate subsystems by
-  calling `setWantedState(...)` / public mechanism helpers. **Read joysticks only in `OI`**, never in
-  subsystems or commands (the one exception is piping drive-axis values to the teleop drive command).
+- **Don't add command files.** Coordination between subsystems belongs in `RobotContainer` as a robot
+  state; buttons and autos only call `setWantedState(...)` on the robot. Commands never `require()` a
+  subsystem. **Read joysticks only in `OI`**, never in subsystems or RobotContainer (the one exception
+  is piping drive-axis values into the swerve's driver inputs).
 - **Class name suffixes are load-bearing.** `*Subsystem`, `*Constants`, `*Mech` names are reflected to
   derive logging keys — don't drop or rename them.
 
@@ -64,10 +71,11 @@ every build. Do not fight the formatter.
 
 ```
 src/main/java/frc/robot/
-├── Robot.java, RobotContainer.java, Main.java   # wiring; RobotContainer extends SubsystemManager
+├── Robot.java, Main.java                         # wiring
+├── RobotContainer.java                           # robot super state machine (MwSuperStateMachine)
+├── RobotStates.java, ScoringModes.java           # robot states; field-based scoring mode
 ├── RobotId.java                                  # which robot the code runs on (burned RobotName)
 ├── OI.java                                       # controller/dashboard bindings only
-├── ControlCommands.java                          # command factory methods
 ├── subsystems/<name>/
 │   ├── <Name>Subsystem.java                      # singleton state machine
 │   └── <Name>Constants.java                      # public final constants + state enum + MotorConfigs

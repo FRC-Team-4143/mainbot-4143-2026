@@ -59,7 +59,12 @@ the normal `Auto`/`AutoManager`/`CommandScheduler` flow. Full reference:
 - **Waits.** Use BT.CPP `Sleep msec` or `Delay delay_msec`; there are no custom wait nodes.
 - **Tunable values.** Declare a port on the auto's tree in `<TreeNodesModel>` and read it as
   `{name}`. It appears on the dashboard at `/Tuning/Autos/<auto>/<port>`.
-- **State requests.** `SetIntakeState`, `SetShooterState`, `SetSwerveState`, `SetShooterTarget`.
+- **Robot states first.** `<SetWantedState state="SHOOT"/>` asks the `RobotContainer` super state
+  machine for the same robot state teleop uses, and waits until the robot is in it (SUCCESS) or the
+  state fails (FAILURE). `IsSystemState` checks it. Scoring sequences live once in RobotContainer;
+  wrap them in `Timeout`/`Fallback`/`Retry` for auto-only fail handling. `ShootFor` uses `SHOOT`.
+- **Subsystem state requests** for small one-off moves (an intake state on a path event):
+  `SetIntakeState`, `SetShooterState`, `SetSwerveState`, `SetShooterTarget`.
 
 ## Swerve states you'll request
 

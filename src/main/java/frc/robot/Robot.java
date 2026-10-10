@@ -15,7 +15,6 @@ import com.marswars.dashboard.Elastic;
 import com.marswars.geometry.AllianceFlipUtil;
 import com.marswars.logging.MwLog;
 import com.marswars.swerve_lib.OperatorPerspective;
-import com.marswars.swerve_lib.SwerveStates;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -28,10 +27,7 @@ import frc.robot.lib2026.FieldConstants;
 import frc.robot.lib2026.FieldRegions;
 import frc.robot.lib2026.FieldTargets;
 import frc.robot.lib2026.HubMonitor;
-import frc.robot.subsystems.intake.IntakeConstants.IntakeStates;
-import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.localization.LocalizationSubsystem;
-import frc.robot.subsystems.shooter.ShooterConstants.ShooterStates;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 import java.util.Optional;
@@ -96,7 +92,7 @@ public class Robot extends LoggedRobot {
 
     @Override
     public void disabledInit() {
-        ShooterSubsystem.getInstance().setWantedState(ShooterStates.IDLE);
+        robot_container_.setWantedState(RobotStates.IDLE);
         HubMonitor.seedActiveAlliance(HubMonitor.ActiveAlliance.INVALID);
     }
 
@@ -120,6 +116,7 @@ public class Robot extends LoggedRobot {
     @Override
     public void autonomousInit() {
         Elastic.selectTab("Autonomous");
+        robot_container_.setWantedState(RobotStates.AUTO);
         Auto selected_auto = AutoManager.getInstance().getSelectedAuto();
         CommandScheduler.getInstance().schedule(selected_auto);
     }
@@ -133,9 +130,9 @@ public class Robot extends LoggedRobot {
     @Override
     public void teleopInit() {
         CommandScheduler.getInstance().cancelAll();
-        SwerveSubsystem.getInstance().setWantedState(SwerveStates.FIELD_CENTRIC);
+        // Starts field-centric driving with the shooter idle (see RobotContainer)
+        robot_container_.setWantedState(RobotStates.DRIVE);
         Elastic.selectTab("Teleoperated");
-        ShooterSubsystem.getInstance().setWantedState(ShooterStates.IDLE);
     }
 
     @Override
@@ -147,9 +144,7 @@ public class Robot extends LoggedRobot {
     @Override
     public void testInit() {
         CommandScheduler.getInstance().cancelAll();
-        SwerveSubsystem.getInstance().setWantedState(SwerveStates.FIELD_CENTRIC);
-        ShooterSubsystem.getInstance().setWantedState(ShooterStates.TUNING);
-        IntakeSubsystem.getInstance().setWantedState(IntakeStates.TUNING);
+        robot_container_.setWantedState(RobotStates.TUNING);
     }
 
     @Override

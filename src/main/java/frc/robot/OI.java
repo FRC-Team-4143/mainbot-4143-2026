@@ -11,8 +11,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.lib2026.HubMonitor;
-import frc.robot.subsystems.gamestates.GameStatesSubsystem;
 import frc.robot.subsystems.localization.LocalizationSubsystem;
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterStates;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
@@ -60,37 +60,33 @@ public abstract class OI {
         // =============================================================================
         // DRIVER CONTROLLER BINDINGS
         // =============================================================================
+        RobotContainer robot = RobotContainer.getInstance();
         driver_controller_
                 .rightStick()
                 .onTrue(SwerveSubsystem.getInstance().toggleFieldCentric().ignoringDisable(true));
+        // Hold a button: the robot is in that state; let go: back to DRIVE
+        whileHeld(driver_controller_.rightTrigger(), RobotStates.SHOOT);
+        whileHeld(driver_controller_.leftTrigger(), RobotStates.AIM);
+        whileHeld(driver_controller_.rightBumper(), RobotStates.INTAKE);
+        whileHeld(driver_controller_.y(), RobotStates.MANUAL_HUB);
+        whileHeld(driver_controller_.b(), RobotStates.MANUAL_PASS);
+        whileHeld(driver_controller_.a(), RobotStates.OUTTAKE);
+        whileHeld(driver_controller_.x(), RobotStates.BRAKE);
         driver_controller_
-                .rightTrigger()
-                .whileTrue(ControlCommands.shootFuelCommand().ignoringDisable(true));
-        driver_controller_.leftTrigger().whileTrue(ControlCommands.aimAtTargetCommand());
-        driver_controller_
-                .rightBumper()
-                .whileTrue(ControlCommands.intakeFuelCommand().ignoringDisable(true));
-        driver_controller_.leftBumper().onFalse(ControlCommands.toggleStoreIntakeCommand());
-        driver_controller_.y().whileTrue(ControlCommands.manualShootFuelCommand());
-        driver_controller_.b().whileTrue(ControlCommands.manualPassFuelCommand());
-        driver_controller_.a().whileTrue(ControlCommands.outTakeFuelCommand());
-        driver_controller_.x().whileTrue(ControlCommands.crossWheelsCommand());
+                .leftBumper()
+                .onFalse(Commands.runOnce(robot::toggleStoreIntake).ignoringDisable(true));
 
         // =============================================================================
         // OPERATOR CONTROLLER BINDINGS
         // =============================================================================
-        // Dead-man force-pass override: hold to force GSM to choose a PASS target
-        // while inside the alliance zone (left bumper acts as the dead-man).
+        // Dead-man force-pass override: hold to pick a PASS target while inside the alliance
+        // zone (left bumper acts as the dead-man).
         operator_controller_
                 .leftBumper()
                 .whileTrue(
                         Commands.startEnd(
-                                        () ->
-                                                GameStatesSubsystem.getInstance()
-                                                        .setPassOverride(true),
-                                        () ->
-                                                GameStatesSubsystem.getInstance()
-                                                        .setPassOverride(false))
+                                        () -> robot.setPassOverride(true),
+                                        () -> robot.setPassOverride(false))
                                 .ignoringDisable(true));
         operator_controller_
                 .povUp()
@@ -122,8 +118,26 @@ public abstract class OI {
                                     ShooterSubsystem.getInstance()
                                             .adjustHood(Units.degreesToRadians(1));
                                 }));
-        operator_controller_.x().onTrue(ControlCommands.toggleIsAbleToRack());
-        driver_controller_.leftTrigger().whileTrue(ControlCommands.aimAtTargetCommand());
+        operator_controller_
+                .x()
+                .onTrue(Commands.runOnce(robot::toggleIsAbleToRack).ignoringDisable(true));
+    }
+
+    /**
+     * While {@code button} is held the robot wants {@code state}; on release it goes back to DRIVE,
+     * unless another button asked for a different state since.
+     */
+    private static void whileHeld(Trigger button, RobotStates state) {
+        RobotContainer robot = RobotContainer.getInstance();
+        button.whileTrue(
+                Commands.startEnd(
+                                () -> robot.setWantedState(state),
+                                () -> {
+                                    if (robot.getWantedState() == state) {
+                                        robot.setWantedState(RobotStates.DRIVE);
+                                    }
+                                })
+                        .ignoringDisable(true));
     }
 
     /**
