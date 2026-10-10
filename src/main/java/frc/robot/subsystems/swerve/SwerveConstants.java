@@ -4,77 +4,25 @@ import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.Slot1Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-import com.ctre.phoenix6.swerve.utility.PhoenixPIDController;
 import com.marswars.mechanisms.MotorConfig;
 import com.marswars.mechanisms.MotorConfig.TalonMotorType;
-import com.marswars.subsystem.MwConstants;
+import com.marswars.swerve_lib.MwSwerveConstants;
 import com.marswars.swerve_lib.SwerveDriveConfig;
 import com.marswars.swerve_lib.module.ModuleType;
 import com.marswars.swerve_lib.module.SwerveModuleConfig;
 import com.marswars.util.PhoenixUtil;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import frc.robot.RobotId;
 
-public class SwerveConstants extends MwConstants {
-
-    // =============================================================================
-    // ENUMS AND STATE DEFINITIONS
-    // =============================================================================
-
-    /** Swerve drive operational states defining different control modes. */
-    public enum SwerveStates {
-        /** Drive relative to the robot's orientation using joystick inputs. */
-        ROBOT_CENTRIC,
-        /** Drive relative to the field's orientation using joystick inputs. */
-        FIELD_CENTRIC,
-        /** Follow a pre-planned Choreo trajectory path with Choreo rotation control. */
-        CHOREO_PATH,
-        /** Drive towards a target pose using feedback control. */
-        TRACTOR_BEAM,
-        /** Drive using raw ChassisSpeeds including rotation. */
-        CHASSIS_SPEEDS,
-        /** Slow precision movement relative to robot orientation using POV/D-pad. */
-        CRAWL_ROBOT_CENTRIC,
-        /** Slow precision movement relative to field orientation using POV/D-pad. */
-        CRAWL_FIELD_CENTRIC,
-        /** Drive relative to robot orientation with rotation locked to a target heading. */
-        ROBOT_CENTRIC_ROTATION_LOCK,
-        /** Drive relative to field orientation with rotation locked to a target heading. */
-        FIELD_CENTRIC_ROTATION_LOCK,
-        /** Follow a Choreo trajectory path with rotation locked to a target heading. */
-        CHOREO_PATH_ROTATION_LOCK,
-        /** Drive using raw ChassisSpeeds with rotation locked to a target heading. */
-        CHASSIS_SPEEDS_ROTATION_LOCK,
-        /** Slow precision movement relative to robot with rotation locked to a target heading. */
-        CRAWL_ROBOT_CENTRIC_ROTATION_LOCK,
-        /** Slow precision movement relative to field with rotation locked to a target heading. */
-        CRAWL_FIELD_CENTRIC_ROTATION_LOCK,
-        /** Brake mode locking the wheels in an x pattern */
-        BRAKE,
-        /** Manual tuning mode for testing chassis speeds. */
-        TUNING,
-        /** Idle state with no movement commands. */
-        IDLE
-    }
-
-    public enum OperatorPerspective {
-        BLUE_ALLIANCE(Rotation2d.fromDegrees(0.0)),
-        RED_ALLIANCE(Rotation2d.fromDegrees(180.0));
-
-        private OperatorPerspective(Rotation2d heading) {
-            this.heading = heading;
-        }
-
-        public final Rotation2d heading;
-    }
+public class SwerveConstants extends MwSwerveConstants {
 
     // =============================================================================
     // PER-ROBOT CONSTANTS (defaults = AlphaBot; variants reassign in configure())
     // =============================================================================
-    // These are the only non-final fields in this class. They may only be reassigned
-    // inside a configure() override, which runs before any derived config is built.
+    // These (plus the inherited MwSwerveConstants tunables) are the only non-final fields. They
+    // may only be reassigned inside a configure() override, which runs before any derived config
+    // is built.
     // Overrides must assign self-contained values and never read subclass state (the
     // subclass is not initialized yet when configure() runs).
 
@@ -143,46 +91,11 @@ public class SwerveConstants extends MwConstants {
     public final double STEER_SUPPLY_CURRENT_TRIGGER_TIME = 0.1; // Seconds
 
     // =============================================================================
-    // CONTROL AND OPERATIONAL CONSTANTS
+    // CONTROL, CHOREO AND TRACTOR BEAM TUNABLES
     // =============================================================================
-
-    public final double CONTROLLER_DEADBAND = 0.1; // Deadband for joystick inputs to prevent drift
-    public final double MAX_TRANSLATION_RATE = 5.0; // Meters per second
-    public final double MAX_TRANSLATION_ACCEL =
-            40.0; // Meters per second squared (Used for slew rate limiters)
-    public final double MAX_CRAWL_RATE = 0.5; // Meters per second, max speed during crawl mode
-    public final double MAX_ANGULAR_RATE = 10.0; // Radians per second
-    public final PhoenixPIDController HEADING_CONTROLLER = new PhoenixPIDController(10, 0.0, 1);
-
-    // Thresholds for determining when the chassis is stationary
-    public final double STATIONARY_TRANSLATION_VELOCITY_THRESHOLD =
-            0.1; // Meters per second, max translation velocity to be considered stationary
-    public final double STATIONARY_ANGULAR_VELOCITY_THRESHOLD =
-            0.2; // Radians per second, max angular velocity to be considered stationary
-
-    // =============================================================================
-    // CHOREO PATH FOLLOWING CONSTANTS
-    // =============================================================================
-
-    public final double CHOREO_TRANSLATION_ERROR_MARGIN = Units.inchesToMeters(1.0);
-    public final double CHOREO_VELOCITY_ERROR_MARGIN = 0.2;
-    public final double CHOREO_TRANSLATION_CONTROLLER_KP = 7.0;
-    public final double CHOREO_TRANSLATION_CONTROLLER_KI = 0.0;
-    public final double CHOREO_TRANSLATION_CONTROLLER_KD = 0.0;
-    public final double CHOREO_THETA_CONTROLLER_KP = 12.0; // 7.3;
-    public final double CHOREO_THETA_CONTROLLER_KI = 0.0;
-    public final double CHOREO_THETA_CONTROLLER_KD = 1.0; // 0.07;
-    public final double CHOREO_LOOK_AHEAD = 1.0; // In meters
-
-    // =============================================================================
-    // TRACTOR BEAM CONSTANTS
-    // =============================================================================
-
-    public final double TRACTOR_BEAM_TRANSLATION_ERROR_MARGIN = Units.inchesToMeters(0.5);
-    public final double TRACTOR_BEAM_STATIC_FRICTION_CONSTANT = 0.1;
-    public final double TRACTOR_BEAM_CONTROLLER_KP = 0.0;
-    public final double TRACTOR_BEAM_CONTROLLER_KI = 0.0;
-    public final double TRACTOR_BEAM_CONTROLLER_KD = 0.0;
+    // Inherited from MwSwerveConstants (MAX_TRANSLATION_RATE, CHOREO_*, TRACTOR_BEAM_*,
+    // HEADING_CONTROLLER_*, ...). The library defaults are this robot's values; reassign
+    // any of them in configure() to override per robot.
 
     // =============================================================================
     // SWERVE MODULE CONFIGURATION OBJECTS
@@ -239,6 +152,11 @@ public class SwerveConstants extends MwConstants {
                         PIGEON2_ID,
                         PIGEON2_CANBUS_NAME,
                         SKID_DETECTION_RANGE);
+    }
+
+    @Override
+    public SwerveDriveConfig getDriveConfig() {
+        return SWERVE_DRIVE_CONFIG;
     }
 
     // =============================================================================

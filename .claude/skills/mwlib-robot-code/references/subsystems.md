@@ -222,12 +222,23 @@ protected void configure() {
 }
 ```
 
-The subsystem constructs via the factory: `super(SwerveStates.IDLE, SwerveConstants.create())`.
+Subsystems construct via the factory, e.g. `super(MyStates.IDLE, MyConstants.create())`.
 `configure()` runs during the base constructor — overrides must only assign self-contained values
 to base fields, never read subclass state. The active robot comes from `frc.robot.RobotId.current()`
 (MW-Lib `RobotIdentity`: persistent `MWPreferences` "RobotName" burned via the Test-mode
 `Config/Burn RobotName` dashboard button, or `SimBot`/`ROBOT_NAME` env var in sim). Subsystems with
 no per-robot variance need none of this — plain `new XConstants()` stays.
+
+### Swerve is a library subsystem
+
+The swerve state machine (teleop, crawl, rotation lock, Choreo following, tractor beam, brake)
+lives in MW-Lib's `com.marswars.swerve_lib.MwSwerveSubsystem`. `SwerveSubsystem` here is a thin
+subclass: it owns the singleton, passes `SwerveConstants.create()`, the localization pose supplier
+and the driver `SwerveDriverInputs`, and overrides `remapWantedState()` for the POV→crawl driver
+preference. `SwerveConstants` extends `MwSwerveConstants`, which supplies the control/Choreo/
+tractor-beam tunables (reassign them in `configure()` to override per robot) and requires
+`getDriveConfig()`. `SwerveStates` and `OperatorPerspective` are imported from
+`com.marswars.swerve_lib`. Add new drive behaviour to MW-Lib, not to the robot subclass.
 
 ## Register the subsystem (required)
 

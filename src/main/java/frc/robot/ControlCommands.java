@@ -1,6 +1,7 @@
 package frc.robot;
 
 import com.marswars.logging.MwLog;
+import com.marswars.swerve_lib.SwerveStates;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
@@ -13,7 +14,6 @@ import frc.robot.subsystems.localization.LocalizationConstants.LocalizationState
 import frc.robot.subsystems.localization.LocalizationSubsystem;
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterStates;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
-import frc.robot.subsystems.swerve.SwerveConstants.SwerveStates;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 
 public class ControlCommands {
