@@ -22,15 +22,6 @@ import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.autos.CitrusSynergy;
-import frc.robot.autos.CitrusSynergyFarBump;
-import frc.robot.autos.CitrusSynergyRight;
-import frc.robot.autos.Left_Trench_Bump_Swipe;
-import frc.robot.autos.Left_Trench_Trench_Swipe;
-import frc.robot.autos.Right_Trench_Bump_Swipe;
-import frc.robot.autos.Right_Trench_Trench_Swipe;
-import frc.robot.autos.Shoot;
-import frc.robot.autos.Slop_Auto;
 import frc.robot.autos.bt.AutoNodes;
 import frc.robot.lib2026.FieldConstants;
 import frc.robot.lib2026.FieldRegions;
@@ -62,23 +53,8 @@ public class Robot extends LoggedRobot {
         // Configure External Interfaces
         OI.configureBindings();
 
-        // Initialize AutoManager and register auto routines
-        AutoManager.getInstance()
-                .registerAutos(
-                        // Add your auto routines here as you create them
-                        new Left_Trench_Bump_Swipe(),
-                        new Left_Trench_Trench_Swipe(),
-                        new Right_Trench_Bump_Swipe(),
-                        new Right_Trench_Trench_Swipe(),
-                        new Shoot(),
-                        new CitrusSynergy(),
-                        new CitrusSynergyFarBump(),
-                        new Slop_Auto(),
-                        new CitrusSynergyRight()
-                        // new TestAuto()
-                        );
-
-        // Behavior-tree autos: every deploy/autos/*.xml becomes a chooser option
+        // Autos are behavior trees: every deploy/autos/*.xml is a chooser option (see the README
+        // there). Robot-specific nodes are registered in AutoNodes.
         BehaviorTreeFactory bt_factory = AutoNodes.createFactory();
         BehaviorTreeMonitor.publishNodeModels(bt_factory);
         AutoManager.getInstance()

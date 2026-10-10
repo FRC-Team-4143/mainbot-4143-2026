@@ -71,9 +71,9 @@ Fields are `snake_case_` (trailing underscore); constants `UPPER_SNAKE_CASE` via
 | Create/edit a subsystem or its `*Constants` (state machine, singleton skeleton, registration, per-robot variants) | `references/subsystems.md` |
 | Use a mechanism (`ArmMech`/`ElevatorMech`/`FlywheelMech`/`RollerMech`/`TurretMech`) — constructors, setters, getters | `references/mechanisms.md` |
 | Add a command or a controller/dashboard binding | `references/commands-and-oi.md` |
-| Write an autonomous routine (Choreo paths, event triggers, swerve states) | `references/autonomous.md` |
+| Write an autonomous routine (behavior-tree XML, Choreo paths, events, tunable waits) | `references/autonomous.md` |
 | Log data, add a live tunable, or handle replay | `references/logging.md` |
 
 Canonical code examples to imitate: `subsystems/intake/IntakeSubsystem.java` +
 `IntakeConstants.java` (mechanism-driven), `subsystems/gamestates/GameStatesSubsystem.java`
-(logic-only), `ControlCommands.java` + `OI.java`, `autos/Right_Trench_Trench_Swipe.java`.
+(logic-only), `ControlCommands.java` + `OI.java`, `src/main/deploy/autos/Right_Trench_Trench_Swipe.xml`.

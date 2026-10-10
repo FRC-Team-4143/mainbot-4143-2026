@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Drive out, shoot, intake while shooting, then drive to climb. -->
+<root BTCPP_format="4" main_tree_to_execute="Slop_Auto">
+  <include path="lib/common.xml"/>
+
+  <BehaviorTree ID="Slop_Auto">
+    <Sequence>
+      <SetShooterTarget target="HUB"/>
+      <SetShooterState state="TRACKING"/>
+
+      <Parallel name="Drive SlopAutoStart" success_count="1">
+        <FollowTrajectory trajectory="SlopAutoStart" end_state="FIELD_CENTRIC_ROTATION_LOCK"/>
+        <SubTree ID="IntakeOnEvent" event="Intake Out" state="INTAKE"/>
+        <SubTree ID="IntakeOnEvent" event="Intake In" state="STORE"/>
+      </Parallel>
+
+      <SetShooterState state="SHOOT"/>
+      <Sleep msec="3000"/>
+      <SetIntakeState state="INTAKE"/>
+      <Sleep msec="3000"/>
+      <SetShooterState state="TRACKING"/>
+      <SetIntakeState state="STORE"/>
+
+      <FollowTrajectory trajectory="SlopAutoClimb" end_state="IDLE" min_time="1"/>
+    </Sequence>
+  </BehaviorTree>
+</root>
