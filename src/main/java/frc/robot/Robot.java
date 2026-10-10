@@ -6,13 +6,20 @@ package frc.robot;
 
 import com.marswars.auto.Auto;
 import com.marswars.auto.AutoManager;
+import com.marswars.auto.BehaviorTreeAuto;
+import com.marswars.bt.core.BehaviorTreeFactory;
+import com.marswars.bt.debug.BtLiveServer;
+import com.marswars.bt.monitor.BehaviorTreeMonitor;
 import com.marswars.dashboard.Elastic;
 import com.marswars.geometry.AllianceFlipUtil;
 import com.marswars.logging.MwLog;
 import com.marswars.swerve_lib.OperatorPerspective;
 import com.marswars.swerve_lib.SwerveStates;
+import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.Filesystem;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.autos.CitrusSynergy;
@@ -24,6 +31,7 @@ import frc.robot.autos.Right_Trench_Bump_Swipe;
 import frc.robot.autos.Right_Trench_Trench_Swipe;
 import frc.robot.autos.Shoot;
 import frc.robot.autos.Slop_Auto;
+import frc.robot.autos.bt.AutoNodes;
 import frc.robot.lib2026.FieldConstants;
 import frc.robot.lib2026.FieldRegions;
 import frc.robot.lib2026.FieldTargets;
@@ -38,6 +46,8 @@ import java.util.Optional;
 import org.littletonrobotics.junction.LoggedRobot;
 
 public class Robot extends LoggedRobot {
+    /** btlive WebSocket port for the BT editor's live view. */
+    private static final int BT_LIVE_PORT = BtLiveServer.DEFAULT_PORT;
 
     private Alliance alliance_ = Alliance.Blue; // Current alliance, used to set driver perspective
     private RobotContainer robot_container_;
@@ -67,6 +77,16 @@ public class Robot extends LoggedRobot {
                         new CitrusSynergyRight()
                         // new TestAuto()
                         );
+
+        // Behavior-tree autos: every deploy/autos/*.xml becomes a chooser option
+        BehaviorTreeFactory bt_factory = AutoNodes.createFactory();
+        BehaviorTreeMonitor.publishNodeModels(bt_factory);
+        AutoManager.getInstance()
+                .registerAutos(
+                        BehaviorTreeAuto.loadAll(
+                                bt_factory,
+                                Filesystem.getDeployDirectory().toPath().resolve("autos")));
+        startBtLiveServer();
 
         // Set the default target for the shooter to be the hub
         ShooterSubsystem.getInstance().setTarget(FieldTargets.Shooter.HUB);
@@ -157,6 +177,21 @@ public class Robot extends LoggedRobot {
 
     @Override
     public void testExit() {}
+
+    /** Streams running behavior trees to the BT editor (btlive protocol). Never fatal. */
+    private static void startBtLiveServer() {
+        if (MwLog.isReplay()) {
+            return;
+        }
+        try {
+            BtLiveServer.start(
+                    BtLiveServer.Options.defaults()
+                            .withPort(BT_LIVE_PORT)
+                            .withRobotName(RobotBase.isSimulation() ? "sim" : "4143"));
+        } catch (RuntimeException e) {
+            DataLogManager.log("BT live server not started: " + e.getMessage());
+        }
+    }
 
     /**
      * Check if the alliance has changed since the last check

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Behavior-tree port of frc.robot.autos.CitrusSynergy, kept side by side with the Java auto.
+  BehaviorTree.CPP v4 format: opens in Groot2 / the BT editor. Robot nodes: frc.robot.autos.bt.AutoNodes.
+  Note: SynergyP1.traj only defines the "Intake Out" event, so "Intake In" never fires - exactly like
+  the Java auto's trigger today.
+-->
+<root BTCPP_format="4" main_tree_to_execute="CitrusSynergy">
+  <BehaviorTree ID="CitrusSynergy">
+    <Sequence name="CitrusSynergy">
+      <!-- Commands.runOnce: shooter target HUB, shooter IDLE, intake STORE -->
+      <SetShooterTarget target="HUB"/>
+      <SetShooterState state="IDLE"/>
+      <SetIntakeState state="STORE"/>
+      <Wait name="Settle" seconds="1"/>
+
+      <!-- Drive P1. Choreo events are handled next to the path instead of by global Triggers.
+           The event branch parks forever at the end so only the path can finish the Parallel. -->
+      <Parallel name="DriveP1" success_count="1" failure_count="1">
+        <FollowTrajectory trajectory="SynergyP1" end_state="IDLE"/>
+        <Sequence name="P1Events">
+          <WaitForChoreoEvent event="Intake Out"/>
+          <SetIntakeState state="INTAKE"/>
+          <WaitForChoreoEvent event="Intake In"/>
+          <SetIntakeState state="STORE"/>
+          <KeepRunningUntilFailure name="Park">
+            <AlwaysSuccess/>
+          </KeepRunningUntilFailure>
+        </Sequence>
+      </Parallel>
+
+      <!-- DynamicWaitCommand("CitrusSynergy/MiddleWaitTime", 3): live-tunable at /Tuning/CitrusSynergyBt/MiddleWaitTime -->
+      <TunableWait name="MiddleWait" key="CitrusSynergyBt/MiddleWaitTime" default_seconds="3"/>
+
+      <FollowTrajectory trajectory="SynergyP2" end_state="IDLE"/>
+
+      <!-- Shoot for 2 seconds -->
+      <SetShooterState state="SHOOT"/>
+      <SetIntakeState state="SQUEEZE"/>
+      <Wait name="ShootFor" seconds="2"/>
+    </Sequence>
+  </BehaviorTree>
+</root>
