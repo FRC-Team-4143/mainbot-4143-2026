@@ -5,11 +5,11 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.marswars.auto.BehaviorTreeAuto;
+import com.marswars.bt.MwLibNodes;
 import com.marswars.bt.core.BehaviorTree;
 import com.marswars.bt.core.BehaviorTreeFactory;
 import com.marswars.bt.core.PortInfo;
 import com.marswars.bt.core.TreeSpec;
-import com.marswars.bt.debug.BtLiveServer;
 import com.marswars.bt.xml.BtXmlParser;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -111,12 +111,26 @@ class BtAutosParseTest {
     }
 
     @Test
-    void writeNodeSpecForEditors() throws Exception {
-        Path out = Path.of("build/bt/nodes.xml");
-        Files.createDirectories(out.getParent());
-        BtLiveServer.writeNodeSpec(factory(), out);
-        String xml = Files.readString(out);
-        assertTrue(xml.contains("<Action ID=\"FollowTrajectory\">"));
-        assertTrue(xml.contains("<Condition ID=\"IsShooterReady\""));
+    void nodeSpecIsMwLibPlusRobotNodes() throws Exception {
+        String generated = factory().writeTreeNodesModelXml(false);
+        Path file = AUTOS.resolve("lib/nodes.xml");
+        if (Boolean.getBoolean("bt.updateNodeSpec")) {
+            Files.writeString(file, generated);
+        }
+        assertTrue(Files.exists(file), "missing " + file + "; run ./gradlew test -PupdateNodeSpec");
+        assertEquals(
+                generated,
+                Files.readString(file),
+                file + " is out of date; run ./gradlew test -PupdateNodeSpec");
+
+        // MW-Lib's bundled node file comes first, unchanged; the robot's nodes are appended.
+        String lib = MwLibNodes.bundledNodeSpecXml();
+        String libSection = lib.substring(0, lib.indexOf("  </TreeNodesModel>"));
+        assertTrue(generated.startsWith(libSection), "robot spec must start with MW-Lib's");
+        String robotSection = generated.substring(libSection.length());
+        assertTrue(robotSection.contains("<!-- Robot nodes -->"));
+        assertTrue(robotSection.contains("<Action ID=\"SetIntakeState\">"));
+        assertTrue(robotSection.contains("<Condition ID=\"IsShooterReady\">"));
+        assertFalse(robotSection.contains("FollowTrajectory"), "swerve nodes come from MW-Lib");
     }
 }

@@ -8,10 +8,10 @@
       <SetShooterTarget target="HUB"/>
       <SetShooterState state="IDLE"/>
 
-      <Parallel name="DriveP1" success_count="1">
+      <ParallelDeadline name="DriveP1">
         <FollowTrajectory trajectory="SynergyP1" end_state="IDLE"/>
         <SubTree ID="IntakeOnEvent" event="Intake Out" state="INTAKE"/>
-      </Parallel>
+      </ParallelDeadline>
 
       <Delay name="MiddleWait" delay_msec="{middle_wait_msec}">
         <FollowTrajectory trajectory="SynergyFarBumpP2" end_state="IDLE"/>

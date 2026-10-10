@@ -9,6 +9,7 @@ import com.marswars.auto.AutoManager;
 import com.marswars.auto.BehaviorTreeAuto;
 import com.marswars.bt.core.BehaviorTreeFactory;
 import com.marswars.bt.debug.BtLiveServer;
+import com.marswars.bt.monitor.BehaviorTreeFileLogger;
 import com.marswars.bt.monitor.BehaviorTreeMonitor;
 import com.marswars.dashboard.Elastic;
 import com.marswars.geometry.AllianceFlipUtil;
@@ -63,6 +64,8 @@ public class Robot extends LoggedRobot {
                                 bt_factory,
                                 Filesystem.getDeployDirectory().toPath().resolve("autos")));
         startBtLiveServer();
+        // One <auto>_<time>.btlog.xml per auto run (logs/bt in sim, /U/logs/bt on the robot)
+        BehaviorTreeFileLogger.enableDefault();
 
         // Set the default target for the shooter to be the hub
         ShooterSubsystem.getInstance().setTarget(FieldTargets.Shooter.HUB);

@@ -8,10 +8,10 @@
       <SetShooterTarget target="HUB"/>
       <SetShooterState state="IDLE"/>
 
-      <Parallel name="Drive LTrenchStartTrenchReturn" success_count="1">
+      <ParallelDeadline name="Drive LTrenchStartTrenchReturn">
         <FollowTrajectory trajectory="LTrenchStartTrenchReturn" end_state="FIELD_CENTRIC_ROTATION_LOCK"/>
         <SubTree ID="IntakeOnEvent" event="Intake Out" state="INTAKE"/>
-      </Parallel>
+      </ParallelDeadline>
 
       <SubTree ID="ShootFor" duration_msec="3500"/>
       <SetShooterState state="IDLE"/>

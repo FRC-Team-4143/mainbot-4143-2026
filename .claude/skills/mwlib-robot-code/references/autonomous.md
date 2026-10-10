@@ -7,8 +7,12 @@ the normal `Auto`/`AutoManager`/`CommandScheduler` flow. Full reference:
 `src/main/deploy/autos/README.md`.
 
 - **Don't add `Auto` subclasses or command sequences for autos.** Write XML.
-- **Robot actions and conditions** are registered in `frc/robot/autos/bt/AutoNodes.java`. Add new
-  nodes there, and never call `getInstance()` in a node constructor.
+- **Where nodes live.** Generic nodes any robot could use, like `ParallelDeadline` and the swerve
+  nodes in `com.marswars.bt.swerve.SwerveNodes`, belong in MW-Lib. Robot-only actions and
+  conditions are registered in `frc/robot/autos/bt/AutoNodes.java`. Never call `getInstance()` in a
+  node constructor.
+- **Node palette.** `deploy/autos/lib/nodes.xml` holds MW-Lib's nodes plus the robot's.
+  Regenerate it with `./gradlew test -PupdateNodeSpec`.
 - **Shared subtrees** live in `deploy/autos/lib/common.xml`.
 - **Hidden autos** go in `deploy/autos/unlisted/`. They're tested but not in the chooser.
 
@@ -22,11 +26,11 @@ the normal `Auto`/`AutoManager`/`CommandScheduler` flow. Full reference:
       <SetShooterTarget target="HUB"/>
       <SetIntakeState state="STORE"/>
       <Sleep msec="1000"/>
-      <!-- path + Choreo event handler; only the path can finish the Parallel -->
-      <Parallel success_count="1">
+      <!-- path + Choreo event handler; the first child (the path) decides when it ends -->
+      <ParallelDeadline>
         <FollowTrajectory trajectory="SynergyP1" end_state="IDLE"/>
         <SubTree ID="IntakeOnEvent" event="Intake Out" state="INTAKE"/>
-      </Parallel>
+      </ParallelDeadline>
       <!-- tunable wait, then the next path -->
       <Delay delay_msec="{middle_wait_msec}">
         <FollowTrajectory trajectory="SynergyP2" end_state="IDLE"/>
@@ -48,7 +52,7 @@ the normal `Auto`/`AutoManager`/`CommandScheduler` flow. Full reference:
   `path_state` (CHOREO_PATH, or CHOREO_PATH_ROTATION_LOCK). It finishes when
   `isAtChoreoSetpoint()` holds and at least `min_time` seconds have passed, then requests
   `end_state`. Trajectory names are pre-loaded and alliance-flipped automatically.
-- **Choreo events.** Handle them next to the path in a `Parallel success_count="1"` with
+- **Choreo events.** Handle them next to the path in a `ParallelDeadline`, path first, with
   `IntakeOnEvent` or `WaitForChoreoEvent`. There are no global `Trigger` bindings.
 - **Waits.** Use BT.CPP `Sleep msec` or `Delay delay_msec`; there are no custom wait nodes.
 - **Tunable values.** Declare a port on the auto's tree in `<TreeNodesModel>` and read it as

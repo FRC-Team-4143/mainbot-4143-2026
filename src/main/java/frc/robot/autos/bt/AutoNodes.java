@@ -1,10 +1,8 @@
 package frc.robot.autos.bt;
 
 import com.marswars.bt.core.BehaviorTreeFactory;
-import com.marswars.bt.core.NodeKind;
 import com.marswars.bt.core.PortInfo;
-import com.marswars.bt.core.PortType;
-import com.marswars.swerve_lib.SwerveStates;
+import com.marswars.bt.swerve.SwerveNodes;
 import edu.wpi.first.math.geometry.Translation3d;
 import frc.robot.lib2026.FieldTargets;
 import frc.robot.subsystems.intake.IntakeConstants.IntakeStates;
@@ -57,11 +55,6 @@ public final class AutoNodes {
                 "Request a shooter state",
                 ShooterStates.class,
                 s -> ShooterSubsystem.getInstance().setWantedState(s));
-        factory.registerSetState(
-                "SetSwerveState",
-                "Request a swerve state",
-                SwerveStates.class,
-                s -> SwerveSubsystem.getInstance().setWantedState(s));
         factory.registerInstantAction(
                 "SetShooterTarget",
                 "Point the shooter at a named field target",
@@ -76,40 +69,11 @@ public final class AutoNodes {
                                 .setTarget(SHOOTER_TARGETS.get(n.getString("target"))));
 
         // ---------------------------------------------------------------- driving
-        factory.registerNodeType(
-                FollowTrajectoryNode.ID,
-                NodeKind.ACTION,
-                "Follow a Choreo trajectory until its end setpoint is reached",
-                FollowTrajectoryNode.PORTS,
-                FollowTrajectoryNode::new);
-        factory.registerNodeType(
-                WaitForChoreoEventNode.ID,
-                NodeKind.ACTION,
-                "Wait until the running trajectory passes a Choreo event marker",
-                WaitForChoreoEventNode.PORTS,
-                WaitForChoreoEventNode::new);
+        // FollowTrajectory, WaitForChoreoEvent, SetSwerveState and the Choreo/chassis conditions
+        // are MW-Lib's shared swerve nodes.
+        SwerveNodes.register(factory, SwerveSubsystem::getInstance);
 
         // ---------------------------------------------------------------- conditions
-        factory.registerSimpleCondition(
-                "IsAtChoreoSetpoint",
-                "The swerve reached the end of its Choreo trajectory",
-                List.of(),
-                n -> SwerveSubsystem.getInstance().isAtChoreoSetpoint());
-        factory.registerSimpleCondition(
-                "HasChoreoTimeElapsed",
-                "At least `seconds` of the current Choreo trajectory have run",
-                List.of(PortInfo.input("seconds", PortType.DOUBLE, "Seconds on the path")),
-                n -> SwerveSubsystem.getInstance().hasChoreoTimeElapsed(n.getDouble("seconds")));
-        factory.registerSimpleCondition(
-                "HasChoreoEventPassed",
-                "The running trajectory passed a Choreo event marker",
-                List.of(PortInfo.input("event", PortType.STRING, "Choreo event marker name")),
-                n -> SwerveSubsystem.getInstance().hasChoreoEventBeenPassed(n.getString("event")));
-        factory.registerSimpleCondition(
-                "IsChassisStationary",
-                "The chassis is not moving",
-                List.of(),
-                n -> SwerveSubsystem.getInstance().isChassisStationary());
         factory.registerSimpleCondition(
                 "IsShooterReady",
                 "Flywheel, hood and aim are within tolerance",

@@ -8,28 +8,28 @@
       <SetShooterTarget target="HUB"/>
       <SetShooterState state="IDLE"/>
 
-      <Parallel name="Drive LBumpStartBumpReturn" success_count="1">
+      <ParallelDeadline name="Drive LBumpStartBumpReturn">
         <FollowTrajectory trajectory="LBumpStartBumpReturn" end_state="FIELD_CENTRIC_ROTATION_LOCK"/>
         <SubTree ID="IntakeOnEvent" event="Intake Out" state="INTAKE"/>
-      </Parallel>
+      </ParallelDeadline>
 
       <SubTree ID="ShootFor" duration_msec="3500"/>
       <SetShooterState state="IDLE"/>
       <SetIntakeState state="SQUEEZE_HOLD"/>
 
-      <Parallel name="Drive LBumpSwipeBumpReturn" success_count="1">
+      <ParallelDeadline name="Drive LBumpSwipeBumpReturn">
         <FollowTrajectory trajectory="LBumpSwipeBumpReturn" end_state="FIELD_CENTRIC_ROTATION_LOCK" min_time="1"/>
         <SubTree ID="IntakeOnEvent" event="Intake Out" state="INTAKE"/>
-      </Parallel>
+      </ParallelDeadline>
 
       <SubTree ID="ShootFor" duration_msec="3500"/>
       <SetShooterState state="IDLE"/>
       <SetIntakeState state="SQUEEZE_HOLD"/>
 
-      <Parallel name="Drive LBumpSwipeBumpReturn" success_count="1">
+      <ParallelDeadline name="Drive LBumpSwipeBumpReturn">
         <FollowTrajectory trajectory="LBumpSwipeBumpReturn" end_state="FIELD_CENTRIC_ROTATION_LOCK" min_time="1"/>
         <SubTree ID="IntakeOnEvent" event="Intake Out" state="INTAKE"/>
-      </Parallel>
+      </ParallelDeadline>
     </Sequence>
   </BehaviorTree>
 </root>

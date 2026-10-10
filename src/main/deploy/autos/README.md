@@ -19,6 +19,8 @@ Use the standard BT.CPP nodes for flow control and timing:
 
 - **Order and branching:** `Sequence`, `Fallback`, `ReactiveSequence`, `Parallel`, `IfThenElse`
   and the rest of the standard control nodes.
+- **MW-Lib shared nodes:** `ParallelDeadline` runs its children in parallel until the *first*
+  child finishes, then halts the rest. The swerve nodes in the table below also come from MW-Lib.
 - **Waits:** `Sleep msec` waits. `Delay delay_msec` waits, then runs its child.
 - **Decorators:** `Timeout`, `Repeat`, `RetryUntilSuccessful`, `Inverter`, `ForceSuccess`,
   `KeepRunningUntilFailure`, `RunOnce`.
@@ -26,7 +28,7 @@ Use the standard BT.CPP nodes for flow control and timing:
 
 Scripting (`Script`, `_skipIf`, and so on) isn't supported.
 
-The robot nodes:
+Robot and MW-Lib swerve nodes:
 
 | Node | Ports | What it does |
 |---|---|---|
@@ -68,10 +70,10 @@ read it from the blackboard with `{name}`:
 Run event handlers in a `Parallel` next to the path. Only the path should be able to finish it:
 
 ```xml
-<Parallel success_count="1">
+<ParallelDeadline>
   <FollowTrajectory trajectory="SynergyP1"/>
   <SubTree ID="IntakeOnEvent" event="Intake Out" state="INTAKE"/>
-</Parallel>
+</ParallelDeadline>
 ```
 
 `IntakeOnEvent` waits for the marker, sets the intake state, then stays RUNNING until the path
@@ -81,8 +83,14 @@ ends. For other actions, copy its pattern: `WaitForChoreoEvent`, then the action
 ## Checking and debugging
 
 - **Run the tests.** `./gradlew test` instantiates every auto, including `unlisted/`. It fails on
-  unknown nodes, bad ports, or trajectories missing from `deploy/choreo`. It also writes
-  `build/bt/nodes.xml`, the node palette for the editor and Groot2.
+  unknown nodes, bad ports, or trajectories missing from `deploy/choreo`.
+- **Node palette.** `lib/nodes.xml` is the node-spec file for the editor and Groot2: MW-Lib's
+  shared nodes first, then this robot's nodes appended. MW-Lib ships its own part as
+  `com/marswars/bt/mwlib_nodes.xml`. The tests fail when `lib/nodes.xml` is stale; regenerate it
+  with `./gradlew test -PupdateNodeSpec`.
+- **Run logs.** Every auto run writes `<auto>_<date>_<time>.btlog.xml` with every node status
+  transition (`/U/logs/bt` on the robot, `logs/bt` in sim, `_replay` during log replay). Times use
+  the same clock as the AdvantageKit log.
 - **A broken auto still shows up.** An auto that fails to load is still in the chooser. It raises
   an Elastic alert and logs `BehaviorTree/<name>/Error`.
 - **No code deploy needed for XML edits.** Re-selecting an auto or changing alliance re-reads its
