@@ -43,35 +43,11 @@ public class SwerveConstants extends MwSwerveConstants {
     public double STEER_STATOR_CURRENT_LIMIT = 40.0; // Amps
 
     // =============================================================================
-    // CAN IDS AND HARDWARE CONFIGURATION
+    // HARDWARE CONSTANTS (identical on every robot)
     // =============================================================================
 
     public final int PIGEON2_ID = 0;
-
-    // =============================================================================
-    // PHYSICAL ROBOT CONSTANTS
-    // =============================================================================
-
-    public final double ROBOT_MASS_KG = Units.lbsToKilograms(140.0); // Mass of the robot in pounds
-    public final double BUMPER_WIDTH_METERS =
-            Units.inchesToMeters(34.75); // Width of the bumpers in meters (y axis : left -> right)
-    public final double BUMPER_LENGTH_METERS =
-            Units.inchesToMeters(34.75); // Length of the bumpers in meters (x axis : front -> back)
-    public final double BUMPER_THICKNESS_METERS =
-            Units.inchesToMeters(3.0); // Thickness of the bumpers in meters
-
-    // =============================================================================
-    // MOTOR AND MECHANICAL CONSTANTS
-    // =============================================================================
-
-    public final double DRIVE_INERTIA = 0.025; // kg*m^2, inertia of the drive motor
-    public final double STEER_INERTIA = 0.004; // kg*m^2, inertia of the steer motor
-    public final double DRIVE_FRICTION_VOLTAGE = 0.2;
-    public final double STEER_FRICTION_VOLTAGE = 0.2;
-
-    public final double SLIP_CURRENT_AMPS = 50.0;
     public final double SPEED_AT_12V_MPS = 5.0;
-    public final double COUPLE_RATIO = 3.5;
 
     // =============================================================================
     // DRIVETRAIN HARDWARE
