@@ -234,8 +234,8 @@ no per-robot variance need none of this — plain `new XConstants()` stays.
 The swerve state machine (teleop, crawl, rotation lock, Choreo following, tractor beam, brake)
 lives in MW-Lib's `com.marswars.swerve_lib.MwSwerveSubsystem`. `SwerveSubsystem` here is a thin
 subclass: it owns the singleton, passes `SwerveConstants.create()`, the localization pose supplier
-and the driver `SwerveDriverInputs`, and overrides `remapWantedState()` for the POV→crawl driver
-preference. `SwerveConstants` extends `MwSwerveConstants`, which supplies the control/Choreo/
+and the driver `SwerveDriverInputs`. Holding the POV forcing crawl is built into the library
+(override `remapWantedState()` to change it). `SwerveConstants` extends `MwSwerveConstants`, which supplies the control/Choreo/
 tractor-beam tunables (reassign them in `configure()` to override per robot) and requires
 `getDriveConfig()`. `SwerveStates` and `OperatorPerspective` are imported from
 `com.marswars.swerve_lib`. Add new drive behaviour to MW-Lib, not to the robot subclass.
