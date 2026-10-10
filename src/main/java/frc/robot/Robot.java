@@ -64,7 +64,8 @@ public class Robot extends LoggedRobot {
                                 bt_factory,
                                 Filesystem.getDeployDirectory().toPath().resolve("autos")));
         startBtLiveServer();
-        // One <auto>_<time>.btlog.xml per auto run (logs/bt in sim, /U/logs/bt on the robot)
+        // One <auto>_<time>.btlog per auto run, replayable in Groot2 / the BT editor
+        // (logs/bt in sim, /U/logs/bt on the robot)
         BehaviorTreeFileLogger.enableDefault();
 
         // Set the default target for the shooter to be the hub

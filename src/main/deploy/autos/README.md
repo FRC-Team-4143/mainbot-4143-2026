@@ -180,9 +180,14 @@ auto's tree in `<TreeNodesModel>`, then read it with `{name}`:
 - **AdvantageScope.** `BehaviorTree/Active` is the running auto.
   `BehaviorTree/<auto>/{Status,Structure,Xml,Result}` describe the tree and its state. `Status`
   has one letter per node in tree order: I(dle), R(unning), S(uccess), F(ailure), K (skipped).
-- **Run logs.** Every run writes `<auto>_<date>_<time>.btlog.xml` with every node status change.
-  These go to `/U/logs/bt` on the robot and `logs/bt` in sim, with a `_replay` suffix during log
-  replay. Times use the same clock as the AdvantageKit log.
+- **Run logs.** Every run writes `<auto>_<date>_<time>.btlog`, in the same binary format as
+  BehaviorTree.CPP's `FileLogger2`. Open it in Groot2 or the BT editor to replay the run node by
+  node. It records every status change, including ones too quick to show in `Status`.
+  - **Where.** `/U/logs/bt` on the robot, next to the AdvantageKit logs, and `logs/bt` in sim.
+    Log replay writes `_replay` copies.
+  - **Timing.** Times follow the same clock as the AdvantageKit log.
+  - **Crash-safe.** It's written as the auto runs, so a power loss mid-auto still leaves a usable
+    file.
 - **Live view.** The robot streams the running tree to the BT editor over WebSocket at
   `ws://<robot>:1670/`, using the btlive protocol.
 
