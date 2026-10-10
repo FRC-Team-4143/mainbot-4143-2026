@@ -189,10 +189,8 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
         } else {
             system_state_ = wanted;
         }
-    }
 
-    @Override
-    public void updateLogic(double timestamp) {
+        // Work out where to aim for the state just picked (updateLogic uses the results)
         // Get the current robot pose and velocity
         Pose2d robot_pose = LocalizationSubsystem.getInstance().getFieldPose();
 
@@ -229,7 +227,10 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
             // Store heading feedforward velocity (rad/s) for use in all states
             heading_feedforward_ = launch_params_.heading_velocity;
         }
+    }
 
+    @Override
+    public void updateLogic(double timestamp) {
         // Apply flywheel velocity filtering
         filtered_flywheel_velocity_ =
                 flywheel_velocity_filter_.calculate(flywheel_.getCurrentVelocity());

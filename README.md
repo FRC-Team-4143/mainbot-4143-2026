@@ -38,14 +38,19 @@ There are no command files.
 | `TRACK` | Driving with the flywheel kept at speed (after releasing aim), so the next shot is quick |
 | `AUTO` | Autonomous: the robot asks for nothing; autos set subsystem states themselves |
 | `AIM` | Aim at the target without shooting (driver LT) |
-| `SHOOT` | Spin up and aim. The intake feeds (`SQUEEZE`) only once the shooter is ready, and the robot brakes once stopped and ready (driver RT; autos' `ShootFor`) |
+| `SHOOT` | What the driver's RT and autos' `ShootFor` ask for. The robot is never in `SHOOT` itself: each loop `handleStateTransition` picks a step |
+| `SHOOT_WAIT` | Spinning up and aiming, not feeding yet |
+| `SHOOT_FEED` | Ready: feed (intake `SQUEEZE`) while driving with the heading locked |
+| `SHOOT_FEED_BRAKED` | Ready and stopped: feed with the wheels crossed |
+| `SHOOT_PASS_INTAKE` | Passing while moving: keep intaking until the robot stops |
 | `MANUAL_HUB` / `MANUAL_PASS` | Fixed flywheel speed shot or pass, for when vision is down (driver Y / B) |
 | `INTAKE` / `OUTTAKE` | Run the intake in / out (driver RB / A) |
 | `BRAKE` | Cross the wheels (driver X) |
 | `MAINTENANCE` | Test mode: the robot asks for nothing, so dashboard maintenance buttons (homing, tuning) drive the subsystems |
 
-RobotContainer is written like a subsystem state machine: `updateLogic` is a `switch` on the robot
-state that asks every subsystem for its state, every loop. In `AUTO` and `MAINTENANCE` it asks for
+RobotContainer is written like a subsystem state machine. **Every decision is in
+`handleStateTransition`** (scoring mode, shooter target, which `SHOOT_` step); `updateLogic` is a
+`switch` on the robot state with no conditions, asking every subsystem for its state every loop. In `AUTO` and `MAINTENANCE` it asks for
 nothing, so autos and maintenance tasks (homing, tuning) can set subsystem states directly. Driver
 toggles (field centric, intake stowed, able to rack) are flags the states read.
 

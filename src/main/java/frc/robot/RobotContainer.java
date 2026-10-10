@@ -8,6 +8,7 @@ import com.marswars.logging.MwLog;
 import com.marswars.subsystem.MwSuperStateMachine;
 import com.marswars.swerve_lib.SwerveStates;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.RobotState;
 import frc.robot.lib2026.FieldConstants;
@@ -28,10 +29,11 @@ import frc.robot.subsystems.swerve.SwerveSubsystem;
  * subsystems:
  *
  * <ul>
- *   <li>{@link #handleStateTransition}: the default, straight to the wanted state.
- *   <li>{@link #updateLogic}: a switch on the robot state that asks each subsystem for the state it
- *       needs, every loop. It also works out the scoring mode from the robot's pose and picks the
- *       shooter target.
+ *   <li>{@link #handleStateTransition}: every decision. It works out the scoring mode, the shooter
+ *       target, the driving mode and where the intake rests, and picks the robot state (SHOOT is
+ *       split into step states, chosen from whether the shooter is ready and the robot is moving).
+ *   <li>{@link #updateLogic}: no decisions. A switch on the robot state that asks each subsystem
+ *       for the state it needs, every loop.
  * </ul>
  *
  * <p>Maintenance (homing, tuning) lives outside it: in Test mode the robot is in MAINTENANCE and
@@ -52,12 +54,18 @@ public class RobotContainer extends MwSuperStateMachine<RobotStates> {
     private final ShooterSubsystem shooter_ = ShooterSubsystem.getInstance();
     private final IntakeSubsystem intake_ = IntakeSubsystem.getInstance();
 
-    private ScoringModes scoring_mode_ = ScoringModes.HOLD;
+    // Operator settings
     private boolean goal_active_ = true; // must be true :)
     private boolean pass_override_ = false;
     private boolean is_able_to_rack_ = true;
     private boolean field_centric_ = true;
     private boolean intake_stored_ = false;
+
+    // Decided in handleStateTransition, used in updateLogic
+    private ScoringModes scoring_mode_ = ScoringModes.HOLD;
+    private Translation3d shooter_target_ = FieldTargets.Shooter.HUB;
+    private SwerveStates drive_mode_ = SwerveStates.FIELD_CENTRIC;
+    private IntakeStates intake_rest_ = IntakeStates.DEPLOYED;
 
     public RobotContainer() {
         super(RobotStates.IDLE, BuildConstants.class, RobotId.current().disabled_subsystems);
@@ -77,68 +85,137 @@ public class RobotContainer extends MwSuperStateMachine<RobotStates> {
     }
 
     @Override
-    protected void updateLogic(double timestamp) {
+    protected void handleStateTransition(RobotStates wanted) {
+        // Where the robot is decides the scoring mode and what the shooter aims at
         updateScoringMode();
-        MwLog.log(LOG_KEY + "ScoringMode", scoring_mode_);
-        if (scoring_mode_ != ScoringModes.AUTO) {
-            selectShooterTarget();
+        updateShooterTarget();
+
+        // Operator settings
+        if (field_centric_) {
+            drive_mode_ = SwerveStates.FIELD_CENTRIC;
+        } else {
+            drive_mode_ = SwerveStates.ROBOT_CENTRIC;
         }
+        if (intake_stored_) {
+            intake_rest_ = IntakeStates.STORE;
+        } else {
+            intake_rest_ = IntakeStates.DEPLOYED;
+        }
+
+        // The robot state
+        if (wanted == RobotStates.SHOOT) {
+            system_state_ = shootStep();
+        } else {
+            system_state_ = wanted;
+        }
+    }
+
+    /**
+     * Which shooting step the robot is in. Feed only when the shooter is ready (and the operator
+     * allows racking); when passing, only feed while stopped and keep intaking while moving; cross
+     * the wheels once stopped and feeding.
+     */
+    private RobotStates shootStep() {
+        boolean ready = shooter_.isShooterReady() && is_able_to_rack_;
+        boolean stationary = swerve_.isChassisStationary();
+        boolean scoring = scoring_mode_ == ScoringModes.SCORE || scoring_mode_ == ScoringModes.AUTO;
+        boolean passing = scoring_mode_ == ScoringModes.PASS;
+
+        if (ready && stationary && (scoring || passing)) {
+            return RobotStates.SHOOT_FEED_BRAKED;
+        } else if (ready && scoring) {
+            return RobotStates.SHOOT_FEED;
+        } else if (passing && !stationary) {
+            return RobotStates.SHOOT_PASS_INTAKE;
+        } else {
+            return RobotStates.SHOOT_WAIT;
+        }
+    }
+
+    @Override
+    protected void updateLogic(double timestamp) {
+        MwLog.log(LOG_KEY + "ScoringMode", scoring_mode_);
 
         switch (system_state_) {
             case IDLE, DRIVE -> {
-                swerve_.setWantedState(driveMode());
+                swerve_.setWantedState(drive_mode_);
                 swerve_.setTeleOpVelocityScalar(1.0);
                 shooter_.setWantedState(ShooterStates.IDLE);
-                intake_.setWantedState(intakeRest());
+                shooter_.setTarget(shooter_target_);
+                intake_.setWantedState(intake_rest_);
                 localization_.setWantedState(LocalizationStates.FULL);
             }
             case TRACK -> {
-                swerve_.setWantedState(driveMode());
+                swerve_.setWantedState(drive_mode_);
                 swerve_.setTeleOpVelocityScalar(1.0);
                 shooter_.setWantedState(ShooterStates.TRACKING);
-                intake_.setWantedState(intakeRest());
+                shooter_.setTarget(shooter_target_);
+                intake_.setWantedState(intake_rest_);
                 localization_.setWantedState(LocalizationStates.FULL);
             }
             case AIM -> {
                 swerve_.setWantedState(SwerveStates.FIELD_CENTRIC_ROTATION_LOCK);
                 swerve_.setTeleOpVelocityScalar(1.0);
                 shooter_.setWantedState(ShooterStates.AIMING);
-                intake_.setWantedState(intakeRest());
+                shooter_.setTarget(shooter_target_);
+                intake_.setWantedState(intake_rest_);
                 localization_.setWantedState(LocalizationStates.SHOOTING_FOCUS);
             }
-            case SHOOT -> {
-                swerve_.setWantedState(
-                        swerve_.isChassisStationary() && shooter_.isShooterReady()
-                                ? SwerveStates.BRAKE
-                                : SwerveStates.FIELD_CENTRIC_ROTATION_LOCK);
+            case SHOOT_WAIT -> {
+                swerve_.setWantedState(SwerveStates.FIELD_CENTRIC_ROTATION_LOCK);
                 swerve_.setTeleOpVelocityScalar(0.25);
                 shooter_.setWantedState(ShooterStates.SHOOT);
-                feedWhenReady();
+                shooter_.setTarget(shooter_target_);
+                // the intake stays where it is until the shooter is ready
+                localization_.setWantedState(LocalizationStates.SHOOTING_FOCUS);
+            }
+            case SHOOT_FEED -> {
+                swerve_.setWantedState(SwerveStates.FIELD_CENTRIC_ROTATION_LOCK);
+                swerve_.setTeleOpVelocityScalar(0.25);
+                shooter_.setWantedState(ShooterStates.SHOOT);
+                shooter_.setTarget(shooter_target_);
+                intake_.setWantedState(IntakeStates.SQUEEZE);
+                localization_.setWantedState(LocalizationStates.SHOOTING_FOCUS);
+            }
+            case SHOOT_FEED_BRAKED -> {
+                swerve_.setWantedState(SwerveStates.BRAKE);
+                swerve_.setTeleOpVelocityScalar(0.25);
+                shooter_.setWantedState(ShooterStates.SHOOT);
+                shooter_.setTarget(shooter_target_);
+                intake_.setWantedState(IntakeStates.SQUEEZE);
+                localization_.setWantedState(LocalizationStates.SHOOTING_FOCUS);
+            }
+            case SHOOT_PASS_INTAKE -> {
+                swerve_.setWantedState(SwerveStates.FIELD_CENTRIC_ROTATION_LOCK);
+                swerve_.setTeleOpVelocityScalar(0.25);
+                shooter_.setWantedState(ShooterStates.SHOOT);
+                shooter_.setTarget(shooter_target_);
+                intake_.setWantedState(IntakeStates.INTAKE);
                 localization_.setWantedState(LocalizationStates.SHOOTING_FOCUS);
             }
             case MANUAL_HUB -> {
-                swerve_.setWantedState(driveMode());
+                swerve_.setWantedState(drive_mode_);
                 swerve_.setTeleOpVelocityScalar(1.0);
                 shooter_.setWantedState(ShooterStates.MANUAL_HUB);
                 intake_.setWantedState(IntakeStates.SQUEEZE);
                 localization_.setWantedState(LocalizationStates.FULL);
             }
             case MANUAL_PASS -> {
-                swerve_.setWantedState(driveMode());
+                swerve_.setWantedState(drive_mode_);
                 swerve_.setTeleOpVelocityScalar(1.0);
                 shooter_.setWantedState(ShooterStates.MANUAL_PASS);
                 intake_.setWantedState(IntakeStates.SQUEEZE);
                 localization_.setWantedState(LocalizationStates.FULL);
             }
             case INTAKE -> {
-                swerve_.setWantedState(driveMode());
+                swerve_.setWantedState(drive_mode_);
                 swerve_.setTeleOpVelocityScalar(1.0);
                 shooter_.setWantedState(ShooterStates.IDLE);
                 intake_.setWantedState(IntakeStates.INTAKE);
                 localization_.setWantedState(LocalizationStates.FULL);
             }
             case OUTTAKE -> {
-                swerve_.setWantedState(driveMode());
+                swerve_.setWantedState(drive_mode_);
                 swerve_.setTeleOpVelocityScalar(1.0);
                 shooter_.setWantedState(ShooterStates.IDLE);
                 intake_.setWantedState(IntakeStates.OUTTAKE);
@@ -147,41 +224,17 @@ public class RobotContainer extends MwSuperStateMachine<RobotStates> {
             case BRAKE -> {
                 swerve_.setWantedState(SwerveStates.BRAKE);
                 shooter_.setWantedState(ShooterStates.IDLE);
-                intake_.setWantedState(intakeRest());
+                intake_.setWantedState(intake_rest_);
                 localization_.setWantedState(LocalizationStates.FULL);
             }
             case AUTO, MAINTENANCE -> {
                 // Hands off: the auto (FollowTrajectory, SetIntakeState, ...) or the maintenance
                 // dashboard buttons (homing, tuning) set subsystem states themselves.
             }
+            case SHOOT -> {
+                // Never the robot's state: handleStateTransition picks a SHOOT_ step instead.
+            }
         }
-    }
-
-    /** SHOOT: feed fuel into the shooter only when it is ready (and the scoring mode allows). */
-    private void feedWhenReady() {
-        boolean should_squeeze = shooter_.isShooterReady() && is_able_to_rack_;
-        boolean stationary = swerve_.isChassisStationary();
-        boolean scoring = scoring_mode_ == ScoringModes.SCORE || scoring_mode_ == ScoringModes.AUTO;
-
-        if (scoring && should_squeeze) {
-            intake_.setWantedState(IntakeStates.SQUEEZE);
-        } else if (scoring_mode_ == ScoringModes.PASS && stationary && should_squeeze) {
-            intake_.setWantedState(IntakeStates.SQUEEZE);
-        } else if (scoring_mode_ == ScoringModes.PASS && !stationary) {
-            intake_.setWantedState(IntakeStates.INTAKE);
-        } else {
-            // hold - leave the intake where it is
-        }
-    }
-
-    /** Field centric or robot centric driving, toggled by the driver. */
-    private SwerveStates driveMode() {
-        return field_centric_ ? SwerveStates.FIELD_CENTRIC : SwerveStates.ROBOT_CENTRIC;
-    }
-
-    /** Where the intake sits when it isn't doing anything: stowed or deployed. */
-    private IntakeStates intakeRest() {
-        return intake_stored_ ? IntakeStates.STORE : IntakeStates.DEPLOYED;
     }
 
     /** HOLD / SCORE / PASS from where the robot is on the field. */
@@ -223,26 +276,29 @@ public class RobotContainer extends MwSuperStateMachine<RobotStates> {
         }
     }
 
-    /** Point the shooter at the hub, or at a pass target, from the robot's pose. */
-    private void selectShooterTarget() {
+    /** The hub, or a pass target, from the robot's pose. Autos pick their own target. */
+    private void updateShooterTarget() {
+        if (scoring_mode_ == ScoringModes.AUTO) {
+            return;
+        }
         Pose2d pose = localization_.getFieldPose();
 
         if (FieldRegions.LEFT_PASS_REGION.contains(pose)) {
-            shooter_.setTarget(FieldTargets.Shooter.LEFT_PASS);
+            shooter_target_ = FieldTargets.Shooter.LEFT_PASS;
         } else if (FieldRegions.RIGHT_PASS_REGION.contains(pose)) {
-            shooter_.setTarget(FieldTargets.Shooter.RIGHT_PASS);
+            shooter_target_ = FieldTargets.Shooter.RIGHT_PASS;
         } else if (FieldRegions.ALLIANCE_ZONE.contains(pose)) {
             // If operator is holding the dead-man pass override, allow selecting a pass
             // target even while inside the alliance zone. Choose left/right pass by Y
             // position (field is split roughly at y=4.021). Otherwise default to HUB.
             if (pass_override_) {
                 if (pose.getY() > FieldConstants.FIELD_CENTER.getY()) {
-                    shooter_.setTarget(FieldTargets.Shooter.RIGHT_PASS);
+                    shooter_target_ = FieldTargets.Shooter.RIGHT_PASS;
                 } else {
-                    shooter_.setTarget(FieldTargets.Shooter.LEFT_PASS);
+                    shooter_target_ = FieldTargets.Shooter.LEFT_PASS;
                 }
             } else {
-                shooter_.setTarget(FieldTargets.Shooter.HUB);
+                shooter_target_ = FieldTargets.Shooter.HUB;
             }
         }
     }
@@ -286,6 +342,12 @@ public class RobotContainer extends MwSuperStateMachine<RobotStates> {
 
     public ScoringModes getScoringMode() {
         return scoring_mode_;
+    }
+
+    /** Autos: aim the shooter at {@code target} (in autonomous the pose doesn't pick it). */
+    public void setAutoShooterTarget(Translation3d target) {
+        shooter_target_ = target;
+        shooter_.setTarget(target);
     }
 
     /** Allow or block feeding fuel into the shooter while shooting. */

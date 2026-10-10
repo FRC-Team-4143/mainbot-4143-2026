@@ -16,8 +16,20 @@ public enum RobotStates {
     AUTO,
     /** Aim at the target (shooter aiming, swerve rotation lock) without shooting */
     AIM,
-    /** Shoot: spin up, then feed (intake squeeze) once the shooter is ready */
+    /**
+     * Shoot (what buttons and autos ask for). The robot is never in SHOOT itself:
+     * handleStateTransition picks one of the SHOOT_ step states below every loop. It keeps shooting
+     * until something asks for another state.
+     */
     SHOOT,
+    /** Shooting step: spinning up and aiming, not feeding yet */
+    SHOOT_WAIT,
+    /** Shooting step: ready, feeding fuel (intake squeeze) while driving with the heading locked */
+    SHOOT_FEED,
+    /** Shooting step: ready and stopped, feeding fuel with the wheels crossed */
+    SHOOT_FEED_BRAKED,
+    /** Shooting step: passing while moving, keep intaking until the robot stops */
+    SHOOT_PASS_INTAKE,
     /** Shoot at the hub with a fixed flywheel speed (vision not working) */
     MANUAL_HUB,
     /** Pass with a fixed flywheel speed and hood angle (vision not working) */

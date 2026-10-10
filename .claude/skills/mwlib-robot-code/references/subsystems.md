@@ -62,7 +62,7 @@ public class IntakeSubsystem extends MwSubsystem<IntakeStates, IntakeConstants> 
         return Arrays.asList(roller_0_, pivot_);
     }
 
-    // 5. handleStateTransition — the transition table (only override if you need guards)
+    // 5. handleStateTransition — the transition table; every condition lives here
     @Override
     protected void handleStateTransition(IntakeStates wantedState) {
         if (wantedState == IntakeStates.SQUEEZE && system_state_ == IntakeStates.DEPLOYED) {
@@ -74,7 +74,7 @@ public class IntakeSubsystem extends MwSubsystem<IntakeStates, IntakeConstants> 
         }
     }
 
-    // 6. updateLogic — switch on the CURRENT state, command mechanisms
+    // 6. updateLogic — switch on the CURRENT state, command mechanisms. No conditions here.
     @Override
     public void updateLogic(double timestamp) {
         switch (system_state_) {
@@ -109,8 +109,11 @@ public class IntakeSubsystem extends MwSubsystem<IntakeStates, IntakeConstants> 
 - **`super(DEFAULT_STATE, new XConstants())`** sets the initial state and injects the constants (the
   base stores them in the `CONSTANTS` field).
 - **`updateLogic()` switches on `system_state_` (the current state)** and commands mechanisms. Always
-  end with `default:` falling into a safe/`IDLE` case.
-- **`handleStateTransition(wanted)` decides the next state.** The base default just does
+  end with `default:` falling into a safe/`IDLE` case. **No conditions in it:** no `if`/`?:` that
+  changes what a state does. If a state should behave differently depending on a sensor or setting,
+  make it two states and choose between them in `handleStateTransition`. Calculations (filters,
+  feedforward math) are fine; decisions are not.
+- **`handleStateTransition(wanted)` decides the next state, and holds every condition.** The base default just does
   `system_state_ = wanted`. Override it only to insert guards, timed waits, or intermediate states
   (e.g. current-spike homing, `SQUEEZE_WAIT`). Inside it you assign `system_state_` directly — this is
   the *only* place that's allowed.

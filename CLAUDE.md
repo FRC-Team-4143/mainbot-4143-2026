@@ -34,6 +34,10 @@ Data flows **OI / Autos → RobotContainer (robot state machine) → Subsystems 
 
 - **Change subsystem state only via `setWantedState(SomeState)`.** Never assign `system_state_` from
   outside a subsystem. Inside a subsystem, transitions live in `handleStateTransition()`.
+- **Conditions only in `handleStateTransition()`.** `updateLogic()` is a `switch` on the state with
+  no `if`/`?:` deciding behaviour. If a state behaves differently depending on a condition, split it
+  into states and pick between them in `handleStateTransition()` (see RobotContainer's `SHOOT_`
+  steps). Same rule for subsystems and RobotContainer.
 - **Never override `MwSubsystem.update()`.** It auto-logs state and drives the tick; override
   `updateLogic()` and `handleStateTransition()` instead.
 - **Every subsystem is a singleton** (`private static instance_` + `getInstance()`) and **must be

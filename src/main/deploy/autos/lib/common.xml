@@ -19,8 +19,12 @@
        to AUTO, which stops the shooter and redeploys the intake. -->
   <BehaviorTree ID="ShootFor">
     <Sequence>
-      <SetWantedState state="SHOOT"/>
-      <Sleep msec="{duration_msec}"/>
+      <!-- SHOOT keeps going until something asks for another state, so the Sleep decides when
+           it ends -->
+      <ParallelDeadline>
+        <Sleep msec="{duration_msec}"/>
+        <SetWantedState state="SHOOT"/>
+      </ParallelDeadline>
       <SetWantedState state="AUTO"/>
     </Sequence>
   </BehaviorTree>

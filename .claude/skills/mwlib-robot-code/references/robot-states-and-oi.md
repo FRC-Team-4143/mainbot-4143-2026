@@ -23,8 +23,10 @@ same loop. It logs `Robot/WantedState`, `Robot/State` and `Robot/ScoringMode`.
 
 1. Add a value to `RobotStates` (per-value Javadoc).
 2. In `RobotContainer.updateLogic`, add a `case X ->` to the switch that asks **every** subsystem for
-   the state it needs (the same shape as a subsystem's `updateLogic`). Gating that changes loop to
-   loop (feed only when the shooter is ready) goes right in that case.
+   the state it needs (the same shape as a subsystem's `updateLogic`). **No conditions in
+   `updateLogic`:** if X behaves differently depending on something (feed only when the shooter is
+   ready), split it into step states and pick the step in `handleStateTransition`, like `SHOOT` →
+   `SHOOT_WAIT` / `SHOOT_FEED` / `SHOOT_FEED_BRAKED` / `SHOOT_PASS_INTAKE`.
 3. Bind it in `OI` (below). An auto uses it with `<SetWantedState state="X"/>`.
 
 **Multi-step sequences** (aim, then spin up, then feed) are written **once**, as a robot state:

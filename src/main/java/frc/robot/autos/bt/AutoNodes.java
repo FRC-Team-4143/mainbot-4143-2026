@@ -74,8 +74,8 @@ public final class AutoNodes {
                                 "HUB",
                                 "Field target to aim at")),
                 n ->
-                        ShooterSubsystem.getInstance()
-                                .setTarget(SHOOTER_TARGETS.get(n.getString("target"))));
+                        RobotContainer.getInstance()
+                                .setAutoShooterTarget(SHOOTER_TARGETS.get(n.getString("target"))));
 
         // ---------------------------------------------------------------- driving
         // FollowTrajectory, WaitForChoreoEvent, SetSwerveState and the Choreo/chassis conditions
