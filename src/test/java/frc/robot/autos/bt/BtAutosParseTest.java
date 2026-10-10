@@ -96,7 +96,7 @@ class BtAutosParseTest {
         assertEquals(
                 List.of("middle_wait_msec:3000"),
                 params("CitrusSynergy.xml"),
-                "replaces DynamicWaitCommand CitrusSynergy/MiddleWaitTime (3 s)");
+                "CitrusSynergy's middle wait is a tunable tree parameter (3 s)");
         assertEquals(
                 List.of("middle_wait_msec:4000", "before_alliance_zone_wait_msec:1000"),
                 params("CitrusSynergyFarBump.xml"));

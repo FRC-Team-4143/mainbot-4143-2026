@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Building blocks shared by every auto (pulled in with <include path="lib/common.xml"/>).
+  Files in lib/ are not autos themselves: only deploy/autos/*.xml shows up in the chooser.
+-->
+<root BTCPP_format="4">
+  <!-- Waits for a Choreo event on the running path, then requests an intake state. Put it in a
+       ParallelDeadline after the FollowTrajectory: the path decides when the group ends (and halts
+       this branch if the event never came). -->
+  <BehaviorTree ID="IntakeOnEvent">
+    <Sequence>
+      <WaitForChoreoEvent event="{event}"/>
+      <SetIntakeState state="{state}"/>
+    </Sequence>
+  </BehaviorTree>
+
+  <!-- Shoots for a fixed time: shooter SHOOT, intake SQUEEZE, then wait. -->
+  <BehaviorTree ID="ShootFor">
+    <Sequence>
+      <SetShooterState state="SHOOT"/>
+      <SetIntakeState state="SQUEEZE"/>
+      <Sleep msec="{duration_msec}"/>
+    </Sequence>
+  </BehaviorTree>
+
+  <TreeNodesModel>
+    <SubTree ID="IntakeOnEvent">
+      <input_port name="event" type="std::string">Choreo event marker to wait for</input_port>
+      <input_port name="state" type="IntakeStates" default="INTAKE">Intake state to request when it passes</input_port>
+      <description>Run next to a FollowTrajectory in a ParallelDeadline: set the intake state when the event passes</description>
+    </SubTree>
+    <SubTree ID="ShootFor">
+      <input_port name="duration_msec" type="int" default="2000">How long to shoot</input_port>
+      <description>Shooter SHOOT + intake SQUEEZE, then wait</description>
+    </SubTree>
+  </TreeNodesModel>
+</root>

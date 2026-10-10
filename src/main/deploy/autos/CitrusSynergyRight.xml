@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Right start (mirror of CitrusSynergy): drive out (intake on "Intake Out"), wait for partners, drive back, shoot. -->
 <root BTCPP_format="4" main_tree_to_execute="CitrusSynergyRight">
+  <include path="lib/common.xml"/>
+
   <BehaviorTree ID="CitrusSynergyRight">
     <Sequence>
       <SetShooterTarget target="HUB"/>
@@ -10,19 +12,14 @@
 
       <ParallelDeadline name="DriveP1">
         <FollowTrajectory trajectory="SynergyP1Right" end_state="IDLE"/>
-        <Sequence name="On Intake Out">
-          <WaitForChoreoEvent event="Intake Out"/>
-          <SetIntakeState state="INTAKE"/>
-        </Sequence>
+        <SubTree ID="IntakeOnEvent" event="Intake Out" state="INTAKE"/>
       </ParallelDeadline>
 
       <Delay name="MiddleWait" delay_msec="{middle_wait_msec}">
         <FollowTrajectory trajectory="SynergyP2Right" end_state="IDLE"/>
       </Delay>
 
-      <SetShooterState state="SHOOT"/>
-      <SetIntakeState state="SQUEEZE"/>
-      <Sleep name="ShootFor" msec="2000"/>
+      <SubTree ID="ShootFor" duration_msec="2000"/>
     </Sequence>
   </BehaviorTree>
 

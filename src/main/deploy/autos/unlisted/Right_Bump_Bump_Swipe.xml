@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Right bump start (not in the chooser, like the Java version): shoot preload, then swipe twice. -->
 <root BTCPP_format="4" main_tree_to_execute="Right_Bump_Bump_Swipe">
+  <include path="../lib/common.xml"/>
+
   <BehaviorTree ID="Right_Bump_Bump_Swipe">
     <Sequence>
       <SetShooterTarget target="HUB"/>
@@ -8,38 +10,25 @@
 
       <ParallelDeadline name="Drive RBumpStartBumpReturn">
         <FollowTrajectory trajectory="RBumpStartBumpReturn" end_state="FIELD_CENTRIC_ROTATION_LOCK"/>
-        <Sequence name="On Intake Out">
-          <WaitForChoreoEvent event="Intake Out"/>
-          <SetIntakeState state="INTAKE"/>
-        </Sequence>
+        <SubTree ID="IntakeOnEvent" event="Intake Out" state="INTAKE"/>
       </ParallelDeadline>
 
-      <SetShooterState state="SHOOT"/>
-      <SetIntakeState state="SQUEEZE"/>
-      <Sleep name="ShootFor" msec="3500"/>
+      <SubTree ID="ShootFor" duration_msec="3500"/>
       <SetShooterState state="IDLE"/>
       <SetIntakeState state="SQUEEZE_HOLD"/>
 
       <ParallelDeadline name="Drive RBumpSwipeBumpReturn">
         <FollowTrajectory trajectory="RBumpSwipeBumpReturn" end_state="FIELD_CENTRIC_ROTATION_LOCK" min_time="1"/>
-        <Sequence name="On Intake Out">
-          <WaitForChoreoEvent event="Intake Out"/>
-          <SetIntakeState state="INTAKE"/>
-        </Sequence>
+        <SubTree ID="IntakeOnEvent" event="Intake Out" state="INTAKE"/>
       </ParallelDeadline>
 
-      <SetShooterState state="SHOOT"/>
-      <SetIntakeState state="SQUEEZE"/>
-      <Sleep name="ShootFor" msec="3500"/>
+      <SubTree ID="ShootFor" duration_msec="3500"/>
       <SetShooterState state="IDLE"/>
       <SetIntakeState state="SQUEEZE_HOLD"/>
 
       <ParallelDeadline name="Drive RBumpSwipeBumpReturn">
         <FollowTrajectory trajectory="RBumpSwipeBumpReturn" end_state="FIELD_CENTRIC_ROTATION_LOCK" min_time="1"/>
-        <Sequence name="On Intake Out">
-          <WaitForChoreoEvent event="Intake Out"/>
-          <SetIntakeState state="INTAKE"/>
-        </Sequence>
+        <SubTree ID="IntakeOnEvent" event="Intake Out" state="INTAKE"/>
       </ParallelDeadline>
     </Sequence>
   </BehaviorTree>

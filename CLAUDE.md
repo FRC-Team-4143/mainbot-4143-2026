@@ -72,7 +72,7 @@ src/main/java/frc/robot/
 │   ├── <Name>Subsystem.java                      # singleton state machine
 │   └── <Name>Constants.java                      # public final constants + state enum + MotorConfigs
 │       (per-robot variants: Beta<Name>Constants/Sim<Name>Constants reassign fields in their constructor)
-├── autos/                                         # one class per auto, each extends Auto
+├── autos/bt/AutoNodes.java                       # robot BT nodes; the autos themselves are XML in deploy/autos/
 └── lib2026/                                       # season field/game helpers
 ```
 
