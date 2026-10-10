@@ -21,7 +21,7 @@ same loop. It logs `Robot/WantedState`, `Robot/State` and `Robot/ScoringMode`.
 
 ## Adding a robot behaviour
 
-1. Add a value to `RobotStates` (per-value Javadoc).
+1. Add a value to the `RobotStates` enum at the top of `RobotContainer` (per-value Javadoc).
 2. In `RobotContainer.updateLogic`, add a `case X ->` to the switch that asks **every** subsystem for
    the state it needs (the same shape as a subsystem's `updateLogic`). **No conditions in
    `updateLogic`:** if X behaves differently depending on something (feed only when the shooter is

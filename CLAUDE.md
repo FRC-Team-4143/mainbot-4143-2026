@@ -77,8 +77,8 @@ every build. Do not fight the formatter.
 ```
 src/main/java/frc/robot/
 ├── Robot.java, Main.java                         # wiring
-├── RobotContainer.java                           # robot super state machine (MwSuperStateMachine)
-├── RobotStates.java, ScoringModes.java           # robot states; field-based scoring mode
+├── RobotContainer.java                           # robot super state machine, with its RobotStates and
+│                                                 #   ScoringModes enums nested inside
 ├── RobotId.java                                  # which robot the code runs on (burned RobotName)
 ├── OI.java                                       # controller/dashboard bindings only
 ├── subsystems/<name>/
