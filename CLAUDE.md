@@ -65,7 +65,6 @@ every build. Do not fight the formatter.
 ```
 src/main/java/frc/robot/
 ├── Robot.java, RobotContainer.java, Main.java   # wiring; RobotContainer extends SubsystemManager
-├── RobotId.java                                  # which robot the code runs on (burned RobotName)
 ├── OI.java                                       # controller/dashboard bindings only
 ├── ControlCommands.java                          # command factory methods
 ├── subsystems/<name>/
@@ -80,5 +79,5 @@ Per-robot constants are pure Java (no JSON): the base `*Constants` class is Alph
 values that differ between robots as its only non-final fields. A robot that differs is a small
 subclass whose constructor reassigns just those fields (see
 `subsystems/swerve/BetaSwerveConstants.java`), selected by a static `create()` switching on
-`RobotId.current()`. Anything derived from those fields must be computed after construction (e.g.
+`RobotContainer.ROBOT`. Anything derived from those fields must be computed after construction (e.g.
 in a method the subsystem calls), never in the base constructor, or variant values are missed.
