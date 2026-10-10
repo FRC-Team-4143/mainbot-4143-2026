@@ -237,7 +237,9 @@ subclass: it owns the singleton, passes `SwerveConstants.create()`, the localiza
 and the driver `SwerveDriverInputs`. Holding the POV forcing crawl is built into the library
 (override `remapWantedState()` to change it). `SwerveConstants` extends `MwSwerveConstants`, which supplies the control/Choreo/
 tractor-beam tunables (reassign them in `configure()` to override per robot) and requires
-`getDriveConfig()`. `SwerveStates` and `OperatorPerspective` are imported from
+`getDriveConfig()`, built with `SwerveDriveConfig.builder()` (bus, module type, wheel radius,
+gains, current limits, per-module CAN IDs + positions; brake mode, gear ratios and steer
+inversion come from the library / `ModuleType`). `SwerveStates` and `OperatorPerspective` are imported from
 `com.marswars.swerve_lib`. Add new drive behaviour to MW-Lib, not to the robot subclass.
 
 ## Register the subsystem (required)
