@@ -71,12 +71,14 @@ src/main/java/frc/robot/
 ├── subsystems/<name>/
 │   ├── <Name>Subsystem.java                      # singleton state machine
 │   └── <Name>Constants.java                      # public final constants + state enum + MotorConfigs
-│       (per-robot variants: Beta<Name>Constants/Sim<Name>Constants pass values via super(...))
+│       (per-robot variants: Beta<Name>Constants/Sim<Name>Constants reassign fields in their constructor)
 ├── autos/                                         # one class per auto, each extends Auto
 └── lib2026/                                       # season field/game helpers
 ```
 
-Per-robot constants are pure Java (no JSON) and every field is final: the base `*Constants` class
-is AlphaBot; a robot that differs is a small subclass whose constructor passes its values up
-through `super(...)` (see `subsystems/swerve/BetaSwerveConstants.java`, which edits AlphaBot's
-`alphaHardware()` builder), selected by a static `create()` switching on `RobotId.current()`.
+Per-robot constants are pure Java (no JSON): the base `*Constants` class is AlphaBot, with the
+values that differ between robots as its only non-final fields. A robot that differs is a small
+subclass whose constructor reassigns just those fields (see
+`subsystems/swerve/BetaSwerveConstants.java`), selected by a static `create()` switching on
+`RobotId.current()`. Anything derived from those fields must be computed after construction (e.g.
+in a method the subsystem calls), never in the base constructor, or variant values are missed.

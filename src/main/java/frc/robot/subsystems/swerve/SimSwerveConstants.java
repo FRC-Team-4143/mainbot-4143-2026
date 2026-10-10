@@ -9,19 +9,12 @@ import com.marswars.swerve_lib.module.ModuleType;
 public class SimSwerveConstants extends SwerveConstants {
 
     public SimSwerveConstants() {
-        super(
-                alphaHardware()
-                        .canbus("rio")
-                        .moduleType(ModuleType.getModuleType("MK4I-L2+"))
-                        .steerMotor(TalonMotorType.X60)
-                        .driveSlot0(new Slot0Configs().withKG(0.21).withKP(35.0))
-                        .steerGains(
-                                new Slot0Configs().withKG(0.21).withKP(35.0),
-                                new Slot1Configs()
-                                        .withKS(0.2)
-                                        .withKV(0.1)
-                                        .withKA(0.02)
-                                        .withKG(0.3)
-                                        .withKP(8.0)));
+        CANBUS_NAME = "rio";
+        MODULE_TYPE = ModuleType.getModuleType("MK4I-L2+");
+        STEER_MOTOR_TYPE = TalonMotorType.X60;
+        DRIVE_GAINS_SLOT0 = new Slot0Configs().withKG(0.21).withKP(35.0);
+        STEER_GAINS_SLOT0 = new Slot0Configs().withKG(0.21).withKP(35.0);
+        STEER_GAINS_SLOT1 =
+                new Slot1Configs().withKS(0.2).withKV(0.1).withKA(0.02).withKG(0.3).withKP(8.0);
     }
 }

@@ -8,12 +8,12 @@ import edu.wpi.first.math.util.Units;
 public class BetaSwerveConstants extends SwerveConstants {
 
     public BetaSwerveConstants() {
-        super(
-                alphaHardware()
-                        .moduleType(ModuleType.getModuleType("TSN-P13-S16"))
-                        .wheelRadius(Units.inchesToMeters(1.978))
-                        .driveSlot1(new Slot1Configs().withKS(0.224).withKV(0.62).withKP(0.25))
-                        .driveCurrentLimits(35.0, 105.0)
-                        .steerCurrentLimits(20.0, 60.0));
+        WHEEL_RADIUS_METERS = Units.inchesToMeters(1.978);
+        MODULE_TYPE = ModuleType.getModuleType("TSN-P13-S16");
+        DRIVE_GAINS_SLOT1 = new Slot1Configs().withKS(0.224).withKV(0.62).withKP(0.25);
+        DRIVE_SUPPLY_CURRENT_LIMIT = 35.0;
+        DRIVE_STATOR_CURRENT_LIMIT = 105.0;
+        STEER_SUPPLY_CURRENT_LIMIT = 20.0;
+        STEER_STATOR_CURRENT_LIMIT = 60.0;
     }
 }

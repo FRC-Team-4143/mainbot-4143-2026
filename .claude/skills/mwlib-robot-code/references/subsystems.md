@@ -190,23 +190,15 @@ Conventions:
 
 ### Per-robot values (multi-robot support)
 
-Everything is Java — there is no JSON config — and every constant is `final`. The base
-`*Constants` class is **AlphaBot**. Java only lets the declaring class assign its finals, so a robot
-that differs is a small subclass whose **constructor passes its values up through `super(...)`**;
-a static `create()` picks the variant (see `subsystems/swerve/` for the canonical example):
+Everything is Java — there is no JSON config. The base `*Constants` class is **AlphaBot**; the
+values that differ between physical robots are the class's only **non-final** fields, grouped
+under a `PER-ROBOT CONSTANTS` banner. A robot that differs gets a small subclass whose
+**constructor reassigns** just those fields, and a static `create()` picks the variant (see
+`subsystems/swerve/` for the canonical example):
 
 ```java
 // SwerveConstants.java (base = AlphaBot)
-public SwerveConstants() { this(alphaHardware()); }
-
-protected SwerveConstants(SwerveDriveConfig.Builder hardware) { super(hardware.build()); }
-
-protected static SwerveDriveConfig.Builder alphaHardware() {
-    return SwerveDriveConfig.builder()
-            .wheelRadius(Units.inchesToMeters(1.8))
-            // ... everything AlphaBot uses
-            ;
-}
+public double WHEEL_RADIUS_METERS = Units.inchesToMeters(1.8);   // non-final knob
 
 public static SwerveConstants create() {
     return switch (RobotId.current()) {
@@ -218,15 +210,14 @@ public static SwerveConstants create() {
 
 // BetaSwerveConstants.java — ONLY what's unique to BetaBot
 public BetaSwerveConstants() {
-    super(alphaHardware().wheelRadius(Units.inchesToMeters(1.978)));
+    WHEEL_RADIUS_METERS = Units.inchesToMeters(1.978);
 }
 ```
 
-For a subsystem without a hardware builder, the same shape works with plain constructor
-parameters: the base has a `protected` constructor taking the per-robot values and assigning its
-`final` fields, its public no-arg constructor passes AlphaBot's values, and each variant's
-constructor passes its own. Subsystems construct via the factory, e.g.
-`super(MyStates.IDLE, MyConstants.create())`. The active robot comes from `frc.robot.RobotId.current()`
+The variant constructor runs **after** the base class is fully initialized, so anything derived
+from per-robot fields (motor configs, the swerve drive config) must be built later — in a method
+the subsystem calls (e.g. `getDriveConfig()`), never in the base constructor. Subsystems construct
+via the factory, e.g. `super(MyStates.IDLE, MyConstants.create())`. The active robot comes from `frc.robot.RobotId.current()`
 (MW-Lib `RobotIdentity`: persistent `MWPreferences` "RobotName" burned via the Test-mode
 `Config/Burn RobotName` dashboard button, or `SimBot`/`ROBOT_NAME` env var in sim). Subsystems with
 no per-robot variance need none of this — plain `new XConstants()` stays.
@@ -238,8 +229,8 @@ lives in MW-Lib's `com.marswars.swerve_lib.MwSwerveSubsystem`. `SwerveSubsystem`
 subclass: it owns the singleton, passes `SwerveConstants.create()`, the localization pose supplier
 and the driver `SwerveDriverInputs`. Holding the POV forcing crawl is built into the library
 (override `remapWantedState()` to change it). `SwerveConstants` extends `MwSwerveConstants`, which supplies the control/Choreo/
-tractor-beam tunables (final; pass a `MwSwerveConstants.Tuning` to `super(...)` to override)
-and the `DRIVE_CONFIG`, built with `SwerveDriveConfig.builder()` (bus, module type, wheel radius,
+tractor-beam tunables (non-final; reassign in a variant constructor to override) and
+requires `getDriveConfig()`, built with `SwerveDriveConfig.builder()` (bus, module type, wheel radius,
 gains, current limits, per-module CAN IDs + positions; brake mode, gear ratios and steer
 inversion come from the library / `ModuleType`). `SwerveStates` and `OperatorPerspective` are imported from
 `com.marswars.swerve_lib`. Add new drive behaviour to MW-Lib, not to the robot subclass.
