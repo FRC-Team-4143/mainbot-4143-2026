@@ -24,17 +24,18 @@ import frc.robot.subsystems.swerve.SwerveSubsystem;
 
 /**
  * The robot's super state machine. Buttons (OI) and autos ask for a {@link RobotStates} with {@code
- * setWantedState(...)}; this class turns that into subsystem states. Every loop it runs before the
- * subsystems, so what it requests takes effect in the same loop.
+ * setWantedState(...)}. It works like a subsystem's state machine, and runs every loop before the
+ * subsystems:
  *
  * <ul>
- *   <li>{@link #handleStateTransition}: when the robot state changes, undoes what the old state
- *       asked for (exit) and asks for what the new state needs (enter). Requesting only on a change
- *       leaves subsystems free to be set by dashboard buttons (homing) and autos.
- *   <li>{@link #updateLogic}: works out the scoring mode from the robot's pose, picks the shooter
- *       target, and runs the parts of a state that are checked every loop (SHOOT: feed only when
- *       the shooter is ready).
+ *   <li>{@link #handleStateTransition}: the default, straight to the wanted state.
+ *   <li>{@link #updateLogic}: a switch on the robot state that asks each subsystem for the state it
+ *       needs, every loop. It also works out the scoring mode from the robot's pose and picks the
+ *       shooter target.
  * </ul>
+ *
+ * <p>Maintenance (homing, tuning) lives outside it: in Test mode the robot is in MAINTENANCE and
+ * asks for nothing, so the dashboard buttons set subsystem states directly.
  */
 public class RobotContainer extends MwSuperStateMachine<RobotStates> {
     private static RobotContainer instance;
@@ -55,6 +56,8 @@ public class RobotContainer extends MwSuperStateMachine<RobotStates> {
     private boolean goal_active_ = true; // must be true :)
     private boolean pass_override_ = false;
     private boolean is_able_to_rack_ = true;
+    private boolean field_centric_ = true;
+    private boolean intake_stored_ = false;
 
     public RobotContainer() {
         super(RobotStates.IDLE, BuildConstants.class, RobotId.current().disabled_subsystems);
@@ -74,88 +77,6 @@ public class RobotContainer extends MwSuperStateMachine<RobotStates> {
     }
 
     @Override
-    protected void handleStateTransition(RobotStates wanted) {
-        if (wanted == system_state_) {
-            return;
-        }
-        RobotStates previous = system_state_;
-        exitState(previous);
-        system_state_ = wanted;
-        enterState(previous, wanted);
-    }
-
-    /** Undo what {@code state} asked for, as it is left. */
-    private void exitState(RobotStates state) {
-        switch (state) {
-            case AIM -> {
-                shooter_.setWantedState(ShooterStates.TRACKING);
-                swerve_.setWantedState(SwerveStates.FIELD_CENTRIC);
-                localization_.setWantedState(LocalizationStates.FULL);
-            }
-            case SHOOT -> {
-                shooter_.setWantedState(ShooterStates.IDLE);
-                swerve_.setTeleOpVelocityScalar(1.0);
-                swerve_.setWantedState(SwerveStates.FIELD_CENTRIC);
-                localization_.setWantedState(LocalizationStates.FULL);
-                intake_.setWantedState(IntakeStates.DEPLOYED);
-            }
-            case MANUAL_HUB, MANUAL_PASS -> {
-                shooter_.setWantedState(ShooterStates.IDLE);
-                intake_.setWantedState(IntakeStates.DEPLOYED);
-            }
-            case INTAKE, OUTTAKE -> intake_.setWantedState(IntakeStates.DEPLOYED);
-            case BRAKE -> swerve_.setWantedState(SwerveStates.FIELD_CENTRIC);
-            case TUNING -> {
-                shooter_.setWantedState(ShooterStates.IDLE);
-                intake_.setWantedState(IntakeStates.DEPLOYED);
-            }
-            case IDLE, DRIVE, AUTO -> {}
-        }
-    }
-
-    /** Ask for what {@code state} needs, as it is entered from {@code previous}. */
-    private void enterState(RobotStates previous, RobotStates state) {
-        switch (state) {
-            case IDLE -> shooter_.setWantedState(ShooterStates.IDLE);
-            case DRIVE -> {
-                // Teleop starting (from disabled or auto): drive field centric, shooter idle.
-                // Coming back from an action leaves the drive mode alone (robot centric toggle).
-                if (previous == RobotStates.IDLE || previous == RobotStates.AUTO) {
-                    swerve_.setWantedState(SwerveStates.FIELD_CENTRIC);
-                    shooter_.setWantedState(ShooterStates.IDLE);
-                }
-            }
-            case AIM -> {
-                shooter_.setWantedState(ShooterStates.AIMING);
-                swerve_.setWantedState(SwerveStates.FIELD_CENTRIC_ROTATION_LOCK);
-                localization_.setWantedState(LocalizationStates.SHOOTING_FOCUS);
-            }
-            case SHOOT -> {
-                shooter_.setWantedState(ShooterStates.SHOOT);
-                swerve_.setTeleOpVelocityScalar(0.25);
-                localization_.setWantedState(LocalizationStates.SHOOTING_FOCUS);
-            }
-            case MANUAL_HUB -> {
-                shooter_.setWantedState(ShooterStates.MANUAL_HUB);
-                intake_.setWantedState(IntakeStates.SQUEEZE);
-            }
-            case MANUAL_PASS -> {
-                shooter_.setWantedState(ShooterStates.MANUAL_PASS);
-                intake_.setWantedState(IntakeStates.SQUEEZE);
-            }
-            case INTAKE -> intake_.setWantedState(IntakeStates.INTAKE);
-            case OUTTAKE -> intake_.setWantedState(IntakeStates.OUTTAKE);
-            case BRAKE -> swerve_.setWantedState(SwerveStates.BRAKE);
-            case TUNING -> {
-                swerve_.setWantedState(SwerveStates.FIELD_CENTRIC);
-                shooter_.setWantedState(ShooterStates.TUNING);
-                intake_.setWantedState(IntakeStates.TUNING);
-            }
-            case AUTO -> {}
-        }
-    }
-
-    @Override
     protected void updateLogic(double timestamp) {
         updateScoringMode();
         MwLog.log(LOG_KEY + "ScoringMode", scoring_mode_);
@@ -163,13 +84,81 @@ public class RobotContainer extends MwSuperStateMachine<RobotStates> {
             selectShooterTarget();
         }
 
-        if (system_state_ == RobotStates.SHOOT) {
-            updateShoot();
+        switch (system_state_) {
+            case IDLE, DRIVE -> {
+                swerve_.setWantedState(driveMode());
+                swerve_.setTeleOpVelocityScalar(1.0);
+                shooter_.setWantedState(ShooterStates.IDLE);
+                intake_.setWantedState(intakeRest());
+                localization_.setWantedState(LocalizationStates.FULL);
+            }
+            case TRACK -> {
+                swerve_.setWantedState(driveMode());
+                swerve_.setTeleOpVelocityScalar(1.0);
+                shooter_.setWantedState(ShooterStates.TRACKING);
+                intake_.setWantedState(intakeRest());
+                localization_.setWantedState(LocalizationStates.FULL);
+            }
+            case AIM -> {
+                swerve_.setWantedState(SwerveStates.FIELD_CENTRIC_ROTATION_LOCK);
+                swerve_.setTeleOpVelocityScalar(1.0);
+                shooter_.setWantedState(ShooterStates.AIMING);
+                intake_.setWantedState(intakeRest());
+                localization_.setWantedState(LocalizationStates.SHOOTING_FOCUS);
+            }
+            case SHOOT -> {
+                swerve_.setWantedState(
+                        swerve_.isChassisStationary() && shooter_.isShooterReady()
+                                ? SwerveStates.BRAKE
+                                : SwerveStates.FIELD_CENTRIC_ROTATION_LOCK);
+                swerve_.setTeleOpVelocityScalar(0.25);
+                shooter_.setWantedState(ShooterStates.SHOOT);
+                feedWhenReady();
+                localization_.setWantedState(LocalizationStates.SHOOTING_FOCUS);
+            }
+            case MANUAL_HUB -> {
+                swerve_.setWantedState(driveMode());
+                swerve_.setTeleOpVelocityScalar(1.0);
+                shooter_.setWantedState(ShooterStates.MANUAL_HUB);
+                intake_.setWantedState(IntakeStates.SQUEEZE);
+                localization_.setWantedState(LocalizationStates.FULL);
+            }
+            case MANUAL_PASS -> {
+                swerve_.setWantedState(driveMode());
+                swerve_.setTeleOpVelocityScalar(1.0);
+                shooter_.setWantedState(ShooterStates.MANUAL_PASS);
+                intake_.setWantedState(IntakeStates.SQUEEZE);
+                localization_.setWantedState(LocalizationStates.FULL);
+            }
+            case INTAKE -> {
+                swerve_.setWantedState(driveMode());
+                swerve_.setTeleOpVelocityScalar(1.0);
+                shooter_.setWantedState(ShooterStates.IDLE);
+                intake_.setWantedState(IntakeStates.INTAKE);
+                localization_.setWantedState(LocalizationStates.FULL);
+            }
+            case OUTTAKE -> {
+                swerve_.setWantedState(driveMode());
+                swerve_.setTeleOpVelocityScalar(1.0);
+                shooter_.setWantedState(ShooterStates.IDLE);
+                intake_.setWantedState(IntakeStates.OUTTAKE);
+                localization_.setWantedState(LocalizationStates.FULL);
+            }
+            case BRAKE -> {
+                swerve_.setWantedState(SwerveStates.BRAKE);
+                shooter_.setWantedState(ShooterStates.IDLE);
+                intake_.setWantedState(intakeRest());
+                localization_.setWantedState(LocalizationStates.FULL);
+            }
+            case AUTO, MAINTENANCE -> {
+                // Hands off: the auto (FollowTrajectory, SetIntakeState, ...) or the maintenance
+                // dashboard buttons (homing, tuning) set subsystem states themselves.
+            }
         }
     }
 
-    /** SHOOT: feed only when the shooter is ready, and brake once stopped and ready. */
-    private void updateShoot() {
+    /** SHOOT: feed fuel into the shooter only when it is ready (and the scoring mode allows). */
+    private void feedWhenReady() {
         boolean should_squeeze = shooter_.isShooterReady() && is_able_to_rack_;
         boolean stationary = swerve_.isChassisStationary();
         boolean scoring = scoring_mode_ == ScoringModes.SCORE || scoring_mode_ == ScoringModes.AUTO;
@@ -181,14 +170,18 @@ public class RobotContainer extends MwSuperStateMachine<RobotStates> {
         } else if (scoring_mode_ == ScoringModes.PASS && !stationary) {
             intake_.setWantedState(IntakeStates.INTAKE);
         } else {
-            // hold - do nothing
+            // hold - leave the intake where it is
         }
+    }
 
-        if (stationary && shooter_.isShooterReady()) {
-            swerve_.setWantedState(SwerveStates.BRAKE);
-        } else {
-            swerve_.setWantedState(SwerveStates.FIELD_CENTRIC_ROTATION_LOCK);
-        }
+    /** Field centric or robot centric driving, toggled by the driver. */
+    private SwerveStates driveMode() {
+        return field_centric_ ? SwerveStates.FIELD_CENTRIC : SwerveStates.ROBOT_CENTRIC;
+    }
+
+    /** Where the intake sits when it isn't doing anything: stowed or deployed. */
+    private IntakeStates intakeRest() {
+        return intake_stored_ ? IntakeStates.STORE : IntakeStates.DEPLOYED;
     }
 
     /** HOLD / SCORE / PASS from where the robot is on the field. */
@@ -303,10 +296,12 @@ public class RobotContainer extends MwSuperStateMachine<RobotStates> {
 
     /** Stow the intake, or deploy it if it is stowed. */
     public void toggleStoreIntake() {
-        if (intake_.getSystemState() == IntakeStates.STORE) {
-            intake_.setWantedState(IntakeStates.DEPLOYED);
-        } else {
-            intake_.setWantedState(IntakeStates.STORE);
-        }
+        intake_stored_ = !intake_stored_;
+    }
+
+    /** Switch between field centric and robot centric driving. */
+    public void toggleFieldCentric() {
+        field_centric_ = !field_centric_;
+        MwLog.log(LOG_KEY + "FieldCentric", field_centric_);
     }
 }

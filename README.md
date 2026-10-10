@@ -34,20 +34,20 @@ There are no command files.
 | State | Meaning |
 | ----- | ------- |
 | `IDLE` | Disabled: shooter idle |
-| `DRIVE` | Teleop driving with no button held (from `IDLE`/`AUTO` it starts field-centric driving) |
-| `AUTO` | Autonomous: autos drive and set states |
+| `DRIVE` | Teleop driving with no button held, shooter idle |
+| `TRACK` | Driving with the flywheel kept at speed (after releasing aim), so the next shot is quick |
+| `AUTO` | Autonomous: the robot asks for nothing; autos set subsystem states themselves |
 | `AIM` | Aim at the target without shooting (driver LT) |
 | `SHOOT` | Spin up and aim. The intake feeds (`SQUEEZE`) only once the shooter is ready, and the robot brakes once stopped and ready (driver RT; autos' `ShootFor`) |
 | `MANUAL_HUB` / `MANUAL_PASS` | Fixed flywheel speed shot or pass, for when vision is down (driver Y / B) |
 | `INTAKE` / `OUTTAKE` | Run the intake in / out (driver RB / A) |
 | `BRAKE` | Cross the wheels (driver X) |
-| `TUNING` | Test mode: shooter and intake tuning |
+| `MAINTENANCE` | Test mode: the robot asks for nothing, so dashboard maintenance buttons (homing, tuning) drive the subsystems |
 
-How RobotContainer requests subsystem states:
-- **When the robot state changes**, it undoes what the old state asked for and asks for what the new
-  state needs. This leaves dashboard buttons (homing, spin down) and autos free to set subsystems in
-  between.
-- **`SHOOT`'s feed and brake gating** is also checked every loop.
+RobotContainer is written like a subsystem state machine: `updateLogic` is a `switch` on the robot
+state that asks every subsystem for its state, every loop. In `AUTO` and `MAINTENANCE` it asks for
+nothing, so autos and maintenance tasks (homing, tuning) can set subsystem states directly. Driver
+toggles (field centric, intake stowed, able to rack) are flags the states read.
 
 Autos use the same states as teleop through the `SetWantedState` behavior-tree node. It waits until
 the robot is in the state (SUCCESS) or the state fails (FAILURE). A scoring sequence is written once,

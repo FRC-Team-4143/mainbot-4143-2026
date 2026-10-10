@@ -14,7 +14,6 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.lib2026.HubMonitor;
 import frc.robot.subsystems.localization.LocalizationSubsystem;
-import frc.robot.subsystems.shooter.ShooterConstants.ShooterStates;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 import java.util.Optional;
@@ -43,12 +42,14 @@ public abstract class OI {
         SmartDashboard.putData(
                 "Zero Wheel Offsets",
                 SwerveSubsystem.getInstance().setModuleOffsets().ignoringDisable(true));
+        // In teleop the flywheel only keeps spinning in TRACK (after aiming); DRIVE stops it.
         SmartDashboard.putData(
                 "Spin Down Flywheel",
                 Commands.runOnce(
-                        () ->
-                                ShooterSubsystem.getInstance()
-                                        .setWantedState(ShooterStates.SPIN_DOWN)));
+                                () ->
+                                        RobotContainer.getInstance()
+                                                .setWantedState(RobotStates.DRIVE))
+                        .ignoringDisable(true));
 
         // Set up the hub first alliance chooser on the dashboard
         hub_first_alliance_chooser_.setDefaultOption("Auto", HubMonitor.ActiveAlliance.INVALID);
@@ -63,15 +64,16 @@ public abstract class OI {
         RobotContainer robot = RobotContainer.getInstance();
         driver_controller_
                 .rightStick()
-                .onTrue(SwerveSubsystem.getInstance().toggleFieldCentric().ignoringDisable(true));
-        // Hold a button: the robot is in that state; let go: back to DRIVE
-        whileHeld(driver_controller_.rightTrigger(), RobotStates.SHOOT);
-        whileHeld(driver_controller_.leftTrigger(), RobotStates.AIM);
-        whileHeld(driver_controller_.rightBumper(), RobotStates.INTAKE);
-        whileHeld(driver_controller_.y(), RobotStates.MANUAL_HUB);
-        whileHeld(driver_controller_.b(), RobotStates.MANUAL_PASS);
-        whileHeld(driver_controller_.a(), RobotStates.OUTTAKE);
-        whileHeld(driver_controller_.x(), RobotStates.BRAKE);
+                .onTrue(Commands.runOnce(robot::toggleFieldCentric).ignoringDisable(true));
+        // Hold a button: the robot is in that state; let go: back to DRIVE (or TRACK after aiming,
+        // so the flywheel stays at speed for the shot)
+        whileHeld(driver_controller_.rightTrigger(), RobotStates.SHOOT, RobotStates.DRIVE);
+        whileHeld(driver_controller_.leftTrigger(), RobotStates.AIM, RobotStates.TRACK);
+        whileHeld(driver_controller_.rightBumper(), RobotStates.INTAKE, RobotStates.DRIVE);
+        whileHeld(driver_controller_.y(), RobotStates.MANUAL_HUB, RobotStates.DRIVE);
+        whileHeld(driver_controller_.b(), RobotStates.MANUAL_PASS, RobotStates.DRIVE);
+        whileHeld(driver_controller_.a(), RobotStates.OUTTAKE, RobotStates.DRIVE);
+        whileHeld(driver_controller_.x(), RobotStates.BRAKE, RobotStates.DRIVE);
         driver_controller_
                 .leftBumper()
                 .onFalse(Commands.runOnce(robot::toggleStoreIntake).ignoringDisable(true));
@@ -124,17 +126,17 @@ public abstract class OI {
     }
 
     /**
-     * While {@code button} is held the robot wants {@code state}; on release it goes back to DRIVE,
-     * unless another button asked for a different state since.
+     * While {@code button} is held the robot wants {@code state}; on release it wants {@code
+     * release}, unless another button asked for a different state since.
      */
-    private static void whileHeld(Trigger button, RobotStates state) {
+    private static void whileHeld(Trigger button, RobotStates state, RobotStates release) {
         RobotContainer robot = RobotContainer.getInstance();
         button.whileTrue(
                 Commands.startEnd(
                                 () -> robot.setWantedState(state),
                                 () -> {
                                     if (robot.getWantedState() == state) {
-                                        robot.setWantedState(RobotStates.DRIVE);
+                                        robot.setWantedState(release);
                                     }
                                 })
                         .ignoringDisable(true));

@@ -2,15 +2,17 @@ package frc.robot;
 
 /**
  * The robot's super state machine states, owned by {@link RobotContainer}. Buttons and autos ask
- * for one of these with {@code RobotContainer.getInstance().setWantedState(...)}; the container
- * then requests the matching subsystem states.
+ * for one of these with {@code RobotContainer.getInstance().setWantedState(...)}; every loop the
+ * container asks each subsystem for the state the robot's state needs.
  */
 public enum RobotStates {
     /** Disabled: shooter idle */
     IDLE,
-    /** Teleop driving with no button held. From IDLE or AUTO it starts field-centric driving */
+    /** Teleop driving with no button held, shooter idle */
     DRIVE,
-    /** Autonomous: autos drive and set states; nothing extra is requested */
+    /** Driving with the flywheel kept at the target speed, so the next shot is quick */
+    TRACK,
+    /** Autonomous: the auto sets subsystem states itself, so the robot asks for nothing */
     AUTO,
     /** Aim at the target (shooter aiming, swerve rotation lock) without shooting */
     AIM,
@@ -26,6 +28,9 @@ public enum RobotStates {
     OUTTAKE,
     /** Cross the wheels so the robot can't be pushed */
     BRAKE,
-    /** Test mode: shooter and intake tuning from the dashboard */
-    TUNING
+    /**
+     * Test mode: maintenance (homing, tuning, spin down) from the dashboard. Like AUTO, the robot
+     * asks for nothing, so the dashboard buttons set subsystem states directly.
+     */
+    MAINTENANCE
 }

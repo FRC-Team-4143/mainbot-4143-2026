@@ -27,7 +27,10 @@ import frc.robot.lib2026.FieldConstants;
 import frc.robot.lib2026.FieldRegions;
 import frc.robot.lib2026.FieldTargets;
 import frc.robot.lib2026.HubMonitor;
+import frc.robot.subsystems.intake.IntakeConstants.IntakeStates;
+import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.localization.LocalizationSubsystem;
+import frc.robot.subsystems.shooter.ShooterConstants.ShooterStates;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 import java.util.Optional;
@@ -144,7 +147,11 @@ public class Robot extends LoggedRobot {
     @Override
     public void testInit() {
         CommandScheduler.getInstance().cancelAll();
-        robot_container_.setWantedState(RobotStates.TUNING);
+        // Maintenance lives outside the robot state machine: it asks for nothing in MAINTENANCE,
+        // and the subsystems start in TUNING so the dashboard buttons (homing, tuning) drive them.
+        robot_container_.setWantedState(RobotStates.MAINTENANCE);
+        ShooterSubsystem.getInstance().setWantedState(ShooterStates.TUNING);
+        IntakeSubsystem.getInstance().setWantedState(IntakeStates.TUNING);
     }
 
     @Override

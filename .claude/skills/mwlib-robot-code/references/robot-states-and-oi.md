@@ -10,8 +10,8 @@ There are **no command files**:
 ```
  OI / BT autos        robot.setWantedState(RobotStates.SHOOT)
    │
- RobotContainer       handleStateTransition: exit old state / enter new state (subsystem requests)
-   │                  updateLogic: scoring mode, shooter target, per-loop gating (SHOOT feed)
+ RobotContainer       handleStateTransition: guards / sequence steps (default: go to wanted)
+   │                  updateLogic: switch on the robot state, ask every subsystem for a state
    │  setWantedState(...)
  Subsystems           each subsystem's own state machine
 ```
@@ -22,11 +22,10 @@ same loop. It logs `Robot/WantedState`, `Robot/State` and `Robot/ScoringMode`.
 ## Adding a robot behaviour
 
 1. Add a value to `RobotStates` (per-value Javadoc).
-2. In `RobotContainer`, in `enterState`, request the subsystem states it needs. In `exitState`,
-   undo them.
-3. If part of it must be checked every loop (gating, like feeding only when the shooter is ready),
-   put that in `updateLogic` under `if (system_state_ == RobotStates.X)`.
-4. Bind it in `OI` (below). An auto uses it with `<SetWantedState state="X"/>`.
+2. In `RobotContainer.updateLogic`, add a `case X ->` to the switch that asks **every** subsystem for
+   the state it needs (the same shape as a subsystem's `updateLogic`). Gating that changes loop to
+   loop (feed only when the shooter is ready) goes right in that case.
+3. Bind it in `OI` (below). An auto uses it with `<SetWantedState state="X"/>`.
 
 **Multi-step sequences** (aim, then spin up, then feed) are written **once**, as a robot state:
 - Add step states to `RobotStates`.
@@ -38,9 +37,10 @@ same loop. It logs `Robot/WantedState`, `Robot/State` and `Robot/ScoringMode`.
 an auto can wrap the sequence in `Timeout` / `Fallback` / `Retry` for auto-only fail handling, while
 teleop reuses the same sequence.
 
-**Requests on change, not every loop.** RobotContainer asks for subsystem states only when the
-robot state changes, plus any per-loop gating. That leaves room for dashboard buttons (homing, spin
-down) and small one-off auto moves (`SetIntakeState` on a path event) to set subsystems in between.
+**Hands-off states.** In `AUTO` and `MAINTENANCE` (Test mode) the switch asks for nothing, so autos'
+subsystem nodes (`SetIntakeState` on a path event) and maintenance dashboard buttons (homing,
+tuning) set subsystem states directly. Maintenance tasks live outside the robot state machine.
+Driver toggles (field centric, intake stowed) are flags on RobotContainer that the states read.
 
 ## OI: bindings (`OI.java`)
 
@@ -83,5 +83,5 @@ Rules:
 `Robot` sets robot states, never subsystem states:
 - `disabledInit()` → `IDLE`
 - `autonomousInit()` → `AUTO`
-- `teleopInit()` → `DRIVE` (from `IDLE`/`AUTO`, this starts field-centric driving)
-- `testInit()` → `TUNING`
+- `teleopInit()` → `DRIVE`
+- `testInit()` → `MAINTENANCE` (hands off; it also puts the shooter and intake in `TUNING` directly)

@@ -20,8 +20,9 @@ Data flows **OI / Autos → RobotContainer (robot state machine) → Subsystems 
   and make sim vs. real transparent.
 - **`RobotContainer` is the robot's super state machine** (`MwSuperStateMachine<RobotStates>`). OI
   buttons and BT autos ask for a robot state with `RobotContainer.getInstance().setWantedState(...)`;
-  RobotContainer requests the subsystem states (enter/exit actions in `handleStateTransition`, per-loop
-  gating in `updateLogic`). It runs before the subsystems every loop. **There are no command files**:
+  RobotContainer's `updateLogic` is a `switch` on the robot state that asks every subsystem for its
+  state every loop, just like a subsystem's state machine (AUTO and MAINTENANCE ask for nothing, so
+  autos and maintenance tasks like homing set subsystems directly). It runs before the subsystems every loop. **There are no command files**:
   anything that coordinates more than one subsystem is a robot state in RobotContainer, shared by
   teleop and autos.
 - **OI** bindings are plain `Commands.startEnd/runOnce` lambdas around `setWantedState`, run by the
