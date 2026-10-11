@@ -7,7 +7,6 @@ package frc.robot;
 import com.marswars.logging.MwLog;
 import com.marswars.subsystem.MwSuperStateMachine;
 import com.marswars.swerve_lib.SwerveStates;
-import com.marswars.util.RobotIdentity;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj.RobotBase;
@@ -40,7 +39,8 @@ import frc.robot.subsystems.swerve.SwerveSubsystem;
  * <p>Maintenance (homing, tuning) lives outside it: in Test mode the robot is in MAINTENANCE and
  * asks for nothing, so the dashboard buttons set subsystem states directly.
  */
-public class RobotContainer extends MwSuperStateMachine<RobotContainer.RobotStates> {
+public class RobotContainer
+        extends MwSuperStateMachine<RobotContainer.RobotStates, RobotConstants> {
     /**
      * The robot's super state machine states, owned by {@link RobotContainer}. Buttons and autos
      * ask for one of these with {@code RobotContainer.getInstance().setWantedState(...)}; every
@@ -105,16 +105,6 @@ public class RobotContainer extends MwSuperStateMachine<RobotContainer.RobotStat
         AUTO
     }
 
-    /** The robots this code can run on; per-robot constants variants switch on {@link #ROBOT}. */
-    public enum Robot {
-        ALPHA_BOT,
-        BETA_BOT,
-        SIM_BOT
-    }
-
-    /** The robot the code is running on, from the burned "RobotName" (SimBot in simulation). */
-    public static final Robot ROBOT = RobotIdentity.getInstance().getRobot(Robot.class);
-
     private static RobotContainer instance;
 
     public static synchronized RobotContainer getInstance() {
@@ -143,7 +133,7 @@ public class RobotContainer extends MwSuperStateMachine<RobotContainer.RobotStat
     private IntakeStates intake_rest_ = IntakeStates.DEPLOYED;
 
     public RobotContainer() {
-        super(RobotStates.IDLE, BuildConstants.class);
+        super(RobotStates.IDLE, new RobotConstants(), BuildConstants.class);
         // !!!!!! ALL SUBSYSTEMS MUST BE REGISTERED HERE TO RUN !!!!!!!
         registerSubsystem(swerve_);
         registerSubsystem(localization_);
@@ -215,7 +205,7 @@ public class RobotContainer extends MwSuperStateMachine<RobotContainer.RobotStat
         switch (system_state_) {
             case IDLE, DRIVE -> {
                 swerve_.setWantedState(drive_mode_);
-                swerve_.setTeleOpVelocityScalar(1.0);
+                swerve_.setTeleOpVelocityScalar(CONSTANTS.DRIVE_SPEED_SCALE);
                 shooter_.setWantedState(ShooterStates.IDLE);
                 shooter_.setTarget(shooter_target_);
                 intake_.setWantedState(intake_rest_);
@@ -223,7 +213,7 @@ public class RobotContainer extends MwSuperStateMachine<RobotContainer.RobotStat
             }
             case TRACK -> {
                 swerve_.setWantedState(drive_mode_);
-                swerve_.setTeleOpVelocityScalar(1.0);
+                swerve_.setTeleOpVelocityScalar(CONSTANTS.DRIVE_SPEED_SCALE);
                 shooter_.setWantedState(ShooterStates.TRACKING);
                 shooter_.setTarget(shooter_target_);
                 intake_.setWantedState(intake_rest_);
@@ -231,7 +221,7 @@ public class RobotContainer extends MwSuperStateMachine<RobotContainer.RobotStat
             }
             case AIM -> {
                 swerve_.setWantedState(SwerveStates.FIELD_CENTRIC_ROTATION_LOCK);
-                swerve_.setTeleOpVelocityScalar(1.0);
+                swerve_.setTeleOpVelocityScalar(CONSTANTS.DRIVE_SPEED_SCALE);
                 shooter_.setWantedState(ShooterStates.AIMING);
                 shooter_.setTarget(shooter_target_);
                 intake_.setWantedState(intake_rest_);
@@ -239,7 +229,7 @@ public class RobotContainer extends MwSuperStateMachine<RobotContainer.RobotStat
             }
             case SHOOT_WAIT -> {
                 swerve_.setWantedState(SwerveStates.FIELD_CENTRIC_ROTATION_LOCK);
-                swerve_.setTeleOpVelocityScalar(0.25);
+                swerve_.setTeleOpVelocityScalar(CONSTANTS.SHOOTING_SPEED_SCALE);
                 shooter_.setWantedState(ShooterStates.SHOOT);
                 shooter_.setTarget(shooter_target_);
                 // the intake stays where it is until the shooter is ready
@@ -247,7 +237,7 @@ public class RobotContainer extends MwSuperStateMachine<RobotContainer.RobotStat
             }
             case SHOOT_FEED -> {
                 swerve_.setWantedState(SwerveStates.FIELD_CENTRIC_ROTATION_LOCK);
-                swerve_.setTeleOpVelocityScalar(0.25);
+                swerve_.setTeleOpVelocityScalar(CONSTANTS.SHOOTING_SPEED_SCALE);
                 shooter_.setWantedState(ShooterStates.SHOOT);
                 shooter_.setTarget(shooter_target_);
                 intake_.setWantedState(IntakeStates.SQUEEZE);
@@ -255,7 +245,7 @@ public class RobotContainer extends MwSuperStateMachine<RobotContainer.RobotStat
             }
             case SHOOT_FEED_BRAKED -> {
                 swerve_.setWantedState(SwerveStates.BRAKE);
-                swerve_.setTeleOpVelocityScalar(0.25);
+                swerve_.setTeleOpVelocityScalar(CONSTANTS.SHOOTING_SPEED_SCALE);
                 shooter_.setWantedState(ShooterStates.SHOOT);
                 shooter_.setTarget(shooter_target_);
                 intake_.setWantedState(IntakeStates.SQUEEZE);
@@ -263,7 +253,7 @@ public class RobotContainer extends MwSuperStateMachine<RobotContainer.RobotStat
             }
             case SHOOT_PASS_INTAKE -> {
                 swerve_.setWantedState(SwerveStates.FIELD_CENTRIC_ROTATION_LOCK);
-                swerve_.setTeleOpVelocityScalar(0.25);
+                swerve_.setTeleOpVelocityScalar(CONSTANTS.SHOOTING_SPEED_SCALE);
                 shooter_.setWantedState(ShooterStates.SHOOT);
                 shooter_.setTarget(shooter_target_);
                 intake_.setWantedState(IntakeStates.INTAKE);
@@ -271,28 +261,28 @@ public class RobotContainer extends MwSuperStateMachine<RobotContainer.RobotStat
             }
             case MANUAL_HUB -> {
                 swerve_.setWantedState(drive_mode_);
-                swerve_.setTeleOpVelocityScalar(1.0);
+                swerve_.setTeleOpVelocityScalar(CONSTANTS.DRIVE_SPEED_SCALE);
                 shooter_.setWantedState(ShooterStates.MANUAL_HUB);
                 intake_.setWantedState(IntakeStates.SQUEEZE);
                 localization_.setWantedState(LocalizationStates.FULL);
             }
             case MANUAL_PASS -> {
                 swerve_.setWantedState(drive_mode_);
-                swerve_.setTeleOpVelocityScalar(1.0);
+                swerve_.setTeleOpVelocityScalar(CONSTANTS.DRIVE_SPEED_SCALE);
                 shooter_.setWantedState(ShooterStates.MANUAL_PASS);
                 intake_.setWantedState(IntakeStates.SQUEEZE);
                 localization_.setWantedState(LocalizationStates.FULL);
             }
             case INTAKE -> {
                 swerve_.setWantedState(drive_mode_);
-                swerve_.setTeleOpVelocityScalar(1.0);
+                swerve_.setTeleOpVelocityScalar(CONSTANTS.DRIVE_SPEED_SCALE);
                 shooter_.setWantedState(ShooterStates.IDLE);
                 intake_.setWantedState(IntakeStates.INTAKE);
                 localization_.setWantedState(LocalizationStates.FULL);
             }
             case OUTTAKE -> {
                 swerve_.setWantedState(drive_mode_);
-                swerve_.setTeleOpVelocityScalar(1.0);
+                swerve_.setTeleOpVelocityScalar(CONSTANTS.DRIVE_SPEED_SCALE);
                 shooter_.setWantedState(ShooterStates.IDLE);
                 intake_.setWantedState(IntakeStates.OUTTAKE);
                 localization_.setWantedState(LocalizationStates.FULL);

@@ -23,8 +23,9 @@ practice) so the rest of the robot code can reason about it.
 ## Robot state machine (RobotContainer)
 
 [`RobotContainer`](src/main/java/frc/robot/RobotContainer.java) is the robot's **super state machine**.
-It extends MW-Lib's `MwSuperStateMachine<RobotStates>`, and it is the only place that coordinates
-subsystems:
+It extends MW-Lib's `MwSuperStateMachine<RobotStates, RobotConstants>` and is written like a big subsystem
+(`system_state_`, `CONSTANTS` from [`RobotConstants`](src/main/java/frc/robot/RobotConstants.java),
+`handleStateTransition`, `updateLogic`). It is the only place that coordinates subsystems:
 - Buttons (`OI`) and autos ask for a robot state with `setWantedState(RobotStates.X)`.
 - RobotContainer then requests the matching subsystem states.
 - It runs every loop **before** the subsystems.
@@ -127,14 +128,15 @@ Two Xbox controllers: Driver (port 0) and Operator (port 1). See
 The same code runs on several physical robots. Which one it is running on comes from MW-Lib's
 `RobotIdentity`: on a real robot the persistent `RobotName` preference (burn it from Test mode with the
 `Config/RobotName` field and the `Config/Burn RobotName` button), `SimBot` in simulation (override with the
-`ROBOT_NAME` environment variable; a replay log carries its own name). `RobotContainer.ROBOT` maps that
-name onto the `RobotContainer.Robot` enum (`ALPHA_BOT`, `BETA_BOT`, `SIM_BOT`).
+`ROBOT_NAME` environment variable; a replay log carries its own name). `RobotConstants.ROBOT` maps that
+name onto the `RobotConstants.Robot` enum (`ALPHA_BOT`, `BETA_BOT`, `SIM_BOT`). It is static, because
+subsystems read it while `RobotContainer` is still being constructed.
 
 Per-robot hardware constants are Java, not JSON: a subsystem's `*Constants` class holds the AlphaBot
 values in non-final fields, variants such as
 [`BetaSwerveConstants`](src/main/java/frc/robot/subsystems/swerve/BetaSwerveConstants.java) and
 [`SimSwerveConstants`](src/main/java/frc/robot/subsystems/swerve/SimSwerveConstants.java) reassign the
-ones that differ in their constructors, and `SwerveConstants.create()` switches on `RobotContainer.ROBOT`
+ones that differ in their constructors, and `SwerveConstants.create()` switches on `RobotConstants.ROBOT`
 to pick the variant.
 
 ## Autonomous

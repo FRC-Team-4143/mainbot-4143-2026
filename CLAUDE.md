@@ -18,7 +18,7 @@ Data flows **OI / Autos → RobotContainer (robot state machine) → Subsystems 
 - **Mechanisms** (`ArmMech`, `ElevatorMech`, `FlywheelMech`, `RollerMech`, `TurretMech`) are the
   hardware IO layer. Subsystems **compose** them (has-a), never extend them. They abstract the motors
   and make sim vs. real transparent.
-- **`RobotContainer` is the robot's super state machine** (`MwSuperStateMachine<RobotStates>`). OI
+- **`RobotContainer` is the robot's super state machine** (`MwSuperStateMachine<RobotStates, RobotConstants>`), written like a big subsystem (`system_state_`, `CONSTANTS`). OI
   buttons and BT autos ask for a robot state with `RobotContainer.getInstance().setWantedState(...)`;
   RobotContainer's `updateLogic` is a `switch` on the robot state that asks every subsystem for its
   state every loop, just like a subsystem's state machine (AUTO and MAINTENANCE ask for nothing, so
@@ -92,5 +92,5 @@ Per-robot constants are pure Java (no JSON): the base `*Constants` class is Alph
 values that differ between robots as its only non-final fields. A robot that differs is a small
 subclass whose constructor reassigns just those fields (see
 `subsystems/swerve/BetaSwerveConstants.java`), selected by a static `create()` switching on
-`RobotContainer.ROBOT`. Anything derived from those fields must be computed after construction (e.g.
+`RobotConstants.ROBOT` (static, so subsystems can read it while `RobotContainer` is being built). Anything derived from those fields must be computed after construction (e.g.
 in a method the subsystem calls), never in the base constructor, or variant values are missed.

@@ -2,7 +2,9 @@
 
 There are **no command files**:
 - **`RobotContainer.java`** is the robot's **super state machine**
-  (`MwSuperStateMachine<RobotStates>`). It is the only place that coordinates more than one
+  (`MwSuperStateMachine<RobotStates, RobotConstants>`), written like a big subsystem: `system_state_`,
+  `CONSTANTS` (robot-level values such as the drive speed scales, plus the static robot identity),
+  `handleStateTransition`, `updateLogic`. It is the only place that coordinates more than one
   subsystem.
 - **`OI.java`** only binds buttons to robot states.
 - **Autos** ask for the same robot states as teleop.

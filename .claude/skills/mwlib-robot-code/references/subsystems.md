@@ -231,7 +231,7 @@ under a `PER-ROBOT CONSTANTS` banner. A robot that differs gets a small subclass
 public double WHEEL_RADIUS_METERS = Units.inchesToMeters(1.8);   // non-final knob
 
 public static SwerveConstants create() {
-    return switch (RobotContainer.ROBOT) {
+    return switch (RobotConstants.ROBOT) {
         case BETA_BOT -> new BetaSwerveConstants();
         case SIM_BOT -> new SimSwerveConstants();
         default -> new SwerveConstants();
@@ -249,7 +249,7 @@ from per-robot fields (motor configs, the swerve drive config) must be built lat
 the subsystem calls (e.g. `getDriveConfig()`), never in the base constructor. Subsystems construct
 via the factory, e.g. `super(MyStates.IDLE, MyConstants.create())`.
 
-The active robot is `RobotContainer.ROBOT`, a value of the `RobotContainer.Robot` enum resolved by
+The active robot is `RobotConstants.ROBOT` (static, so subsystems can read it while `RobotContainer` is still being constructed), a value of the `RobotConstants.Robot` enum resolved by
 MW-Lib `RobotIdentity.getRobot(...)`: the persistent `MWPreferences` "RobotName" burned via the
 Test-mode `Config/Burn RobotName` dashboard button (or `SimBot`/`ROBOT_NAME` env var in sim),
 matched to the enum ignoring case and underscores ("BetaBot" → `BETA_BOT`). Add a robot by adding
@@ -275,7 +275,7 @@ A subsystem that isn't registered never ticks. Add it in `RobotContainer`'s cons
 
 ```java
 public RobotContainer() {
-    super(RobotStates.IDLE, BuildConstants.class);
+    super(RobotStates.IDLE, new RobotConstants(), BuildConstants.class);
     // !!!!!! ALL SUBSYSTEMS MUST BE REGISTERED HERE TO RUN !!!!!!!
     registerSubsystem(SwerveSubsystem.getInstance());
     registerSubsystem(IntakeSubsystem.getInstance());

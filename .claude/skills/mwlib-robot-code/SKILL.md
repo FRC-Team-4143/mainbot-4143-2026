@@ -23,7 +23,7 @@ Data flows in one direction: **OI / Autos → RobotContainer → Subsystems → 
 ```
  OI.java / autos    Reads operator input; buttons and BT autos ask for a robot state.
    │  robot.setWantedState(RobotStates.X)
- RobotContainer     The robot's super state machine (MwSuperStateMachine<RobotStates>). The only
+ RobotContainer     The robot's super state machine (MwSuperStateMachine<RobotStates, RobotConstants>). The only
    │                place that coordinates subsystems. No command files.
    │  setWantedState(...)
  Subsystems         Singleton state machines: MwSubsystem<States, Constants>.
@@ -37,7 +37,7 @@ Two schedulers run each 20 ms in `Robot.robotPeriodic()`:
 - `robot_container_.doControlLoop()` — MW-Lib: runs the robot state machine, then ticks every
   registered subsystem's IO + state machine.
 
-`RobotContainer extends MwSuperStateMachine<RobotStates>` (a `SubsystemManager`); `Robot extends
+`RobotContainer extends MwSuperStateMachine<RobotStates, RobotConstants>` (a `SubsystemManager`, written like a big subsystem: `system_state_`, `CONSTANTS`); `Robot extends
 LoggedRobot` (AdvantageKit).
 
 ## The subsystem control loop (per tick, per subsystem)
