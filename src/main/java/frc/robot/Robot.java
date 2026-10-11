@@ -4,7 +4,6 @@
 
 package frc.robot;
 
-import com.marswars.auto.Auto;
 import com.marswars.auto.AutoManager;
 import com.marswars.auto.BehaviorTreeAuto;
 import com.marswars.bt.core.BehaviorTreeFactory;
@@ -82,6 +81,9 @@ public class Robot extends LoggedRobot {
     public void robotPeriodic() {
         // Call the scheduler so that commands work for buttons
         CommandScheduler.getInstance().run();
+        // Step the running auto (a behavior tree ticks here) and prepare the selected one in the
+        // background; before doControlLoop so the states it asks for apply in this same loop
+        AutoManager.getInstance().periodic();
         // run the main robot loop for each subsystem
         robot_container_.doControlLoop();
 
@@ -95,14 +97,13 @@ public class Robot extends LoggedRobot {
 
     @Override
     public void disabledInit() {
+        AutoManager.getInstance().stop();
         robot_container_.setWantedState(RobotStates.IDLE);
         HubMonitor.seedActiveAlliance(HubMonitor.ActiveAlliance.INVALID);
     }
 
     @Override
     public void disabledPeriodic() {
-        AutoManager.getInstance().periodic();
-
         // Allow chaning alliance perspective while disabled
         if (hasAllianceChanged()) {
             SwerveSubsystem.getInstance()
@@ -120,8 +121,7 @@ public class Robot extends LoggedRobot {
     public void autonomousInit() {
         Elastic.selectTab("Autonomous");
         robot_container_.setWantedState(RobotStates.AUTO);
-        Auto selected_auto = AutoManager.getInstance().getSelectedAuto();
-        CommandScheduler.getInstance().schedule(selected_auto);
+        AutoManager.getInstance().start();
     }
 
     @Override
@@ -132,6 +132,7 @@ public class Robot extends LoggedRobot {
 
     @Override
     public void teleopInit() {
+        AutoManager.getInstance().stop();
         CommandScheduler.getInstance().cancelAll();
         // Starts field-centric driving with the shooter idle (see RobotContainer)
         robot_container_.setWantedState(RobotStates.DRIVE);

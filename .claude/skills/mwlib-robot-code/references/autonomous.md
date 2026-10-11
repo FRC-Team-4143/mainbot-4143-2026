@@ -2,8 +2,10 @@
 
 Autos are **behavior trees in BehaviorTree.CPP v4 XML**, not Java classes. Each
 `src/main/deploy/autos/trees/<Name>.xml` file is one auto in the dashboard chooser, named after the file.
-Its `main_tree_to_execute` must use the same name. MW-Lib (`com.marswars.bt`) runs them through
-the normal `Auto`/`AutoManager`/`CommandScheduler` flow. Full reference:
+Its `main_tree_to_execute` must use the same name. MW-Lib (`com.marswars.bt`) runs them: they are
+`AutoRoutine`s, not commands. `AutoManager.periodic()` (in `robotPeriodic`, before `doControlLoop`)
+ticks the running tree and prepares the selected auto on a background thread;
+`autonomousInit` calls `AutoManager.start()`, `disabledInit`/`teleopInit` call `stop()`. Full reference:
 `src/main/deploy/autos/README.md`.
 
 - **Don't add `Auto` subclasses or command sequences for autos.** Write XML.
