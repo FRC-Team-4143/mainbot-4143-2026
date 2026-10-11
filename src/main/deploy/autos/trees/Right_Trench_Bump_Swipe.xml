@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Right trench start, bump return: shoot preload, then swipe twice, shooting after each. -->
 <root BTCPP_format="4" main_tree_to_execute="Right_Trench_Bump_Swipe">
-  <include path="lib/common.xml"/>
+  <include path="common.xml"/>
 
   <BehaviorTree ID="Right_Trench_Bump_Swipe">
     <Sequence>

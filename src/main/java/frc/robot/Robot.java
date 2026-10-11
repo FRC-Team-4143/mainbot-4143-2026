@@ -54,7 +54,8 @@ public class Robot extends LoggedRobot {
         // Configure External Interfaces
         OI.configureBindings();
 
-        // Autos are behavior trees: every deploy/autos/*.xml is a chooser option (see the README
+        // Autos are behavior trees: every deploy/autos/trees/*.xml is a chooser option (except
+        // library files like common.xml) (see the README
         // there). Robot-specific nodes are registered in AutoNodes.
         BehaviorTreeFactory bt_factory = AutoNodes.createFactory();
         BehaviorTreeMonitor.publishNodeModels(bt_factory);
@@ -62,7 +63,7 @@ public class Robot extends LoggedRobot {
                 .registerAutos(
                         BehaviorTreeAuto.loadAll(
                                 bt_factory,
-                                Filesystem.getDeployDirectory().toPath().resolve("autos")));
+                                Filesystem.getDeployDirectory().toPath().resolve("autos/trees")));
         startBtLiveServer();
         // One <auto>_<time>.btlog per auto run, replayable in Groot2 / the BT editor
         // (logs/bt in sim, /U/logs/bt on the robot)

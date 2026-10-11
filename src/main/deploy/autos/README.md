@@ -1,23 +1,24 @@
 # Autos
 
 Every auto is a behavior tree, written as a [BehaviorTree.CPP v4](https://www.behaviortree.dev/)
-XML file. Each `*.xml` file in this folder is an option in the dashboard Auto Chooser, named
-after the file. The trees run on MW-Lib's behavior-tree engine (`com.marswars.bt`), and the files
-open in Groot2 or the BT editor.
+XML file. Each `*.xml` file in `trees/` is an option in the dashboard Auto Chooser, named after the
+file. The trees run on MW-Lib's behavior-tree engine (`com.marswars.bt`), and this folder is a BT
+editor project (`bt_project.json`), so it also opens in Groot2.
 
 | Path | What it is |
 |---|---|
-| `*.xml` | Autos in the chooser |
-| `unlisted/*.xml` | Finished autos kept out of the chooser. They're still checked by the tests. Move one up a level to list it |
-| `lib/common.xml` | Shared subtrees every auto can use (see [Shared subtrees](#shared-subtrees)) |
-| `lib/nodes.xml` | Generated list of every node an auto can use, for the editor and Groot2 (see [Node palette](#node-palette)) |
+| `trees/*.xml` | Autos in the chooser |
+| `trees/unlisted/*.xml` | Finished autos kept out of the chooser. They're still checked by the tests. Move one up a level to list it |
+| `trees/common.xml` | Shared subtrees every auto can use (see [Shared subtrees](#shared-subtrees)). A library, not an auto: it has several trees and no `main_tree_to_execute`, so it isn't in the chooser |
+| `nodes.xml` | Generated list of every node an auto can use, for the editor and Groot2 (see [Node palette](#node-palette)) |
+| `bt_project.json` | BT editor project file: where the nodes and trees are, and the robot's live-view address |
 
 ## Anatomy of an auto
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <root BTCPP_format="4" main_tree_to_execute="CitrusSynergy">
-  <include path="lib/common.xml"/>
+  <include path="common.xml"/>
 
   <BehaviorTree ID="CitrusSynergy">
     <Sequence>
@@ -53,8 +54,8 @@ Rules for every file:
 
 - **Names match.** The file name, `main_tree_to_execute`, and the `<BehaviorTree ID>` are all the
   auto's name.
-- **Shared blocks come from `lib/common.xml`.** Pull them in with `<include path="lib/common.xml"/>`,
-  or `../lib/common.xml` from `unlisted/`, and call them with `<SubTree ID="...">`. A block only
+- **Shared blocks come from `common.xml`.** Pull them in with `<include path="common.xml"/>`,
+  or `../common.xml` from `unlisted/`, and call them with `<SubTree ID="...">`. A block only
   one auto needs can be another `<BehaviorTree>` in that auto's own file.
 - **Attributes are ports.** A literal (`msec="1000"`) is used as written. `{name}` reads the
   blackboard entry `name`.
@@ -62,7 +63,7 @@ Rules for every file:
 ## Adding an auto
 
 1. Make the paths in Choreo. They end up in `deploy/choreo/<name>.traj`.
-2. Copy an existing auto to `deploy/autos/<NewName>.xml`, and rename the file, the
+2. Copy an existing auto to `deploy/autos/trees/<NewName>.xml`, and rename the file, the
    `main_tree_to_execute` and the `<BehaviorTree ID>`.
 3. Edit the steps. Every path named in a `trajectory="..."` is loaded and flipped for the
    alliance automatically.
@@ -87,7 +88,7 @@ Rules for every file:
 | `Repeat num_cycles`, `RetryUntilSuccessful num_attempts` | Loop the child |
 | `Inverter`, `ForceSuccess`, `ForceFailure`, `KeepRunningUntilFailure`, `RunOnce` | Change the child's result |
 | `SetBlackboard`, `UnsetBlackboard` | Write or clear blackboard entries |
-| `SubTree ID` | Run another `<BehaviorTree>`, such as one from `lib/common.xml`. Its other attributes are its ports |
+| `SubTree ID` | Run another `<BehaviorTree>`, such as one from `common.xml`. Its other attributes are its ports |
 
 BT.CPP scripting (`Script`, `_skipIf`, `Precondition`, and so on) isn't supported.
 
@@ -134,15 +135,15 @@ action other than the intake, use a `Sequence` of `WaitForChoreoEvent` followed 
 
 ## Shared subtrees
 
-`lib/common.xml` holds small blocks that several autos use. It isn't an auto itself, so it isn't
-in the chooser.
+`trees/common.xml` holds small blocks that several autos use. It isn't an auto itself (several
+trees, no `main_tree_to_execute`), so it isn't in the chooser.
 
 | Subtree | Ports | What it does |
 |---|---|---|
 | `IntakeOnEvent` | `event`, `state`=INTAKE | Waits for a Choreo event on the running path, then sets the intake state |
 | `ShootFor` | `duration_msec`=2000 | Robot `SHOOT` (the driver's right trigger: feeds once the shooter is ready) for `duration_msec`, then robot `AUTO` |
 
-To add one, write a `<BehaviorTree ID="...">` in `lib/common.xml` that reads its inputs as
+To add one, write a `<BehaviorTree ID="...">` in `common.xml` that reads its inputs as
 `{name}`. Declare those inputs in the file's `<TreeNodesModel>` as a `<SubTree ID="...">` with
 ports, so editors and Groot2 show them.
 
@@ -172,9 +173,9 @@ auto's tree in `<TreeNodesModel>`, then read it with `{name}`:
 
 ## Testing and debugging
 
-- **`./gradlew test`** loads every auto, including `unlisted/` and the `lib/common.xml` subtrees, with the robot's real node set.
+- **`./gradlew test`** loads every auto, including `unlisted/` and the `common.xml` subtrees, with the robot's real node set.
   It checks every trajectory file exists, that the chooser lists exactly the expected autos, and
-  that `lib/nodes.xml` is up to date.
+  that `nodes.xml` is up to date.
 - **Broken files still show up.** An auto that fails to load still appears in the chooser. It
   raises an Elastic alert and logs `BehaviorTree/<auto>/Error`, and it does nothing when run.
 - **No code deploy for XML changes.** Re-selecting an auto, or changing alliance, re-reads its
@@ -195,7 +196,7 @@ auto's tree in `<TreeNodesModel>`, then read it with `{name}`:
 
 ## Node palette
 
-`lib/nodes.xml` lists every node an auto can use, with its ports, defaults and descriptions, for
+`nodes.xml` lists every node an auto can use, with its ports, defaults and descriptions, for
 the editor and Groot2. It starts with MW-Lib's shared nodes, which MW-Lib also ships as
 `com/marswars/bt/mwlib_nodes.xml`, followed by this robot's nodes. It's generated from the Java
 code. After adding or changing a node, regenerate it:

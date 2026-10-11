@@ -1,7 +1,7 @@
 # Autonomous
 
 Autos are **behavior trees in BehaviorTree.CPP v4 XML**, not Java classes. Each
-`src/main/deploy/autos/<Name>.xml` file is one auto in the dashboard chooser, named after the file.
+`src/main/deploy/autos/trees/<Name>.xml` file is one auto in the dashboard chooser, named after the file.
 Its `main_tree_to_execute` must use the same name. MW-Lib (`com.marswars.bt`) runs them through
 the normal `Auto`/`AutoManager`/`CommandScheduler` flow. Full reference:
 `src/main/deploy/autos/README.md`.
@@ -11,17 +11,18 @@ the normal `Auto`/`AutoManager`/`CommandScheduler` flow. Full reference:
   nodes in `com.marswars.bt.swerve.SwerveNodes`, belong in MW-Lib. Robot-only actions and
   conditions are registered in `frc/robot/autos/bt/AutoNodes.java`. Never call `getInstance()` in a
   node constructor.
-- **Node palette.** `deploy/autos/lib/nodes.xml` holds MW-Lib's nodes plus the robot's.
+- **Node palette.** `deploy/autos/nodes.xml` holds MW-Lib's nodes plus the robot's.
   Regenerate it with `./gradlew test -PupdateNodeSpec`.
-- **Shared subtrees** (`IntakeOnEvent`, `ShootFor`) live in `deploy/autos/lib/common.xml`. Autos
-  pull them in with `<include path="lib/common.xml"/>`.
-- **Hidden autos** go in `deploy/autos/unlisted/`. They're tested but not in the chooser.
+- **Shared subtrees** (`IntakeOnEvent`, `ShootFor`) live in `deploy/autos/trees/common.xml` (a library:
+  several trees, no `main_tree_to_execute`, so not in the chooser). Autos pull them in with
+  `<include path="common.xml"/>`.
+- **Hidden autos** go in `deploy/autos/trees/unlisted/` (include `../common.xml`). They're tested but not in the chooser.
 
 ## Anatomy of an auto
 
 ```xml
 <root BTCPP_format="4" main_tree_to_execute="CitrusSynergy">
-  <include path="lib/common.xml"/>
+  <include path="common.xml"/>
   <BehaviorTree ID="CitrusSynergy">
     <Sequence>
       <SetShooterTarget target="HUB"/>

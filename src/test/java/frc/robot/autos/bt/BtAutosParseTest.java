@@ -18,13 +18,13 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 /**
- * Every XML auto (deploy/autos/*.xml, plus deploy/autos/unlisted/*.xml which are kept out of the
+ * Every XML auto (deploy/autos/trees/*.xml, plus trees/unlisted/*.xml which are kept out of the
  * chooser) must instantiate against the robot's node set and only reference trajectories that exist
  * in deploy/choreo. Also writes build/bt/nodes.xml, the node-spec palette the BT editor (or Groot2)
  * loads.
  */
 class BtAutosParseTest {
-    static final Path AUTOS = Path.of("src/main/deploy/autos");
+    static final Path AUTOS = Path.of("src/main/deploy/autos/trees");
     static final Path CHOREO = Path.of("src/main/deploy/choreo");
 
     static BehaviorTreeFactory factory() {
@@ -34,15 +34,15 @@ class BtAutosParseTest {
     }
 
     static List<Path> allAutos() {
-        List<Path> files = new ArrayList<>(BehaviorTreeAuto.listXml(AUTOS));
-        files.addAll(BehaviorTreeAuto.listXml(AUTOS.resolve("unlisted")));
+        List<Path> files = new ArrayList<>(BehaviorTreeAuto.listAutos(AUTOS));
+        files.addAll(BehaviorTreeAuto.listAutos(AUTOS.resolve("unlisted")));
         return files;
     }
 
     @Test
     void chooserHasTheConvertedAutos() {
         List<String> names =
-                BehaviorTreeAuto.listXml(AUTOS).stream()
+                BehaviorTreeAuto.listAutos(AUTOS).stream()
                         .map(p -> p.getFileName().toString().replace(".xml", ""))
                         .toList();
         assertEquals(
@@ -113,7 +113,7 @@ class BtAutosParseTest {
     @Test
     void nodeSpecIsMwLibPlusRobotNodes() throws Exception {
         String generated = factory().writeTreeNodesModelXml(false);
-        Path file = AUTOS.resolve("lib/nodes.xml");
+        Path file = Path.of("src/main/deploy/autos/nodes.xml");
         if (Boolean.getBoolean("bt.updateNodeSpec")) {
             Files.writeString(file, generated);
         }

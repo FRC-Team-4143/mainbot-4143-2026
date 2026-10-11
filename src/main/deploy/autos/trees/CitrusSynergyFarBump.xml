@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- CitrusSynergy start, then the far bump route back into the alliance zone, then shoot. -->
 <root BTCPP_format="4" main_tree_to_execute="CitrusSynergyFarBump">
-  <include path="lib/common.xml"/>
+  <include path="common.xml"/>
 
   <BehaviorTree ID="CitrusSynergyFarBump">
     <Sequence>

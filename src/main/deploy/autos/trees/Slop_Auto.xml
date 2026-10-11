@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Drive out, shoot, intake while shooting, then drive to climb. -->
 <root BTCPP_format="4" main_tree_to_execute="Slop_Auto">
-  <include path="lib/common.xml"/>
+  <include path="common.xml"/>
 
   <BehaviorTree ID="Slop_Auto">
     <Sequence>

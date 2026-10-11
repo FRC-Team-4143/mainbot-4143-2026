@@ -140,7 +140,7 @@ dependencies {
 
 test {
     useJUnitPlatform()
-    // BtAutosParseTest: `./gradlew test -PupdateNodeSpec` rewrites src/main/deploy/autos/lib/nodes.xml
+    // BtAutosParseTest: `./gradlew test -PupdateNodeSpec` rewrites src/main/deploy/autos/nodes.xml
     systemProperty 'bt.updateNodeSpec', project.hasProperty('updateNodeSpec') ? 'true' : 'false'
     systemProperty 'junit.jupiter.extensions.autodetection.enabled', 'true'
 }
