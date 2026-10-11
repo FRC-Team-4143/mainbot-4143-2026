@@ -199,9 +199,9 @@ auto's tree in `<TreeNodesModel>`, then read it with `{name}`:
 ## Node palette
 
 `nodes.xml` lists every node an auto can use, with its ports, defaults and descriptions, for
-Arbor and Groot2. It starts with MW-Lib's shared nodes, which MW-Lib also ships as
-`com/marswars/bt/mwlib_nodes.xml`, followed by this robot's nodes. It's generated from the Java
-code. After adding or changing a node, regenerate it:
+Arbor and Groot2. It starts with MW-Lib's shared nodes (generated from MW-Lib's own node
+registrations), followed by this robot's nodes. It's generated from the Java code. After adding or
+changing a node, or after bumping MW-Lib, regenerate it:
 
 ```
 ./gradlew test -PupdateNodeSpec

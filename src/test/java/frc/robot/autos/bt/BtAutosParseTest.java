@@ -122,8 +122,8 @@ class BtAutosParseTest {
                 Files.readString(file),
                 file + " is out of date; run ./gradlew test -PupdateNodeSpec");
 
-        // MW-Lib's bundled node file comes first, unchanged; the robot's nodes are appended.
-        String lib = MwLibNodes.bundledNodeSpecXml();
+        // MW-Lib's generated node spec comes first, unchanged; the robot's nodes are appended.
+        String lib = MwLibNodes.nodeSpecXml();
         String libSection = lib.substring(0, lib.indexOf("  </TreeNodesModel>"));
         assertTrue(generated.startsWith(libSection), "robot spec must start with MW-Lib's");
         String robotSection = generated.substring(libSection.length());
