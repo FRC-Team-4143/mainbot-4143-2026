@@ -159,7 +159,7 @@ offseason competitions. See [`FieldLayouts.md`](src/main/deploy/apriltag_layouts
 ## Local MWLib development
 
 By default the project builds against the **published** `mw-lib-java` artifact
-(`com.github.frc-team-4143:mw-lib-java`, from GitHub Packages / jitpack).
+(`com.github.FRC-Team-4143.MW-Lib:mw-lib-java`, from JitPack).
 
 To iterate on [MW-Lib](https://github.com/FRC-Team-4143/MW-Lib) locally without publishing, opt into a
 Gradle composite build that substitutes the published jar for a live compile of your local MWLib checkout.

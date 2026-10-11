@@ -4,7 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import com.marswars.auto.BehaviorTreeAuto;
+import com.marswars.auto.AutoFiles;
+import com.marswars.auto.TrajectoryNames;
 import com.marswars.bt.MwLibNodes;
 import com.marswars.bt.core.BehaviorTree;
 import com.marswars.bt.core.BehaviorTreeFactory;
@@ -33,15 +34,15 @@ class BtAutosParseTest {
     }
 
     static List<Path> allAutos() {
-        List<Path> files = new ArrayList<>(BehaviorTreeAuto.listAutos(AUTOS));
-        files.addAll(BehaviorTreeAuto.listAutos(AUTOS.resolve("unlisted")));
+        List<Path> files = new ArrayList<>(AutoFiles.listAutos(AUTOS));
+        files.addAll(AutoFiles.listAutos(AUTOS.resolve("unlisted")));
         return files;
     }
 
     @Test
     void chooserHasTheConvertedAutos() {
         List<String> names =
-                BehaviorTreeAuto.listAutos(AUTOS).stream()
+                AutoFiles.listAutos(AUTOS).stream()
                         .map(p -> p.getFileName().toString().replace(".xml", ""))
                         .toList();
         assertEquals(
@@ -69,7 +70,7 @@ class BtAutosParseTest {
             assertEquals(stem, spec.mainTreeId(), file + ": main tree ID should match file name");
             BehaviorTree tree = factory.createTreeFromFile(file);
             assertFalse(tree.getNodes().isEmpty());
-            for (String traj : BehaviorTreeAuto.discoverTrajectoryNames(spec, factory)) {
+            for (String traj : TrajectoryNames.discover(spec, factory)) {
                 assertTrue(
                         Files.exists(CHOREO.resolve(traj + ".traj")),
                         file.getFileName() + " references missing trajectory " + traj);
@@ -82,11 +83,11 @@ class BtAutosParseTest {
         BehaviorTreeFactory factory = factory();
         assertEquals(
                 List.of("SynergyP1", "SynergyP2"),
-                BehaviorTreeAuto.discoverTrajectoryNames(
+                TrajectoryNames.discover(
                         BtXmlParser.parse(AUTOS.resolve("CitrusSynergy.xml")), factory));
         assertEquals(
                 List.of("LTrenchStartBumpReturn", "LTrenchSwipeBumpReturn"),
-                BehaviorTreeAuto.discoverTrajectoryNames(
+                TrajectoryNames.discover(
                         BtXmlParser.parse(AUTOS.resolve("Left_Trench_Bump_Swipe.xml")), factory));
     }
 
