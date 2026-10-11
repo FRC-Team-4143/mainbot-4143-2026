@@ -10,7 +10,6 @@ import com.marswars.auto.BehaviorTreeAuto;
 import com.marswars.bt.core.BehaviorTreeFactory;
 import com.marswars.bt.debug.BtLiveServer;
 import com.marswars.bt.monitor.BehaviorTreeFileLogger;
-import com.marswars.bt.monitor.BehaviorTreeMonitor;
 import com.marswars.dashboard.Elastic;
 import com.marswars.geometry.AllianceFlipUtil;
 import com.marswars.logging.MwLog;
@@ -58,7 +57,6 @@ public class Robot extends LoggedRobot {
         // library files like common.xml) (see the README
         // there). Robot-specific nodes are registered in AutoNodes.
         BehaviorTreeFactory bt_factory = AutoNodes.createFactory();
-        BehaviorTreeMonitor.publishNodeModels(bt_factory);
         AutoManager.getInstance()
                 .registerAutos(
                         BehaviorTreeAuto.loadAll(

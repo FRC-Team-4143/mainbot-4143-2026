@@ -182,8 +182,9 @@ auto's tree in `<TreeNodesModel>`, then read it with `{name}`:
 - **No code deploy for XML changes.** Re-selecting an auto, or changing alliance, re-reads its
   file.
 - **AdvantageScope.** `BehaviorTree/Active` is the running auto.
-  `BehaviorTree/<auto>/{Status,Structure,Xml,Result}` describe the tree and its state. `Status`
-  has one letter per node in tree order: I(dle), R(unning), S(uccess), F(ailure), K (skipped).
+  `BehaviorTree/<auto>/{Status,Result,Error}` give its state. `Status` has one letter per node in
+  tree order: I(dle), R(unning), S(uccess), F(ailure), K (skipped). The tree's shape is not logged
+  there: open it in Arbor (live view or the run's `.btlog`) to see it.
 - **Run logs.** Every run writes `<auto>_<date>_<time>.btlog`, in the same binary format as
   BehaviorTree.CPP's `FileLogger2`. Open it in Arbor or Groot2 to replay the run node by
   node. It records every status change, including ones too quick to show in `Status`.
