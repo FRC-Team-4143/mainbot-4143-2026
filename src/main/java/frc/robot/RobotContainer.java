@@ -7,6 +7,7 @@ package frc.robot;
 import com.marswars.logging.MwLog;
 import com.marswars.subsystem.MwSuperStateMachine;
 import com.marswars.swerve_lib.SwerveStates;
+import com.marswars.util.RobotIdentity;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj.RobotBase;
@@ -104,6 +105,16 @@ public class RobotContainer extends MwSuperStateMachine<RobotContainer.RobotStat
         AUTO
     }
 
+    /** The robots this code can run on; per-robot constants variants switch on {@link #ROBOT}. */
+    public enum Robot {
+        ALPHA_BOT,
+        BETA_BOT,
+        SIM_BOT
+    }
+
+    /** The robot the code is running on, from the burned "RobotName" (SimBot in simulation). */
+    public static final Robot ROBOT = RobotIdentity.getInstance().getRobot(Robot.class);
+
     private static RobotContainer instance;
 
     public static synchronized RobotContainer getInstance() {
@@ -132,7 +143,7 @@ public class RobotContainer extends MwSuperStateMachine<RobotContainer.RobotStat
     private IntakeStates intake_rest_ = IntakeStates.DEPLOYED;
 
     public RobotContainer() {
-        super(RobotStates.IDLE, BuildConstants.class, RobotId.current().disabled_subsystems);
+        super(RobotStates.IDLE, BuildConstants.class);
         // !!!!!! ALL SUBSYSTEMS MUST BE REGISTERED HERE TO RUN !!!!!!!
         registerSubsystem(swerve_);
         registerSubsystem(localization_);

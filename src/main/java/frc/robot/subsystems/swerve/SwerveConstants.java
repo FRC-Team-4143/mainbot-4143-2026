@@ -8,13 +8,13 @@ import com.marswars.swerve_lib.SwerveDriveConfig;
 import com.marswars.swerve_lib.module.ModuleType;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
-import frc.robot.RobotId;
+import frc.robot.RobotContainer;
 
 public class SwerveConstants extends MwSwerveConstants {
 
     /** Builds the constants variant for the robot the code is running on. */
     public static SwerveConstants create() {
-        return switch (RobotId.current()) {
+        return switch (RobotContainer.ROBOT) {
             case BETA_BOT -> new BetaSwerveConstants();
             case SIM_BOT -> new SimSwerveConstants();
             default -> new SwerveConstants();

@@ -205,7 +205,7 @@ under a `PER-ROBOT CONSTANTS` banner. A robot that differs gets a small subclass
 public double WHEEL_RADIUS_METERS = Units.inchesToMeters(1.8);   // non-final knob
 
 public static SwerveConstants create() {
-    return switch (RobotId.current()) {
+    return switch (RobotContainer.ROBOT) {
         case BETA_BOT -> new BetaSwerveConstants();
         case SIM_BOT -> new SimSwerveConstants();
         default -> new SwerveConstants();
@@ -221,10 +221,14 @@ public BetaSwerveConstants() {
 The variant constructor runs **after** the base class is fully initialized, so anything derived
 from per-robot fields (motor configs, the swerve drive config) must be built later — in a method
 the subsystem calls (e.g. `getDriveConfig()`), never in the base constructor. Subsystems construct
-via the factory, e.g. `super(MyStates.IDLE, MyConstants.create())`. The active robot comes from `frc.robot.RobotId.current()`
-(MW-Lib `RobotIdentity`: persistent `MWPreferences` "RobotName" burned via the Test-mode
-`Config/Burn RobotName` dashboard button, or `SimBot`/`ROBOT_NAME` env var in sim). Subsystems with
-no per-robot variance need none of this — plain `new XConstants()` stays.
+via the factory, e.g. `super(MyStates.IDLE, MyConstants.create())`.
+
+The active robot is `RobotContainer.ROBOT`, a value of the `RobotContainer.Robot` enum resolved by
+MW-Lib `RobotIdentity.getRobot(...)`: the persistent `MWPreferences` "RobotName" burned via the
+Test-mode `Config/Burn RobotName` dashboard button (or `SimBot`/`ROBOT_NAME` env var in sim),
+matched to the enum ignoring case and underscores ("BetaBot" → `BETA_BOT`). Add a robot by adding
+an enum constant. Subsystems with no per-robot variance need none of this — plain
+`new XConstants()` stays.
 
 ### Swerve is a library subsystem
 
@@ -245,7 +249,7 @@ A subsystem that isn't registered never ticks. Add it in `RobotContainer`'s cons
 
 ```java
 public RobotContainer() {
-    super(RobotStates.IDLE, BuildConstants.class, RobotId.current().disabled_subsystems);
+    super(RobotStates.IDLE, BuildConstants.class);
     // !!!!!! ALL SUBSYSTEMS MUST BE REGISTERED HERE TO RUN !!!!!!!
     registerSubsystem(SwerveSubsystem.getInstance());
     registerSubsystem(IntakeSubsystem.getInstance());
