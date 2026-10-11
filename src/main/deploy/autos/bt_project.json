@@ -1,0 +1,8 @@
+{
+  "name": "mainbot-4143-2026",
+  "nodes": "nodes.xml",
+  "trees": "trees",
+  "live": {
+    "url": "ws://localhost:1670"
+  }
+}

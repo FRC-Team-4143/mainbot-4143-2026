@@ -151,8 +151,9 @@ public class RobotContainer extends MwSuperStateMachine<RobotContainer.RobotStat
     @Override
     protected void handleStateTransition(RobotStates wanted) {
         // Where the robot is decides the scoring mode and what the shooter aims at
-        updateScoringMode();
-        updateShooterTarget();
+        Pose2d pose = localization_.getFieldPose();
+        updateScoringMode(pose);
+        updateShooterTarget(pose);
 
         // Operator settings
         if (field_centric_) {
@@ -302,7 +303,7 @@ public class RobotContainer extends MwSuperStateMachine<RobotContainer.RobotStat
     }
 
     /** HOLD / SCORE / PASS from where the robot is on the field. */
-    private void updateScoringMode() {
+    private void updateScoringMode(Pose2d pose) {
         if (RobotState.isAutonomous()) {
             scoring_mode_ = ScoringModes.AUTO;
             return;
@@ -312,7 +313,6 @@ public class RobotContainer extends MwSuperStateMachine<RobotContainer.RobotStat
             scoring_mode_ = ScoringModes.HOLD;
         }
 
-        Pose2d pose = localization_.getFieldPose();
         switch (scoring_mode_) {
             case HOLD -> {
                 if (isInAllianceZone(pose) && goal_active_) {
@@ -341,11 +341,10 @@ public class RobotContainer extends MwSuperStateMachine<RobotContainer.RobotStat
     }
 
     /** The hub, or a pass target, from the robot's pose. Autos pick their own target. */
-    private void updateShooterTarget() {
+    private void updateShooterTarget(Pose2d pose) {
         if (scoring_mode_ == ScoringModes.AUTO) {
             return;
         }
-        Pose2d pose = localization_.getFieldPose();
 
         if (FieldRegions.LEFT_PASS_REGION.contains(pose)) {
             shooter_target_ = FieldTargets.Shooter.LEFT_PASS;
