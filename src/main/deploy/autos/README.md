@@ -182,12 +182,14 @@ auto's tree in `<TreeNodesModel>`, then read it with `{name}`:
 - **No code deploy for XML changes.** Re-selecting an auto, or changing alliance, re-reads its
   file.
 - **AdvantageScope.** `BehaviorTree/Active` is the running auto.
-  `BehaviorTree/<auto>/{Status,Result,Error}` give its state. `Status` has one letter per node in
-  tree order: I(dle), R(unning), S(uccess), F(ailure), K (skipped). The tree's shape is not logged
-  there: open it in Arbor (live view or the run's `.btlog`) to see it.
+  `BehaviorTree/<auto>/{Transitions,Result,Error}` give its state. `Transitions` lists each node
+  status change since the last tick as `"<node>: <STATE>"` (for example `Follow::2: RUNNING`), so
+  AdvantageScope can show it as a table or timeline like a `.btlog`; it is empty on ticks where
+  nothing changed. The tree's shape is not logged there: open it in Arbor (live view or the run's
+  `.btlog`) to see it.
 - **Run logs.** Every run writes `<auto>_<date>_<time>.btlog`, in the same binary format as
   BehaviorTree.CPP's `FileLogger2`. Open it in Arbor or Groot2 to replay the run node by
-  node. It records every status change, including ones too quick to show in `Status`.
+  node. It records every status change, with the exact time of each.
   - **Where.** `/U/logs/bt` on the robot, next to the AdvantageKit logs, and `logs/bt` in sim.
     Log replay writes `_replay` copies.
   - **Timing.** Times follow the same clock as the AdvantageKit log.
