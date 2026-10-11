@@ -94,29 +94,75 @@ public class IntakeSubsystem extends MwSubsystem<IntakeStates, IntakeConstants> 
     }
 
     // handleStateTransition
+    //
+    // Explicit (current state, request) -> next-state table, grouped by state. A request with
+    // no matching arm is ignored. SQUEEZE_WAIT is a step state: nothing requests it.
     @Override
-    protected void handleStateTransition(IntakeStates wantedState) {
-        // If pivot current spikes while in homing state, set current position as home
-        if (homeDebouncer.calculate(
-                        pivot_.getLeaderSupplyCurrent() > CONSTANTS.PIVOT_HOMING_CURRENT_THRESHOLD)
-                && system_state_ == IntakeStates.PIVOT_HOMING) {
-            pivot_.setCurrentPosition(CONSTANTS.PIVOT_HOME_POSITION);
-            setWantedState(IntakeStates.DEPLOYED);
-            system_state_ = IntakeStates.DEPLOYED;
-        } else if (wantedState == IntakeStates.SQUEEZE && system_state_ == IntakeStates.DEPLOYED) {
-            system_state_ = IntakeStates.SQUEEZE_WAIT;
-            timer.reset();
-            timer.start();
-        } else if (system_state_ == IntakeStates.SQUEEZE_WAIT) {
-            if (timer.get() > CONSTANTS.SQUEEZE_WAIT_TIME) {
-                system_state_ = IntakeStates.SQUEEZE;
+    protected void handleStateTransition(IntakeStates wanted) {
+        // Run the debouncer every loop so its timing doesn't depend on the state
+        boolean pivot_stalled =
+                homeDebouncer.calculate(
+                        pivot_.getLeaderSupplyCurrent() > CONSTANTS.PIVOT_HOMING_CURRENT_THRESHOLD);
+
+        switch (system_state_) {
+            case PIVOT_HOMING -> {
+                // Drive the pivot until its current spikes, then take that as home
+                if (pivot_stalled) {
+                    pivot_.setCurrentPosition(CONSTANTS.PIVOT_HOME_POSITION);
+                    setWantedState(IntakeStates.DEPLOYED);
+                    system_state_ = IntakeStates.DEPLOYED;
+                    return;
+                }
+                switch (wanted) {
+                    case SQUEEZE -> squeeze();
+                    case STORE, DEPLOYED, INTAKE, OUTTAKE, IDLE, SQUEEZE_HOLD, TUNING ->
+                            system_state_ = wanted;
+                    default -> {}
+                }
             }
-        } else if (wantedState == IntakeStates.SQUEEZE
-                && pivot_.getCurrentPosition() > CONSTANTS.PIVOT_SQUEEZE_MAX_POSITION) {
+            case DEPLOYED -> {
+                switch (wanted) {
+                    // Settle before the squeeze engages
+                    case SQUEEZE -> {
+                        system_state_ = IntakeStates.SQUEEZE_WAIT;
+                        timer.restart();
+                    }
+                    case STORE, INTAKE, OUTTAKE, IDLE, SQUEEZE_HOLD, PIVOT_HOMING, TUNING ->
+                            system_state_ = wanted;
+                    default -> {}
+                }
+            }
+            case SQUEEZE_WAIT -> {
+                // Ignores every request until the settle time is up
+                if (timer.get() > CONSTANTS.SQUEEZE_WAIT_TIME) {
+                    system_state_ = IntakeStates.SQUEEZE;
+                }
+            }
+            case STORE, INTAKE, OUTTAKE, IDLE, SQUEEZE, SQUEEZE_HOLD, TUNING -> {
+                switch (wanted) {
+                    case SQUEEZE -> squeeze();
+                    case STORE,
+                                    DEPLOYED,
+                                    INTAKE,
+                                    OUTTAKE,
+                                    IDLE,
+                                    SQUEEZE_HOLD,
+                                    PIVOT_HOMING,
+                                    TUNING ->
+                            system_state_ = wanted;
+                    default -> {}
+                }
+            }
+        }
+    }
+
+    /** Squeeze straight away (no settle), or hold once the pivot is past the squeeze limit. */
+    private void squeeze() {
+        if (pivot_.getCurrentPosition() > CONSTANTS.PIVOT_SQUEEZE_MAX_POSITION) {
             system_state_ = IntakeStates.SQUEEZE_HOLD;
             setWantedState(IntakeStates.SQUEEZE_HOLD);
         } else {
-            system_state_ = wantedState;
+            system_state_ = IntakeStates.SQUEEZE;
         }
     }
 

@@ -165,29 +165,85 @@ public class ShooterSubsystem extends MwSubsystem<ShooterStates, ShooterConstant
     }
 
     // handleStateTransition
+    //
+    // Explicit (current state, request) -> next-state table, grouped by state. A request with
+    // no matching arm is ignored. SHOOT_WAIT is a step state: a SHOOT request goes through it
+    // and it moves on to SHOOT once isShooterReady(); nothing requests it directly.
     @Override
     public void handleStateTransition(ShooterStates wanted) {
-        if (hood_.getLeaderSupplyCurrent() > CONSTANTS.HOOD_HOMING_CURRENT_THRESHOLD
-                && system_state_ == ShooterStates.HOOD_HOMING) {
-            hood_.setCurrentPosition(CONSTANTS.HOOD_HOME_POSITION);
-            setWantedState(ShooterStates.IDLE);
-            system_state_ = ShooterStates.IDLE;
-        } else if (wanted == ShooterStates.SHOOT
-                && system_state_ != ShooterStates.SHOOT_WAIT
-                && system_state_ != ShooterStates.SHOOT) {
-            system_state_ = ShooterStates.SHOOT_WAIT;
-        } else if (system_state_ == ShooterStates.SHOOT_WAIT
-                && isShooterReady()
-                && wanted == ShooterStates.SHOOT) {
-            system_state_ = ShooterStates.SHOOT;
-        } else if (system_state_ == ShooterStates.SHOOT_WAIT
-                && !isShooterReady()
-                && wanted == ShooterStates.SHOOT) {
-            // Nap time : Blocks default transition from occurring
-        } else if (system_state_ == ShooterStates.SHOOT && !isShooterReady()) {
-            system_state_ = ShooterStates.SHOOT_WAIT;
-        } else {
-            system_state_ = wanted;
+        switch (system_state_) {
+            case HOOD_HOMING -> {
+                // Drive the hood until its current spikes, then take that as home
+                if (hood_.getLeaderSupplyCurrent() > CONSTANTS.HOOD_HOMING_CURRENT_THRESHOLD) {
+                    hood_.setCurrentPosition(CONSTANTS.HOOD_HOME_POSITION);
+                    setWantedState(ShooterStates.IDLE);
+                    system_state_ = ShooterStates.IDLE;
+                    break;
+                }
+                switch (wanted) {
+                    case SHOOT -> system_state_ = ShooterStates.SHOOT_WAIT;
+                    case IDLE, TRACKING, AIMING, DUMP, MANUAL_HUB, MANUAL_PASS, SPIN_DOWN, TUNING ->
+                            system_state_ = wanted;
+                    default -> {}
+                }
+            }
+            case SHOOT_WAIT -> {
+                switch (wanted) {
+                    // Spin up and settle, then fire
+                    case SHOOT -> {
+                        if (isShooterReady()) {
+                            system_state_ = ShooterStates.SHOOT;
+                        }
+                    }
+                    case IDLE,
+                                    TRACKING,
+                                    AIMING,
+                                    DUMP,
+                                    MANUAL_HUB,
+                                    MANUAL_PASS,
+                                    SPIN_DOWN,
+                                    TUNING,
+                                    HOOD_HOMING ->
+                            system_state_ = wanted;
+                    default -> {}
+                }
+            }
+            case SHOOT -> {
+                // Drop back to settle if the solution goes stale, whatever is asked for
+                if (!isShooterReady()) {
+                    system_state_ = ShooterStates.SHOOT_WAIT;
+                    break;
+                }
+                switch (wanted) {
+                    case IDLE,
+                                    TRACKING,
+                                    AIMING,
+                                    DUMP,
+                                    MANUAL_HUB,
+                                    MANUAL_PASS,
+                                    SPIN_DOWN,
+                                    TUNING,
+                                    HOOD_HOMING ->
+                            system_state_ = wanted;
+                    default -> {}
+                }
+            }
+            case IDLE, TRACKING, AIMING, DUMP, MANUAL_HUB, MANUAL_PASS, SPIN_DOWN, TUNING -> {
+                switch (wanted) {
+                    case SHOOT -> system_state_ = ShooterStates.SHOOT_WAIT;
+                    case IDLE,
+                                    TRACKING,
+                                    AIMING,
+                                    DUMP,
+                                    MANUAL_HUB,
+                                    MANUAL_PASS,
+                                    SPIN_DOWN,
+                                    TUNING,
+                                    HOOD_HOMING ->
+                            system_state_ = wanted;
+                    default -> {}
+                }
+            }
         }
 
         // Work out where to aim for the state just picked (updateLogic uses the results)
