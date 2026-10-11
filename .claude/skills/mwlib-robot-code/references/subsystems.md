@@ -62,15 +62,36 @@ public class IntakeSubsystem extends MwSubsystem<IntakeStates, IntakeConstants> 
         return Arrays.asList(roller_0_, pivot_);
     }
 
-    // 5. handleStateTransition — the transition table; every condition lives here
+    // 5. handleStateTransition — the transition table; every condition lives here.
+    //    Outer switch: the CURRENT state. Inner switch: the REQUEST. An arm assigns the next
+    //    state; a request with no arm is ignored; step states (SQUEEZE_WAIT) are never requested.
     @Override
-    protected void handleStateTransition(IntakeStates wantedState) {
-        if (wantedState == IntakeStates.SQUEEZE && system_state_ == IntakeStates.DEPLOYED) {
-            system_state_ = IntakeStates.SQUEEZE_WAIT;   // insert an intermediate/timed state
-            timer.reset();
-            timer.start();
-        } else {
-            system_state_ = wantedState;                 // default: accept the requested state
+    protected void handleStateTransition(IntakeStates wanted) {
+        switch (system_state_) {
+            case DEPLOYED -> {
+                switch (wanted) {
+                    // Settle before the squeeze engages (a timed step state)
+                    case SQUEEZE -> {
+                        system_state_ = IntakeStates.SQUEEZE_WAIT;
+                        timer.restart();
+                    }
+                    case STORE, INTAKE, OUTTAKE, IDLE, TUNING -> system_state_ = wanted;
+                    default -> {}
+                }
+            }
+            case SQUEEZE_WAIT -> {
+                // Ignores every request until the settle time is up
+                if (timer.get() > CONSTANTS.SQUEEZE_WAIT_TIME) {
+                    system_state_ = IntakeStates.SQUEEZE;
+                }
+            }
+            case STORE, INTAKE, OUTTAKE, IDLE, SQUEEZE, TUNING -> {
+                switch (wanted) {
+                    case STORE, DEPLOYED, INTAKE, OUTTAKE, IDLE, SQUEEZE, TUNING ->
+                            system_state_ = wanted;
+                    default -> {}
+                }
+            }
         }
     }
 
@@ -114,9 +135,14 @@ public class IntakeSubsystem extends MwSubsystem<IntakeStates, IntakeConstants> 
   make it two states and choose between them in `handleStateTransition`. Calculations (filters,
   feedforward math) are fine; decisions are not.
 - **`handleStateTransition(wanted)` decides the next state, and holds every condition.** The base default just does
-  `system_state_ = wanted`. Override it only to insert guards, timed waits, or intermediate states
-  (e.g. current-spike homing, `SQUEEZE_WAIT`). Inside it you assign `system_state_` directly — this is
-  the *only* place that's allowed.
+  `system_state_ = wanted`. When you override it, write it as the **transition table**: `switch
+  (system_state_)` (where we are) then `switch (wanted)` (what was asked), one arm per allowed move,
+  `default -> {}` to ignore a request that makes no sense from here. Guards, timed waits and step
+  states (current-spike homing, `SQUEEZE_WAIT`) are arms of that table. A state that would behave
+  differently on a condition is split into step states, picked here. Values decided from sensors or
+  settings become fields that `updateLogic` reads. **No enter/exit actions**: a state asks for what it
+  needs every loop. Inside it you assign `system_state_` directly — this is the *only* place that's
+  allowed.
 - **`getIos()` returns the mechanisms** so the framework ticks their hardware IO. A **logic-only
   subsystem returns `new ArrayList<SubsystemIoBase>()`** and commands other subsystems via their
   singletons instead of driving motors.

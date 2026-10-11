@@ -81,4 +81,4 @@ Fields are `snake_case_` (trailing underscore); constants `UPPER_SNAKE_CASE` via
 
 Canonical code examples to imitate: `subsystems/intake/IntakeSubsystem.java` +
 `IntakeConstants.java` (mechanism-driven), `RobotContainer.java` (robot state machine) + `OI.java`,
-`src/main/deploy/autos/Right_Trench_Trench_Swipe.xml`.
+`src/main/deploy/autos/trees/Right_Trench_Trench_Swipe.xml` (+ `trees/common.xml`).

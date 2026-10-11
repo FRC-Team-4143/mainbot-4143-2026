@@ -124,24 +124,30 @@ Two Xbox controllers: Driver (port 0) and Operator (port 1). See
 
 ## Robot Configs
 
-Hardware constants (swerve module gearing/wheel radius, motor gains, shooter geometry, etc.) are loaded at
-runtime from JSON in [`src/main/deploy/robots/`](src/main/deploy/robots) rather than hardcoded, so the same
-code runs on multiple physical robots:
+The same code runs on several physical robots. Which one it is running on comes from MW-Lib's
+`RobotIdentity`: on a real robot the persistent `RobotName` preference (burn it from Test mode with the
+`Config/RobotName` field and the `Config/Burn RobotName` button), `SimBot` in simulation (override with the
+`ROBOT_NAME` environment variable; a replay log carries its own name). `RobotContainer.ROBOT` maps that
+name onto the `RobotContainer.Robot` enum (`ALPHA_BOT`, `BETA_BOT`, `SIM_BOT`).
 
-- [`AlphaBot.json`](src/main/deploy/robots/AlphaBot.json) / [`BetaBot.json`](src/main/deploy/robots/BetaBot.json) — practice vs. competition chassis (differ in wheel radius and module gearing).
-- [`SimBot.json`](src/main/deploy/robots/SimBot.json) — used automatically in simulation.
-
-The active config is chosen by `RobotName` (MW-Lib `ConstantsLoader`): defaults to `AlphaBot`, falls back to
-`SimBot` in simulation (overridable with the `ROBOT_NAME` environment variable), and can otherwise be set
-persistently via a `RobotName` robot preference from the dashboard.
+Per-robot hardware constants are Java, not JSON: a subsystem's `*Constants` class holds the AlphaBot
+values in non-final fields, variants such as
+[`BetaSwerveConstants`](src/main/java/frc/robot/subsystems/swerve/BetaSwerveConstants.java) and
+[`SimSwerveConstants`](src/main/java/frc/robot/subsystems/swerve/SimSwerveConstants.java) reassign the
+ones that differ in their constructors, and `SwerveConstants.create()` switches on `RobotContainer.ROBOT`
+to pick the variant.
 
 ## Autonomous
 
-Auto routines live in [`src/main/java/frc/robot/autos/`](src/main/java/frc/robot/autos) and are registered
-with MW-Lib's `AutoManager` in [`Robot.java`](src/main/java/frc/robot/Robot.java). Paths are authored in
-[Choreo](https://sleipnirgroup.github.io/Choreo/) (`src/main/deploy/choreo/*.traj`) and referenced from Java
-via the generated `ChoreoTraj`/`ChoreoVars` (excluded from Spotless since they're generated code, not hand
-written).
+Autos are behavior trees, written as BehaviorTree.CPP v4 XML in
+[`src/main/deploy/autos/trees/`](src/main/deploy/autos/trees) and run by MW-Lib's `com.marswars.bt`
+engine; every tree file there is a chooser option. Robot-specific nodes are registered in
+[`AutoNodes.java`](src/main/java/frc/robot/autos/bt/AutoNodes.java); `./gradlew test -PupdateNodeSpec`
+regenerates the node palette (`deploy/autos/nodes.xml`). The folder is an
+[Arbor](https://github.com/coalman321/Arbor) project (`bt_project.json`), so it opens in the tree
+editor, with a live view of the running tree and `.btlog` replay. Paths are authored in
+[Choreo](https://sleipnirgroup.github.io/Choreo/) (`src/main/deploy/choreo/*.traj`) and named from the
+XML (`trajectory="..."`). The full guide is [`src/main/deploy/autos/README.md`](src/main/deploy/autos/README.md).
 
 ## Field Layouts
 

@@ -38,7 +38,7 @@ import java.util.Optional;
 import org.littletonrobotics.junction.LoggedRobot;
 
 public class Robot extends LoggedRobot {
-    /** btlive WebSocket port for the BT editor's live view. */
+    /** btlive WebSocket port for Arbor's live view. */
     private static final int BT_LIVE_PORT = BtLiveServer.DEFAULT_PORT;
 
     private Alliance alliance_ = Alliance.Blue; // Current alliance, used to set driver perspective
@@ -65,7 +65,7 @@ public class Robot extends LoggedRobot {
                                 bt_factory,
                                 Filesystem.getDeployDirectory().toPath().resolve("autos/trees")));
         startBtLiveServer();
-        // One <auto>_<time>.btlog per auto run, replayable in Groot2 / the BT editor
+        // One <auto>_<time>.btlog per auto run, replayable in Arbor / Groot2
         // (logs/bt in sim, /U/logs/bt on the robot)
         BehaviorTreeFileLogger.enableDefault();
 
@@ -162,7 +162,7 @@ public class Robot extends LoggedRobot {
     @Override
     public void testExit() {}
 
-    /** Streams running behavior trees to the BT editor (btlive protocol). Never fatal. */
+    /** Streams running behavior trees to Arbor (btlive protocol). Never fatal. */
     private static void startBtLiveServer() {
         if (MwLog.isReplay()) {
             return;

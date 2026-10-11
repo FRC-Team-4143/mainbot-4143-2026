@@ -2,16 +2,17 @@
 
 Every auto is a behavior tree, written as a [BehaviorTree.CPP v4](https://www.behaviortree.dev/)
 XML file. Each `*.xml` file in `trees/` is an option in the dashboard Auto Chooser, named after the
-file. The trees run on MW-Lib's behavior-tree engine (`com.marswars.bt`), and this folder is a BT
-editor project (`bt_project.json`), so it also opens in Groot2.
+file. The trees run on MW-Lib's behavior-tree engine (`com.marswars.bt`), and this folder is an
+[Arbor](https://github.com/coalman321/Arbor) project (`bt_project.json`), our tree editor and live
+viewer. It also opens in Groot2.
 
 | Path | What it is |
 |---|---|
 | `trees/*.xml` | Autos in the chooser |
 | `trees/unlisted/*.xml` | Finished autos kept out of the chooser. They're still checked by the tests. Move one up a level to list it |
 | `trees/common.xml` | Shared subtrees every auto can use (see [Shared subtrees](#shared-subtrees)). A library, not an auto: it has several trees and no `main_tree_to_execute`, so it isn't in the chooser |
-| `nodes.xml` | Generated list of every node an auto can use, for the editor and Groot2 (see [Node palette](#node-palette)) |
-| `bt_project.json` | BT editor project file: where the nodes and trees are, and the robot's live-view address |
+| `nodes.xml` | Generated list of every node an auto can use, for Arbor and Groot2 (see [Node palette](#node-palette)) |
+| `bt_project.json` | Arbor project file: where the nodes and trees are, and the robot's live-view address |
 
 ## Anatomy of an auto
 
@@ -145,7 +146,7 @@ trees, no `main_tree_to_execute`), so it isn't in the chooser.
 
 To add one, write a `<BehaviorTree ID="...">` in `common.xml` that reads its inputs as
 `{name}`. Declare those inputs in the file's `<TreeNodesModel>` as a `<SubTree ID="...">` with
-ports, so editors and Groot2 show them.
+ports, so Arbor and Groot2 show them.
 
 ## Tunable values
 
@@ -184,20 +185,21 @@ auto's tree in `<TreeNodesModel>`, then read it with `{name}`:
   `BehaviorTree/<auto>/{Status,Structure,Xml,Result}` describe the tree and its state. `Status`
   has one letter per node in tree order: I(dle), R(unning), S(uccess), F(ailure), K (skipped).
 - **Run logs.** Every run writes `<auto>_<date>_<time>.btlog`, in the same binary format as
-  BehaviorTree.CPP's `FileLogger2`. Open it in Groot2 or the BT editor to replay the run node by
+  BehaviorTree.CPP's `FileLogger2`. Open it in Arbor or Groot2 to replay the run node by
   node. It records every status change, including ones too quick to show in `Status`.
   - **Where.** `/U/logs/bt` on the robot, next to the AdvantageKit logs, and `logs/bt` in sim.
     Log replay writes `_replay` copies.
   - **Timing.** Times follow the same clock as the AdvantageKit log.
   - **Crash-safe.** It's written as the auto runs, so a power loss mid-auto still leaves a usable
     file.
-- **Live view.** The robot streams the running tree to the BT editor over WebSocket at
-  `ws://<robot>:1670/`, using the btlive protocol.
+- **Live view.** The robot streams the running tree to Arbor over WebSocket at
+  `ws://<robot>:1670/` (`ws://10.41.43.2:1670/` on the robot, `ws://localhost:1670/` in sim), using
+  the btlive protocol. `bt_project.json` holds the address Arbor connects to.
 
 ## Node palette
 
 `nodes.xml` lists every node an auto can use, with its ports, defaults and descriptions, for
-the editor and Groot2. It starts with MW-Lib's shared nodes, which MW-Lib also ships as
+Arbor and Groot2. It starts with MW-Lib's shared nodes, which MW-Lib also ships as
 `com/marswars/bt/mwlib_nodes.xml`, followed by this robot's nodes. It's generated from the Java
 code. After adding or changing a node, regenerate it:
 

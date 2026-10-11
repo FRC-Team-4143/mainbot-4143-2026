@@ -20,8 +20,7 @@ import org.junit.jupiter.api.Test;
 /**
  * Every XML auto (deploy/autos/trees/*.xml, plus trees/unlisted/*.xml which are kept out of the
  * chooser) must instantiate against the robot's node set and only reference trajectories that exist
- * in deploy/choreo. Also writes build/bt/nodes.xml, the node-spec palette the BT editor (or Groot2)
- * loads.
+ * in deploy/choreo. Also writes build/bt/nodes.xml, the node-spec palette Arbor (or Groot2) loads.
  */
 class BtAutosParseTest {
     static final Path AUTOS = Path.of("src/main/deploy/autos/trees");

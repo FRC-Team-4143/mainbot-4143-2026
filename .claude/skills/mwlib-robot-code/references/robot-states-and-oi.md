@@ -55,8 +55,10 @@ Buttons use plain lambdas around `setWantedState`, the same syntax as subsystems
 ```java
 RobotContainer robot = RobotContainer.getInstance();
 
-// hold: the robot is in SHOOT; release: back to DRIVE (whileHeld wraps Commands.startEnd)
-whileHeld(driver_controller_.rightTrigger(), RobotStates.SHOOT);
+// hold: the robot wants SHOOT; release: back to DRIVE (whileHeld wraps Commands.startEnd)
+whileHeld(driver_controller_.rightTrigger(), RobotStates.SHOOT, RobotStates.DRIVE);
+// release to TRACK instead, so the flywheel stays at speed after aiming
+whileHeld(driver_controller_.leftTrigger(), RobotStates.AIM, RobotStates.TRACK);
 
 // one-shot
 driver_controller_.leftBumper()
@@ -67,9 +69,9 @@ operator_controller_.povUp()
         .onTrue(Commands.runOnce(() -> ShooterSubsystem.getInstance().adjustFlywheel(2)));
 ```
 
-`whileHeld(button, state)` is `Commands.startEnd(() -> robot.setWantedState(state), ...)`. On release
-it goes back to `DRIVE`, **but only if `state` is still the wanted state**, so letting go of one
-button never cancels a state another button asked for after it.
+`whileHeld(button, state, release)` is `Commands.startEnd(() -> robot.setWantedState(state), ...)`.
+On release it asks for `release`, **but only if `state` is still the wanted state**, so letting go
+of one button never cancels a state another button asked for after it.
 
 Rules:
 - **Only `OI` reads inputs.** Subsystems and RobotContainer never touch a controller. The one
