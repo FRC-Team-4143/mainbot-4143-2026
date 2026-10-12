@@ -37,7 +37,7 @@ props.setProperty("org.gradle.internal.native.headers.unresolved.dependencies.ig
 //   One-off:    ./gradlew <task> -PmwlibLocal   (a -P flag overrides local.properties)
 //   Disable:    ./gradlew <task> -PmwlibLocal=false
 // When off (the default, and always in CI) mainbot uses the published mw-lib-java artifact.
-// See build.gradle: the com.github.frc-team-4143:mw-lib-java dependency is what gets substituted.
+// See build.gradle: the com.github.FRC-Team-4143.MW-Lib:mw-lib-java dependency is what gets substituted.
 // ---------------------------------------------------------------------------------------------
 def mwlibProps = new Properties()
 def mwlibPropsFile = new File(rootDir, 'local.properties')
@@ -54,7 +54,7 @@ if (mwlibLocal) {
     includeBuild(mwlibPath) {
         dependencySubstitution {
             // Explicit so it doesn't depend on MWLib advertising its publication coordinates.
-            substitute module('com.github.frc-team-4143:mw-lib-java') using project(':')
+            substitute module('com.github.FRC-Team-4143.MW-Lib:mw-lib-java') using project(':')
         }
     }
 

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Right start (mirror of CitrusSynergy): drive out (intake on "Intake Out"), wait for partners, drive back, shoot. -->
+<root BTCPP_format="4" main_tree_to_execute="CitrusSynergyRight">
+  <include path="common.xml"/>
+
+  <BehaviorTree ID="CitrusSynergyRight">
+    <Sequence>
+      <SetShooterTarget target="HUB"/>
+      <SetShooterState state="IDLE"/>
+      <SetIntakeState state="STORE"/>
+      <Sleep name="Settle" msec="1000"/>
+
+      <ParallelDeadline name="DriveP1">
+        <FollowTrajectory trajectory="SynergyP1Right" end_state="IDLE"/>
+        <SubTree ID="IntakeOnEvent" event="Intake Out" state="INTAKE"/>
+      </ParallelDeadline>
+
+      <Delay name="MiddleWait" delay_msec="{middle_wait_msec}">
+        <FollowTrajectory trajectory="SynergyP2Right" end_state="IDLE"/>
+      </Delay>
+
+      <SubTree ID="ShootFor" duration_msec="2000"/>
+    </Sequence>
+  </BehaviorTree>
+
+  <TreeNodesModel>
+    <SubTree ID="CitrusSynergyRight">
+      <input_port name="middle_wait_msec" type="int" default="3000">Wait for other robots to clear the middle before SynergyP2</input_port>
+    </SubTree>
+  </TreeNodesModel>
+</root>

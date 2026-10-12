@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Building blocks shared by every auto (pulled in with <include path="common.xml"/>).
+  It is a library, not an auto: it defines several trees and no main_tree_to_execute, so it stays out
+  of the chooser. Autos in unlisted/ include it as ../common.xml.
+-->
+<root BTCPP_format="4">
+  <!-- Waits for a Choreo event on the running path, then requests an intake state. Put it in a
+       ParallelDeadline after the FollowTrajectory: the path decides when the group ends (and halts
+       this branch if the event never came). -->
+  <BehaviorTree ID="IntakeOnEvent">
+    <Sequence>
+      <WaitForChoreoEvent event="{event}"/>
+      <SetIntakeState state="{state}"/>
+    </Sequence>
+  </BehaviorTree>
+
+  <!-- Shoots for a fixed time with the robot's SHOOT state, the same one the driver's right
+       trigger uses: spin up, aim, and feed (intake SQUEEZE) once the shooter is ready. Then back
+       to AUTO, which stops the shooter and redeploys the intake. -->
+  <BehaviorTree ID="ShootFor">
+    <Sequence>
+      <!-- SHOOT keeps going until something asks for another state, so the Sleep decides when
+           it ends -->
+      <ParallelDeadline>
+        <Sleep msec="{duration_msec}"/>
+        <SetWantedState state="SHOOT"/>
+      </ParallelDeadline>
+      <SetWantedState state="AUTO"/>
+    </Sequence>
+  </BehaviorTree>
+
+  <TreeNodesModel>
+    <SubTree ID="IntakeOnEvent">
+      <input_port name="event" type="std::string">Choreo event marker to wait for</input_port>
+      <input_port name="state" type="IntakeStates" default="INTAKE">Intake state to request when it passes</input_port>
+      <description>Run next to a FollowTrajectory in a ParallelDeadline: set the intake state when the event passes</description>
+    </SubTree>
+    <SubTree ID="ShootFor">
+      <input_port name="duration_msec" type="int" default="2000">How long to shoot</input_port>
+      <description>Robot SHOOT for a fixed time (feeds once the shooter is ready), then back to AUTO</description>
+    </SubTree>
+  </TreeNodesModel>
+</root>

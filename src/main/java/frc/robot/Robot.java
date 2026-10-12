@@ -4,24 +4,24 @@
 
 package frc.robot;
 
-import com.marswars.auto.Auto;
 import com.marswars.auto.AutoManager;
+import com.marswars.auto.BehaviorTreeAuto;
+import com.marswars.bt.core.BehaviorTreeFactory;
+import com.marswars.bt.debug.BtLiveServer;
+import com.marswars.bt.monitor.BehaviorTreeFileLogger;
+import com.marswars.dashboard.Elastic;
 import com.marswars.geometry.AllianceFlipUtil;
-import com.marswars.logging.Elastic;
 import com.marswars.logging.MwLog;
+import com.marswars.swerve_lib.OperatorPerspective;
+import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.Filesystem;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.autos.CitrusSynergy;
-import frc.robot.autos.CitrusSynergyFarBump;
-import frc.robot.autos.CitrusSynergyRight;
-import frc.robot.autos.Left_Trench_Bump_Swipe;
-import frc.robot.autos.Left_Trench_Trench_Swipe;
-import frc.robot.autos.Right_Trench_Bump_Swipe;
-import frc.robot.autos.Right_Trench_Trench_Swipe;
-import frc.robot.autos.Shoot;
-import frc.robot.autos.Slop_Auto;
+import frc.robot.RobotContainer.RobotStates;
+import frc.robot.autos.bt.AutoNodes;
 import frc.robot.lib2026.FieldConstants;
 import frc.robot.lib2026.FieldRegions;
 import frc.robot.lib2026.FieldTargets;
@@ -31,13 +31,13 @@ import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.localization.LocalizationSubsystem;
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterStates;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
-import frc.robot.subsystems.swerve.SwerveConstants;
-import frc.robot.subsystems.swerve.SwerveConstants.SwerveStates;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 import java.util.Optional;
 import org.littletonrobotics.junction.LoggedRobot;
 
 public class Robot extends LoggedRobot {
+    /** btlive WebSocket port for Arbor's live view. */
+    private static final int BT_LIVE_PORT = BtLiveServer.DEFAULT_PORT;
 
     private Alliance alliance_ = Alliance.Blue; // Current alliance, used to set driver perspective
     private RobotContainer robot_container_;
@@ -52,21 +52,19 @@ public class Robot extends LoggedRobot {
         // Configure External Interfaces
         OI.configureBindings();
 
-        // Initialize AutoManager and register auto routines
+        // Autos are behavior trees: every deploy/autos/trees/*.xml is a chooser option (except
+        // library files like common.xml) (see the README
+        // there). Robot-specific nodes are registered in AutoNodes.
+        BehaviorTreeFactory bt_factory = AutoNodes.createFactory();
         AutoManager.getInstance()
                 .registerAutos(
-                        // Add your auto routines here as you create them
-                        new Left_Trench_Bump_Swipe(),
-                        new Left_Trench_Trench_Swipe(),
-                        new Right_Trench_Bump_Swipe(),
-                        new Right_Trench_Trench_Swipe(),
-                        new Shoot(),
-                        new CitrusSynergy(),
-                        new CitrusSynergyFarBump(),
-                        new Slop_Auto(),
-                        new CitrusSynergyRight()
-                        // new TestAuto()
-                        );
+                        BehaviorTreeAuto.loadAll(
+                                bt_factory,
+                                Filesystem.getDeployDirectory().toPath().resolve("autos/trees")));
+        startBtLiveServer();
+        // One <auto>_<time>.btlog per auto run, replayable in Arbor / Groot2
+        // (logs/bt in sim, /U/logs/bt on the robot)
+        BehaviorTreeFileLogger.enableDefault();
 
         // Set the default target for the shooter to be the hub
         ShooterSubsystem.getInstance().setTarget(FieldTargets.Shooter.HUB);
@@ -83,6 +81,9 @@ public class Robot extends LoggedRobot {
     public void robotPeriodic() {
         // Call the scheduler so that commands work for buttons
         CommandScheduler.getInstance().run();
+        // Step the running auto (a behavior tree ticks here) and prepare the selected one in the
+        // background; before doControlLoop so the states it asks for apply in this same loop
+        AutoManager.getInstance().periodic();
         // run the main robot loop for each subsystem
         robot_container_.doControlLoop();
 
@@ -96,21 +97,20 @@ public class Robot extends LoggedRobot {
 
     @Override
     public void disabledInit() {
-        ShooterSubsystem.getInstance().setWantedState(ShooterStates.IDLE);
+        AutoManager.getInstance().stop();
+        robot_container_.setWantedState(RobotStates.IDLE);
         HubMonitor.seedActiveAlliance(HubMonitor.ActiveAlliance.INVALID);
     }
 
     @Override
     public void disabledPeriodic() {
-        AutoManager.getInstance().periodic();
-
         // Allow chaning alliance perspective while disabled
         if (hasAllianceChanged()) {
             SwerveSubsystem.getInstance()
                     .setOperatorForwardDirection(
                             alliance_ == Alliance.Blue
-                                    ? SwerveConstants.OperatorPerspective.BLUE_ALLIANCE
-                                    : SwerveConstants.OperatorPerspective.RED_ALLIANCE);
+                                    ? OperatorPerspective.BLUE_ALLIANCE
+                                    : OperatorPerspective.RED_ALLIANCE);
             FieldRegions.flipRegions();
             LocalizationSubsystem.getInstance().setTagFocus(alliance_);
             HubMonitor.seedActiveAlliance(HubMonitor.ActiveAlliance.INVALID);
@@ -120,8 +120,8 @@ public class Robot extends LoggedRobot {
     @Override
     public void autonomousInit() {
         Elastic.selectTab("Autonomous");
-        Auto selected_auto = AutoManager.getInstance().getSelectedAuto();
-        CommandScheduler.getInstance().schedule(selected_auto);
+        robot_container_.setWantedState(RobotStates.AUTO);
+        AutoManager.getInstance().start();
     }
 
     @Override
@@ -132,10 +132,11 @@ public class Robot extends LoggedRobot {
 
     @Override
     public void teleopInit() {
+        AutoManager.getInstance().stop();
         CommandScheduler.getInstance().cancelAll();
-        SwerveSubsystem.getInstance().setWantedState(SwerveStates.FIELD_CENTRIC);
+        // Starts field-centric driving with the shooter idle (see RobotContainer)
+        robot_container_.setWantedState(RobotStates.DRIVE);
         Elastic.selectTab("Teleoperated");
-        ShooterSubsystem.getInstance().setWantedState(ShooterStates.IDLE);
     }
 
     @Override
@@ -147,7 +148,9 @@ public class Robot extends LoggedRobot {
     @Override
     public void testInit() {
         CommandScheduler.getInstance().cancelAll();
-        SwerveSubsystem.getInstance().setWantedState(SwerveStates.FIELD_CENTRIC);
+        // Maintenance lives outside the robot state machine: it asks for nothing in MAINTENANCE,
+        // and the subsystems start in TUNING so the dashboard buttons (homing, tuning) drive them.
+        robot_container_.setWantedState(RobotStates.MAINTENANCE);
         ShooterSubsystem.getInstance().setWantedState(ShooterStates.TUNING);
         IntakeSubsystem.getInstance().setWantedState(IntakeStates.TUNING);
     }
@@ -157,6 +160,21 @@ public class Robot extends LoggedRobot {
 
     @Override
     public void testExit() {}
+
+    /** Streams running behavior trees to Arbor (btlive protocol). Never fatal. */
+    private static void startBtLiveServer() {
+        if (MwLog.isReplay()) {
+            return;
+        }
+        try {
+            BtLiveServer.start(
+                    BtLiveServer.Options.defaults()
+                            .withPort(BT_LIVE_PORT)
+                            .withRobotName(RobotBase.isSimulation() ? "sim" : "4143"));
+        } catch (RuntimeException e) {
+            DataLogManager.log("BT live server not started: " + e.getMessage());
+        }
+    }
 
     /**
      * Check if the alliance has changed since the last check

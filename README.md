@@ -20,25 +20,59 @@ shift timer for the back half of the match. [`HubMonitor`](src/main/java/frc/rob
 tracks whose hub is currently live from the FMS game-specific message (with a dashboard chooser fallback for
 practice) so the rest of the robot code can reason about it.
 
-## Game State Machine (GSM)
+## Robot state machine (RobotContainer)
 
-[`GameStatesSubsystem`](src/main/java/frc/robot/subsystems/gamestates/GameStatesSubsystem.java) is the
-top-level coordinator that decides what the robot is trying to do based on its field pose, and pushes wanted
-states down to Shooter/Swerve/Localization. It does not run during autonomous.
+[`RobotContainer`](src/main/java/frc/robot/RobotContainer.java) is the robot's **super state machine**.
+It extends MW-Lib's `MwSuperStateMachine<RobotStates, RobotConstants>` and is written like a big subsystem
+(`system_state_`, `CONSTANTS` from [`RobotConstants`](src/main/java/frc/robot/RobotConstants.java),
+`handleStateTransition`, `updateLogic`). It is the only place that coordinates subsystems:
+- Buttons (`OI`) and autos ask for a robot state with `setWantedState(RobotStates.X)`.
+- RobotContainer then requests the matching subsystem states.
+- It runs every loop **before** the subsystems.
+
+There are no command files.
 
 | State | Meaning |
 | ----- | ------- |
-| `HOLD` | Holding fuel, not committed to scoring or passing yet |
-| `SCORE` | In the alliance zone — aim at and shoot into the hub |
-| `PASS` | In a neutral/opponent-side pass region — aim at a pass target instead of the hub |
-| `TELEOP_CLIMB` | Operator has commanded a climb |
-| `DOWN_CLIMB` | Descending from a climb |
-| `AUTO` | Autonomous period — GSM is inert and auto routines drive everything directly |
+| `IDLE` | Disabled: shooter idle |
+| `DRIVE` | Teleop driving with no button held, shooter idle |
+| `TRACK` | Driving with the flywheel kept at speed (after releasing aim), so the next shot is quick |
+| `AUTO` | Autonomous: the robot asks for nothing; autos set subsystem states themselves |
+| `AIM` | Aim at the target without shooting (driver LT) |
+| `SHOOT` | What the driver's RT and autos' `ShootFor` ask for. The robot is never in `SHOOT` itself: each loop `handleStateTransition` picks a step |
+| `SHOOT_WAIT` | Spinning up and aiming, not feeding yet |
+| `SHOOT_FEED` | Ready: feed (intake `SQUEEZE`) while driving with the heading locked |
+| `SHOOT_FEED_BRAKED` | Ready and stopped: feed with the wheels crossed |
+| `SHOOT_PASS_INTAKE` | Passing while moving: keep intaking until the robot stops |
+| `MANUAL_HUB` / `MANUAL_PASS` | Fixed flywheel speed shot or pass, for when vision is down (driver Y / B) |
+| `INTAKE` / `OUTTAKE` | Run the intake in / out (driver RB / A) |
+| `BRAKE` | Cross the wheels (driver X) |
+| `MAINTENANCE` | Test mode: the robot asks for nothing, so dashboard maintenance buttons (homing, tuning) drive the subsystems |
 
-Transitions are driven by [`FieldRegions`](src/main/java/frc/robot/lib2026/FieldRegions.java) polygons
-(alliance zone, left/right pass regions, hold zones, tower, depot/outpost, neutral zone), which are alliance-
-flipped at match start. The operator can also hold a dead-man override (left bumper) to force a pass target
-selection while still standing in the alliance zone.
+RobotContainer is written like a subsystem state machine. **Every decision is in
+`handleStateTransition`** (scoring mode, shooter target, which `SHOOT_` step); `updateLogic` is a
+`switch` on the robot state with no conditions, asking every subsystem for its state every loop. In `AUTO` and `MAINTENANCE` it asks for
+nothing, so autos and maintenance tasks (homing, tuning) can set subsystem states directly. Driver
+toggles (field centric, intake stowed, able to rack) are flags the states read.
+
+Autos use the same states as teleop through the `SetWantedState` behavior-tree node. It waits until
+the robot is in the state (SUCCESS) or the state fails (FAILURE). A scoring sequence is written once,
+in RobotContainer, and used by both teleop and autos.
+
+**Scoring mode.** Every loop RobotContainer also works out a **scoring mode** from the robot's pose:
+
+| Mode | Meaning |
+| ---- | ------- |
+| `HOLD` | Holding fuel, not committed to scoring or passing yet |
+| `SCORE` | In the alliance zone: aim at and shoot into the hub |
+| `PASS` | In a neutral/opponent-side pass region: aim at a pass target instead of the hub |
+| `AUTO` | Autonomous period: the auto picks the target |
+
+The scoring mode picks the shooter target and decides when `SHOOT` feeds. Mode changes are driven by
+[`FieldRegions`](src/main/java/frc/robot/lib2026/FieldRegions.java) polygons (alliance zone, left/right
+pass regions, hold zones, tower, depot/outpost, neutral zone), which are alliance-flipped at match
+start. The operator can also hold a dead-man override (left bumper) to force a pass target while
+still standing in the alliance zone.
 
 ## Subsystems
 
@@ -48,35 +82,36 @@ selection while still standing in the alliance zone.
 | `ShooterSubsystem` | Flywheel + hood + indexer/accelerator. States: `IDLE`, `TRACKING`, `AIMING`, `SHOOT_WAIT`, `SHOOT`, `MANUAL_HUB`, `MANUAL_PASS`, `DUMP`, `TUNING`. Targets either `HUB` or `PASS`. |
 | `IntakeSubsystem` | Pivoting roller intake. States: `STORE`, `DEPLOYED`, `PIVOT_HOMING`, `INTAKE`, `OUTTAKE`, `SQUEEZE` (feeds fuel into the shooter), `IDLE`. |
 | `LocalizationSubsystem` | Pose estimation. States: `FULL` (normal), `SHOOTING_FOCUS` / `CLIMBING_FOCUS` (weight specific AprilTag sets while aiming or climbing). |
-| `GameStatesSubsystem` | See above. |
 | `SimulationSubsystem` | Only registered in simulation (and never during log replay) — drives physics sim of game pieces/mechanisms. |
 
 All subsystems are registered in [`RobotContainer`](src/main/java/frc/robot/RobotContainer.java), which
-extends MW-Lib's `SubsystemManager`.
+extends MW-Lib's `MwSuperStateMachine` (a `SubsystemManager`).
 
 ## Controller Bindings
 
 Two Xbox controllers: Driver (port 0) and Operator (port 1). See
-[`OI`](src/main/java/frc/robot/OI.java) / [`ControlCommands`](src/main/java/frc/robot/ControlCommands.java).
+[`OI`](src/main/java/frc/robot/OI.java). Held buttons ask for a robot state, and releasing them goes back to
+`DRIVE`.
 
 **Driver**
 
 | Button | Action |
 | ------ | ------ |
-| Right Trigger | Shoot fuel at the current target (hub or pass, per GSM) |
-| Left Trigger | Aim at target without shooting (lines up shooter/rotation/localization) |
-| Right Bumper | Intake fuel |
+| Right Trigger | `SHOOT`: shoot fuel at the current target (hub or pass, per scoring mode) |
+| Left Trigger | `AIM`: aim at target without shooting (lines up shooter/rotation/localization) |
+| Right Bumper | `INTAKE`: intake fuel |
 | Left Bumper (on release) | Toggle intake stow/deploy |
 | Right Stick (click) | Toggle field-centric / robot-centric driving |
-| Y | Manual shoot at hub (fixed flywheel speed, for when vision tracking is unavailable) |
-| B | Manual pass (fixed flywheel speed + hood, for when vision tracking is unavailable) |
-| A | Outtake fuel |
+| Y | `MANUAL_HUB`: manual shoot at hub (fixed flywheel speed, for when vision tracking is unavailable) |
+| B | `MANUAL_PASS`: manual pass (fixed flywheel speed + hood, for when vision tracking is unavailable) |
+| A | `OUTTAKE`: outtake fuel |
+| X | `BRAKE`: cross the wheels |
 
 **Operator**
 
 | Button | Action |
 | ------ | ------ |
-| Left Bumper (hold) | Dead-man pass override — force GSM to a pass target while inside the alliance zone |
+| Left Bumper (hold) | Dead-man pass override — force a pass target while inside the alliance zone |
 | POV Up / Down | Nudge flywheel speed +/- |
 | POV Left / Right | Nudge hood angle +/- |
 | X | Toggle "able to rack" (allows/blocks auto-squeeze into the shooter while shooting) |
@@ -90,24 +125,31 @@ Two Xbox controllers: Driver (port 0) and Operator (port 1). See
 
 ## Robot Configs
 
-Hardware constants (swerve module gearing/wheel radius, motor gains, shooter geometry, etc.) are loaded at
-runtime from JSON in [`src/main/deploy/robots/`](src/main/deploy/robots) rather than hardcoded, so the same
-code runs on multiple physical robots:
+The same code runs on several physical robots. Which one it is running on comes from MW-Lib's
+`RobotIdentity`: on a real robot the persistent `RobotName` preference (burn it from Test mode with the
+`Config/RobotName` field and the `Config/Burn RobotName` button), `SimBot` in simulation (override with the
+`ROBOT_NAME` environment variable; a replay log carries its own name). `RobotConstants.ROBOT` maps that
+name onto the `RobotConstants.Robot` enum (`ALPHA_BOT`, `BETA_BOT`, `SIM_BOT`). It is static, because
+subsystems read it while `RobotContainer` is still being constructed.
 
-- [`AlphaBot.json`](src/main/deploy/robots/AlphaBot.json) / [`BetaBot.json`](src/main/deploy/robots/BetaBot.json) — practice vs. competition chassis (differ in wheel radius and module gearing).
-- [`SimBot.json`](src/main/deploy/robots/SimBot.json) — used automatically in simulation.
-
-The active config is chosen by `RobotName` (MW-Lib `ConstantsLoader`): defaults to `AlphaBot`, falls back to
-`SimBot` in simulation (overridable with the `ROBOT_NAME` environment variable), and can otherwise be set
-persistently via a `RobotName` robot preference from the dashboard.
+Per-robot hardware constants are Java, not JSON: a subsystem's `*Constants` class holds the AlphaBot
+values in non-final fields, variants such as
+[`BetaSwerveConstants`](src/main/java/frc/robot/subsystems/swerve/BetaSwerveConstants.java) and
+[`SimSwerveConstants`](src/main/java/frc/robot/subsystems/swerve/SimSwerveConstants.java) reassign the
+ones that differ in their constructors, and `SwerveConstants.create()` switches on `RobotConstants.ROBOT`
+to pick the variant.
 
 ## Autonomous
 
-Auto routines live in [`src/main/java/frc/robot/autos/`](src/main/java/frc/robot/autos) and are registered
-with MW-Lib's `AutoManager` in [`Robot.java`](src/main/java/frc/robot/Robot.java). Paths are authored in
-[Choreo](https://sleipnirgroup.github.io/Choreo/) (`src/main/deploy/choreo/*.traj`) and referenced from Java
-via the generated `ChoreoTraj`/`ChoreoVars` (excluded from Spotless since they're generated code, not hand
-written).
+Autos are behavior trees, written as BehaviorTree.CPP v4 XML in
+[`src/main/deploy/autos/trees/`](src/main/deploy/autos/trees) and run by MW-Lib's `com.marswars.bt`
+engine; every tree file there is a chooser option. Robot-specific nodes are registered in
+[`AutoNodes.java`](src/main/java/frc/robot/autos/bt/AutoNodes.java); `./gradlew test -PupdateNodeSpec`
+regenerates the node palette (`deploy/autos/nodes.xml`). The folder is an
+[Arbor](https://github.com/coalman321/Arbor) project (`bt_project.json`), so it opens in the tree
+editor, with a live view of the running tree and `.btlog` replay. Paths are authored in
+[Choreo](https://sleipnirgroup.github.io/Choreo/) (`src/main/deploy/choreo/*.traj`) and named from the
+XML (`trajectory="..."`). The full guide is [`src/main/deploy/autos/README.md`](src/main/deploy/autos/README.md).
 
 ## Field Layouts
 
@@ -117,7 +159,7 @@ offseason competitions. See [`FieldLayouts.md`](src/main/deploy/apriltag_layouts
 ## Local MWLib development
 
 By default the project builds against the **published** `mw-lib-java` artifact
-(`com.github.frc-team-4143:mw-lib-java`, from GitHub Packages / jitpack).
+(`com.github.FRC-Team-4143.MW-Lib:mw-lib-java`, from JitPack).
 
 To iterate on [MW-Lib](https://github.com/FRC-Team-4143/MW-Lib) locally without publishing, opt into a
 Gradle composite build that substitutes the published jar for a live compile of your local MWLib checkout.

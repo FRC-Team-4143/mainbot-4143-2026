@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- CitrusSynergy start, then the far bump route back into the alliance zone, then shoot. -->
+<root BTCPP_format="4" main_tree_to_execute="CitrusSynergyFarBump">
+  <include path="common.xml"/>
+
+  <BehaviorTree ID="CitrusSynergyFarBump">
+    <Sequence>
+      <SetShooterTarget target="HUB"/>
+      <SetShooterState state="IDLE"/>
+
+      <ParallelDeadline name="DriveP1">
+        <FollowTrajectory trajectory="SynergyP1" end_state="IDLE"/>
+        <SubTree ID="IntakeOnEvent" event="Intake Out" state="INTAKE"/>
+      </ParallelDeadline>
+
+      <Delay name="MiddleWait" delay_msec="{middle_wait_msec}">
+        <FollowTrajectory trajectory="SynergyFarBumpP2" end_state="IDLE"/>
+      </Delay>
+
+      <Delay name="BeforeAllianceZoneWait" delay_msec="{before_alliance_zone_wait_msec}">
+        <FollowTrajectory trajectory="SynergyFarBumpP3" end_state="FIELD_CENTRIC_ROTATION_LOCK"/>
+      </Delay>
+
+      <SubTree ID="ShootFor" duration_msec="2000"/>
+    </Sequence>
+  </BehaviorTree>
+
+  <TreeNodesModel>
+    <SubTree ID="CitrusSynergyFarBump">
+      <input_port name="middle_wait_msec" type="int" default="4000">Wait for other robots to clear the middle before SynergyFarBumpP2</input_port>
+      <input_port name="before_alliance_zone_wait_msec" type="int" default="1000">Wait before re-entering the alliance zone (SynergyFarBumpP3)</input_port>
+    </SubTree>
+  </TreeNodesModel>
+</root>

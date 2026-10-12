@@ -1,16 +1,14 @@
 package frc.robot.subsystems.simulation;
 
 import com.marswars.subsystem.MwConstants;
-import com.marswars.util.ConstantsLoader;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
+import frc.robot.subsystems.shooter.ShooterConstants;
 
 public class SimulationConstants extends MwConstants {
-
-    private final ConstantsLoader LOADER = ConstantsLoader.getInstance();
 
     // =============================================================================
     // ENUMS AND STATE DEFINITIONS
@@ -53,14 +51,12 @@ public class SimulationConstants extends MwConstants {
     // =============================================================================
     public final Translation3d SHOOTER_LAUNCH_OFFSET =
             new Translation3d(
-                    Units.inchesToMeters(LOADER.getDoubleValue("shooter", "translation", "x")),
-                    Units.inchesToMeters(LOADER.getDoubleValue("shooter", "translation", "y")),
-                    Units.inchesToMeters(LOADER.getDoubleValue("shooter", "translation", "z")));
+                    Units.inchesToMeters(ShooterConstants.SHOOTER_MOUNT_X_INCHES),
+                    Units.inchesToMeters(ShooterConstants.SHOOTER_MOUNT_Y_INCHES),
+                    Units.inchesToMeters(ShooterConstants.SHOOTER_MOUNT_Z_INCHES));
     public final Rotation2d SHOOTER_LAUNCH_ROTATION =
-            new Rotation2d(
-                    Units.degreesToRadians(LOADER.getDoubleValue("shooter", "rotation", "z")));
-    public final double SHOOTER_WIDTH =
-            Units.inchesToMeters(LOADER.getDoubleValue("shooter", "width"));
+            new Rotation2d(Units.degreesToRadians(ShooterConstants.SHOOTER_MOUNT_YAW_DEGREES));
+    public final double SHOOTER_WIDTH = Units.inchesToMeters(ShooterConstants.SHOOTER_WIDTH_INCHES);
     public final double FUEL_RADIUS = 0.075; // meters (from FuelSim)
     public final double SECONDS_PER_SHOT = 1.0 / 15.0; // balls per second
 
@@ -77,14 +73,10 @@ public class SimulationConstants extends MwConstants {
     // INTAKE SIMULATION
     // =============================================================================
     public final boolean SIM_FUEL_ENABLED = true;
-    public final double BASE_LENGTH =
-            Units.inchesToMeters(LOADER.getDoubleValue("swerve", "com", "base_length"));
-    public final double BASE_WIDTH =
-            Units.inchesToMeters(LOADER.getDoubleValue("swerve", "com", "base_width"));
-    public final double BUMPER_HEIGHT =
-            Units.inchesToMeters(LOADER.getDoubleValue("swerve", "com", "bumper_height"));
-    public final double INTAKE_MAX_EXTENSION =
-            Units.inchesToMeters(LOADER.getDoubleValue("intake", "max_extension"));
+    public final double BASE_LENGTH = Units.inchesToMeters(27.5); // frame length
+    public final double BASE_WIDTH = Units.inchesToMeters(27.5); // frame width
+    public final double BUMPER_HEIGHT = Units.inchesToMeters(3.0);
+    public final double INTAKE_MAX_EXTENSION = Units.inchesToMeters(12.0);
     public final int HOPPER_CAPACITY = 50; // number of game pieces
 
     // =============================================================================

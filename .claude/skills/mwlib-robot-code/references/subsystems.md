@@ -1,0 +1,301 @@
+# Subsystems & Constants
+
+A subsystem is a **singleton state machine** extending `MwSubsystem<StatesEnum, ConstantsClass>`.
+Each subsystem folder holds exactly two files:
+
+```
+subsystems/<name>/
+├── <Name>Subsystem.java   // the state machine + mechanisms
+└── <Name>Constants.java   // public final constants + the state enum + MotorConfigs
+```
+
+Canonical example: `subsystems/intake/` (mechanism-driven). Logic that coordinates several
+subsystems is not a subsystem: it is a robot state in `RobotContainer` (see
+`references/robot-states-and-oi.md`).
+
+## Subsystem skeleton (keep methods in this order)
+
+```java
+public class IntakeSubsystem extends MwSubsystem<IntakeStates, IntakeConstants> {
+    private static IntakeSubsystem instance_ = null;
+
+    // Mechanism (IO) fields + any filters/timers/debouncers
+    private RollerMech roller_0_;
+    private ArmMech pivot_;
+    private Timer timer = new Timer();
+
+    // 1. getInstance — lazy singleton
+    public static IntakeSubsystem getInstance() {
+        if (instance_ == null) {
+            instance_ = new IntakeSubsystem();
+        }
+        return instance_;
+    }
+
+    // 2. Constructor — super(DEFAULT_STATE, new XConstants()); then build mechanisms
+    public IntakeSubsystem() {
+        super(IntakeStates.STORE, new IntakeConstants());
+        roller_0_ =
+                new RollerMech(
+                        getSubsystemKey(),                    // logging prefix
+                        "Roller0",                            // instance name
+                        List.of(CONSTANTS.ROLLER_MOTOR_CONFIG),
+                        CONSTANTS.ROLLER_GEAR_RATIO);
+        pivot_ =
+                new ArmMech(
+                        getSubsystemKey(), "Pivot",
+                        List.of(CONSTANTS.PIVOT_MOTOR_CONFIG),
+                        CONSTANTS.PIVOT_GEAR_RATIO,
+                        CONSTANTS.PIVOT_LENGTH, CONSTANTS.PIVOT_MASS,
+                        CONSTANTS.PIVOT_MIN, CONSTANTS.PIVOT_MAX);
+    }
+
+    // 3. reset — put the subsystem in a safe state
+    @Override
+    public void reset() {
+        system_state_ = IntakeStates.IDLE;
+    }
+
+    // 4. getIos — every mechanism the framework should tick (read/write/log)
+    @Override
+    public List<SubsystemIoBase> getIos() {
+        return Arrays.asList(roller_0_, pivot_);
+    }
+
+    // 5. handleStateTransition — the transition table; every condition lives here.
+    //    Outer switch: the CURRENT state. Inner switch: the REQUEST. An arm assigns the next
+    //    state; a request with no arm is ignored; step states (SQUEEZE_WAIT) are never requested.
+    @Override
+    protected void handleStateTransition(IntakeStates wanted) {
+        switch (system_state_) {
+            case DEPLOYED -> {
+                switch (wanted) {
+                    // Settle before the squeeze engages (a timed step state)
+                    case SQUEEZE -> {
+                        system_state_ = IntakeStates.SQUEEZE_WAIT;
+                        timer.restart();
+                    }
+                    case STORE, INTAKE, OUTTAKE, IDLE, TUNING -> system_state_ = wanted;
+                    default -> {}
+                }
+            }
+            case SQUEEZE_WAIT -> {
+                // Ignores every request until the settle time is up
+                if (timer.get() > CONSTANTS.SQUEEZE_WAIT_TIME) {
+                    system_state_ = IntakeStates.SQUEEZE;
+                }
+            }
+            case STORE, INTAKE, OUTTAKE, IDLE, SQUEEZE, TUNING -> {
+                switch (wanted) {
+                    case STORE, DEPLOYED, INTAKE, OUTTAKE, IDLE, SQUEEZE, TUNING ->
+                            system_state_ = wanted;
+                    default -> {}
+                }
+            }
+        }
+    }
+
+    // 6. updateLogic — switch on the CURRENT state, command mechanisms. No conditions here.
+    @Override
+    public void updateLogic(double timestamp) {
+        switch (system_state_) {
+            case INTAKE:
+                roller_0_.setTargetDutyCycle(CONSTANTS.INTAKE_DUTY_CYCLE);
+                pivot_.setTargetPosition(CONSTANTS.PIVOT_DEPLOY_POSITION);
+                break;
+            // ... one case per state ...
+            default:
+            case IDLE:
+                roller_0_.setTargetDutyCycle(0.0);
+                pivot_.setTargetDutyCycle(0.0);
+                break;
+        }
+    }
+
+    // 7. Public helpers (getters / adjusters), then private helpers, under banner comments
+    // =============================================================================
+    // PUBLIC HELPER METHODS
+    // =============================================================================
+    public double getPivotAngle() {
+        return pivot_.getCurrentPosition();
+    }
+}
+```
+
+### Rules that matter
+
+- **`getInstance()` is a lazy singleton** (`private static instance_`). Constructor is either public
+  (as in `IntakeSubsystem`) or `private` — both patterns exist; prefer
+  `private` for new code so nothing constructs a second instance.
+- **`super(DEFAULT_STATE, new XConstants())`** sets the initial state and injects the constants (the
+  base stores them in the `CONSTANTS` field).
+- **`updateLogic()` switches on `system_state_` (the current state)** and commands mechanisms. Always
+  end with `default:` falling into a safe/`IDLE` case. **No conditions in it:** no `if`/`?:` that
+  changes what a state does. If a state should behave differently depending on a sensor or setting,
+  make it two states and choose between them in `handleStateTransition`. Calculations (filters,
+  feedforward math) are fine; decisions are not.
+- **`handleStateTransition(wanted)` decides the next state, and holds every condition.** The base default just does
+  `system_state_ = wanted`. When you override it, write it as the **transition table**: `switch
+  (system_state_)` (where we are) then `switch (wanted)` (what was asked), one arm per allowed move,
+  `default -> {}` to ignore a request that makes no sense from here. Guards, timed waits and step
+  states (current-spike homing, `SQUEEZE_WAIT`) are arms of that table. A state that would behave
+  differently on a condition is split into step states, picked here. Values decided from sensors or
+  settings become fields that `updateLogic` reads. **No enter/exit actions**: a state asks for what it
+  needs every loop. Inside it you assign `system_state_` directly — this is the *only* place that's
+  allowed.
+- **`getIos()` returns the mechanisms** so the framework ticks their hardware IO. A **logic-only
+  subsystem returns `new ArrayList<SubsystemIoBase>()`** and commands other subsystems via their
+  singletons instead of driving motors.
+- **Never override `update()`** — it's the base tick and auto-logs `WantedState`/`State`.
+- **Cross-subsystem interaction is direct singleton calls** inside `updateLogic`/`handleStateTransition`,
+  e.g. `LocalizationSubsystem.getInstance().getFieldPose()`.
+
+## The matching `<Name>Constants` class
+
+Extends `MwConstants`. Fields are **`public final` instance fields** (not `static`); only values
+that differ between physical robots are non-final (see the per-robot variants section below).
+Organize with banner comments in this order:
+
+```java
+public class IntakeConstants extends MwConstants {
+
+    // =============================================================================
+    // ENUMS AND STATE DEFINITIONS
+    // =============================================================================
+    public enum IntakeStates {
+        /** Intake stowed in robot */
+        STORE,
+        /** Homing the pivot by driving until a current spike */
+        PIVOT_HOMING,
+        // ... every state gets a one-line Javadoc ...
+        TUNING
+    }
+
+    // =============================================================================
+    // CAN IDS AND HARDWARE CONFIGURATION
+    // =============================================================================
+    public final int PIVOT_MOTOR_ID = 31;
+
+    // =============================================================================
+    // MECHANICAL CONSTANTS - PIVOT
+    // =============================================================================
+    public final double PIVOT_GEAR_RATIO = (50.0 / 12.0) * (50.0 / 24.0) * (32.0 / 14.0);
+    public final double PIVOT_LENGTH = Units.inchesToMeters(13.0);
+    public final double PIVOT_MASS = Units.lbsToKilograms(7.875);
+    public final double PIVOT_MIN = Units.degreesToRadians(-10);
+    public final double PIVOT_MAX = Units.degreesToRadians(140);
+    public final Slot0Configs PIVOT_POSITION_GAINS =
+            new Slot0Configs().withKG(0.45).withKP(15.0).withKD(0.0);
+
+    // =============================================================================
+    // MOTOR CONFIGURATION OBJECTS
+    // =============================================================================
+    public final MotorConfig PIVOT_MOTOR_CONFIG = new MotorConfig();
+
+    // =============================================================================
+    // CONSTRUCTOR - MOTOR CONFIGURATION INITIALIZATION
+    // =============================================================================
+    public IntakeConstants() {
+        PIVOT_MOTOR_CONFIG.can_id = PIVOT_MOTOR_ID;
+        PIVOT_MOTOR_CONFIG.motor_type = TalonMotorType.X60;   // X60, X44, FALCON500, MINION, NEO_550
+        PIVOT_MOTOR_CONFIG.canbus_name = "CANivore";          // "rio" or a named CAN bus
+        TalonFXConfiguration pivot_config = new TalonFXConfiguration();
+        pivot_config.MotorOutput.Inverted = PhoenixUtil.toInvertedValue(PIVOT_MOTOR_INVERTED);
+        pivot_config.CurrentLimits.StatorCurrentLimit = PIVOT_STATOR_CURRENT_LIMIT;
+        pivot_config.CurrentLimits.StatorCurrentLimitEnable = true;
+        pivot_config.Slot0 = PIVOT_POSITION_GAINS;             // position/velocity gains
+        pivot_config.Slot2 = PIVOT_CURRENT_GAINS;              // Slot2 = current-control PID (see mechanisms)
+        PIVOT_MOTOR_CONFIG.apply(pivot_config);
+    }
+}
+```
+
+Conventions:
+- Use WPILib unit helpers for readability: `Units.degreesToRadians(...)`, `Units.inchesToMeters(...)`,
+  `Units.lbsToKilograms(...)`.
+- Gains are Phoenix 6 slot config builders (`new Slot0Configs().withKP(...).withKG(...)`).
+  **Slot0** = primary position, **Slot1** = velocity, **Slot2** = current-control PID.
+- **The state enum lives here**, in the Constants class, and the subsystem imports it
+  (`import frc.robot.subsystems.intake.IntakeConstants.IntakeStates;`).
+
+### Per-robot values (multi-robot support)
+
+Everything is Java — there is no JSON config. The base `*Constants` class is **AlphaBot**; the
+values that differ between physical robots are the class's only **non-final** fields, grouped
+under a `PER-ROBOT CONSTANTS` banner. A robot that differs gets a small subclass whose
+**constructor reassigns** just those fields, and a static `create()` picks the variant (see
+`subsystems/swerve/` for the canonical example):
+
+```java
+// SwerveConstants.java (base = AlphaBot)
+public double WHEEL_RADIUS_METERS = Units.inchesToMeters(1.8);   // non-final knob
+
+public static SwerveConstants create() {
+    return switch (RobotConstants.ROBOT) {
+        case BETA_BOT -> new BetaSwerveConstants();
+        case SIM_BOT -> new SimSwerveConstants();
+        default -> new SwerveConstants();
+    };
+}
+
+// BetaSwerveConstants.java — ONLY what's unique to BetaBot
+public BetaSwerveConstants() {
+    WHEEL_RADIUS_METERS = Units.inchesToMeters(1.978);
+}
+```
+
+The variant constructor runs **after** the base class is fully initialized, so anything derived
+from per-robot fields (motor configs, the swerve drive config) must be built later — in a method
+the subsystem calls (e.g. `getDriveConfig()`), never in the base constructor. Subsystems construct
+via the factory, e.g. `super(MyStates.IDLE, MyConstants.create())`.
+
+The active robot is `RobotConstants.ROBOT` (static, so subsystems can read it while `RobotContainer` is still being constructed), a value of the `RobotConstants.Robot` enum resolved by
+MW-Lib `RobotIdentity.getRobot(...)`: the persistent `MWPreferences` "RobotName" burned via the
+Test-mode `Config/Burn RobotName` dashboard button (or `SimBot`/`ROBOT_NAME` env var in sim),
+matched to the enum ignoring case and underscores ("BetaBot" → `BETA_BOT`). Add a robot by adding
+an enum constant. Subsystems with no per-robot variance need none of this — plain
+`new XConstants()` stays.
+
+### Swerve is a library subsystem
+
+The swerve state machine (teleop, crawl, rotation lock, Choreo following, tractor beam, brake)
+lives in MW-Lib's `com.marswars.swerve_lib.MwSwerveSubsystem`. `SwerveSubsystem` here is a thin
+subclass: it owns the singleton, passes `SwerveConstants.create()`, the localization pose supplier
+and the driver `SwerveDriverInputs`. Holding the POV forcing crawl is built into the library
+(override `remapWantedState()` to change it). `SwerveConstants` extends `MwSwerveConstants`, which supplies the control/Choreo/
+tractor-beam tunables (non-final; reassign in a variant constructor to override) and
+requires `getDriveConfig()`, built with `SwerveDriveConfig.builder()` (bus, module type, wheel radius,
+gains, current limits, per-module CAN IDs + positions; brake mode, gear ratios and steer
+inversion come from the library / `ModuleType`). `SwerveStates` and `OperatorPerspective` are imported from
+`com.marswars.swerve_lib`. Add new drive behaviour to MW-Lib, not to the robot subclass.
+
+## Register the subsystem (required)
+
+A subsystem that isn't registered never ticks. Add it in `RobotContainer`'s constructor:
+
+```java
+public RobotContainer() {
+    super(RobotStates.IDLE, new RobotConstants(), BuildConstants.class);
+    // !!!!!! ALL SUBSYSTEMS MUST BE REGISTERED HERE TO RUN !!!!!!!
+    registerSubsystem(SwerveSubsystem.getInstance());
+    registerSubsystem(IntakeSubsystem.getInstance());
+    // sim-only subsystems are gated:
+    if (RobotBase.isSimulation() && !MwLog.isReplay()) {
+        registerSubsystem(SimulationSubsystem.getInstance());
+    }
+    // !!!!! LEAVE reset() AS THE LAST LINE IN THE CONSTRUCTOR !!!!!!
+    reset();
+}
+```
+
+## Requesting states from elsewhere
+
+`RobotContainer` (the robot state machine) drives a subsystem only by requesting a state. Buttons,
+autos and `Robot` mode inits ask RobotContainer for a robot state instead of touching subsystems:
+
+```java
+IntakeSubsystem.getInstance().setWantedState(IntakeStates.INTAKE);
+```
+
+Never touch `system_state_` from outside. The requested state is "sticky" — `handleStateTransition`
+re-evaluates it every loop until something requests a different one.

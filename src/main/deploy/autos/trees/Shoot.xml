@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Shoot in place: aim at the hub and start shooting (no driving). -->
+<root BTCPP_format="4" main_tree_to_execute="Shoot">
+  <include path="common.xml"/>
+
+  <BehaviorTree ID="Shoot">
+    <Sequence>
+      <SetShooterTarget target="HUB"/>
+      <SetShooterState state="SHOOT"/>
+    </Sequence>
+  </BehaviorTree>
+</root>

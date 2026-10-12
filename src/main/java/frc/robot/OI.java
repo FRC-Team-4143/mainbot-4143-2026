@@ -11,10 +11,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.RobotContainer.RobotStates;
 import frc.robot.lib2026.HubMonitor;
-import frc.robot.subsystems.gamestates.GameStatesSubsystem;
 import frc.robot.subsystems.localization.LocalizationSubsystem;
-import frc.robot.subsystems.shooter.ShooterConstants.ShooterStates;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 import java.util.Optional;
@@ -43,12 +43,14 @@ public abstract class OI {
         SmartDashboard.putData(
                 "Zero Wheel Offsets",
                 SwerveSubsystem.getInstance().setModuleOffsets().ignoringDisable(true));
+        // In teleop the flywheel only keeps spinning in TRACK (after aiming); DRIVE stops it.
         SmartDashboard.putData(
                 "Spin Down Flywheel",
                 Commands.runOnce(
-                        () ->
-                                ShooterSubsystem.getInstance()
-                                        .setWantedState(ShooterStates.SPIN_DOWN)));
+                                () ->
+                                        RobotContainer.getInstance()
+                                                .setWantedState(RobotStates.DRIVE))
+                        .ignoringDisable(true));
 
         // Set up the hub first alliance chooser on the dashboard
         hub_first_alliance_chooser_.setDefaultOption("Auto", HubMonitor.ActiveAlliance.INVALID);
@@ -60,37 +62,34 @@ public abstract class OI {
         // =============================================================================
         // DRIVER CONTROLLER BINDINGS
         // =============================================================================
+        RobotContainer robot = RobotContainer.getInstance();
         driver_controller_
                 .rightStick()
-                .onTrue(SwerveSubsystem.getInstance().toggleFieldCentric().ignoringDisable(true));
+                .onTrue(Commands.runOnce(robot::toggleFieldCentric).ignoringDisable(true));
+        // Hold a button: the robot is in that state; let go: back to DRIVE (or TRACK after aiming,
+        // so the flywheel stays at speed for the shot)
+        whileHeld(driver_controller_.rightTrigger(), RobotStates.SHOOT, RobotStates.DRIVE);
+        whileHeld(driver_controller_.leftTrigger(), RobotStates.AIM, RobotStates.TRACK);
+        whileHeld(driver_controller_.rightBumper(), RobotStates.INTAKE, RobotStates.DRIVE);
+        whileHeld(driver_controller_.y(), RobotStates.MANUAL_HUB, RobotStates.DRIVE);
+        whileHeld(driver_controller_.b(), RobotStates.MANUAL_PASS, RobotStates.DRIVE);
+        whileHeld(driver_controller_.a(), RobotStates.OUTTAKE, RobotStates.DRIVE);
+        whileHeld(driver_controller_.x(), RobotStates.BRAKE, RobotStates.DRIVE);
         driver_controller_
-                .rightTrigger()
-                .whileTrue(ControlCommands.shootFuelCommand().ignoringDisable(true));
-        driver_controller_.leftTrigger().whileTrue(ControlCommands.aimAtTargetCommand());
-        driver_controller_
-                .rightBumper()
-                .whileTrue(ControlCommands.intakeFuelCommand().ignoringDisable(true));
-        driver_controller_.leftBumper().onFalse(ControlCommands.toggleStoreIntakeCommand());
-        driver_controller_.y().whileTrue(ControlCommands.manualShootFuelCommand());
-        driver_controller_.b().whileTrue(ControlCommands.manualPassFuelCommand());
-        driver_controller_.a().whileTrue(ControlCommands.outTakeFuelCommand());
-        driver_controller_.x().whileTrue(ControlCommands.crossWheelsCommand());
+                .leftBumper()
+                .onFalse(Commands.runOnce(robot::toggleStoreIntake).ignoringDisable(true));
 
         // =============================================================================
         // OPERATOR CONTROLLER BINDINGS
         // =============================================================================
-        // Dead-man force-pass override: hold to force GSM to choose a PASS target
-        // while inside the alliance zone (left bumper acts as the dead-man).
+        // Dead-man force-pass override: hold to pick a PASS target while inside the alliance
+        // zone (left bumper acts as the dead-man).
         operator_controller_
                 .leftBumper()
                 .whileTrue(
                         Commands.startEnd(
-                                        () ->
-                                                GameStatesSubsystem.getInstance()
-                                                        .setPassOverride(true),
-                                        () ->
-                                                GameStatesSubsystem.getInstance()
-                                                        .setPassOverride(false))
+                                        () -> robot.setPassOverride(true),
+                                        () -> robot.setPassOverride(false))
                                 .ignoringDisable(true));
         operator_controller_
                 .povUp()
@@ -122,8 +121,26 @@ public abstract class OI {
                                     ShooterSubsystem.getInstance()
                                             .adjustHood(Units.degreesToRadians(1));
                                 }));
-        operator_controller_.x().onTrue(ControlCommands.toggleIsAbleToRack());
-        driver_controller_.leftTrigger().whileTrue(ControlCommands.aimAtTargetCommand());
+        operator_controller_
+                .x()
+                .onTrue(Commands.runOnce(robot::toggleIsAbleToRack).ignoringDisable(true));
+    }
+
+    /**
+     * While {@code button} is held the robot wants {@code state}; on release it wants {@code
+     * release}, unless another button asked for a different state since.
+     */
+    private static void whileHeld(Trigger button, RobotStates state, RobotStates release) {
+        RobotContainer robot = RobotContainer.getInstance();
+        button.whileTrue(
+                Commands.startEnd(
+                                () -> robot.setWantedState(state),
+                                () -> {
+                                    if (robot.getWantedState() == state) {
+                                        robot.setWantedState(release);
+                                    }
+                                })
+                        .ignoringDisable(true));
     }
 
     /**
