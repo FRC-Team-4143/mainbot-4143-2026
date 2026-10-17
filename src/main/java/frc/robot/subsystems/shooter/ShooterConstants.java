@@ -96,6 +96,7 @@ public class ShooterConstants extends MwConstants {
     public final double INDEXER_GEAR_RATIO = 28.0 / 11.0;
     public final Slot1Configs INDEXER_VELOCITY_GAINS =
             new Slot1Configs().withKD(0.01).withKP(1).withKV(0.25);
+    public final double INDEXER_SUPPLY_CURRENT_LIMIT = 35;
 
     // =============================================================================
     // MECHANICAL CONSTANTS - ACCELERATOR
@@ -105,6 +106,7 @@ public class ShooterConstants extends MwConstants {
     public final double ACCELERATOR_GEAR_RATIO = (40.0 / 11.0) * (23.0 / 26.0);
     public final Slot1Configs ACCELERATOR_VELOCITY_GAINS =
             new Slot1Configs().withKP(1).withKV(0.318);
+    public final double ACCELERATOR_SUPPLY_CURRENT_LIMIT = 30;
 
     // =============================================================================
     // MECHANICAL CONSTANTS - HOPPER
@@ -113,6 +115,7 @@ public class ShooterConstants extends MwConstants {
     public final boolean HOPPER_MOTOR_INVERTED = false;
     public final double HOPPER_GEAR_RATIO = 1.0;
     public final Slot1Configs HOPPER_VELOCITY_GAINS = new Slot1Configs().withKV(.122).withKP(0.5);
+    public final double HOPPER_SUPPLY_CURRENT_LIMIT = 30;
 
     // =============================================================================
     // MECHANICAL CONSTANTS - HOOD
@@ -232,16 +235,16 @@ public class ShooterConstants extends MwConstants {
 
         // Populate flywheel speed map (distance in meters -> speed in rad/s)
         // Empirically determined values from testing
-        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(0.75, 145);
-        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(1.34, 148);
-        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(1.78, 162);
-        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(2.17, 166);
-        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(2.81, 174);
-        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(3.82, 190);
-        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(4.40, 198);
-        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(4.77, 200);
-        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(5.60, 226);
-        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(6.50, 256);
+        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(0.75, 145 - 2);
+        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(1.34, 148 - 2);
+        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(1.78, 162 - 2);
+        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(2.17, 166 - 2);
+        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(2.81, 174 - 2);
+        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(3.82, 190 - 2);
+        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(4.40, 198 - 2);
+        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(4.77, 200 - 2);
+        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(5.60, 226 - 2);
+        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(6.50, 256 - 2);
 
         // Populate time of flight map (distance in meters -> time in seconds)
         // Empirically determined values from testing
@@ -288,6 +291,8 @@ public class ShooterConstants extends MwConstants {
         // indexer_leader_config.Voltage.PeakForwardVoltage = 8.0;
         indexer_leader_config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
         indexer_leader_config.Slot1 = INDEXER_VELOCITY_GAINS;
+        indexer_leader_config.CurrentLimits.SupplyCurrentLimit = INDEXER_SUPPLY_CURRENT_LIMIT;
+        indexer_leader_config.CurrentLimits.SupplyCurrentLimitEnable = true;
         INDEXER_MOTOR_CONFIG.apply(indexer_leader_config);
 
         ACCELERATOR_MOTOR_CONFIG.can_id = ACCELERATOR_ID;
@@ -298,6 +303,8 @@ public class ShooterConstants extends MwConstants {
         // accelerator_config.Voltage.PeakForwardVoltage = 8.0;
         accelerator_config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
         accelerator_config.Slot1 = ACCELERATOR_VELOCITY_GAINS;
+        accelerator_config.CurrentLimits.SupplyCurrentLimit = ACCELERATOR_SUPPLY_CURRENT_LIMIT;
+        accelerator_config.CurrentLimits.SupplyCurrentLimitEnable = true;
         ACCELERATOR_MOTOR_CONFIG.apply(accelerator_config);
 
         // Configure Shooter Leader Motor
@@ -384,6 +391,8 @@ public class ShooterConstants extends MwConstants {
         HOPPER_MOTOR_CONFIG.canbus_name = "rio";
         TalonFXConfiguration hopper_config = new TalonFXConfiguration();
         hopper_config.Slot1 = HOPPER_VELOCITY_GAINS;
+        hopper_config.CurrentLimits.SupplyCurrentLimit = HOPPER_SUPPLY_CURRENT_LIMIT;
+        hopper_config.CurrentLimits.SupplyCurrentLimitEnable = true;
         HOPPER_MOTOR_CONFIG.apply(hopper_config);
     }
 }
