@@ -219,16 +219,16 @@ public class ShooterConstants extends MwConstants {
 
         // Populate hood angle map (distance in meters -> angle in radians)
         // Empirically determined values from testing
-        HUB_LAUNCH_CALCULATOR.addHoodAnglePoint(0.75, 1.550 - 0.035);
-        HUB_LAUNCH_CALCULATOR.addHoodAnglePoint(1.34, 1.4 - 0.035);
-        HUB_LAUNCH_CALCULATOR.addHoodAnglePoint(1.78, 1.38 - 0.035);
-        HUB_LAUNCH_CALCULATOR.addHoodAnglePoint(2.17, 1.335 - 0.035);
-        HUB_LAUNCH_CALCULATOR.addHoodAnglePoint(2.81, 1.3 - 0.035);
-        HUB_LAUNCH_CALCULATOR.addHoodAnglePoint(3.82, 1.23 - 0.035);
-        HUB_LAUNCH_CALCULATOR.addHoodAnglePoint(4.40, 1.2 - 0.035);
-        HUB_LAUNCH_CALCULATOR.addHoodAnglePoint(4.77, 1.15 - 0.035);
-        HUB_LAUNCH_CALCULATOR.addHoodAnglePoint(5.60, 1.12 - 0.035);
-        HUB_LAUNCH_CALCULATOR.addHoodAnglePoint(6.50, 1.1 - 0.035);
+        HUB_LAUNCH_CALCULATOR.addHoodAnglePoint(0.75, 1.550 - 0.035 + 0.087);
+        HUB_LAUNCH_CALCULATOR.addHoodAnglePoint(1.34, 1.4 - 0.035 + 0.087);
+        HUB_LAUNCH_CALCULATOR.addHoodAnglePoint(1.78, 1.38 - 0.035 + 0.087);
+        HUB_LAUNCH_CALCULATOR.addHoodAnglePoint(2.17, 1.335 - 0.035 + 0.087);
+        HUB_LAUNCH_CALCULATOR.addHoodAnglePoint(2.81, 1.3 - 0.035 + 0.087);
+        HUB_LAUNCH_CALCULATOR.addHoodAnglePoint(3.82, 1.23 - 0.035 + 0.087);
+        HUB_LAUNCH_CALCULATOR.addHoodAnglePoint(4.40, 1.2 - 0.035 + 0.087);
+        HUB_LAUNCH_CALCULATOR.addHoodAnglePoint(4.77, 1.15 - 0.035 + 0.087);
+        HUB_LAUNCH_CALCULATOR.addHoodAnglePoint(5.60, 1.12 - 0.035 + 0.087);
+        HUB_LAUNCH_CALCULATOR.addHoodAnglePoint(6.50, 1.1 - 0.035 + 0.087);
 
         // Populate flywheel speed map (distance in meters -> speed in rad/s)
         // Empirically determined values from testing
