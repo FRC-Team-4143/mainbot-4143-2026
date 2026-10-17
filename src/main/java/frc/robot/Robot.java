@@ -20,7 +20,7 @@ import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.RobotContainer.RobotStates;
+import frc.robot.RobotConstants.RobotStates;
 import frc.robot.autos.bt.AutoNodes;
 import frc.robot.lib2026.FieldConstants;
 import frc.robot.lib2026.FieldRegions;

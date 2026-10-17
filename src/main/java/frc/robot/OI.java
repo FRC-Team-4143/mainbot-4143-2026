@@ -11,8 +11,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.RobotContainer.RobotStates;
+import frc.robot.RobotConstants.RobotStates;
 import frc.robot.lib2026.HubMonitor;
 import frc.robot.subsystems.localization.LocalizationSubsystem;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
@@ -68,13 +67,83 @@ public abstract class OI {
                 .onTrue(Commands.runOnce(robot::toggleFieldCentric).ignoringDisable(true));
         // Hold a button: the robot is in that state; let go: back to DRIVE (or TRACK after aiming,
         // so the flywheel stays at speed for the shot)
-        whileHeld(driver_controller_.rightTrigger(), RobotStates.SHOOT, RobotStates.DRIVE);
-        whileHeld(driver_controller_.leftTrigger(), RobotStates.AIM, RobotStates.TRACK);
-        whileHeld(driver_controller_.rightBumper(), RobotStates.INTAKE, RobotStates.DRIVE);
-        whileHeld(driver_controller_.y(), RobotStates.MANUAL_HUB, RobotStates.DRIVE);
-        whileHeld(driver_controller_.b(), RobotStates.MANUAL_PASS, RobotStates.DRIVE);
-        whileHeld(driver_controller_.a(), RobotStates.OUTTAKE, RobotStates.DRIVE);
-        whileHeld(driver_controller_.x(), RobotStates.BRAKE, RobotStates.DRIVE);
+        driver_controller_
+                .rightTrigger()
+                .whileTrue(
+                        Commands.startEnd(
+                                        () -> robot.setWantedState(RobotStates.SHOOT),
+                                        () -> {
+                                            if (robot.getWantedState() == RobotStates.SHOOT) {
+                                                robot.setWantedState(RobotStates.DRIVE);
+                                            }
+                                        })
+                                .ignoringDisable(true));
+        driver_controller_
+                .leftTrigger()
+                .whileTrue(
+                        Commands.startEnd(
+                                        () -> robot.setWantedState(RobotStates.AIM),
+                                        () -> {
+                                            if (robot.getWantedState() == RobotStates.AIM) {
+                                                robot.setWantedState(RobotStates.TRACK);
+                                            }
+                                        })
+                                .ignoringDisable(true));
+        driver_controller_
+                .rightBumper()
+                .whileTrue(
+                        Commands.startEnd(
+                                        () -> robot.setWantedState(RobotStates.INTAKE),
+                                        () -> {
+                                            if (robot.getWantedState() == RobotStates.INTAKE) {
+                                                robot.setWantedState(RobotStates.DRIVE);
+                                            }
+                                        })
+                                .ignoringDisable(true));
+        driver_controller_
+                .y()
+                .whileTrue(
+                        Commands.startEnd(
+                                        () -> robot.setWantedState(RobotStates.MANUAL_HUB),
+                                        () -> {
+                                            if (robot.getWantedState() == RobotStates.MANUAL_HUB) {
+                                                robot.setWantedState(RobotStates.DRIVE);
+                                            }
+                                        })
+                                .ignoringDisable(true));
+        driver_controller_
+                .b()
+                .whileTrue(
+                        Commands.startEnd(
+                                        () -> robot.setWantedState(RobotStates.MANUAL_PASS),
+                                        () -> {
+                                            if (robot.getWantedState() == RobotStates.MANUAL_PASS) {
+                                                robot.setWantedState(RobotStates.DRIVE);
+                                            }
+                                        })
+                                .ignoringDisable(true));
+        driver_controller_
+                .a()
+                .whileTrue(
+                        Commands.startEnd(
+                                        () -> robot.setWantedState(RobotStates.OUTTAKE),
+                                        () -> {
+                                            if (robot.getWantedState() == RobotStates.OUTTAKE) {
+                                                robot.setWantedState(RobotStates.DRIVE);
+                                            }
+                                        })
+                                .ignoringDisable(true));
+        driver_controller_
+                .x()
+                .whileTrue(
+                        Commands.startEnd(
+                                        () -> robot.setWantedState(RobotStates.BRAKE),
+                                        () -> {
+                                            if (robot.getWantedState() == RobotStates.BRAKE) {
+                                                robot.setWantedState(RobotStates.DRIVE);
+                                            }
+                                        })
+                                .ignoringDisable(true));
         driver_controller_
                 .leftBumper()
                 .onFalse(Commands.runOnce(robot::toggleStoreIntake).ignoringDisable(true));
@@ -124,23 +193,6 @@ public abstract class OI {
         operator_controller_
                 .x()
                 .onTrue(Commands.runOnce(robot::toggleIsAbleToRack).ignoringDisable(true));
-    }
-
-    /**
-     * While {@code button} is held the robot wants {@code state}; on release it wants {@code
-     * release}, unless another button asked for a different state since.
-     */
-    private static void whileHeld(Trigger button, RobotStates state, RobotStates release) {
-        RobotContainer robot = RobotContainer.getInstance();
-        button.whileTrue(
-                Commands.startEnd(
-                                () -> robot.setWantedState(state),
-                                () -> {
-                                    if (robot.getWantedState() == state) {
-                                        robot.setWantedState(release);
-                                    }
-                                })
-                        .ignoringDisable(true));
     }
 
     /**
