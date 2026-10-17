@@ -235,16 +235,16 @@ public class ShooterConstants extends MwConstants {
 
         // Populate flywheel speed map (distance in meters -> speed in rad/s)
         // Empirically determined values from testing
-        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(0.75, 145 - 2);
-        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(1.34, 148 - 2);
-        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(1.78, 162 - 2);
-        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(2.17, 166 - 2);
-        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(2.81, 174 - 2);
-        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(3.82, 190 - 2);
-        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(4.40, 198 - 2);
-        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(4.77, 200 - 2);
-        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(5.60, 226 - 2);
-        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(6.50, 256 - 2);
+        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(0.75, 145);
+        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(1.34, 148);
+        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(1.78, 162);
+        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(2.17, 166);
+        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(2.81, 174);
+        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(3.82, 190);
+        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(4.40, 198);
+        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(4.77, 200);
+        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(5.60, 226);
+        HUB_LAUNCH_CALCULATOR.addFlywheelSpeedPoint(6.50, 256);
 
         // Populate time of flight map (distance in meters -> time in seconds)
         // Empirically determined values from testing
