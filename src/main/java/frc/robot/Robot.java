@@ -29,6 +29,7 @@ import frc.robot.lib2026.HubMonitor;
 import frc.robot.subsystems.intake.IntakeConstants.IntakeStates;
 import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.localization.LocalizationSubsystem;
+import frc.robot.subsystems.roam.RoamDriveInterface;
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterStates;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.swerve.SwerveConstants;
@@ -92,6 +93,11 @@ public class Robot extends LoggedRobot {
 
         // Visualize the 3D Robot
         Mechanism3dViz.publish();
+
+        // Roam Mode: apply (or relinquish) drive commands from the Sparky
+        // coprocessor. Runs every cycle, in every robot mode, so its own
+        // enabled/autonomous/driver-override checks always see fresh state.
+        RoamDriveInterface.getInstance().periodic();
     }
 
     @Override
@@ -121,7 +127,8 @@ public class Robot extends LoggedRobot {
     public void autonomousInit() {
         Elastic.selectTab("Autonomous");
         Auto selected_auto = AutoManager.getInstance().getSelectedAuto();
-        CommandScheduler.getInstance().schedule(selected_auto);
+        // SwerveSubsystem.getInstance().setWantedState(SwerveStates.CHASSIS_SPEEDS);
+        // CommandScheduler.getInstance().schedule(selected_auto);
     }
 
     @Override

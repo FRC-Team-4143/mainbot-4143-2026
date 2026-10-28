@@ -169,9 +169,11 @@ public class SwerveSubsystem extends MwSubsystem<SwerveStates, SwerveConstants> 
                 new ChassisRequest.ApplyFieldSpeeds()
                         .withDriveRequestType(DriveControlMode.CLOSED_LOOP)
                         .withSteerRequestType(SteerControlMode.CLOSED_LOOP);
+        // OPEN_LOOP drive avoids the CLOSED_LOOP velocity controller fighting the
+        // drive-steer coupling when steer motors are moving to align wheels.
         chassis_speeds_request_ =
                 new ChassisRequest.ApplyChassisSpeeds()
-                        .withDriveRequestType(DriveControlMode.CLOSED_LOOP)
+                        .withDriveRequestType(DriveControlMode.OPEN_LOOP)
                         .withSteerRequestType(SteerControlMode.CLOSED_LOOP);
         brake_request_ = new ChassisRequest.SwerveDriveBrake();
 
