@@ -72,8 +72,8 @@ public abstract class OI {
                 .whileTrue(ControlCommands.intakeFuelCommand().ignoringDisable(true));
         driver_controller_.leftBumper().onFalse(ControlCommands.toggleStoreIntakeCommand());
         driver_controller_.y().whileTrue(ControlCommands.manualShootFuelCommand());
-        driver_controller_.b().whileTrue(ContlPassFuelCommand());
-        driver_controller_.a().whileTruerolCommands.manua(ControlCommands.outTakeFuelCommand());
+        driver_controller_.b().whileTrue(ControlCommands.manualPassFuelCommand());
+        driver_controller_.a().whileTrue(ControlCommands.outTakeFuelCommand());
         driver_controller_.x().whileTrue(ControlCommands.crossWheelsCommand());
 
         // =============================================================================
