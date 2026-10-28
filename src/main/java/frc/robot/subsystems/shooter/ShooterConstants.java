@@ -185,8 +185,8 @@ public class ShooterConstants extends MwConstants {
     public final double HOOD_MANUAL_HUB_ANGLE = 1.335 - 0.035; // radians
 
     // Passing (long range)
-    public final double FLYWHEEL_MANUAL_PASS_VELOCITY = 200.0; // rad/s
-    public final double HOOD_MANUAL_PASS_ANGLE = Units.degreesToRadians(51.57); // radians
+    public final double FLYWHEEL_MANUAL_PASS_VELOCITY = 300.0; // rad/s originally 200
+    public final double HOOD_MANUAL_PASS_ANGLE = 1.335 - 0.035; // radians originally Units.degreesToRadians(51.57);
 
     // =============================================================================
     // MOTOR CONFIGURATION OBJECTS
