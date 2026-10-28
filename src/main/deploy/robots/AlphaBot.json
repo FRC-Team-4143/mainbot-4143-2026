@@ -7,11 +7,11 @@
       "slip_current": 50,
       "speed_at_12v": 5.0,
       "couple_ratio": 3.5,
-      "wheel_radius_inches": 1.8,
+      "wheel_radius_inches": 1.978,
       "max_translation_rate": 5.0,
       "max_angular_rate": 10,
       "drive_motor": {
-        "bus_name": "CANivore",
+        "bus_name": "rio",
         "bus_id": 0,
         "type": "X60",
         "inverted": false,
@@ -26,11 +26,11 @@
           "kd": 0.0
         },
         "slot1": {
-          "ks": 0.2,
-          "kv": 0.1,
-          "ka": 0.02,
-          "kg": 0.3,
-          "kp": 8.0,
+          "ks": 0.224,
+          "kv": 0.62,
+          "ka": 0.0,
+          "kg": 0.0,
+          "kp": 0.25,
           "ki": 0.0,
           "kd": 0.0
         },
@@ -42,18 +42,19 @@
         },
         "supply_limit": {
           "enabled": true,
-          "current_limit": 40,
-          "trigger_time": 0.1
+          "current_limit": 35,
+          "trigger_time": 0.1,
+          "current_lower_limit": 30
         },
         "stator_limit": {
           "enabled": true,
-          "current_limit": 40
+          "current_limit": 105
         }
       },
       "steer_motor": {
-        "bus_name": "CANivore",
+        "bus_name": "rio",
         "bus_id": 0,
-        "type": "X44",
+        "type": "X60",
         "inverted": false,
         "brake_mode": true,
         "slot0": {
@@ -82,12 +83,13 @@
         },
         "supply_limit": {
           "enabled": true,
-          "current_limit": 40,
-          "trigger_time": 0.1
+          "current_limit": 20,
+          "trigger_time": 0.1,
+          "current_lower_limit": 10
         },
         "stator_limit": {
           "enabled": true,
-          "current_limit": 40
+          "current_limit": 60
         }
       }
     },
@@ -98,8 +100,8 @@
       "x_position": 7.5,
       "y_position": 7.5,
       "invert_drive": false,
-      "module_type": "TSN",
-      "module_gearing": "P13-S18"
+      "module_type": "MK4I",
+      "module_gearing": "L2+"
     },
     "fr": {
       "drive_id": 3,
@@ -108,8 +110,8 @@
       "x_position": 7.5,
       "y_position": -7.5,
       "invert_drive": false,
-      "module_type": "TSN",
-      "module_gearing": "P13-S18"
+      "module_type": "MK4I",
+      "module_gearing": "L2+"
     },
     "bl": {
       "drive_id": 5,
@@ -118,8 +120,8 @@
       "x_position": -7.5,
       "y_position": 7.5,
       "invert_drive": false,
-      "module_type": "TSN",
-      "module_gearing": "P13-S18"
+      "module_type": "MK4I",
+      "module_gearing": "L2+"
     },
     "br": {
       "drive_id": 7,
@@ -128,8 +130,8 @@
       "x_position": -7.5,
       "y_position": -7.5,
       "invert_drive": false,
-      "module_type": "TSN",
-      "module_gearing": "P13-S18"
+      "module_type": "MK4I",
+      "module_gearing": "L2+"
     }
   },
   "intake": {
