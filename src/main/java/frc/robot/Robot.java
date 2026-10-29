@@ -127,7 +127,7 @@ public class Robot extends LoggedRobot {
     public void autonomousInit() {
         Elastic.selectTab("Autonomous");
         Auto selected_auto = AutoManager.getInstance().getSelectedAuto();
-        // SwerveSubsystem.getInstance().setWantedState(SwerveStates.CHASSIS_SPEEDS);
+        //SwerveSubsystem.getInstance().setWantedState(SwerveStates.CHASSIS_SPEEDS);
         // CommandScheduler.getInstance().schedule(selected_auto);
     }
 
