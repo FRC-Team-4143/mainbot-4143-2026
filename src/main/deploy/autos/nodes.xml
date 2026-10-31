@@ -8,12 +8,13 @@
     <Action ID="FollowTrajectory">
       <input_port name="trajectory" type="trajectory">Choreo trajectory name (deploy/choreo/&lt;name&gt;.traj)</input_port>
       <input_port name="path_state" type="SwerveStates" default="CHOREO_PATH">Swerve state used while following (CHOREO_PATH or CHOREO_PATH_ROTATION_LOCK)</input_port>
-      <input_port name="end_state" type="SwerveStates" default="IDLE">Swerve state requested when the path finishes or is halted</input_port>
+      <input_port name="end_state" type="SwerveStates" default="IDLE">Swerve state requested when the path finishes, gives up or is halted</input_port>
       <input_port name="min_time" type="double" default="0">Minimum seconds on the path before it may succeed</input_port>
+      <input_port name="max_paused_sec" type="double" default="3">Fail once the path timer has been paused this long (the robot is stuck behind the path); 0 never gives up</input_port>
       <description>Follow a Choreo trajectory until its end setpoint is reached</description>
     </Action>
     <Action ID="WaitForChoreoEvent">
-      <input_port name="event" type="std::string">Choreo event marker name</input_port>
+      <input_port name="event" type="event">Choreo event marker name</input_port>
       <description>Wait until the running trajectory passes a Choreo event marker (use next to a FollowTrajectory in a ParallelDeadline)</description>
     </Action>
     <Action ID="SetSwerveState">
@@ -28,7 +29,7 @@
       <description>At least `seconds` of the current Choreo trajectory have run</description>
     </Condition>
     <Condition ID="HasChoreoEventPassed">
-      <input_port name="event" type="std::string">Choreo event marker name</input_port>
+      <input_port name="event" type="event">Choreo event marker name</input_port>
       <description>The running trajectory passed a Choreo event marker</description>
     </Condition>
     <Condition ID="IsChassisStationary">
@@ -37,8 +38,8 @@
 
     <!-- Robot nodes -->
     <Action ID="SetWantedState">
-      <input_port name="state" type="RobotStates">Robot state to request</input_port>
-      <description>Request a robot state and wait until the robot is in it (SUCCESS) or the state fails (FAILURE)</description>
+      <input_port name="state" type="RobotStates">State to request</input_port>
+      <description>Request a robot state (instant: succeeds at once)</description>
     </Action>
     <Condition ID="IsSystemState">
       <input_port name="state" type="RobotStates">Robot state to check</input_port>
